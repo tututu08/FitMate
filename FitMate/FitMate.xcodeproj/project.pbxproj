@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F6DABEA32DF08E2500FBEBC7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA22DF08E2500FBEBC7 /* RxCocoa */; };
+		F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA42DF08E2500FBEBC7 /* RxRelay */; };
+		F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA62DF08E2500FBEBC7 /* RxSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F6F3B9CE2DEF095800FA2815 /* FitMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -14,17 +20,29 @@
 		F6F3B9E02DEF095A00FA2815 /* Exceptions for "FitMate" folder in "FitMate" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resources/Info.plist,
+				ThirdParty/RxSwift/USAGE.md,
 			);
 			target = F6F3B9CD2DEF095800FA2815 /* FitMate */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		F6DABE9A2DF052B500FBEBC7 /* Exceptions for "FitMate" folder in "Compile Sources" phase from "FitMate" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = F6F3B9CA2DEF095800FA2815 /* Sources */;
+			membershipExceptions = (
+				ThirdParty/RxSwift/USAGE.md,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F6F3B9D02DEF095800FA2815 /* FitMate */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				F6F3B9E02DEF095A00FA2815 /* Exceptions for "FitMate" folder in "FitMate" target */,
+				F6DABE9A2DF052B500FBEBC7 /* Exceptions for "FitMate" folder in "Compile Sources" phase from "FitMate" target */,
 			);
 			path = FitMate;
 			sourceTree = "<group>";
@@ -36,6 +54,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */,
+				F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */,
+				F6DABEA32DF08E2500FBEBC7 /* RxCocoa in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +99,9 @@
 			);
 			name = FitMate;
 			packageProductDependencies = (
+				F6DABEA22DF08E2500FBEBC7 /* RxCocoa */,
+				F6DABEA42DF08E2500FBEBC7 /* RxRelay */,
+				F6DABEA62DF08E2500FBEBC7 /* RxSwift */,
 			);
 			productName = FitMate;
 			productReference = F6F3B9CE2DEF095800FA2815 /* FitMate.app */;
@@ -107,6 +131,9 @@
 			);
 			mainGroup = F6F3B9C52DEF095800FA2815;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6F3B9CF2DEF095800FA2815 /* Products */;
 			projectDirPath = "";
@@ -147,11 +174,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N9SS624GF4;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = FitMate/Info.plist;
+				INFOPLIST_FILE = FitMate/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -174,11 +202,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N9SS624GF4;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = FitMate/Info.plist;
+				INFOPLIST_FILE = FitMate/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -333,6 +362,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.9.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F6DABEA22DF08E2500FBEBC7 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		F6DABEA42DF08E2500FBEBC7 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		F6DABEA62DF08E2500FBEBC7 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F6F3B9C62DEF095800FA2815 /* Project object */;
 }
