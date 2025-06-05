@@ -35,19 +35,32 @@ class LoginViewController: UIViewController {
         let password = UILabel()
         password.text = "비밀번호"
         password.font = .systemFont(ofSize: 14)
+        password.textColor = .lightGray
         return password
     }()
     
     private let passwordField = CustomTextField(placeholder: "비밀번호를 입력해주세요")
     
-    private let saveIDButton: UIButton = {
-        let saveID = UIButton()
-        saveID.setTitle("아이디 저장", for: .normal)
-        saveID.setTitleColor(.darkGray, for: .normal)
-        saveID.titleLabel?.font = .systemFont(ofSize: 14)
-        saveID.tintColor = .systemPurple
-        saveID.contentHorizontalAlignment = .left // 체크박스 좌측 배치
-        return saveID
+    private let saveIDCheckImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "check_1x"))
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private let saveIDLabel: UILabel = {
+        let label = UILabel()
+        label.text = "아이디 저장"
+        label.textColor = .darkGray
+        label.font = .systemFont(ofSize: 14)
+        return label
+    }()
+    
+    private lazy var saveIDStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [saveIDCheckImageView, saveIDLabel])
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center
+        return stack
     }()
     
     private let findIDandPW: UIButton = {
@@ -114,9 +127,9 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black // 컬러 변경 필요
-
+        
         [loginLabel, idLabel, idTextField, passwordLabel,
-         passwordField, saveIDButton, findIDandPW, loginButton,
+         passwordField, saveIDStack, findIDandPW, loginButton,
          kakaoLogo, googleLogo, appleLogo, askingSignUp, signUpButton].forEach({view.addSubview($0)})
         setConstraints()
     }
@@ -128,13 +141,14 @@ class LoginViewController: UIViewController {
         }
         
         idLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(24)
+            make.top.equalTo(loginLabel.snp.bottom).offset(30)
             make.leading.equalTo(view.safeAreaLayoutGuide).inset(32)
         }
         
         idTextField.snp.makeConstraints { make in
             make.top.equalTo(idLabel.snp.bottom).offset(8)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.height.equalTo(60)
         }
         
         passwordLabel.snp.makeConstraints { make in
@@ -144,21 +158,23 @@ class LoginViewController: UIViewController {
         
         passwordField.snp.makeConstraints { make in
             make.top.equalTo(passwordLabel.snp.bottom).offset(8)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.height.equalTo(60)
         }
         
-        saveIDButton.snp.makeConstraints { make in
-            make.top.equalTo(passwordField).offset(20)
+        saveIDStack.snp.makeConstraints { make in
+            make.top.equalTo(passwordField.snp.bottom).offset(20)
             make.leading.equalTo(view.safeAreaLayoutGuide).inset(20)
         }
+
         
         findIDandPW.snp.makeConstraints { make in
-            make.top.equalTo(passwordField).offset(20)
+            make.top.equalTo(passwordField.snp.bottom).offset(20)
             make.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
         }
         
         loginButton.snp.makeConstraints { make in
-            make.top.equalTo(saveIDButton.snp.bottom).offset(42)
+            make.top.equalTo(saveIDStack.snp.bottom).offset(42)
             make.width.equalTo(335)
             make.height.equalTo(60)
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
@@ -167,30 +183,32 @@ class LoginViewController: UIViewController {
         kakaoLogo.snp.makeConstraints { make in
             make.top.equalTo(loginButton.snp.bottom).offset(48)
             make.leading.equalTo(view.safeAreaLayoutGuide).inset(82)
+            make.height.width.equalTo(60)
         }
         
         googleLogo.snp.makeConstraints { make in
             make.top.equalTo(loginButton.snp.bottom).offset(48)
-            make.leading.equalTo(kakaoLogo.snp.trailing).inset(16)
+            make.leading.equalTo(kakaoLogo.snp.trailing).offset(16)
+            make.height.width.equalTo(60)
         }
         
         appleLogo.snp.makeConstraints { make in
             make.top.equalTo(loginButton.snp.bottom).offset(48)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(82)
+            make.height.width.equalTo(60)
         }
         
         askingSignUp.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(52)
             make.leading.equalTo(view.safeAreaLayoutGuide).inset(92)
-            make.trailing.equalTo(signUpButton.snp.leading).inset(4)
+            make.trailing.equalTo(signUpButton.snp.leading).offset(6)
         }
         
         signUpButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(52)
+            make.bottom.equalToSuperview().inset(45)
             make.trailing.equalTo(view.safeAreaLayoutGuide).inset(88)
-            
+            make.leading.equalTo(askingSignUp.snp.trailing).offset(6)
         }
-        
         
     }
 }
