@@ -31,11 +31,18 @@ class CustomTextField: UITextField {
         
         setEyeToggle()
         bind()
-        
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0))
+    }
+    
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0))
     }
     
     func setEyeToggle() {
@@ -45,6 +52,11 @@ class CustomTextField: UITextField {
         // 우측 배치
         rightView = eyeToggleButton
         rightViewMode = .always
+    }
+    
+    override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
+        let original = super.rightViewRect(forBounds: bounds)
+        return original.offsetBy(dx: -8, dy: 0)
     }
     
     func bind() {
@@ -64,5 +76,5 @@ class CustomTextField: UITextField {
             .disposed(by: disposeBag)
         
     }
-
+    
 }
