@@ -10,6 +10,7 @@
 		F6DABEA32DF08E2500FBEBC7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA22DF08E2500FBEBC7 /* RxCocoa */; };
 		F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA42DF08E2500FBEBC7 /* RxRelay */; };
 		F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA62DF08E2500FBEBC7 /* RxSwift */; };
+		F6DAC1F02DF17CF800FBEBC7 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = F6DAC1EF2DF17CF800FBEBC7 /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +56,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */,
+				F6DAC1F02DF17CF800FBEBC7 /* SnapKit in Frameworks */,
 				F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */,
 				F6DABEA32DF08E2500FBEBC7 /* RxCocoa in Frameworks */,
 			);
@@ -102,6 +104,7 @@
 				F6DABEA22DF08E2500FBEBC7 /* RxCocoa */,
 				F6DABEA42DF08E2500FBEBC7 /* RxRelay */,
 				F6DABEA62DF08E2500FBEBC7 /* RxSwift */,
+				F6DAC1EF2DF17CF800FBEBC7 /* SnapKit */,
 			);
 			productName = FitMate;
 			productReference = F6F3B9CE2DEF095800FA2815 /* FitMate.app */;
@@ -133,6 +136,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				F6DAC1EE2DF17CF800FBEBC7 /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6F3B9CF2DEF095800FA2815 /* Products */;
@@ -372,6 +376,14 @@
 				minimumVersion = 6.9.0;
 			};
 		};
+		F6DAC1EE2DF17CF800FBEBC7 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -389,6 +401,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */;
 			productName = RxSwift;
+		};
+		F6DAC1EF2DF17CF800FBEBC7 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F6DAC1EE2DF17CF800FBEBC7 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
