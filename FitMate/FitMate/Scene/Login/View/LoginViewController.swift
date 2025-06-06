@@ -29,7 +29,7 @@ class LoginViewController: UIViewController {
         return id
     }()
     
-    private let idTextField = CustomTextField(placeholder: "아이디를 입력해주세요")
+    private let idTextField = CustomTextField(placeholder: "아이디를 입력해주세요", isSecure: false)
     
     private let passwordLabel: UILabel = {
         let password = UILabel()
@@ -39,9 +39,9 @@ class LoginViewController: UIViewController {
         return password
     }()
     
-    private let passwordField = CustomTextField(placeholder: "비밀번호를 입력해주세요")
+    private let passwordField = CustomTextField(placeholder: "비밀번호를 입력해주세요", isSecure: true)
     
-    private let saveIDCheckImageView: UIImageView = {
+    private let saveIDCheckBox: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "check_1x"))
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -56,7 +56,7 @@ class LoginViewController: UIViewController {
     }()
     
     private lazy var saveIDStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [saveIDCheckImageView, saveIDLabel])
+        let stack = UIStackView(arrangedSubviews: [saveIDCheckBox, saveIDLabel])
         stack.axis = .horizontal
         stack.spacing = 8
         stack.alignment = .center
