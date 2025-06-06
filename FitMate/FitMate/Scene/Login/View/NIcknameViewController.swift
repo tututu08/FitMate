@@ -12,6 +12,8 @@ import RxCocoa
 
 class NIcknameViewController: UIViewController {
     
+    private let disposeBag = DisposeBag()
+    
     private let nicknameViewTitle: UILabel = {
         let title = UILabel()
         title.text = "닉네임 등록"
@@ -38,9 +40,8 @@ class NIcknameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        [nicknameViewTitle, nicknameHeader, nicknameField, termsStack,
-         privacyStack, registerButton].forEach({view.addSubview($0)})
-        setConstraints()
+        setUpUI()
+        registerTapped()
     }
    
     private func setTermsStack() -> UIStackView {
@@ -81,7 +82,11 @@ class NIcknameViewController: UIViewController {
         return stack
     }
     
-    private func setConstraints() {
+    private func setUpUI() {
+        
+        [nicknameViewTitle, nicknameHeader, nicknameField, termsStack,
+         privacyStack, registerButton].forEach({view.addSubview($0)})
+        
         nicknameViewTitle.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.centerX.equalTo(view.safeAreaLayoutGuide)
@@ -115,6 +120,16 @@ class NIcknameViewController: UIViewController {
             make.height.equalTo(60)
 
         }
+    }
+    
+    private func registerTapped() {
+        registerButton.rx.tap
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] _ in
+                let codeShareView = CodeShareVIewController()
+                self?.navigationController?.pushViewController(codeShareView, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 
 }

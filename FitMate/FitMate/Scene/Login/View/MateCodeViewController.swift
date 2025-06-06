@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class MateCodeVIewController: UIViewController {
+class MateCodeViewController: UIViewController {
     
     private let disposeBag = DisposeBag()
     private let customNavBar: UIView = {

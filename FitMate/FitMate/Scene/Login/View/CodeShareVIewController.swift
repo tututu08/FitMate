@@ -96,5 +96,14 @@ class CodeShareVIewController: UIViewController {
 
         }
     }
+    
+    private func mateCodeButtonTapped() {
+        mateCodeButton.rx.tap
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] _ in
+                let moveToMateCode = MateCodeViewController()
+                self?.navigationController?.pushViewController(moveToMateCode, animated: true)
+            })
+    }
 
 }
