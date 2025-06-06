@@ -45,7 +45,7 @@ class CarouselViewModel: ViewModelType {
             image: UIImage(named: "jumpRope") ?? UIImage(),
             title: "줄넘기",
             calorie: "350kcal / 30분",
-            description: "전신을 사용하는 고강도 유산소 운동",
+            description: "전신을 사용하는 \n고강도 유산소 운동",
             effect: "체지방 감소, 순발력 향상"
         ),
         ExerciseItem(

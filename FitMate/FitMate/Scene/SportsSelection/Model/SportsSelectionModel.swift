@@ -33,6 +33,7 @@ class CarouselCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .black
+        label.numberOfLines = 0
         return label
     }()
     private let exerciseDescriptionLabel: UILabel = {
@@ -40,12 +41,14 @@ class CarouselCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .gray
         label.text = "운동 설명"
+        
         return label
     }()
     private var exerciseDescriptionTextLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .black
+        label.numberOfLines = 0
         return label
     }()
     private let exerciseEffectLabel: UILabel = {
@@ -59,6 +62,7 @@ class CarouselCell: UICollectionViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .black
+        label.numberOfLines = 0
         return label
     }()
     
