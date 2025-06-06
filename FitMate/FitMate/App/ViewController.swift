@@ -9,6 +9,12 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    let coopVc = CooperationSportsView()
+    
+    override func loadView() {
+        super.view = coopVc
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .blue

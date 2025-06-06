@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-        let VC = ViewController()
+        let VC = JumpRopeCoopViewController()
         
         window.rootViewController = VC
         window.makeKeyAndVisible()
