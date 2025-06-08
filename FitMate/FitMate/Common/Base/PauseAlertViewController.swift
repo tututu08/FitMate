@@ -17,14 +17,6 @@ class PauseAlertViewController: UIViewController {
         resume.backgroundColor = .lightGray
         return resume
     }()
-
-    private let stopButton = {
-        let stop = UIButton()
-        stop.setTitle("그만하기", for: .normal)
-        stop.setTitleColor(.white, for: .normal)
-        stop.backgroundColor = .systemPurple
-        return stop
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +28,6 @@ class PauseAlertViewController: UIViewController {
             .setTitle("운동이 잠시 멈췄어요")
             .setMessage("운동이 일시정지 되었습니다. 준비되면 이어서 계속해 보세요!")
             .setResumeButton(resumeButton)
-            .setStopButton(stopButton)
             .buildAlert()
         
         view.addSubview(alert)
