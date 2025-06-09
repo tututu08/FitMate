@@ -9,6 +9,10 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    override func loadView() {
+        self.view = BattleSportsView()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .blue
