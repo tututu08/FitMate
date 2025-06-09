@@ -9,206 +9,75 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class LoginViewController: UIViewController {
+class LoginViewController: BaseViewController {
     
-    let disposeBag = DisposeBag()
-    
-    private let loginLabel: UILabel = {
-        let login = UILabel()
-        login.text = "로그인"
-        login.font = .systemFont(ofSize: 20)
-        login.textColor = .white
-        return login
+    private let fitMateLogo: UIImageView = {
+       let logo = UIImageView()
+        logo.contentMode = .scaleAspectFit
+        logo.clipsToBounds = true
+        logo.image = UIImage(named: "logo")
+       return logo
     }()
     
-    private let idLabel: UILabel = {
-        let id = UILabel()
-        id.text = "아이디"
-        id.font = .systemFont(ofSize: 14)
-        id.textColor = .lightGray
-        return id
-    }()
-    
-    private let idTextField = CustomTextField(placeholder: "아이디를 입력해주세요")
-    
-    private let passwordLabel: UILabel = {
-        let password = UILabel()
-        password.text = "비밀번호"
-        password.font = .systemFont(ofSize: 14)
-        password.textColor = .lightGray
-        return password
-    }()
-    
-    private let passwordField = CustomTextField(placeholder: "비밀번호를 입력해주세요")
-    
-    private let saveIDCheckImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "check_1x"))
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
-    private let saveIDLabel: UILabel = {
-        let label = UILabel()
-        label.text = "아이디 저장"
-        label.textColor = .darkGray
-        label.font = .systemFont(ofSize: 14)
-        return label
-    }()
-    
-    private lazy var saveIDStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [saveIDCheckImageView, saveIDLabel])
-        stack.axis = .horizontal
-        stack.spacing = 8
-        stack.alignment = .center
-        return stack
-    }()
-    
-    private let findIDandPW: UIButton = {
-        let findBtn = UIButton()
-        findBtn.setTitle("아이디/비밀번호 찾기", for: .normal)
-        findBtn.setTitleColor(.lightGray, for: .normal) // 컬러 변경 필요
-        findBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14) // 폰트 변경 필요
-        return findBtn
-    }()
-    
-    private let loginButton: UIButton = {
-        let loginBtn = UIButton()
-        loginBtn.setTitle("로그인", for: .normal)
-        loginBtn.setTitleColor(.white, for: .normal)
-        loginBtn.titleLabel?.font = UIFont.systemFont(ofSize: 22) // 폰트 변경 필요
-        loginBtn.backgroundColor = .systemPurple // 컬러 변경 필요
-        return loginBtn
-    }()
-    
-    private let kakaoLogo: UIImageView = {
-        let kakaoLabel = UIImageView()
-        kakaoLabel.image = UIImage(named: "kakaoLogo")
+    private let kakaoLogin: UIButton = {
+        let kakaoLabel = UIButton()
+        kakaoLabel.setImage(UIImage(named: "kakao"), for: .normal)
         kakaoLabel.contentMode = .scaleAspectFit
         return kakaoLabel
     }()
     
-    private let googleLogo: UIImageView = {
-        let googleLabel = UIImageView()
-        googleLabel.image = UIImage(named: "googleLogo")
+    private let googleLogin: UIButton = {
+        let googleLabel = UIButton()
+        googleLabel.setImage(UIImage(named: "google"), for: .normal)
         googleLabel.contentMode = .scaleAspectFit
         return googleLabel
     }()
     
-    private let appleLogo: UIImageView = {
-        let appleLabel = UIImageView()
-        appleLabel.image = UIImage(named: "appleLogo")
+    private let appleLogin: UIButton = {
+        let appleLabel = UIButton()
+        appleLabel.setImage(UIImage(named: "apple"), for: .normal)
         appleLabel.contentMode = .scaleAspectFit
         return appleLabel
     }()
     
-    private let askingSignUp: UILabel = {
-        let askingSignUp = UILabel()
-        askingSignUp.text = "아직 회원이 아니신가요?"
-        askingSignUp.font = .systemFont(ofSize: 14)
-        askingSignUp.textColor = .lightGray // 컬러 변경 필요
-        return askingSignUp
-    }()
-    
-    private let signUpButton: UIButton = {
-        let signUpBtn = UIButton()
-        let title = "회원가입"
+    override func configureUI() {
+        view.backgroundColor = .black // 색상 변경 필요
         
-        let titleEffect = NSAttributedString(
-            string: title,
-            attributes: [
-                .underlineStyle: NSUnderlineStyle.single.rawValue,
-                .foregroundColor: UIColor.systemPurple,
-                .font: UIFont.systemFont(ofSize: 16) // 폰트 변경 필요
-            ])
-        signUpBtn.setAttributedTitle(titleEffect, for: .normal)
-        return signUpBtn
-    }()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .black // 컬러 변경 필요
-        
-        [loginLabel, idLabel, idTextField, passwordLabel,
-         passwordField, saveIDStack, findIDandPW, loginButton,
-         kakaoLogo, googleLogo, appleLogo, askingSignUp, signUpButton].forEach({view.addSubview($0)})
-        setConstraints()
+        [fitMateLogo, kakaoLogin, googleLogin,
+         appleLogin].forEach({view.addSubview($0)})
     }
     
-    private func setConstraints() {
-        loginLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
-            make.centerX.equalTo(view.safeAreaLayoutGuide)
-        }
+    override func setLayoutUI() {
         
-        idLabel.snp.makeConstraints { make in
-            make.top.equalTo(loginLabel.snp.bottom).offset(30)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(32)
+        fitMateLogo.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(174)
+            make.leading.trailing.equalToSuperview().inset(87)
         }
-        
-        idTextField.snp.makeConstraints { make in
-            make.top.equalTo(idLabel.snp.bottom).offset(8)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+       
+        kakaoLogin.snp.makeConstraints { make in
+            make.top.equalTo(fitMateLogo.snp.bottom).offset(174)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(60)
+            make.width.equalTo(343)
         }
         
-        passwordLabel.snp.makeConstraints { make in
-            make.top.equalTo(idTextField.snp.bottom).offset(20)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(32)
-        }
-        
-        passwordField.snp.makeConstraints { make in
-            make.top.equalTo(passwordLabel.snp.bottom).offset(8)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+        googleLogin.snp.makeConstraints { make in
+            make.top.equalTo(kakaoLogin.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(60)
+            make.width.equalTo(343)
         }
         
-        saveIDStack.snp.makeConstraints { make in
-            make.top.equalTo(passwordField.snp.bottom).offset(20)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(20)
-        }
-
-        
-        findIDandPW.snp.makeConstraints { make in
-            make.top.equalTo(passwordField.snp.bottom).offset(20)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
-        }
-        
-        loginButton.snp.makeConstraints { make in
-            make.top.equalTo(saveIDStack.snp.bottom).offset(42)
-            make.width.equalTo(335)
+        appleLogin.snp.makeConstraints { make in
+            make.top.equalTo(googleLogin.snp.bottom).offset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(60)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.width.equalTo(343)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(114)
         }
-        
-        kakaoLogo.snp.makeConstraints { make in
-            make.top.equalTo(loginButton.snp.bottom).offset(48)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(82)
-            make.height.width.equalTo(60)
-        }
-        
-        googleLogo.snp.makeConstraints { make in
-            make.top.equalTo(loginButton.snp.bottom).offset(48)
-            make.leading.equalTo(kakaoLogo.snp.trailing).offset(16)
-            make.height.width.equalTo(60)
-        }
-        
-        appleLogo.snp.makeConstraints { make in
-            make.top.equalTo(loginButton.snp.bottom).offset(48)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(82)
-            make.height.width.equalTo(60)
-        }
-        
-        askingSignUp.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(52)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(92)
-            make.trailing.equalTo(signUpButton.snp.leading).offset(6)
-        }
-        
-        signUpButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(45)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).inset(88)
-            make.leading.equalTo(askingSignUp.snp.trailing).offset(6)
-        }
-        
+    }
+    
+    override func bindViewModel() {
+        <#code#>
     }
 }
