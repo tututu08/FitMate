@@ -1,9 +1,10 @@
 import UIKit
+import RxRelay
 import RxSwift
 import SnapKit
 
 class SportsSelectionViewController: UIViewController {
-
+    private let selectedItemRelay = PublishRelay<CarouselViewModel.ExerciseItem>()
     let carouselViewModel = CarouselViewModel()
     private let disposeBag = DisposeBag()
     
@@ -71,6 +72,20 @@ class SportsSelectionViewController: UIViewController {
                 cell.configureCell(with: item)
             }
             .disposed(by: disposeBag)
+        
+        collectionView.rx.modelSelected(CarouselViewModel.ExerciseItem.self)
+            .bind(onNext: { [weak self] item in
+                print("cell clicked: \(item.title)")
+                self?.selectedItemRelay.accept(item)
+            })
+            .disposed(by: disposeBag)
+        
+        selectedItemRelay
+            .bind(onNext: { [weak self] item in
+                let modeVC = SportsModeViewController(exerciseItem: item)
+                self?.navigationController?.pushViewController(modeVC, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
     
     // 무한 스크롤 초기 위치를 배열 중간으로 설정하는 함수
@@ -92,4 +107,3 @@ class SportsSelectionViewController: UIViewController {
         collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
     }
 }
-
