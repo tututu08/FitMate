@@ -47,16 +47,14 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         self.title = "목표치"
         navigationController?.navigationBar.applyCustomAppearance()
         navigationItem.backButtonTitle = ""
+        
         pickerView.dataSource = self
         pickerView.delegate = self
-    
-        configureUI()
-        bindViewModel()
         
     }
 
     override func bindViewModel() {
-        
+        super.bindViewModel()
         // viewModel.transform 호출
         let input = GoalSelectionViewModel.Input(selectedTitle: selectedTitleRelay.asObservable())
         let output = viewModel.transform(input: input)
@@ -74,6 +72,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     }
     
     override func configureUI() {
+        super.configureUI()
         view.backgroundColor = .black
         [ infoLabel, subInfoLabel, pickerView, GoalSettingButton].forEach {
             view.addSubview($0)

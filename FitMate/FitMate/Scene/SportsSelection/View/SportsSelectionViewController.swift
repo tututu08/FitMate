@@ -35,8 +35,6 @@ class SportsSelectionViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""
-        configureUI()
-        bindViewModel()
         // 뷰 레이아웃 완료 후 (비동기 실행)
         DispatchQueue.main.async { [weak self] in
             // 중간 인덱스로 스크롤 위치 이동 (무한 스크롤용 초기 위치)
@@ -46,6 +44,7 @@ class SportsSelectionViewController: BaseViewController {
     }
 
     override func configureUI() {
+        super.configureUI()
         view.addSubview(label)
         view.addSubview(collectionView)
         label.snp.makeConstraints {
@@ -62,6 +61,7 @@ class SportsSelectionViewController: BaseViewController {
     }
 
     override func bindViewModel() {
+        super.bindViewModel()
         let input = CarouselViewModel.Input()
         let output = carouselViewModel.transform(input: input)
 

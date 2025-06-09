@@ -80,12 +80,11 @@ class SportsModeViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.applyCustomAppearance()
-        configureUI()
         configureUI(with: exerciseItem)
-        bindViewModel()
     }
 
     override func bindViewModel() {
+        super.bindViewModel()
         cooperationModeButton.rx.tap
             .map { [weak self] in self?.exerciseItem.title ?? "" }
             .bind(to: modeSelectedRelay)
@@ -106,6 +105,7 @@ class SportsModeViewController: BaseViewController {
     }
     
     override func configureUI() {
+        super.configureUI()
         view.backgroundColor = .white
         backgroundView.addSubview(imageView)
         [
