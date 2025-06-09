@@ -3,10 +3,9 @@ import RxRelay
 import RxSwift
 import SnapKit
 
-class SportsSelectionViewController: UIViewController {
+class SportsSelectionViewController: BaseViewController {
     private let selectedItemRelay = PublishRelay<CarouselViewModel.ExerciseItem>()
     let carouselViewModel = CarouselViewModel()
-    private let disposeBag = DisposeBag()
     
     let label: UILabel = {
         let label = UILabel()
@@ -36,7 +35,7 @@ class SportsSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""
-        setupUI()
+        configureUI()
         bindViewModel()
         // 뷰 레이아웃 완료 후 (비동기 실행)
         DispatchQueue.main.async { [weak self] in
@@ -46,7 +45,7 @@ class SportsSelectionViewController: UIViewController {
         view.backgroundColor = .darkGray
     }
 
-    private func setupUI() {
+    override func configureUI() {
         view.addSubview(label)
         view.addSubview(collectionView)
         label.snp.makeConstraints {
@@ -62,7 +61,7 @@ class SportsSelectionViewController: UIViewController {
         }
     }
 
-    private func bindViewModel() {
+    override func bindViewModel() {
         let input = CarouselViewModel.Input()
         let output = carouselViewModel.transform(input: input)
 
@@ -76,7 +75,6 @@ class SportsSelectionViewController: UIViewController {
         
         collectionView.rx.modelSelected(CarouselViewModel.ExerciseItem.self)
             .bind(onNext: { [weak self] item in
-                print("cell clicked: \(item.title)")
                 self?.selectedItemRelay.accept(item)
             })
             .disposed(by: disposeBag)

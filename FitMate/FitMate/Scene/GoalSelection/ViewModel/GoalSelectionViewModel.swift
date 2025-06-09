@@ -1,12 +1,30 @@
 import RxCocoa
 import RxSwift
 
-class GoalSelectionViewModel {
-    // 내부 저장용 Relay
+class GoalSelectionViewModel: ViewModelType {
+    struct Input {
+        let selectedTitle: Observable<String>
+    }
+
+    struct Output {
+        let pickerItems: Driver<[String]>
+    }
+
     private let selectedGoalTitleRelay = BehaviorRelay<String>(value: "")
-    
-    // Driver로 외부에 노출
-    var pickerDataDriver: Driver<[String]> {
+    private let disposeBag = DisposeBag()
+
+    func transform(input: Input) -> Output {
+        // input.selectedTitle 스트림을 selectedGoalTitleRelay로 바인딩
+        input.selectedTitle
+            .bind(to: selectedGoalTitleRelay)
+            .disposed(by: disposeBag)
+
+        return Output(
+            pickerItems: pickerDataDriver
+        )
+    }
+
+    private var pickerDataDriver: Driver<[String]> {
         selectedGoalTitleRelay
             .map { title in
                 switch title {
@@ -22,10 +40,4 @@ class GoalSelectionViewModel {
             }
             .asDriver(onErrorJustReturn: [])
     }
-    
-    // 타이틀 업데이트용 함수
-    func updateSelectedTitle(_ title: String) {
-        selectedGoalTitleRelay.accept(title)
-    }
 }
-

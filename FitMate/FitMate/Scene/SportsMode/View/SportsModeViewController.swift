@@ -9,9 +9,8 @@ import SnapKit
 import RxSwift
 import RxRelay
 
-class SportsModeViewController: UIViewController {
+class SportsModeViewController: BaseViewController {
     private let exerciseItem: CarouselViewModel.ExerciseItem
-    private let disposeBag = DisposeBag()
     
     private let modeSelectedRelay = PublishRelay<String>()
     
@@ -63,7 +62,7 @@ class SportsModeViewController: UIViewController {
         label.textAlignment = .center
         return label
     }()
-    private let CooperationModeButton: UIButton = {
+    private let cooperationModeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.systemBlue, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
@@ -81,13 +80,13 @@ class SportsModeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.applyCustomAppearance()
-        setupUI()
+        configureUI()
         configureUI(with: exerciseItem)
-        bind()
+        bindViewModel()
     }
 
-    private func bind() {
-        CooperationModeButton.rx.tap
+    override func bindViewModel() {
+        cooperationModeButton.rx.tap
             .map { [weak self] in self?.exerciseItem.title ?? "" }
             .bind(to: modeSelectedRelay)
             .disposed(by: disposeBag)
@@ -100,13 +99,13 @@ class SportsModeViewController: UIViewController {
         modeSelectedRelay.asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] title in
                 let goalVC = GoalSelectionViewController()
-                goalVC.viewModel.updateSelectedTitle(title)
+                goalVC.updateSelectedTitle(title)
                 self?.navigationController?.pushViewController(goalVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
     
-    private func setupUI() {
+    override func configureUI() {
         view.backgroundColor = .white
         backgroundView.addSubview(imageView)
         [
@@ -115,7 +114,7 @@ class SportsModeViewController: UIViewController {
             descriptionLabel,
             effectLabel,
             caloriesLabel,
-            CooperationModeButton,
+            cooperationModeButton,
             BattleModeButton
         ].forEach { view.addSubview($0) }
         backgroundView.snp.makeConstraints {
@@ -145,14 +144,14 @@ class SportsModeViewController: UIViewController {
             $0.top.equalTo(effectLabel.snp.bottom).offset(12)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-        CooperationModeButton.snp.makeConstraints {
+        cooperationModeButton.snp.makeConstraints {
             $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
             $0.leading.equalToSuperview().inset(20)
             $0.width.equalTo(157)
             $0.height.equalTo(60)
         }
         BattleModeButton.snp.makeConstraints {
-            $0.top.equalTo(CooperationModeButton)
+            $0.top.equalTo(cooperationModeButton)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo(157)
             $0.height.equalTo(60)

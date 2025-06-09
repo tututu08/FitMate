@@ -10,7 +10,7 @@ import RxCocoa
 class CarouselViewModel: ViewModelType {
     let disposeBag = DisposeBag()
     struct Input {
-        // 현재 예제는 input이 따로 없으므로 빈 구조체
+        // input이 따로 없으므로 빈 구조체
     }
     struct Output {
         let items: Driver<[ExerciseItem]>  // UI 바인딩은 Driver

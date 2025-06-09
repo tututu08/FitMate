@@ -8,14 +8,15 @@ import SnapKit
 import RxSwift
 import RxRelay
 
-class GoalSelectionViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+    
     let viewModel = GoalSelectionViewModel()
-    let disposeBag = DisposeBag()
     
     let pickerView = UIPickerView()
     
     private var pickerData: [String] = []
-
+    private let selectedTitleRelay = BehaviorRelay<String>(value: "")
+    
     private let infoLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 24)
@@ -46,17 +47,21 @@ class GoalSelectionViewController: UIViewController, UIPickerViewDataSource, UIP
         self.title = "목표치"
         navigationController?.navigationBar.applyCustomAppearance()
         navigationItem.backButtonTitle = ""
-        
         pickerView.dataSource = self
         pickerView.delegate = self
     
-        setupUI()
+        configureUI()
         bindViewModel()
         
     }
 
-    func bindViewModel() {
-        viewModel.pickerDataDriver
+    override func bindViewModel() {
+        
+        // viewModel.transform 호출
+        let input = GoalSelectionViewModel.Input(selectedTitle: selectedTitleRelay.asObservable())
+        let output = viewModel.transform(input: input)
+
+        output.pickerItems
             .drive(onNext: { [weak self] data in
                 self?.pickerData = data
                 self?.pickerView.reloadAllComponents()
@@ -64,7 +69,11 @@ class GoalSelectionViewController: UIViewController, UIPickerViewDataSource, UIP
             .disposed(by: disposeBag)
     }
     
-    private func setupUI() {
+    func updateSelectedTitle(_ title: String) {
+        selectedTitleRelay.accept(title)
+    }
+    
+    override func configureUI() {
         view.backgroundColor = .black
         [ infoLabel, subInfoLabel, pickerView, GoalSettingButton].forEach {
             view.addSubview($0)
