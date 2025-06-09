@@ -35,6 +35,7 @@ class SportsSelectionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.backButtonTitle = ""
         setupUI()
         bindViewModel()
         // 뷰 레이아웃 완료 후 (비동기 실행)

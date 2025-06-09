@@ -67,7 +67,6 @@ class CarouselViewModel: ViewModelType {
     // BehaviorRelay로 관리하는 반복된 아이템 배열
     private let itemsRelay = BehaviorRelay<[ExerciseItem]>(value: [])
     
-    
     // 중간 인덱스 (초기 스크롤 위치 계산용)
     var originalCount: Int {
         originalItemsSource.count * repeatCount / 2

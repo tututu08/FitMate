@@ -7,14 +7,19 @@
 import UIKit
 import SnapKit
 import RxSwift
+import RxRelay
 
 class SportsModeViewController: UIViewController {
     private let exerciseItem: CarouselViewModel.ExerciseItem
+    private let disposeBag = DisposeBag()
+    
+    private let modeSelectedRelay = PublishRelay<String>()
     
     init(exerciseItem: CarouselViewModel.ExerciseItem) {
         self.exerciseItem = exerciseItem
         super.init(nibName: nil, bundle: nil)
-        self.title = exerciseItem.title
+        self.title = "운동 선택"
+        navigationItem.backButtonTitle = ""
     }
     
     required init?(coder: NSCoder) {
@@ -75,9 +80,32 @@ class SportsModeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.applyCustomAppearance()
         setupUI()
         configureUI(with: exerciseItem)
+        bind()
     }
+
+    private func bind() {
+        CooperationModeButton.rx.tap
+            .map { [weak self] in self?.exerciseItem.title ?? "" }
+            .bind(to: modeSelectedRelay)
+            .disposed(by: disposeBag)
+        
+        BattleModeButton.rx.tap
+            .map { [weak self] in self?.exerciseItem.title ?? "" }
+            .bind(to: modeSelectedRelay)
+            .disposed(by: disposeBag)
+        
+        modeSelectedRelay.asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] title in
+                let goalVC = GoalSelectionViewController()
+                goalVC.viewModel.updateSelectedTitle(title)
+                self?.navigationController?.pushViewController(goalVC, animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func setupUI() {
         view.backgroundColor = .white
         backgroundView.addSubview(imageView)
