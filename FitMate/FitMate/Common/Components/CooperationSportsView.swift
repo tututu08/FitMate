@@ -8,6 +8,8 @@
 import UIKit
 import SnapKit
 
+/// 여러 운동에서 공용으로 사용되는 협력 모드 화면
+/// CoreLocation, CoreMotion, 타이머 등 다양한 값과 바인딩할 수 있도록 구성
 class CooperationSportsView: UIView {
     
     private let modeLabel: UILabel = {
@@ -105,6 +107,8 @@ class CooperationSportsView: UIView {
         view.backgroundColor = .systemPurple
         return view
     }()
+
+    private var progressWidthConstraint: Constraint?
     
     private let coopImage: UIImageView = {
         let imageView = UIImageView()
@@ -182,8 +186,8 @@ class CooperationSportsView: UIView {
         }
         
         progressForegroundView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(6) // 패딩을 줘서 테두리 공간 유지
-            
+            $0.leading.top.bottom.equalToSuperview().inset(6)
+            progressWidthConstraint = $0.width.equalTo(0).constraint
         }
         coopImage.snp.makeConstraints {
             $0.bottom.equalTo(stopButton.snp.top).offset(-10)
@@ -203,6 +207,32 @@ class CooperationSportsView: UIView {
             $0.height.equalTo(60)
             $0.width.equalTo(260)
         }
+    }
+    /// Updates the label showing the current record for the user.
+    /// - Parameter text: New text to display.
+    func updateMyRecord(_ text: String) {
+        myRecordLabel.text = text
+    }
+
+    /// Updates the label showing the current record for the mate.
+    /// - Parameter text: New text to display.
+    func updateMateRecord(_ text: String) {
+        mateRecordLabel.text = text
+    }
+
+    /// 저장된 목표치를 갱신할 때 사용합니다.
+    /// - Parameter text: 목표를 나타내는 문자열
+    func updateGoal(_ text: String) {
+        goalLabel.text = text
+    }
+
+    /// 전달받은 비율에 따라 진행률 바를 갱신합니다. (0~1 범위)
+    /// - Parameter ratio: 1이면 목표 달성
+    func updateProgress(ratio: CGFloat) {
+        layoutIfNeeded()
+        let width = progressBackgroundView.bounds.width - 12 // inset from both sides
+        progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+        layoutIfNeeded()
     }
     
 }
