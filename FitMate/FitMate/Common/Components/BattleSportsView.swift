@@ -38,6 +38,8 @@ class BattleSportsView: UIView {
         label.text = "나"
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
+        label.setContentHuggingPriority(.required, for: .horizontal)
+
         return label
     }()
     
@@ -54,6 +56,8 @@ class BattleSportsView: UIView {
         label.text = "메이트"
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
+        label.setContentHuggingPriority(.required, for: .horizontal)
+
         return label
     }()
     
