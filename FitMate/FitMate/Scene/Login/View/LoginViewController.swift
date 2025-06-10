@@ -29,7 +29,7 @@ class LoginViewController: UIViewController {
         return id
     }()
     
-    private let idTextField = CustomTextField(placeholder: "아이디를 입력해주세요", isSecure: false)
+    private let idTextField = CustomTextField(placeholder: "아이디를 입력해주세요")
     
     private let passwordLabel: UILabel = {
         let password = UILabel()
@@ -39,7 +39,7 @@ class LoginViewController: UIViewController {
         return password
     }()
     
-    private let passwordField = CustomTextField(placeholder: "비밀번호를 입력해주세요", isSecure: true)
+    private let passwordField = CustomTextField(placeholder: "비밀번호를 입력해주세요")
     
     private let saveIDCheckBox: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "check_1x"))
@@ -72,7 +72,7 @@ class LoginViewController: UIViewController {
     }()
     
     private let loginButton: UIButton = {
-        let loginBtn = UIButton()
+        let loginBtn = UIButton(type: .custom)
         loginBtn.setTitle("로그인", for: .normal)
         loginBtn.setTitleColor(.white, for: .normal)
         loginBtn.titleLabel?.font = UIFont.systemFont(ofSize: 22) // 폰트 변경 필요

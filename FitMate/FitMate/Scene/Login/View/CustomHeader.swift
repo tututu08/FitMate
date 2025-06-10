@@ -9,7 +9,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class CustomHeader: UILabel {
+class CustomHeaderLabel: UILabel {
     init(text: String) {
         super.init(frame: .zero)
         self.text = text
