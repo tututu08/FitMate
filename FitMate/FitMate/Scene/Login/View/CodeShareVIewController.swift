@@ -94,13 +94,16 @@ class CodeShareVIewController: BaseViewController {
         }
     }
     
-    private func mateCodeButtonTapped() {
+    override func bindViewModel() {
         mateCodeButton.rx.tap
             .asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] _ in
                 let moveToMateCode = MateCodeViewController()
                 self?.navigationController?.pushViewController(moveToMateCode, animated: true)
             })
+            .disposed(by: disposeBag)
+        
+        
     }
 
 }
