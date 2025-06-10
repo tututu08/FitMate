@@ -93,9 +93,14 @@ class CodeShareVIewController: BaseViewController {
 
         }
     }
-    // 복사가 완료되었습니다 알림창
-    override func bindViewModel() {
-        copyMyCodeButton.rx.tap
-            .
+    
+    private func mateCodeButtonTapped() {
+        mateCodeButton.rx.tap
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] _ in
+                let moveToMateCode = MateCodeViewController()
+                self?.navigationController?.pushViewController(moveToMateCode, animated: true)
+            })
     }
+
 }
