@@ -23,5 +23,6 @@ class BaseViewController: UIViewController {
     func bindViewModel() {
         // Rx 바인딩은 각 VC에서 override
     }
+
 }
 

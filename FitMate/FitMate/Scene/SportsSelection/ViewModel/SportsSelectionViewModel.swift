@@ -3,29 +3,38 @@
 //
 //  Created by 강성훈 on 6/5/25.
 //
+
 import UIKit
 import RxSwift
 import RxCocoa
 
 class CarouselViewModel: ViewModelType {
-    let disposeBag = DisposeBag()
-    struct Input {
-        // input이 따로 없으므로 빈 구조체
-    }
+    
+    let disposeBag = DisposeBag()  // Rx 구독 해제를 위한 DisposeBag
+
+    // Input & Output 정의
+
+    // 외부에서 전달받을 Input (현재는 사용하지 않음)
+    struct Input {}
+
+    // View로 전달할 Output
     struct Output {
-        let items: Driver<[ExerciseItem]>  // UI 바인딩은 Driver
-        let originalCount: Int             // 중간 인덱스 위치 제공
+        let items: Driver<[ExerciseItem]>  // 컬렉션 뷰에 바인딩할 아이템 목록
+        let originalCount: Int             // 가운데 위치로 초기 스크롤할 인덱스
     }
+
+    // 운동 아이템의 데이터 모델
     struct ExerciseItem {
-        let image: UIImage
-        let title: String
-        let calorie: String
-        let description: String
-        let effect: String
+        let image: UIImage      // 운동 이미지
+        let title: String       // 운동 이름
+        let calorie: String     // 칼로리 정보
+        let description: String // 운동 설명
+        let effect: String      // 운동 효과
     }
-    
-    private let repeatCount = 100
-    
+
+    private let repeatCount = 100  // 무한 스크롤처럼 보이기 위한 반복 횟수
+
+    // 실제 운동 아이템 원본 배열
     private let originalItemsSource: [ExerciseItem] = [
         ExerciseItem(
             image: UIImage(named: "plank") ?? UIImage(),
@@ -63,27 +72,29 @@ class CarouselViewModel: ViewModelType {
             effect: "지구력 향상, 체지방 감소"
         )
     ]
-    
-    // BehaviorRelay로 관리하는 반복된 아이템 배열
+
+    // 반복된 운동 데이터를 담는 Relay
     private let itemsRelay = BehaviorRelay<[ExerciseItem]>(value: [])
-    
-    // 중간 인덱스 (초기 스크롤 위치 계산용)
+
+    // 컬렉션 뷰 초기 위치 설정용 (가운데 인덱스)
     var originalCount: Int {
         originalItemsSource.count * repeatCount / 2
     }
-    
+
+    // 초기화
+
     init() {
+        // 원본 아이템을 repeatCount만큼 반복하여 무한 스크롤처럼 보이게 만듦
         let repeatedItems = Array(repeating: originalItemsSource, count: repeatCount).flatMap { $0 }
         itemsRelay.accept(repeatedItems)
     }
-    
+
+    // Transform
     func transform(input: Input) -> Output {
-        // input이 없으니 itemsRelay의 값을 Driver로 변환해서 내보내고
-        // originalCount도 같이 전달
+        // 반복된 데이터를 Driver로 변환하여 Output으로 내보냄
         return Output(
-            items: itemsRelay.asDriver(),
-            originalCount: originalCount
+            items: itemsRelay.asDriver(),  // UI에서 안전하게 구독할 수 있도록 Driver로 전달
+            originalCount: originalCount  // 시작 인덱스 전달
         )
     }
 }
-
