@@ -85,7 +85,7 @@ class BattleSportsView: UIView {
         return stackView
     }()
     
-    private lazy var myVerticalStack: UIStackView = {
+    private lazy var myProgressStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [myStackView, myProgressBackgroundView])
         stack.axis = .vertical
         stack.spacing = 8
@@ -93,7 +93,7 @@ class BattleSportsView: UIView {
         return stack
     }()
     
-    private lazy var mateVerticalStack: UIStackView = {
+    private lazy var mateProgressStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [mateStackView, mateProgressBackgroundView])
         stack.axis = .vertical
         stack.spacing = 8
@@ -128,7 +128,7 @@ class BattleSportsView: UIView {
     }()
     
     private lazy var totalVerticalStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [myVerticalStack, mateVerticalStack])
+        let stack = UIStackView(arrangedSubviews: [myProgressStackView, mateProgressStackView])
         stack.axis = .vertical
         stack.spacing = 8
         stack.alignment = .fill
@@ -207,6 +207,7 @@ class BattleSportsView: UIView {
         
         myProgressForegroundView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(6) // 패딩을 줘서 테두리 공간 유지
+            
         }
         mateProgressBackgroundView.snp.makeConstraints {
             $0.height.equalTo(30)
@@ -215,6 +216,7 @@ class BattleSportsView: UIView {
         mateProgressForegroundView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(6) // 패딩을 줘서 테두리 공간 유지
         }
+        
         coopImage.snp.makeConstraints {
             $0.bottom.equalTo(stopButton.snp.top).offset(-10)
             $0.centerX.equalToSuperview()
