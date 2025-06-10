@@ -143,15 +143,15 @@ class BattleSportsView: UIView {
     }()
     
     private let pauseButton: UIButton = {
-        let Button = UIButton()
-        Button.setImage(UIImage(named: "pause"), for: .normal)
-        return Button
+        let button = UIButton()
+        button.setImage(UIImage(named: "pause"), for: .normal)
+        return button
     }()
     
     private let stopButton: UIButton = {
-        let Button = UIButton()
-        Button.setImage(UIImage(named: "stop"), for: .normal)
-        return Button
+        let button = UIButton()
+        button.setImage(UIImage(named: "stop"), for: .normal)
+        return button
     }()
     
     override init(frame: CGRect) {
@@ -161,10 +161,8 @@ class BattleSportsView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
-        setupLayout()
-    }
+            fatalError("init(coder:) has not been implemented")
+        }
     
     func setupUI() {
         self.backgroundColor = .black
