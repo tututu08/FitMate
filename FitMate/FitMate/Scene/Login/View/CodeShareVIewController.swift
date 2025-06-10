@@ -103,6 +103,25 @@ class CodeShareVIewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
+        copyMyCodeButton.rx.tap
+        // .empty는 에러 발생시 그냥 아무것도 하지 않고 종료 처리
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                // 시스템 alert 설정
+                let alert = UIAlertController(
+                    title: SystemAlertType.copied.title,
+                    message: nil, // 부가적인 메세지는 쓰지 않으니 nil
+                    preferredStyle: .alert // 중앙 팝업
+                )
+                
+                // SystemAlertType에 등록된 액션 추가 -> 확인 버튼 하나 추가
+                SystemAlertType.copied.actions.forEach { alert.addAction($0)
+                }
+                // 뷰컨에 alert 띄움
+                self.present(alert, animated: true)
+            })
+            .disposed(by: disposeBag)
         
     }
 
