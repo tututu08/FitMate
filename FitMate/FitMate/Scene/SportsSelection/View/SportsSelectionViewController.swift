@@ -9,10 +9,10 @@ class SportsSelectionViewController: BaseViewController {
     private let selectedItemRelay = PublishRelay<CarouselViewModel.ExerciseItem>()
     
     // Carousel 뷰에 연결될 ViewModel
-    let carouselViewModel = CarouselViewModel()
+    private let carouselViewModel = CarouselViewModel()
     
     // 상단 라벨: "운동 선택" 표시
-    let label: UILabel = {
+    private let label: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.textColor = .white
@@ -21,7 +21,7 @@ class SportsSelectionViewController: BaseViewController {
     }()
     
     // 운동 목록을 표시하는 CollectionView (UPCarouselFlowLayout 사용)
-    let collectionView: UICollectionView = {
+    private let collectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
         layout.scrollDirection = .vertical             // 세로 스크롤
         layout.itemSize = CGSize(width: 355, height: 266) // 셀 크기 설정

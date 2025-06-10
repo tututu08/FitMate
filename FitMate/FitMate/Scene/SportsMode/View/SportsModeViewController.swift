@@ -83,7 +83,7 @@ class SportsModeViewController: BaseViewController {
     }()
     
     // 대결 모드 선택 버튼
-    private let BattleModeButton: UIButton = {
+    private let battleModeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.systemBlue, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
@@ -109,7 +109,7 @@ class SportsModeViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         // 대결 모드 버튼 탭 -> 운동 제목을 Relay로 전달
-        BattleModeButton.rx.tap
+        battleModeButton.rx.tap
             .map { [weak self] in self?.exerciseItem.title ?? "" }
             .bind(to: modeSelectedRelay)
             .disposed(by: disposeBag)
@@ -137,7 +137,7 @@ class SportsModeViewController: BaseViewController {
             effectLabel,
             caloriesLabel,
             cooperationModeButton,
-            BattleModeButton
+            battleModeButton
         ].forEach { view.addSubview($0) } // 모든 요소 메인 뷰에 추가
         
         // 오토레이아웃 설정 (SnapKit 사용)
@@ -174,7 +174,7 @@ class SportsModeViewController: BaseViewController {
             $0.width.equalTo(157)
             $0.height.equalTo(60)
         }
-        BattleModeButton.snp.makeConstraints {
+        battleModeButton.snp.makeConstraints {
             $0.top.equalTo(cooperationModeButton)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo(157)

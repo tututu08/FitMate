@@ -12,10 +12,10 @@ import RxRelay
 class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, UIPickerViewDelegate {
     
     // ViewModel 인스턴스
-    let viewModel = GoalSelectionViewModel()
+    private let viewModel = GoalSelectionViewModel()
     
     // PickerView 인스턴스
-    let pickerView = UIPickerView()
+    private let pickerView = UIPickerView()
     
     // Picker에 표시될 데이터
     private var pickerData: [String] = []
@@ -46,7 +46,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     }()
     
     // 목표 설정 버튼
-    private let GoalSettingButton: UIButton = {
+    private let goalSettingButton: UIButton = {
         let button = UIButton()
         button.setTitle("목표설정", for: .normal)
         button.setTitleColor(.white, for: .normal)
@@ -93,7 +93,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         view.backgroundColor = .black
         
         // UI 요소를 뷰에 추가
-        [infoLabel, subInfoLabel, pickerView, GoalSettingButton].forEach {
+        [infoLabel, subInfoLabel, pickerView, goalSettingButton].forEach {
             view.addSubview($0)
         }
         
@@ -115,7 +115,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
             $0.height.equalTo(311)
         }
         
-        GoalSettingButton.snp.makeConstraints {
+        goalSettingButton.snp.makeConstraints {
             $0.top.equalTo(pickerView.snp.bottom).offset(40)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(200)
