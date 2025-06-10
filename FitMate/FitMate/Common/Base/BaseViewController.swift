@@ -13,11 +13,16 @@ class BaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        setLayoutUI()
         bindViewModel()
     }
 
     func configureUI() {
         // UI 구성은 각 VC에서 override
+    }
+    
+    func setLayoutUI() {
+        
     }
 
     func bindViewModel() {

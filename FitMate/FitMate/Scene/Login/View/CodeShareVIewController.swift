@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class CodeShareVIewController: UIViewController {
+class CodeShareVIewController: BaseViewController {
 
     private let codeShareViewTitle: UILabel = {
         let title = UILabel()
@@ -54,16 +54,13 @@ class CodeShareVIewController: UIViewController {
         return mateCode
     }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func configureUI() {
         view.backgroundColor = .black // 컬러 변경 필요
         [codeShareViewTitle, guideMent, defaultAvatarImage,
          copyMyCodeButton, mateCodeButton].forEach({view.addSubview($0)})
-        
-        setConstraints()
     }
     
-    private func setConstraints() {
+    override func setLayoutUI() {
         codeShareViewTitle.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
             make.centerX.equalTo(view.safeAreaLayoutGuide)
@@ -96,5 +93,9 @@ class CodeShareVIewController: UIViewController {
 
         }
     }
-
+    // 복사가 완료되었습니다 알림창
+    override func bindViewModel() {
+        copyMyCodeButton.rx.tap
+            .
+    }
 }
