@@ -28,10 +28,6 @@ class BaseViewController: UIViewController {
     func bindViewModel() {
         // RxSwift 등 바인딩 처리
     }
-    
-    func bindViewModel() {
-        // RxSwift 등 바인딩 처리
-    }
 
 }
 
