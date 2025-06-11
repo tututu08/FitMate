@@ -13,15 +13,21 @@ class BaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        setupLayout()
         bindViewModel()
     }
 
     func configureUI() {
-        // UI 구성은 각 VC에서 override
+        // 색상, 폰트 등 뷰 스타일 구성
     }
 
-    func bindViewModel() {
-        // Rx 바인딩은 각 VC에서 override
+    func setupLayout() {
+        // SnapKit을 활용한 레이아웃 설정
     }
+    
+    func bindViewModel() {
+        // RxSwift 등 바인딩 처리
+    }
+
 }
 
