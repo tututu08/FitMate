@@ -12,7 +12,7 @@ class PauseAlertViewController: UIViewController {
     
     private let resumeButton = {
         let resume = UIButton()
-        resume.setTitle("일시정지", for: .normal)
+        resume.setTitle("계속하기", for: .normal)
         resume.setTitleColor(.darkGray, for: .normal)
         resume.backgroundColor = .lightGray
         return resume
