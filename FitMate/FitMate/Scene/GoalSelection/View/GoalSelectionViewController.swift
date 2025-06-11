@@ -24,7 +24,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     private let selectedTitleRelay = BehaviorRelay<String>(value: "")
     // 선택된 운동 모드를 전달하는 Rx Relay
     private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
-    
+   // 선택된 목표치를 전달하는 Rx Relay
+    private let selectedGoalRelay = BehaviorRelay<String>(value: "")
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
         let label = UILabel()
@@ -194,7 +195,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // Picker의 항목을 선택했을 때 호출
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        pickerData[row]
+        let selected = pickerData[row]
+        selectedGoalRelay.accept(selected)
         pickerView.reloadAllComponents()
     }
     
