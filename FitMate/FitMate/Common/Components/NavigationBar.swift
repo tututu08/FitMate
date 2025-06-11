@@ -12,6 +12,7 @@ extension UINavigationBar {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = backgroundColor
+        
         appearance.titleTextAttributes = [
             .foregroundColor: titleColor,
             .font: font
@@ -19,7 +20,6 @@ extension UINavigationBar {
         self.standardAppearance = appearance
         self.scrollEdgeAppearance = appearance
         self.compactAppearance = appearance
-        
         self.tintColor = titleColor // 뒤로가기 버튼 등 색상 설정
     }
 }

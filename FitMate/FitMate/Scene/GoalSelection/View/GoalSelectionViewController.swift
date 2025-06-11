@@ -92,7 +92,6 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
             .bind(onNext: { [weak self] selectedGoal in
                 guard let self = self else { return }
                 let selectedMode = self.selectedModeRelay.value
-                
                 // 저장(종목 타이틀, 목표치)
                 
                 
