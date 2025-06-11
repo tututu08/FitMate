@@ -84,7 +84,7 @@ class NicknameView: UIView {
     
     private func setupLayout() {
         nicknameViewTitle.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(10)
+            make.top.equalTo(safeAreaLayoutGuide).inset(-23)
             make.centerX.equalToSuperview()
         }
         

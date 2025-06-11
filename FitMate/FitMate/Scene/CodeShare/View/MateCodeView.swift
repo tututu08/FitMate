@@ -18,11 +18,17 @@ class MateCodeView: UIView {
     let backButton: UIButton = {
         let back = UIButton()
         back.setImage(UIImage(named: "backButton"), for: .normal)
-        back.setTitle("              메이트 코드 입력", for: .normal)
-        back.setTitleColor(.white, for: .normal)
-        back.titleLabel?.font = .systemFont(ofSize: 20)
         back.contentHorizontalAlignment = .leading
         return back
+    }()
+    
+    let titleLabel: UILabel = {
+       let title = UILabel()
+        title.text = "메이트 코드 입력"
+        title.textColor = .white
+        title.font = .systemFont(ofSize: 20)
+        title.textAlignment = .center
+        return title
     }()
     
     let mateDefaultAvatar: UIImageView = {
@@ -60,6 +66,7 @@ class MateCodeView: UIView {
     private func setupUI() {
         [customNavBar, mateDefaultAvatar, fillInMateCode, completeButton].forEach { addSubview($0) }
         customNavBar.addSubview(backButton)
+        customNavBar.addSubview(titleLabel)
     }
 
     private func setupLayout() {
@@ -68,10 +75,15 @@ class MateCodeView: UIView {
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(56)
         }
-
+        
         backButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(20)
             make.centerY.equalToSuperview()
+            make.size.equalTo(28)
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
         }
 
         mateDefaultAvatar.snp.makeConstraints { make in

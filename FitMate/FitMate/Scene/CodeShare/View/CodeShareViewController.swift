@@ -16,6 +16,11 @@ class CodeShareVIewController: BaseViewController {
     override func loadView() {
         self.view = codeShareView
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 
     override func bindViewModel() {
         codeShareView.mateCodeButton.rx.tap
@@ -25,5 +30,12 @@ class CodeShareVIewController: BaseViewController {
                 self?.navigationController?.pushViewController(next, animated: true)
             })
             .disposed(by: disposeBag)
+        codeShareView.xButton.rx.tap
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(onNext:  { [weak self] in
+                let moveIn = MainViewController()
+                self?.navigationController?.popViewController(animated: true)
+            })
+        
     }
 }

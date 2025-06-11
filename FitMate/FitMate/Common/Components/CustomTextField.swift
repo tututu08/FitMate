@@ -10,7 +10,6 @@ import UIKit
 
 class CustomTextField: UITextField {
     
-    private let eyeToggleButton = UIButton()
   
     init(placeholder: String) {
         super.init(frame: .zero)

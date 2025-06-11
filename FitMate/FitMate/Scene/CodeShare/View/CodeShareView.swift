@@ -9,7 +9,19 @@ import SnapKit
 
 class CodeShareView: UIView {
     
-    let codeShareViewTitle: UILabel = {
+    let customNavBar: UIView = {
+        let view = UIView()
+        return view
+    }()
+    
+    let xButton: UIButton = {
+        let xButton = UIButton()
+        xButton.setImage(UIImage(named: "X"), for: .normal)
+        xButton.contentHorizontalAlignment = .trailing
+        return xButton
+    }()
+    
+    let titleLabel: UILabel = {
         let title = UILabel()
         title.text = "코드 공유"
         title.textColor = .white
@@ -64,18 +76,32 @@ class CodeShareView: UIView {
     }
     
     private func setupUI() {
-        [codeShareViewTitle, guideMent, defaultAvatarImage,
+        [customNavBar,titleLabel, guideMent, defaultAvatarImage,
          copyRandomCodeView, line, mateCodeButton].forEach { addSubview($0) }
+        
+        customNavBar.addSubview(xButton)
+        customNavBar.addSubview(titleLabel)
     }
     
     private func setupConstraints() {
-        codeShareViewTitle.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(10)
-            make.centerX.equalToSuperview()
+        customNavBar.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(56)
+        }
+        
+        xButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(20)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(28)
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
         }
         
         guideMent.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).offset(113)
+            make.top.equalTo(customNavBar.snp.bottom).offset(43)
             make.leading.trailing.equalToSuperview().inset(94)
         }
         
