@@ -77,13 +77,9 @@ class CustomAlertView: UIView {
                 make.width.equalTo(326)
             }
             
-            var icon: UIImageView = {
-                let image = UIImageView()
-                image.image = nil
-                image.contentMode = .scaleAspectFit
-                image.clipsToBounds = true
-                return image
-            }()
+            guard let icon = self.icon else {
+                    return alertView // 또는 return UIView() 등 선택 가능
+                }
             
             let alertTitle: UILabel = {
                 let titleLabel = UILabel()
@@ -101,6 +97,7 @@ class CustomAlertView: UIView {
                 messageLabel.font = UIFont.systemFont(ofSize: 14)
                 messageLabel.textColor = .darkGray
                 messageLabel.textAlignment = .center
+                messageLabel.numberOfLines = 0
                 return messageLabel
             }()
             
@@ -138,7 +135,7 @@ class CustomAlertView: UIView {
             }
             
             buttonStack.snp.makeConstraints { make in
-                make.bottom.equalToSuperview().inset(20)
+                make.bottom.equalToSuperview().inset(26)
                 make.leading.trailing.equalToSuperview().inset(20)
             }
             
