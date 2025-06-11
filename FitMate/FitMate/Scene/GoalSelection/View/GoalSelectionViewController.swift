@@ -10,7 +10,6 @@ import RxSwift
 import RxRelay
 
 class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, UIPickerViewDelegate {
-    
     // ViewModel 인스턴스
     private let viewModel = GoalSelectionViewModel()
     
@@ -92,6 +91,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
             .bind(onNext: { [weak self] selectedGoal in
                 guard let self = self else { return }
                 let selectedMode = self.selectedModeRelay.value
+                let selectedGoal = self.selectedGoalRelay.value
                 // 저장(종목 타이틀, 목표치)
                 
                 
@@ -99,7 +99,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 switch selectedMode {
                 case .cooperation:
                     // 협력 모드 화면 이동
-                    let runningCooperationVC = RunningCoopViewController()
+                    let runningCooperationVC = RunningCoopViewController(goalText: "")
+                    runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
                     self.navigationController?.pushViewController(runningCooperationVC, animated: true)
                     
                 case .battle:

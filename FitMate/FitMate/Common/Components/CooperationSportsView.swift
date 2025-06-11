@@ -23,8 +23,8 @@ class CooperationSportsView: UIView {
     // 목표값(라벨로 중앙에 노출)
     private let goalLabel: UILabel = {
         let label = UILabel()
-        label.text = "종목 목표치" // 예: "목표 100회"
-        label.textColor = .black
+        //      label.text = "종목 목표치" // 예: "목표 100회"
+        label.textColor = .white
         label.font = .boldSystemFont(ofSize: 20)
         return label
     }()
@@ -115,7 +115,7 @@ class CooperationSportsView: UIView {
     // 가운데 로고 이미지
     private let coopImage: UIImageView = {
         let imageView = UIImageView()
-    //    imageView.image = UIImage(named: "logo")
+        //    imageView.image = UIImage(named: "logo")
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
@@ -143,13 +143,13 @@ class CooperationSportsView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // UI 구성 요소 추가
     func setupUI() {
         self.backgroundColor = .black
         goalImage.addSubview(goalLabel) // 목표 라벨을 이미지 위에 올림(중앙 표시)
         progressBackgroundView.addSubview(progressForegroundView) // 진행률 바 layering
-
+        
         [ modeLabel,
           goalImage,
           recordStackView,
@@ -159,7 +159,7 @@ class CooperationSportsView: UIView {
           stopButton
         ].forEach{self.addSubview($0)}
     }
-
+    
     // SnapKit으로 레이아웃 제약 설정
     func setupLayout() {
         modeLabel.snp.makeConstraints {
@@ -207,15 +207,17 @@ class CooperationSportsView: UIView {
     }
     // 내 기록 라벨 갱신
     func updateMyRecord(_ text: String) {
-         myRecordLabel.text = text
+        myRecordLabel.text = text
+        myRecordLabel.setNeedsLayout()
+        myRecordLabel.layoutIfNeeded()
     }
     // 메이트 기록 라벨 갱신
     func updateMateRecord(_ text: String) {
-         mateRecordLabel.text = text
+        mateRecordLabel.text = text
     }
     // 목표치 라벨 갱신
     func updateGoal(_ text: String) {
-         goalLabel.text = text
+        goalLabel.text = text
     }
     // 이미지 갱신
     func updateImage(_ image: UIImage) {
@@ -223,9 +225,9 @@ class CooperationSportsView: UIView {
     }
     // 진행률 바 갱신(0~1 비율)
     func updateProgress(ratio: CGFloat) {
-         layoutIfNeeded()
-         let width = progressBackgroundView.bounds.width - 12 // inset 보정
-         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
-         layoutIfNeeded()
+        layoutIfNeeded()
+        let width = progressBackgroundView.bounds.width - 12 // inset 보정
+        progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+        layoutIfNeeded()
     }
 }
