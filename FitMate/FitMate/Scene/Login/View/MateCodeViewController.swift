@@ -10,9 +10,8 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class MateCodeViewController: UIViewController {
+class MateCodeViewController: BaseViewController {
     
-    private let disposeBag = DisposeBag()
     private let customNavBar: UIView = {
         let view = UIView()
         return view
@@ -47,20 +46,16 @@ class MateCodeViewController: UIViewController {
         return complete
     }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func configureUI() {
+        
         view.backgroundColor = .black
-        setUpUI()
-        backButtonTapped()
-        completeTapped()
-    }
-    
-    private func setUpUI() {
         [customNavBar,mateDefaultAvatar, fillInMateCode,
          completeButton].forEach({view.addSubview($0)})
         
         customNavBar.addSubview(backButton)
-        
+    }
+    
+    override func setLayoutUI() {
         customNavBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
@@ -92,7 +87,7 @@ class MateCodeViewController: UIViewController {
         }
     }
     
-    private func backButtonTapped() {
+    override func bindViewModel() {
         backButton.rx.tap
             .bind { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
@@ -103,11 +98,38 @@ class MateCodeViewController: UIViewController {
     private func completeTapped() {
         completeButton.rx.tap
             .asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] _ in
-                let main = MainViewController()
-                self?.navigationController?.pushViewController(main, animated: true)
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+
+                let enteredCode = self.fillInMateCode.text ?? ""
+                let correctCode = "4444QQ"
+
+                if enteredCode == correctCode {
+                    // enteredCode가 correct 코드면 codeSent얼럿 뜨고 화면 이동
+                    let alert = UIAlertController(
+                        title: SystemAlertType.codeSent.title,
+                        message: nil,
+                        preferredStyle: .alert
+                    )
+                    let okAction = UIAlertAction(title: "확인", style: .default) { _ in
+                        let main = MainViewController()
+                        self.navigationController?.pushViewController(main, animated: true)
+                    }
+                    alert.addAction(okAction)
+                    self.present(alert, animated: true)
+
+                } else {
+                   // enteredCode가 correctCode가 아니면 invalidCode 얼럿 뜸
+                    let alert = UIAlertController(
+                        title: SystemAlertType.invalidCode.title,
+                        message: nil,
+                        preferredStyle: .alert
+                    )
+                    SystemAlertType.invalidCode.actions.forEach { alert.addAction($0) }
+                    self.present(alert, animated: true)
+                }
             })
             .disposed(by: disposeBag)
-    }
 
+    }
 }
