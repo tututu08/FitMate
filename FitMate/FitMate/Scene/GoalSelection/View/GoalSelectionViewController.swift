@@ -74,7 +74,10 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         super.bindViewModel()
         
         // selectedTitleRelay를 ViewModel에 입력으로 전달
-        let input = GoalSelectionViewModel.Input(selectedTitle: selectedTitleRelay.asObservable())
+        let input = GoalSelectionViewModel.Input(
+            selectedTitle: selectedTitleRelay.asObservable(),
+            selectedMode: selectedModeRelay.asObservable()
+        )
         let output = viewModel.transform(input: input)
         
         // ViewModel에서 전달받은 pickerItems를 구독하여 pickerData에 반영

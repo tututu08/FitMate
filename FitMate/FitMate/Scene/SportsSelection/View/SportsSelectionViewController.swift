@@ -33,7 +33,7 @@ class SportsSelectionViewController: BaseViewController {
         // 설정한 레이아웃을 바탕으로 CollectionView 생성
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.backgroundColor = .systemBlue
+        collectionView.backgroundColor = .black
         collectionView.register(CarouselCell.self, forCellWithReuseIdentifier: "cell")
         return collectionView
     }()
