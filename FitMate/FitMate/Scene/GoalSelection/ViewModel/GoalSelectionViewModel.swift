@@ -44,7 +44,7 @@ class GoalSelectionViewModel: ViewModelType {
                     return Array(1...20).map { "\($0) km" }
                 case "플랭크":
                     // 1~20 라운드 표시
-                    return Array(1...20).map { "\($0) 라운드" }
+                    return Array(2...10).map { "\($0) 분" }
                 case "줄넘기":
                     // 50회부터 1000회까지 50단위로 표시
                     return Array(stride(from: 50, through: 1000, by: 50)).map { "\($0)회" }
