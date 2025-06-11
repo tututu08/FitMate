@@ -72,7 +72,7 @@ class LoginViewController: UIViewController {
     }()
     
     private let loginButton: UIButton = {
-        let loginBtn = UIButton()
+        let loginBtn = UIButton(type: .custom)
         loginBtn.setTitle("로그인", for: .normal)
         loginBtn.setTitleColor(.white, for: .normal)
         loginBtn.titleLabel?.font = UIFont.systemFont(ofSize: 22) // 폰트 변경 필요
