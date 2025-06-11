@@ -2,19 +2,16 @@
 //  CustomTextField.swift
 //  FitMate
 //
-//  Created by Sophie on 6/5/25.
+//  Created by soophie on 6/11/25.
 //
 
 import UIKit
-import RxSwift
-import RxCocoa
+
 
 class CustomTextField: UITextField {
     
     private let eyeToggleButton = UIButton()
-    private let disposeBag = DisposeBag()
-    private let isSecureRelay = BehaviorRelay<Bool>(value: true)
-    
+  
     init(placeholder: String) {
         super.init(frame: .zero)
         self.placeholder = placeholder
@@ -46,7 +43,6 @@ class CustomTextField: UITextField {
     /// 두 메서드는 각각 다른 상황에서 텍스트 위치를 제어함
     ///placeholder와 실제 텍스트의 위치가 따로 놀지 않게 하려면 둘 다 같은 inset을 적용해야 자연스러움
 
-    
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
         let original = super.rightViewRect(forBounds: bounds)
         return original.offsetBy(dx: -8, dy: 0)
