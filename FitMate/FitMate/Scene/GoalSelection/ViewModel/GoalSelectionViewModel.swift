@@ -56,7 +56,10 @@ class GoalSelectionViewModel: ViewModelType {
             // Error가 발생해도 빈 배열로 대체
             .asDriver(onErrorJustReturn: [])
     }
-    func saveGoal(_ goal: String) {
+    func saveTitle(_ title: String) {
+        
+    }
+    func saveGoal() {
         
     }
 }

@@ -83,14 +83,14 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 self?.pickerView.reloadAllComponents()
             })
             .disposed(by: disposeBag)
+        // 목표 설정 클릭시 바인딩
         goalSettingButton.rx.tap
             .bind(onNext: { [weak self] selectedGoal in
                 guard let self = self else { return }
-                let selectedGoal = self.selectedTitleRelay.value
                 let selectedMode = self.selectedModeRelay.value
                 
-                // 목표 저장
-                self.viewModel.saveGoal(selectedGoal)
+                // 저장(종목 타이틀, 목표치)
+                
                 
                 // 모드에 따른 화면 전환 분기
                 switch selectedMode {
@@ -194,9 +194,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // Picker의 항목을 선택했을 때 호출
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        pickerView.reloadAllComponents() // 선택 효과를 갱신하기 위해 전체 리로드
-        let selectedTitle = pickerData[row]
-        selectedTitleRelay.accept(selectedTitle)
+        pickerData[row]
+        pickerView.reloadAllComponents()
     }
     
     // 각 행의 높이 설정
