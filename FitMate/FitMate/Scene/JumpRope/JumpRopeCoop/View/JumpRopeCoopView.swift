@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 
 // JumpRope 협동 모드의 루트 뷰
-final class JumpRopeCoopView: UIView {
+final class JumpRopeCoopView: BaseView {
 
     // 실제 메인 UI 뷰
     private let sportsView = CooperationSportsView()
@@ -18,12 +18,12 @@ final class JumpRopeCoopView: UIView {
     }
 
     // sportsView를 서브뷰로 추가
-    private func configureUI() {
+    override func configureUI() {
         addSubview(sportsView)
     }
 
     // sportsView를 전체 영역에 맞게 제약
-    private func setupLayout() {
+    override func setupLayout() {
         sportsView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
