@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "pause.png",
+      "filename" : "backButton.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
