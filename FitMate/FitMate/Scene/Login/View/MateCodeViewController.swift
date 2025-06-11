@@ -52,7 +52,6 @@ class MateCodeViewController: UIViewController {
         view.backgroundColor = .black
         setUpUI()
         backButtonTapped()
-//        completeTapped()
     }
     
     private func setUpUI() {
@@ -99,15 +98,5 @@ class MateCodeViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
-    
-//    private func completeTapped() {
-//        completeButton.rx.tap
-//            .asDriver(onErrorDriveWith: .empty())
-//            .drive(onNext: { [weak self] _ in
-//                let main = MainViewController()
-//                self?.navigationController?.pushViewController(main, animated: true)
-//            })
-//            .disposed(by: disposeBag)
-//    }
 
 }

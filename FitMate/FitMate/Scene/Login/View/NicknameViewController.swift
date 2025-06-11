@@ -10,9 +10,8 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class NIcknameViewController: UIViewController {
-    
-    private let disposeBag = DisposeBag()
+class NicknameViewController: BaseViewController {
+   
     
     private let nicknameViewTitle: UILabel = {
         let title = UILabel()
@@ -37,11 +36,14 @@ class NIcknameViewController: UIViewController {
         return register
     }()
     
-    override func viewDidLoad() {
+    override func configureUI() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        setUpUI()
-        registerTapped()
+        [nicknameViewTitle, nicknameHeader, nicknameField, termsStack,
+         privacyStack, registerButton].forEach({view.addSubview($0)})
+        
+        setTermsStack()
+        setPrivacyStack()
     }
    
     private func setTermsStack() -> UIStackView {
@@ -82,10 +84,7 @@ class NIcknameViewController: UIViewController {
         return stack
     }
     
-    private func setUpUI() {
-        
-        [nicknameViewTitle, nicknameHeader, nicknameField, termsStack,
-         privacyStack, registerButton].forEach({view.addSubview($0)})
+    override func setLayoutUI() {
         
         nicknameViewTitle.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)

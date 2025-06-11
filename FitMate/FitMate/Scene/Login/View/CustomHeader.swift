@@ -5,10 +5,8 @@
 //  Created by Sophie on 6/6/25.
 //
 import UIKit
-import SnapKit
-import RxSwift
-import RxCocoa
 
+// 테스트 필드 위 헤더명
 class CustomHeader: UILabel {
     init(text: String) {
         super.init(frame: .zero)
