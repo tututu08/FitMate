@@ -22,6 +22,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // 선택된 운동 제목을 전달하는 Rx Relay
     private let selectedTitleRelay = BehaviorRelay<String>(value: "")
+    // 선택된 운동 모드를 전달하는 Rx Relay
+    private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
     
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
@@ -73,7 +75,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         // selectedTitleRelay를 ViewModel에 입력으로 전달
         let input = GoalSelectionViewModel.Input(selectedTitle: selectedTitleRelay.asObservable())
         let output = viewModel.transform(input: input)
-
+        
         // ViewModel에서 전달받은 pickerItems를 구독하여 pickerData에 반영
         output.pickerItems
             .drive(onNext: { [weak self] data in
@@ -81,11 +83,38 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 self?.pickerView.reloadAllComponents()
             })
             .disposed(by: disposeBag)
+        goalSettingButton.rx.tap
+            .bind(onNext: { [weak self] selectedGoal in
+                guard let self = self else { return }
+                let selectedGoal = self.selectedTitleRelay.value
+                let selectedMode = self.selectedModeRelay.value
+                
+                // 목표 저장
+                self.viewModel.saveGoal(selectedGoal)
+                
+                // 모드에 따른 화면 전환 분기
+                switch selectedMode {
+                case .cooperation:
+                    // 협력 모드 화면 이동
+                    let runningCooperationVC = RunningCoopViewController()
+                    self.navigationController?.pushViewController(runningCooperationVC, animated: true)
+                    
+                case .battle:
+                    // 대결 모드 화면 이동
+                    let runningBattleVC = RunningBattleViewController()
+                    self.navigationController?.pushViewController(runningBattleVC, animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     // 외부에서 선택된 운동 제목을 업데이트할 때 호출
     func updateSelectedTitle(_ title: String) {
         selectedTitleRelay.accept(title)
+    }
+    // 외부에서 선택된 운동 모드를 업데이트할 때 호출
+    func updateSelectedMode(_ mode: SportsModeViewController.ExerciseMode) {
+        selectedModeRelay.accept(mode)
     }
     
     override func configureUI() {
@@ -137,20 +166,20 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let container = view ?? UIView()
         container.subviews.forEach { $0.removeFromSuperview() } // 재사용 뷰 정리
-
+        
         let label = UILabel()
         label.text = pickerData[row]
         label.font = .systemFont(ofSize: 40)
         label.textAlignment = .center
         label.textColor = .white
-
+        
         container.addSubview(label)
         label.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.top.equalToSuperview().offset(24)
             $0.bottom.equalToSuperview().inset(24)
         }
-
+        
         // 현재 선택된 행이라면 진하게 표시
         if row == pickerView.selectedRow(inComponent: component) {
             container.backgroundColor = .darkGray
@@ -159,13 +188,15 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
             container.backgroundColor = UIColor.darkGray.withAlphaComponent(0.3)
             label.alpha = 0.5
         }
-
+        
         return container
     }
     
     // Picker의 항목을 선택했을 때 호출
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         pickerView.reloadAllComponents() // 선택 효과를 갱신하기 위해 전체 리로드
+        let selectedTitle = pickerData[row]
+        selectedTitleRelay.accept(selectedTitle)
     }
     
     // 각 행의 높이 설정

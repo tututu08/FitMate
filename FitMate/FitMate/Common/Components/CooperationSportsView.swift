@@ -16,7 +16,7 @@ class CooperationSportsView: UIView {
     // 목표 아이콘(이미지로 보여주기)
     private let goalImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "goalImage") // 목표 아이콘
+       // imageView.image = UIImage(named: "goalImage") // 목표 아이콘
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -116,7 +116,7 @@ class CooperationSportsView: UIView {
     // 가운데 로고 이미지
     private let coopImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "logo")
+    //    imageView.image = UIImage(named: "logo")
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
@@ -217,6 +217,10 @@ class CooperationSportsView: UIView {
     // 목표치 라벨 갱신
     func updateGoal(_ text: String) {
          goalLabel.text = text
+    }
+    // 이미지 갱신
+    func updateImage(_ image: UIImage) {
+        goalImage.image = image
     }
     // 진행률 바 갱신(0~1 비율)
     func updateProgress(ratio: CGFloat) {

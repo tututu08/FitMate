@@ -9,8 +9,12 @@ class SportsModeViewController: BaseViewController {
     // 선택된 운동 항목
     private let exerciseItem: CarouselViewModel.ExerciseItem
     
+    enum ExerciseMode {
+        case cooperation
+        case battle
+    }
     // 모드 선택 이벤트를 전달하는 Relay (Rx 방식)
-    private let modeSelectedRelay = PublishRelay<String>()
+    private let modeSelectedRelay = PublishRelay<(String, ExerciseMode)>()
     
     // 외부에서 운동 항목을 주입받는 초기화 함수
     init(exerciseItem: CarouselViewModel.ExerciseItem) {
@@ -104,21 +108,22 @@ class SportsModeViewController: BaseViewController {
         
         // 협력 모드 버튼 탭 -> 운동 제목을 Relay로 전달
         cooperationModeButton.rx.tap
-            .map { [weak self] in self?.exerciseItem.title ?? "" }
+            .map { [weak self] in (self?.exerciseItem.title ?? "", .cooperation) }
             .bind(to: modeSelectedRelay)
             .disposed(by: disposeBag)
         
         // 대결 모드 버튼 탭 -> 운동 제목을 Relay로 전달
         battleModeButton.rx.tap
-            .map { [weak self] in self?.exerciseItem.title ?? "" }
+            .map { [weak self] in (self?.exerciseItem.title ?? "", .battle) }
             .bind(to: modeSelectedRelay)
             .disposed(by: disposeBag)
         
         // Relay로부터 선택된 제목을 GoalSelectionViewController에 전달하고 push
         modeSelectedRelay.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] title in
+            .drive(onNext: { [weak self] (title, mode) in
                 let goalVC = GoalSelectionViewController()
                 goalVC.updateSelectedTitle(title) // 선택된 운동 이름 전달
+                goalVC.updateSelectedMode(mode) // 선택된 운동 모드 전달
                 self?.navigationController?.pushViewController(goalVC, animated: true)
             })
             .disposed(by: disposeBag)
