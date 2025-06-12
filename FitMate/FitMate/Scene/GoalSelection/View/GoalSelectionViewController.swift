@@ -99,7 +99,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 switch selectedMode {
                 case .cooperation:
                     // 협력 모드 화면 이동
-                    let runningCooperationVC = RunningCoopViewController(goalText: "")
+                    let runningCooperationVC = RunningCoopViewController(goalText: selectedGoal)
                     runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
                     self.navigationController?.pushViewController(runningCooperationVC, animated: true)
                     

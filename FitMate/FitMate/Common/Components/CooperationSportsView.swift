@@ -208,8 +208,6 @@ class CooperationSportsView: UIView {
     // 내 기록 라벨 갱신
     func updateMyRecord(_ text: String) {
         myRecordLabel.text = text
-        myRecordLabel.setNeedsLayout()
-        myRecordLabel.layoutIfNeeded()
     }
     // 메이트 기록 라벨 갱신
     func updateMateRecord(_ text: String) {
