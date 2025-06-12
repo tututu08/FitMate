@@ -5,10 +5,18 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
-class MainViewController: UIViewController {
+class MainViewController: BaseViewController {
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    private let mainView = MainView()
+    
+    override func loadView() {
+        self.view = mainView
+    }
+    
+    override func bindViewModel() {
+        mainView.changeAvatarLayout(hasMate: true)
     }
 }
