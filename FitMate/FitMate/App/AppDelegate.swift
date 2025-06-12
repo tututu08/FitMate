@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseCore // Firebase
+import GoogleSignIn // FirebaseAuth google 로그인
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure() // Firebase
         return true
+    }
+    
+    // MARK: Firebase Auth Google Login
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+            return GIDSignIn.sharedInstance.handle(url)
     }
 
     // MARK: UISceneSession Lifec
