@@ -11,6 +11,7 @@
 		ED6AD6B82DF1AA9A004E23D4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B72DF1AA9A004E23D4 /* FirebaseAuth */; };
 		ED6AD6BA2DF1AA9A004E23D4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B92DF1AA9A004E23D4 /* FirebaseCore */; };
 		ED6AD6BC2DF1AA9A004E23D4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6BB2DF1AA9A004E23D4 /* FirebaseFirestore */; };
+		EDC669B42DF9A27600E5BE4C /* RxCoreLocation in Frameworks */ = {isa = PBXBuildFile; productRef = EDC669B32DF9A27600E5BE4C /* RxCoreLocation */; };
 		F6DABEA32DF08E2500FBEBC7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA22DF08E2500FBEBC7 /* RxCocoa */; };
 		F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA42DF08E2500FBEBC7 /* RxRelay */; };
 		F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA62DF08E2500FBEBC7 /* RxSwift */; };
@@ -64,6 +65,7 @@
 				F6DAC1F02DF17CF800FBEBC7 /* SnapKit in Frameworks */,
 				F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */,
 				ED6AD6BA2DF1AA9A004E23D4 /* FirebaseCore in Frameworks */,
+				EDC669B42DF9A27600E5BE4C /* RxCoreLocation in Frameworks */,
 				ED6AD6BC2DF1AA9A004E23D4 /* FirebaseFirestore in Frameworks */,
 				ED6AD6B62DF1AA9A004E23D4 /* FirebaseAnalytics in Frameworks */,
 				F6DABEA32DF08E2500FBEBC7 /* RxCocoa in Frameworks */,
@@ -117,6 +119,7 @@
 				ED6AD6B72DF1AA9A004E23D4 /* FirebaseAuth */,
 				ED6AD6B92DF1AA9A004E23D4 /* FirebaseCore */,
 				ED6AD6BB2DF1AA9A004E23D4 /* FirebaseFirestore */,
+				EDC669B32DF9A27600E5BE4C /* RxCoreLocation */,
 			);
 			productName = FitMate;
 			productReference = F6F3B9CE2DEF095800FA2815 /* FitMate.app */;
@@ -150,6 +153,7 @@
 				F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				F6DAC1EE2DF17CF800FBEBC7 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EDC669B22DF9A27600E5BE4C /* XCRemoteSwiftPackageReference "RxCoreLocation" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6F3B9CF2DEF095800FA2815 /* Products */;
@@ -389,6 +393,14 @@
 				minimumVersion = 11.14.0;
 			};
 		};
+		EDC669B22DF9A27600E5BE4C /* XCRemoteSwiftPackageReference "RxCoreLocation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RxSwiftCommunity/RxCoreLocation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
 		F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ReactiveX/RxSwift";
@@ -427,6 +439,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		EDC669B32DF9A27600E5BE4C /* RxCoreLocation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDC669B22DF9A27600E5BE4C /* XCRemoteSwiftPackageReference "RxCoreLocation" */;
+			productName = RxCoreLocation;
 		};
 		F6DABEA22DF08E2500FBEBC7 /* RxCocoa */ = {
 			isa = XCSwiftPackageProductDependency;
