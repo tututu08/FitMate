@@ -19,7 +19,7 @@ class NIcknameViewController: UIViewController {
         return title
     }()
     
-    private let nicknameHeader = CustomHeader(text: "닉네임")
+    private let nicknameHeader = CustomHeaderLabel(text: "닉네임")
     private let nicknameField = CustomTextField(placeholder: "닉네임을 입력해주세요")
     
     private lazy var termsStack: UIStackView = setTermsStack()
