@@ -52,7 +52,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         let button = UIButton()
         button.setTitle("목표설정", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 24, weight: .bold)
+        button.backgroundColor = .systemPink
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
         return button
     }()
     
@@ -132,13 +133,17 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         
         // 오토레이아웃 설정
         infoLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(20)
-            $0.leading.equalToSuperview().offset(24)
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(32)
+            $0.leading.trailing.equalToSuperview().offset(24)
+            $0.width.equalTo(327)
+            $0.height.equalTo(68)
         }
         
         subInfoLabel.snp.makeConstraints {
-            $0.top.equalTo(infoLabel.snp.bottom).offset(8)
-            $0.leading.equalToSuperview().offset(24)
+            $0.top.equalTo(infoLabel.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview().offset(24)
+            $0.width.equalTo(327)
+            $0.height.equalTo(24)
         }
         
         pickerView.snp.makeConstraints {
@@ -149,8 +154,9 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         }
         
         goalSettingButton.snp.makeConstraints {
-            $0.top.equalTo(pickerView.snp.bottom).offset(40)
+            $0.top.equalTo(pickerView.snp.bottom).offset(35)
             $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
             $0.width.equalTo(200)
             $0.height.equalTo(50)
         }

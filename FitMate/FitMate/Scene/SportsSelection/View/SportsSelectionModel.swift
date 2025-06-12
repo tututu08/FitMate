@@ -6,7 +6,7 @@ class CarouselCell: UICollectionViewCell {
     private let imageBackgroundView: UIView = {
         let backgroundView = UIView()
         backgroundView.clipsToBounds = true
-        backgroundView.layer.cornerRadius = 20
+        backgroundView.layer.cornerRadius = 8
         backgroundView.backgroundColor = .white // 변경 필요 시 수정
         return backgroundView
     }()
