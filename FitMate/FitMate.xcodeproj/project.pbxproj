@@ -77,10 +77,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EDDA5CDC2DFB23C7005D0F91 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F6F3B9C52DEF095800FA2815 = {
 			isa = PBXGroup;
 			children = (
 				F6F3B9D02DEF095800FA2815 /* FitMate */,
+				EDDA5CDC2DFB23C7005D0F91 /* Frameworks */,
 				F6F3B9CF2DEF095800FA2815 /* Products */,
 			);
 			sourceTree = "<group>";
