@@ -123,4 +123,30 @@ class FirestoreManager {
          )
          .disposed(by: disposeBag)
      */
+    
+    // MARK: - Delete
+    func deleteDocument(collectionName: String, documentName: String) -> Single<Void> {
+            return Single.create { single in
+                let ref = self.db.collection(collectionName).document(documentName)
+                ref.delete { error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else {
+                        single(.success(()))
+                    }
+                }
+                return Disposables.create()
+            }
+        }
+    
+    /* deleteDocumentRx 사용 예시
+     // 사용자 정보 삭제
+     FirestoreService.shared
+         .deleteDocumentRx(collectionName: "user", documentName: "abc123")
+         .subscribe(
+             onSuccess: { print("삭제 성공!") },
+             onFailure: { error in print("삭제 실패: \(error.localizedDescription)") }
+         )
+         .disposed(by: disposeBag)
+     */
 }
