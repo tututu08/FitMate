@@ -92,4 +92,35 @@ class FirestoreManager {
             onFailure: { print("User 데이터 읽기 실패 : \(error.localizedDescription)") }
         )
      */
+    
+    // MARK: - Update
+    
+    func updateDocument(collectionName: String, documentName: String, fields: [String: Any]) -> Single<Void> {
+        return Single.create { single in
+            let ref = self.db.collection(collectionName).document(documentName)
+            ref.updateData(fields) { error in
+                if let error = error {
+                    single(.failure(error))
+                } else {
+                    single(.success(()))
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    /* updateDocument 사용 예시
+     // 사용자 닉네임 업데이트
+     FirestoreService.shared
+         .updateDocumentRx(collectionName: "user", documentName: "abc123", fields: ["nickname": "노훈"])
+         .subscribe(
+             onSuccess: {
+                 print("업데이트 성공!")
+             },
+             onFailure: { error in
+                 print("실패: \(error.localizedDescription)")
+             }
+         )
+         .disposed(by: disposeBag)
+     */
 }
