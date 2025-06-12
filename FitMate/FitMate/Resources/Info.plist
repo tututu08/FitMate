@@ -19,5 +19,7 @@
 			</array>
 		</dict>
 	</dict>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>앱 사용 중 위치를 사용합니다</string>
 </dict>
 </plist>
