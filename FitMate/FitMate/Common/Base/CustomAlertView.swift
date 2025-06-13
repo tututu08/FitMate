@@ -12,6 +12,7 @@ class CustomAlertView: UIView {
 
     private let containerVIew = UIView() // alert 본체
     private let iconContainer = UIView()
+    private var hasIcon: UIImageView? = nil
     private let alertTitle = UILabel()
     private let alertMessage = UILabel()
     private let buttonStack = UIStackView()
@@ -19,12 +20,91 @@ class CustomAlertView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.backgroundColor = .white
+        self.layer.cornerRadius = 4
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setUp(
+        icon: UIImageView? = nil,
+        title: String? = nil,
+        message: String? = nil,
+        resumeButton: UIButton? = nil,
+        stopButton: UIButton? = nil
+    ) {
+        if let icon = icon {
+            self.hasIcon = icon
+            icon.contentMode = .scaleAspectFit
+            addSubview(icon)
+        }
+        [alertTitle, alertMessage,
+         buttonStack].forEach({addSubview($0)})
+        alertTitle.text = title
+        alertTitle.font = UIFont(name: "Pretendard-SemiBold", size: 24)
+        alertTitle.textColor = .background500
+        alertTitle.textAlignment = .center
+        alertTitle.numberOfLines = 0
+           
+        alertMessage.text = message
+        alertMessage.font = UIFont(name: "Pretendard-Medium", size: 14)
+        alertMessage.textColor = .background400
+        alertMessage.textAlignment = .center
+        alertMessage.numberOfLines = 0
+           
+        buttonStack.axis = .horizontal
+        buttonStack.spacing = 20
+        buttonStack.distribution = .fillEqually
+        
+        resumeButton?.layer.cornerRadius = 4
+        stopButton?.layer.cornerRadius = 4
+        if let resume = resumeButton {
+            buttonStack.addArrangedSubview(resume)
+        }
+        
+        if let stop = stopButton {
+            buttonStack.addArrangedSubview(stop)
+        }
+    }
+    
+    func setConstraints() {
+        self.snp.makeConstraints { make in
+            make.width.equalTo(326)
+        }
+        
+        if let icon = hasIcon {
+            icon.snp.makeConstraints { make in
+                make.top.equalToSuperview().inset(32)
+                make.leading.trailing.equalToSuperview().inset(120)
+                make.height.equalTo(icon.snp.width).multipliedBy(1.0)
+            }
+            
+            alertTitle.snp.makeConstraints{ make in
+                make.top.equalTo(icon.snp.bottom).offset(32)
+                make.leading.trailing.equalToSuperview().inset(60.5)
+            }
+        } else {
+            alertTitle.snp.makeConstraints { make in
+                make.top.equalToSuperview().inset(32)
+                make.leading.trailing.equalToSuperview().inset(60.5)
+            }
+        }
+        
+        alertMessage.snp.makeConstraints { make in
+            make.top.equalTo(alertTitle.snp.bottom).offset(12)
+            make.leading.trailing.equalToSuperview().inset(26)
+        }
+        
+        buttonStack.snp.makeConstraints { make in
+            make.top.equalTo(alertMessage.snp.bottom).offset(24)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.height.equalTo(48)
+            make.bottom.equalToSuperview().inset(26)
+        }
+        
+    }
     class AlertBuilder {
         // alert 본체를 구성할 요소들
         private var icon: UIImageView?
@@ -63,83 +143,17 @@ class CustomAlertView: UIView {
         }
         
         // alert 본체 set하는 메서드
-        func buildAlert() -> UIView {
-            
-            
-            let alertView: UIView = {
-                let view = UIView()
-                view.backgroundColor = .white
-                return view
-            }()
-            
-            alertView.snp.makeConstraints { make in
-                make.height.equalTo(349)
-                make.width.equalTo(326)
-            }
-            
-            guard let icon = self.icon else {
-                    return alertView // 또는 return UIView() 등 선택 가능
-                }
-            
-            let alertTitle: UILabel = {
-                let titleLabel = UILabel()
-                titleLabel.text = self.title
-                titleLabel.font = UIFont.systemFont(ofSize: 24)
-                titleLabel.textColor = .darkGray
-                titleLabel.textAlignment = .center
-                titleLabel.numberOfLines = 0
-                return titleLabel
-            }()
-            
-            let alertMessage: UILabel = {
-                let messageLabel = UILabel()
-                messageLabel.text = self.message
-                messageLabel.font = UIFont.systemFont(ofSize: 14)
-                messageLabel.textColor = .darkGray
-                messageLabel.textAlignment = .center
-                messageLabel.numberOfLines = 0
-                return messageLabel
-            }()
-            
-            let buttonStack: UIStackView = {
-                let stack = UIStackView()
-                stack.axis = .horizontal
-                stack.spacing = 20
-                stack.distribution = .fillEqually
-                return stack
-            }()
-            
-            if let resume = resumeButton {
-                buttonStack.addArrangedSubview(resume)
-            }
-            
-            if let stop = stopButton {
-                buttonStack.addArrangedSubview(stop)
-            }
-            [icon, alertTitle, alertMessage, buttonStack].forEach({alertView.addSubview($0)})
-            
-            icon.snp.makeConstraints { make in
-                make.top.equalToSuperview().inset(32)
-                make.leading.trailing.equalToSuperview().inset(120)
-                make.height.equalTo(icon.snp.width).multipliedBy(1.0)
-            }
-            
-            alertTitle.snp.makeConstraints{ make in
-                make.top.equalTo(icon.snp.bottom).offset(32)
-                make.leading.trailing.equalToSuperview().inset(60.5)
-            }
-            
-            alertMessage.snp.makeConstraints { make in
-                make.top.equalTo(alertTitle.snp.bottom).offset(12)
-                make.leading.trailing.equalToSuperview().inset(26)
-            }
-            
-            buttonStack.snp.makeConstraints { make in
-                make.bottom.equalToSuperview().inset(26)
-                make.leading.trailing.equalToSuperview().inset(20)
-            }
-            
-            return alertView
+        func buildAlert() -> CustomAlertView {
+            let alert = CustomAlertView()
+            alert.setUp(
+                icon: icon,
+                title: title,
+                message: message,
+                resumeButton: resumeButton,
+                stopButton: stopButton
+            )
+            alert.setConstraints()
+            return alert
         }
     }
 }

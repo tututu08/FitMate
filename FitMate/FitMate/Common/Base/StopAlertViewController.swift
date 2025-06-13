@@ -12,30 +12,41 @@ class StopAlertViewController: UIViewController {
     private let resumeButton = {
         let resume = UIButton()
         resume.setTitle("일시정지", for: .normal)
-        resume.setTitleColor(.darkGray, for: .normal)
-        resume.backgroundColor = .lightGray
-        resume.snp.makeConstraints {make in
-            make.height.equalTo(48)
-        }
+        resume.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
+        resume.setTitleColor(.background500, for: .normal)
+        resume.backgroundColor = .background50
         return resume
     }()
     
     private let stopButton = {
         let stop = UIButton()
         stop.setTitle("그만하기", for: .normal)
-        stop.setTitleColor(.darkGray, for: .normal)
-        stop.backgroundColor = .systemPurple
-        stop.snp.makeConstraints { make in
-            make.height.equalTo(48)
-        }
+        stop.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
+        stop.setTitleColor(.white, for: .normal)
+        stop.backgroundColor = .primary500
         return stop
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpUI()
+        setAlert()
+    }
+    func setUpUI() {
+        /// 사용할때
+        /// vc.modalPresentationStyle = .overFullScreen
+        /// → 배경이 반투명하게 보이도록 기존 화면 위에 겹쳐 띄우기 위해 설정 필요
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.5) // 필터 역할
+        resumeButton.snp.makeConstraints {make in
+            make.height.equalTo(48)
+        }
         
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        
+        stopButton.snp.makeConstraints { make in
+            make.height.equalTo(48)
+        }
+    }
+    
+    func setAlert() {
         let alert = CustomAlertView.AlertBuilder()
             .setIcon(UIImageView(image: UIImage(named: "stop")))
             .setTitle("정말 그만하시겠어요?")
@@ -49,5 +60,4 @@ class StopAlertViewController: UIViewController {
             make.center.equalToSuperview()
         }
     }
-    
 }
