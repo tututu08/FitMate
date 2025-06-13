@@ -12,7 +12,7 @@ class BaseView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureUI()
-        setupLayout()
+        setLayoutUI()
     }
     
     required init?(coder: NSCoder) {
@@ -25,7 +25,7 @@ class BaseView: UIView {
     }
     
     // SnapKit 등으로 서브뷰 제약 설정
-    func setupLayout() {
+    func setLayoutUI() {
         // override해서 각 뷰에서 세부 설정
     }
 }

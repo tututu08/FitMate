@@ -13,7 +13,7 @@ class BaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        setupLayout()
+        setLayoutUI()
         bindViewModel()
     }
 
@@ -21,12 +21,13 @@ class BaseViewController: UIViewController {
         // 색상, 폰트 등 뷰 스타일 구성
     }
 
-    func setupLayout() {
+    func setLayoutUI() {
         // SnapKit을 활용한 레이아웃 설정
     }
     
     func bindViewModel() {
         // RxSwift 등 바인딩 처리
     }
+
 }
 

@@ -13,7 +13,7 @@ final class JumpRopeBattleView: BaseView {
     }
 
     // sportsView를 전체 영역에 맞게 제약
-    override func setupLayout() {
+    override func setLayoutUI() {
         sportsView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }

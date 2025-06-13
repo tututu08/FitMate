@@ -168,7 +168,7 @@ class CooperationSportsView: BaseView {
     }
 
     // SnapKit으로 레이아웃 제약 설정
-    override func setupLayout() {
+    override func setLayoutUI() {
         modeLabel.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide).offset(0)
             $0.centerX.equalToSuperview()
@@ -196,19 +196,22 @@ class CooperationSportsView: BaseView {
             progressWidthConstraint = $0.width.equalTo(0).constraint // 채워지는 바 width 제약
         }
         coopImage.snp.makeConstraints {
-            $0.bottom.equalTo(stopButton.snp.top).inset(-30)
+            $0.bottom.equalTo(stopButton.snp.top).inset(-40)
             $0.centerX.equalToSuperview()
-            $0.height.width.equalTo(355)
+            $0.width.equalTo(340)
+            $0.height.equalTo(310)
         }
         myCharacterImage.snp.makeConstraints{
             $0.leading.equalTo(coopImage.snp.leading).inset(10)
-            $0.bottom.equalTo(coopImage.snp.bottom).inset(78)
-            $0.height.width.equalTo(150)
+            $0.bottom.equalTo(coopImage.snp.bottom).inset(58)
+            $0.height.equalTo(150)
+            $0.width.equalTo(120)
         }
         mateCharacterImage.snp.makeConstraints{
             $0.trailing.equalTo(coopImage.snp.trailing).inset(10)
-            $0.bottom.equalTo(coopImage.snp.bottom).inset(78)
-            $0.height.width.equalTo(150)
+            $0.bottom.equalTo(coopImage.snp.bottom).inset(58)
+            $0.height.equalTo(150)
+            $0.width.equalTo(120)
         }
         
         pauseButton.snp.makeConstraints{

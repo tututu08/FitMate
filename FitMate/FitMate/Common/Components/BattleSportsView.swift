@@ -187,7 +187,7 @@ class BattleSportsView: BaseView {
         
     }
     
-    override func setupLayout() {
+    override func setLayoutUI() {
         modeLabel.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide).offset(0)
             $0.centerX.equalToSuperview()
