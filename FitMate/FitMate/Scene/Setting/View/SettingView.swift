@@ -1,10 +1,3 @@
-//
-//  SettingView.swift
-//  FitMate
-//
-//  Created by 형윤 on 6/13/25.
-//
-//
 
 import UIKit
 import SnapKit
