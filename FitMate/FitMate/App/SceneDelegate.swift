@@ -20,7 +20,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
+<<<<<<< Updated upstream
         let VC = ViewController()
+=======
+        let VC = MypageViewController()
+>>>>>>> Stashed changes
         
         window.rootViewController = VC
         window.makeKeyAndVisible()
