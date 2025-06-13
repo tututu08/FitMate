@@ -12,6 +12,12 @@
 				<string>com.googleusercontent.apps.45152989960-4qh13i40avkeuos357p4l7qgaf67saq2</string>
 			</array>
 		</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Pretendard-Bold.otf</string>
+		<string>Pretendard-SemiBold.otf</string>
+		<string>Pretendard-Medium.otf</string>
+		<string>Pretendard-Regular.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
@@ -30,7 +36,7 @@
 			</array>
 		</dict>
 	</dict>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>앱 사용 중 위치를 사용합니다</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>앱 사용 중 위치를 사용합니다</string>
 </dict>
 </plist>
