@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         // SportsSelectionViewController는 하나만 생성
-        let rootVC = JumpRopeCoopViewController(goalCount: 500, myCharacter: "yeongdeogi", mateCharacter: "bburi")
+        let rootVC = MypageViewController()
         let nav = UINavigationController(rootViewController: rootVC)
 
         window.rootViewController = nav
