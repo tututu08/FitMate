@@ -188,13 +188,13 @@ class SportsModeViewController: BaseViewController {
         cooperationModeButton.snp.makeConstraints {
             $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
             $0.leading.equalToSuperview().inset(20)
-            $0.width.equalTo(157)
+            $0.width.equalTo(157.5)
             $0.height.equalTo(60)
         }
         battleModeButton.snp.makeConstraints {
             $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
             $0.trailing.equalToSuperview().inset(20)
-            $0.width.equalTo(157)
+            $0.width.equalTo(157.5)
             $0.height.equalTo(60)
         }
     }

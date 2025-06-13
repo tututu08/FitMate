@@ -28,7 +28,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 24)
+        label.font = UIFont(name: "pretendard-semibold", size: 24)
         label.textAlignment = .left
         label.text = "오늘 얼마나 \n운동하고 싶으신가요?"
         label.textColor = .white
@@ -39,7 +39,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     // 서브 타이틀 라벨: 부가 설명
     private let subInfoLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16)
+        label.font = UIFont(name: "pretendard-regular", size: 16)
         label.textAlignment = .left
         label.text = "파트너와 함께 정해보세요"
         label.textColor = .lightGray
@@ -50,10 +50,11 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     // 목표 설정 버튼
     private let goalSettingButton: UIButton = {
         let button = UIButton()
-        button.setTitle("목표설정", for: .normal)
+        button.setTitle("목표 설정", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemPink
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+        button.layer.cornerRadius = 4
+        button.backgroundColor = .primary500
+        button.titleLabel?.font = UIFont(name: "pretendard-semibold", size: 20)
         return button
     }()
     
@@ -124,7 +125,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     override func configureUI() {
         super.configureUI()
-        view.backgroundColor = .black
+        view.backgroundColor = .background800
         
         // UI 요소를 뷰에 추가
         [infoLabel, subInfoLabel, pickerView, goalSettingButton].forEach {
@@ -149,16 +150,15 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         pickerView.snp.makeConstraints {
             $0.top.equalTo(subInfoLabel.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview()
-            $0.width.equalTo(296)
-            $0.height.equalTo(311)
+            $0.width.equalTo(311)
+            $0.height.equalTo(296)
         }
         
         goalSettingButton.snp.makeConstraints {
             $0.top.equalTo(pickerView.snp.bottom).offset(35)
             $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
-            $0.width.equalTo(200)
-            $0.height.equalTo(50)
+            $0.width.equalTo(335)
+            $0.height.equalTo(60)
         }
     }
     
@@ -179,7 +179,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         
         let label = UILabel()
         label.text = pickerData[row]
-        label.font = .systemFont(ofSize: 40)
+        label.font = UIFont(name: "pretendard-semibold", size: 40)
         label.textAlignment = .center
         label.textColor = .white
         
