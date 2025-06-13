@@ -10,7 +10,10 @@ import SnapKit
 
 class LoadingView: UIView {
    
-    private var animation: LottieAnimationView?
+    private lazy var animation: LottieAnimationView = {
+       let lottie = LottieAnimationView(name: "battery")
+        return lottie
+    }()
     private let loadingMent: UILabel = {
        let ment = UILabel()
         ment.text = "잠시만 기다려주세요"
@@ -22,7 +25,6 @@ class LoadingView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        animation = .init(name:"battery")
         setUpUI()
         setLottie()
     }
@@ -33,26 +35,25 @@ class LoadingView: UIView {
     
     func setUpUI() {
         backgroundColor = .background800
-        addSubview(animation!)
+        addSubview(animation)
         addSubview(loadingMent)
         
-        animation!.snp.makeConstraints { make in
+        animation.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(305)
             make.leading.trailing.equalToSuperview().inset(32)
             make.centerX.equalToSuperview()
         }
         
         loadingMent.snp.makeConstraints { make in
-            make.top.equalTo(animation!.snp.bottom).offset(12)
+            make.top.equalTo(animation.snp.bottom).offset(12)
             make.centerX.equalToSuperview()
         }
     }
     
     
     func setLottie() {
-        animation!.frame = bounds
-        animation!.contentMode = .scaleAspectFit
-        animation!.loopMode = .loop
-        animation!.play()
+        animation.contentMode = .scaleAspectFit
+        animation.loopMode = .loop
+        animation.play()
     }
 }
