@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 
 // 협동 스포츠(여기선 줄넘기 협력 모드) 메인 뷰
-class CooperationSportsView: UIView {
+class CooperationSportsView: BaseView {
     
     // "협력 모드" 라벨(모드 이름 표시)
     private let modeLabel: UILabel = {
@@ -16,6 +16,7 @@ class CooperationSportsView: UIView {
     // 목표 아이콘(이미지로 보여주기)
     private let goalImage: UIImageView = {
         let imageView = UIImageView()
+        imageView.image = UIImage(named: "goalImage") // 목표 아이콘
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -23,8 +24,8 @@ class CooperationSportsView: UIView {
     // 목표값(라벨로 중앙에 노출)
     private let goalLabel: UILabel = {
         let label = UILabel()
-        //      label.text = "종목 목표치" // 예: "목표 100회"
-        label.textColor = .white
+        label.text = "종목 목표치" // 예: "목표 100회"
+        label.textColor = .black
         label.font = .boldSystemFont(ofSize: 20)
         return label
     }()
@@ -115,8 +116,23 @@ class CooperationSportsView: UIView {
     // 가운데 로고 이미지
     private let coopImage: UIImageView = {
         let imageView = UIImageView()
-        //    imageView.image = UIImage(named: "logo")
+        imageView.image = UIImage(named: "coopBackground")
         imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    private let myCharacterImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "kaepy")
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private let mateCharacterImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "morano")
+        imageView.transform = CGAffineTransform(scaleX: -1, y: 1)
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -133,22 +149,14 @@ class CooperationSportsView: UIView {
         Button.setImage(UIImage(named: "stop"), for: .normal)
         return Button
     }()
-    
-    // 생성자(초기화)
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
-        setupLayout()
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
     // UI 구성 요소 추가
-    func setupUI() {
+    override func configureUI() {
         self.backgroundColor = .black
         goalImage.addSubview(goalLabel) // 목표 라벨을 이미지 위에 올림(중앙 표시)
         progressBackgroundView.addSubview(progressForegroundView) // 진행률 바 layering
+        coopImage.addSubview(myCharacterImage)
+        coopImage.addSubview(mateCharacterImage)
         
         [ modeLabel,
           goalImage,
@@ -159,9 +167,9 @@ class CooperationSportsView: UIView {
           stopButton
         ].forEach{self.addSubview($0)}
     }
-    
+
     // SnapKit으로 레이아웃 제약 설정
-    func setupLayout() {
+    override func setLayoutUI() {
         modeLabel.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide).offset(0)
             $0.centerX.equalToSuperview()
@@ -189,10 +197,24 @@ class CooperationSportsView: UIView {
             progressWidthConstraint = $0.width.equalTo(0).constraint // 채워지는 바 width 제약
         }
         coopImage.snp.makeConstraints {
-            $0.bottom.equalTo(stopButton.snp.top).offset(-10)
+            $0.bottom.equalTo(stopButton.snp.top).inset(-40)
             $0.centerX.equalToSuperview()
-            $0.height.width.equalTo(400)
+            $0.width.equalTo(340)
+            $0.height.equalTo(310)
         }
+        myCharacterImage.snp.makeConstraints{
+            $0.leading.equalTo(coopImage.snp.leading).inset(10)
+            $0.bottom.equalTo(coopImage.snp.bottom).inset(58)
+            $0.height.equalTo(150)
+            $0.width.equalTo(120)
+        }
+        mateCharacterImage.snp.makeConstraints{
+            $0.trailing.equalTo(coopImage.snp.trailing).inset(10)
+            $0.bottom.equalTo(coopImage.snp.bottom).inset(58)
+            $0.height.equalTo(150)
+            $0.width.equalTo(120)
+        }
+        
         pauseButton.snp.makeConstraints{
             $0.bottom.equalToSuperview().inset(30)
             $0.leading.equalToSuperview().offset(20)
@@ -207,25 +229,27 @@ class CooperationSportsView: UIView {
     }
     // 내 기록 라벨 갱신
     func updateMyRecord(_ text: String) {
-        myRecordLabel.text = text
+         myRecordLabel.text = text
     }
     // 메이트 기록 라벨 갱신
     func updateMateRecord(_ text: String) {
-        mateRecordLabel.text = text
+         mateRecordLabel.text = text
     }
     // 목표치 라벨 갱신
     func updateGoal(_ text: String) {
-        goalLabel.text = text
+         goalLabel.text = text
     }
-    // 이미지 갱신
-    func updateImage(_ image: UIImage) {
-        goalImage.image = image
+    func updateMyCharacter(_ name: String) {
+        myCharacterImage.image = UIImage(named: name)
+    }
+    func updateMateCharacter(_ name: String) {
+        mateCharacterImage.image = UIImage(named: name)
     }
     // 진행률 바 갱신(0~1 비율)
     func updateProgress(ratio: CGFloat) {
-        layoutIfNeeded()
-        let width = progressBackgroundView.bounds.width - 12 // inset 보정
-        progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
-        layoutIfNeeded()
+         layoutIfNeeded()
+         let width = progressBackgroundView.bounds.width - 12 // inset 보정
+         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+         layoutIfNeeded()
     }
 }
