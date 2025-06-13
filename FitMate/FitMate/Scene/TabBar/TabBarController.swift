@@ -24,23 +24,23 @@ class TabBarController: UITabBarController {
             selectedImage: UIImage(systemName: "historyTapped")
         )
         
-        let mainVC = MainViewController()
-        let nav2 = UINavigationController(rootViewController: mainVC)
-        nav2.tabBarItem = UITabBarItem(
-            title: "메인",
-            image: UIImage(systemName: "main"),
-            selectedImage: UIImage(systemName: "mainTapped")
-        )
-        
-        let myPageVC = MyPageViewController()
-        let nav3 = UINavigationController(rootViewController: myPageVC)
-        nav3.tabBarItem = UITabBarItem(
-            title: "마이페이지",
-            image: UIImage(systemName: "mypage"),
-            selectedImage: UIImage(systemName: "mypageTapped")
-        )
-        
-        viewControllers = [nav1, nav2, nav3]
+//        let mainVC = MainViewController()
+//        let nav2 = UINavigationController(rootViewController: mainVC)
+//        nav2.tabBarItem = UITabBarItem(
+//            title: "메인",
+//            image: UIImage(systemName: "main"),
+//            selectedImage: UIImage(systemName: "mainTapped")
+//        )
+//        
+//        let myPageVC = MyPageViewController()
+//        let nav3 = UINavigationController(rootViewController: myPageVC)
+//        nav3.tabBarItem = UITabBarItem(
+//            title: "마이페이지",
+//            image: UIImage(systemName: "mypage"),
+//            selectedImage: UIImage(systemName: "mypageTapped")
+//        )
+//        
+//        viewControllers = [nav1, nav2, nav3]
     }
     
     private func setUp() {
