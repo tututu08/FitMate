@@ -4,39 +4,22 @@
 //
 //  Created by 강성훈 on 6/5/25.
 //
+//
 
 import UIKit
 import SnapKit
 
 final class MypageView: UIView {
 
+    let settingButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "gearshape"), for: .normal)
+        button.tintColor = .white
+        return button
+    }()
+
     let topBar: UIView = {
         let view = UIView()
-        let titleLabel = UILabel()
-        titleLabel.text = "마이페이지"
-        titleLabel.textColor = .white
-        titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
-
-        let settingButton = UIButton()
-        settingButton.setImage(UIImage(systemName: "gearshape"), for: .normal)
-        settingButton.tintColor = .white
-
-        view.addSubview(titleLabel)
-        view.addSubview(settingButton)
-
-        titleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview()
-            $0.width.equalTo(87)
-            $0.height.equalTo(28)
-        }
-
-        settingButton.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(20)
-            $0.width.height.equalTo(24)
-        }
-
         return view
     }()
 
@@ -134,8 +117,28 @@ final class MypageView: UIView {
             contentView.addSubview($0)
         }
 
+        let titleLabel = UILabel()
+        titleLabel.text = "마이페이지"
+        titleLabel.textColor = .white
+        titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
+        topBar.addSubview(titleLabel)
+        topBar.addSubview(settingButton)
+
+        titleLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(87)
+            $0.height.equalTo(28)
+        }
+
+        settingButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.trailing.equalToSuperview().inset(20)
+            $0.width.height.equalTo(24)
+        }
+
         topBar.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(0)
+            $0.top.equalTo(safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(56)
         }
