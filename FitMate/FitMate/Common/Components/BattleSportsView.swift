@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class BattleSportsView: UIView {
+class BattleSportsView: BaseView {
     
     private let modeLabel: UILabel = {
         let label = UILabel()
@@ -57,7 +57,6 @@ class BattleSportsView: UIView {
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
         label.setContentHuggingPriority(.required, for: .horizontal)
-
         return label
     }()
     
@@ -117,13 +116,13 @@ class BattleSportsView: UIView {
     private let mateProgressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.systemPurple.cgColor
+        view.layer.borderColor = UIColor.lightGray.cgColor
         return view
     }()
     
     private let mateProgressForegroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemPurple
+        view.backgroundColor = .lightGray
         return view
     }()
     
@@ -135,9 +134,26 @@ class BattleSportsView: UIView {
         return stack
     }()
     
-    private let coopImage: UIImageView = {
+    private var progressWidthConstraint: Constraint?
+
+    private let battleImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "logo")
+        imageView.image = UIImage(named: "battleBackground")
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    private let myCharacterImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "KaepyR")
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    private let mateCharacterImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "MeoranoL")
+        imageView.transform = CGAffineTransform(scaleX: -1, y: 1)
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
@@ -154,32 +170,25 @@ class BattleSportsView: UIView {
         return button
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
-        setupLayout()
-    }
-    
-    required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-    
-    func setupUI() {
+    override func configureUI() {
         self.backgroundColor = .black
         goalImage.addSubview(goalLabel)
         myProgressBackgroundView.addSubview(myProgressForegroundView)
         mateProgressBackgroundView.addSubview(mateProgressForegroundView)
+        battleImage.addSubview(myCharacterImage)
+        battleImage.addSubview(mateCharacterImage)
+        
         [ modeLabel,
           goalImage,
           totalVerticalStack,
-          coopImage,
+          battleImage,
           pauseButton,
           stopButton
         ].forEach{self.addSubview($0)}
         
     }
     
-    func setupLayout() {
+    override func setLayoutUI() {
         modeLabel.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide).offset(0)
             $0.centerX.equalToSuperview()
@@ -206,23 +215,39 @@ class BattleSportsView: UIView {
         }
         
         myProgressForegroundView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(6) // 패딩을 줘서 테두리 공간 유지
-            
+            $0.leading.top.bottom.equalToSuperview().inset(6)
+            progressWidthConstraint = $0.width.equalTo(0).constraint // 채워지는 바 width 제약
         }
+        
         mateProgressBackgroundView.snp.makeConstraints {
             $0.height.equalTo(30)
         }
         
         mateProgressForegroundView.snp.makeConstraints {
-            $0.edges.equalToSuperview().inset(6) // 패딩을 줘서 테두리 공간 유지
+            $0.leading.top.bottom.equalToSuperview().inset(6)
+            progressWidthConstraint = $0.width.equalTo(0).constraint // 채워지는 바 width 제약
         }
         
-        coopImage.snp.makeConstraints {
-            $0.bottom.equalTo(stopButton.snp.top).offset(-10)
+        battleImage.snp.makeConstraints {
+            $0.bottom.equalTo(stopButton.snp.top).inset(-40)
             $0.centerX.equalToSuperview()
-            $0.height.width.equalTo(400)
+            $0.width.equalTo(350)
+            $0.height.equalTo(340)
         }
         
+        myCharacterImage.snp.makeConstraints{
+            $0.leading.equalTo(battleImage.snp.leading).inset(10)
+            $0.bottom.equalTo(battleImage.snp.bottom).inset(41)
+            $0.height.equalTo(150)
+            $0.width.equalTo(120)
+        }
+        
+        mateCharacterImage.snp.makeConstraints{
+            $0.trailing.equalTo(battleImage.snp.trailing).inset(10)
+            $0.bottom.equalTo(battleImage.snp.bottom).inset(160)
+            $0.height.equalTo(150)
+            $0.width.equalTo(120)
+        }
         pauseButton.snp.makeConstraints{
             $0.bottom.equalToSuperview().inset(30)
             $0.leading.equalToSuperview().offset(20)
@@ -236,5 +261,35 @@ class BattleSportsView: UIView {
             $0.width.equalTo(260)
         }
     }
-    
+    // 내 기록 라벨 갱신
+    func updateMyRecord(_ text: String) {
+         myRecordLabel.text = text
+    }
+    // 메이트 기록 라벨 갱신
+    func updateMateRecord(_ text: String) {
+         mateRecordLabel.text = text
+    }
+    // 목표치 라벨 갱신
+    func updateGoal(_ text: String) {
+         goalLabel.text = text
+    }
+    func updateMyCharacter(_ name: String) {
+        myCharacterImage.image = UIImage(named: name)
+    }
+    func updateMateCharacter(_ name: String) {
+        mateCharacterImage.image = UIImage(named: name)
+    }
+    // 진행률 바 갱신(0~1 비율)
+    func myUpdateProgress(ratio: CGFloat) {
+         layoutIfNeeded()
+         let width = myProgressBackgroundView.bounds.width - 12 // inset 보정
+         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+         layoutIfNeeded()
+    }
+    func mateUpdateProgress(ratio: CGFloat) {
+         layoutIfNeeded()
+         let width = mateProgressBackgroundView.bounds.width - 12 // inset 보정
+         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+         layoutIfNeeded()
+    }
 }
