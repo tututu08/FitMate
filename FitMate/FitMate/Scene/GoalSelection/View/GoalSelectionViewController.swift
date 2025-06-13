@@ -102,6 +102,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
                 
                 // MARK: Firestore 데이터 저장
+                // TODO: "matches" 컬렉션 및 "matchID" 문서 생성
                 
                 
                 // 모드에 따른 화면 전환 분기
