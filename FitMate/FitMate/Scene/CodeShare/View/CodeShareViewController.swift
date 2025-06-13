@@ -33,7 +33,7 @@ class CodeShareVIewController: BaseViewController {
         codeShareView.xButton.rx.tap
             .asDriver(onErrorDriveWith: .empty())
             .drive(onNext:  { [weak self] in
-               // let moveIn = MainViewController()
+                let moveIn = MainViewController()
                 self?.navigationController?.popViewController(animated: true)
             })
         
