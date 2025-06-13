@@ -21,10 +21,13 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // 선택된 운동 제목을 전달하는 Rx Relay
     private let selectedTitleRelay = BehaviorRelay<String>(value: "")
+    
     // 선택된 운동 모드를 전달하는 Rx Relay
     private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
-   // 선택된 목표치를 전달하는 Rx Relay
+    
+    // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
+    
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
         let label = UILabel()
@@ -75,9 +78,10 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         
         // selectedTitleRelay를 ViewModel에 입력으로 전달
         let input = GoalSelectionViewModel.Input(
-            selectedTitle: selectedTitleRelay.asObservable(),
-            selectedMode: selectedModeRelay.asObservable()
+            selectedTitle: selectedTitleRelay.asObservable(), // 운동 종목
+            selectedMode: selectedModeRelay.asObservable()  // 운동 모드
         )
+        
         let output = viewModel.transform(input: input)
         
         // ViewModel에서 전달받은 pickerItems를 구독하여 pickerData에 반영
@@ -87,13 +91,17 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 self?.pickerView.reloadAllComponents()
             })
             .disposed(by: disposeBag)
+        
         // 목표 설정 클릭시 바인딩
         goalSettingButton.rx.tap
             .bind(onNext: { [weak self] selectedGoal in
                 guard let self = self else { return }
-                let selectedMode = self.selectedModeRelay.value
-                let selectedGoal = self.selectedGoalRelay.value
+                
                 // 저장(종목 타이틀, 목표치)
+                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
+                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
+                
+                // MARK: Firestore 데이터 저장
                 
                 
                 // 모드에 따른 화면 전환 분기
@@ -117,6 +125,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     func updateSelectedTitle(_ title: String) {
         selectedTitleRelay.accept(title)
     }
+    
     // 외부에서 선택된 운동 모드를 업데이트할 때 호출
     func updateSelectedMode(_ mode: SportsModeViewController.ExerciseMode) {
         selectedModeRelay.accept(mode)
