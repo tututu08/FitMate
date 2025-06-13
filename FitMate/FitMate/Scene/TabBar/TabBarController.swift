@@ -32,7 +32,7 @@ class TabBarController: UITabBarController {
             selectedImage: UIImage(systemName: "mainTapped")
         )
         
-        let myPageVC = MyPageViewController()
+        let myPageVC = MypageViewController()
         let nav3 = UINavigationController(rootViewController: myPageVC)
         nav3.tabBarItem = UITabBarItem(
             title: "마이페이지",
