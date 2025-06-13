@@ -11,73 +11,14 @@ import RxCocoa
 
 class LoginViewController: BaseViewController {
     
-    private let fitMateLogo: UIImageView = {
-       let logo = UIImageView()
-        logo.contentMode = .scaleAspectFit
-        logo.clipsToBounds = true
-        logo.image = UIImage(named: "logo")
-       return logo
-    }()
+    let logInView = LoginView()
     
-    private let kakaoLogin: UIButton = {
-        let kakaoLabel = UIButton()
-        kakaoLabel.setImage(UIImage(named: "kakao"), for: .normal)
-        kakaoLabel.contentMode = .scaleAspectFit
-        return kakaoLabel
-    }()
-    
-    private let googleLogin: UIButton = {
-        let googleLabel = UIButton()
-        googleLabel.setImage(UIImage(named: "google"), for: .normal)
-        googleLabel.contentMode = .scaleAspectFit
-        return googleLabel
-    }()
-    
-    private let appleLogin: UIButton = {
-        let appleLabel = UIButton()
-        appleLabel.setImage(UIImage(named: "apple"), for: .normal)
-        appleLabel.contentMode = .scaleAspectFit
-        return appleLabel
-    }()
-    
-    override func configureUI() {
-        view.backgroundColor = .black // 색상 변경 필요
-        
-        [fitMateLogo, kakaoLogin, googleLogin,
-         appleLogin].forEach({view.addSubview($0)})
+    override func loadView() {
+        super.loadView()
+        self.view = logInView
     }
     
-    override func setLayoutUI() {
-        
-        fitMateLogo.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(174)
-            make.leading.trailing.equalToSuperview().inset(87)
-        }
-       
-        kakaoLogin.snp.makeConstraints { make in
-            make.top.equalTo(fitMateLogo.snp.bottom).offset(174)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(60)
-            make.width.equalTo(343)
-        }
-        
-        googleLogin.snp.makeConstraints { make in
-            make.top.equalTo(kakaoLogin.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(60)
-            make.width.equalTo(343)
-        }
-        
-        appleLogin.snp.makeConstraints { make in
-            make.top.equalTo(googleLogin.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(60)
-            make.width.equalTo(343)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(114)
-        }
-    }
-    
-    override func bindViewModel() {
-        <#code#>
-    }
+//    override func bindViewModel() {
+//        <#code#>
+//    }
 }
