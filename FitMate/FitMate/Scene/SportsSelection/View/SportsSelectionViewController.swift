@@ -11,29 +11,20 @@ class SportsSelectionViewController: BaseViewController {
     // Carousel 뷰에 연결될 ViewModel
     private let carouselViewModel = CarouselViewModel()
     
-    // 상단 라벨: "운동 선택" 표시
-    private let label: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.textColor = .white
-        label.text = "운동 선택"
-        return label
-    }()
-    
     // 운동 목록을 표시하는 CollectionView (UPCarouselFlowLayout 사용)
     private let collectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
         layout.scrollDirection = .vertical             // 세로 스크롤
         layout.itemSize = CGSize(width: 355, height: 266) // 셀 크기 설정
-        layout.sideItemScale = 0.7                     // 양옆 아이템 크기 축소 비율
+        layout.sideItemScale = 0.85                     // 양옆 아이템 크기 축소 비율
         layout.sideItemAlpha = 0.6                     // 양옆 아이템 투명도
         layout.sideItemShift = 10                      // 셀 이동 오프셋 (약간 겹치게 표현)
-        layout.spacingMode = .fixed(spacing: -45)      // 셀 간 간격 설정
+        layout.spacingMode = .fixed(spacing: -10)      // 셀 간 간격 설정
         
         // 설정한 레이아웃을 바탕으로 CollectionView 생성
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.backgroundColor = .systemBlue
+        collectionView.backgroundColor = .black
         collectionView.register(CarouselCell.self, forCellWithReuseIdentifier: "cell")
         return collectionView
     }()
@@ -41,6 +32,10 @@ class SportsSelectionViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""  // 뒤로가기 버튼 타이틀 제거
+        
+        self.title = "운동 선택"
+        navigationController?.navigationBar.applyCustomAppearance()
+        navigationItem.backButtonTitle = ""
         
         // 레이아웃 완료 후 무한 스크롤용 중간 위치로 스크롤
         DispatchQueue.main.async { [weak self] in
@@ -52,19 +47,12 @@ class SportsSelectionViewController: BaseViewController {
     // UI 요소 배치 설정
     override func configureUI() {
         super.configureUI()
-        view.addSubview(label)
         view.addSubview(collectionView)
         
-        label.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(0)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(20)  // 라벨 높이
-        }
-        
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(label.snp.bottom).offset(44)  // 라벨 아래 44pt 간격
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.height.width.equalTo(view.safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }
 

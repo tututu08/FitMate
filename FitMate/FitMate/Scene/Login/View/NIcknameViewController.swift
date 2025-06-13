@@ -10,6 +10,7 @@ import RxSwift
 import RxCocoa
 
 class NicknameViewController: BaseViewController {
+
     
     private let nicknameView = NicknameView()
     

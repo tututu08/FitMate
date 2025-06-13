@@ -9,8 +9,12 @@ class SportsModeViewController: BaseViewController {
     // 선택된 운동 항목
     private let exerciseItem: CarouselViewModel.ExerciseItem
     
+    enum ExerciseMode {
+        case cooperation
+        case battle
+    }
     // 모드 선택 이벤트를 전달하는 Relay (Rx 방식)
-    private let modeSelectedRelay = PublishRelay<String>()
+    private let modeSelectedRelay = PublishRelay<(String, ExerciseMode)>()
     
     // 외부에서 운동 항목을 주입받는 초기화 함수
     init(exerciseItem: CarouselViewModel.ExerciseItem) {
@@ -28,13 +32,15 @@ class SportsModeViewController: BaseViewController {
     // 이미지 배경 뷰
     private let backgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemBackground
+        view.layer.cornerRadius = 8
+        view.backgroundColor = .yellow
         return view
     }()
     
     // 운동 대표 이미지
     private let imageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.backgroundColor = .green
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -77,7 +83,9 @@ class SportsModeViewController: BaseViewController {
     private let cooperationModeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.systemBlue, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
+        button.backgroundColor = .systemPink
+        button.layer.cornerRadius = 4
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
         button.setTitle("협력 모드", for: .normal)
         return button
     }()
@@ -86,7 +94,9 @@ class SportsModeViewController: BaseViewController {
     private let battleModeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.systemBlue, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
+        button.backgroundColor = .systemPink
+        button.layer.cornerRadius = 4
+        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
         button.setTitle("대결 모드", for: .normal)
         return button
     }()
@@ -104,21 +114,22 @@ class SportsModeViewController: BaseViewController {
         
         // 협력 모드 버튼 탭 -> 운동 제목을 Relay로 전달
         cooperationModeButton.rx.tap
-            .map { [weak self] in self?.exerciseItem.title ?? "" }
+            .map { [weak self] in (self?.exerciseItem.title ?? "", .cooperation) }
             .bind(to: modeSelectedRelay)
             .disposed(by: disposeBag)
         
         // 대결 모드 버튼 탭 -> 운동 제목을 Relay로 전달
         battleModeButton.rx.tap
-            .map { [weak self] in self?.exerciseItem.title ?? "" }
+            .map { [weak self] in (self?.exerciseItem.title ?? "", .battle) }
             .bind(to: modeSelectedRelay)
             .disposed(by: disposeBag)
         
         // Relay로부터 선택된 제목을 GoalSelectionViewController에 전달하고 push
         modeSelectedRelay.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] title in
+            .drive(onNext: { [weak self] (title, mode) in
                 let goalVC = GoalSelectionViewController()
                 goalVC.updateSelectedTitle(title) // 선택된 운동 이름 전달
+                goalVC.updateSelectedMode(mode) // 선택된 운동 모드 전달
                 self?.navigationController?.pushViewController(goalVC, animated: true)
             })
             .disposed(by: disposeBag)
@@ -142,7 +153,7 @@ class SportsModeViewController: BaseViewController {
         
         // 오토레이아웃 설정 (SnapKit 사용)
         backgroundView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(24)
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(24)
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(307)
         }
@@ -170,12 +181,14 @@ class SportsModeViewController: BaseViewController {
         }
         cooperationModeButton.snp.makeConstraints {
             $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(32)
             $0.leading.equalToSuperview().inset(20)
             $0.width.equalTo(157)
             $0.height.equalTo(60)
         }
         battleModeButton.snp.makeConstraints {
-            $0.top.equalTo(cooperationModeButton)
+            $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(32)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo(157)
             $0.height.equalTo(60)
@@ -187,7 +200,7 @@ class SportsModeViewController: BaseViewController {
         titleLabel.text = item.title
         imageView.image = item.image
         descriptionLabel.text = item.description
-        effectLabel.text = "운동 효과: \(item.effect)"
-        caloriesLabel.text = "칼로리 소모: \(item.calorie)"
+        effectLabel.text = "\(item.effect)"
+        caloriesLabel.text = "\(item.calorie)"
     }
 }
