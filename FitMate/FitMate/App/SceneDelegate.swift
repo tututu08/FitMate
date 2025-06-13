@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         // SportsSelectionViewController는 하나만 생성
-        let rootVC = SportsSelectionViewController()
+        let rootVC = MypageViewController()
         let nav = UINavigationController(rootViewController: rootVC)
 
         window.rootViewController = nav

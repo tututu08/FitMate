@@ -22,7 +22,6 @@ final class WorkRecordCell: UICollectionViewCell {
         let view = UIView()
         view.backgroundColor = .lightGray
         view.layer.cornerRadius = 4
-        view.snp.makeConstraints { $0.size.equalTo(CGSize(width: 144, height: 112)) }
         return view
     }()
 
@@ -79,6 +78,11 @@ final class WorkRecordCell: UICollectionViewCell {
         cardView.addSubview(containerStack)
         containerStack.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(16)
+        }
+        
+        characterImageView.snp.makeConstraints {
+            $0.width.equalTo(144)
+            $0.height.equalTo(112)
         }
     }
 }
