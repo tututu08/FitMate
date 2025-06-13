@@ -2,9 +2,13 @@
 //  CustomHeader.swift
 //  FitMate
 //
-//  Created by Sophie on 6/6/25.
+//  Created by soophie on 6/11/25.
 //
+
 import UIKit
+import SnapKit
+import RxSwift
+import RxCocoa
 
 class CustomHeaderLabel: UILabel {
     init(text: String) {

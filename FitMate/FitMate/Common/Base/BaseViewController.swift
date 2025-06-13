@@ -14,12 +14,16 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
         
         configureUI()
-        setupLayout()
+        setLayoutUI()
         bindViewModel()
     }
 
     func configureUI() {
         // 색상, 폰트 등 뷰 스타일 구성
+    }
+    
+    func setLayoutUI() {
+        
     }
 
     func setupLayout() {
