@@ -6,7 +6,7 @@ class CarouselCell: UICollectionViewCell {
     private let imageBackgroundView: UIView = {
         let backgroundView = UIView()
         backgroundView.clipsToBounds = true
-        backgroundView.layer.cornerRadius = 20
+        backgroundView.layer.cornerRadius = 8
         backgroundView.backgroundColor = .white // 변경 필요 시 수정
         return backgroundView
     }()
@@ -73,8 +73,7 @@ class CarouselCell: UICollectionViewCell {
     }
     
     private func configure() {
-        contentView.backgroundColor = .orange
-      
+        contentView.backgroundColor = .yellow
         contentView.layer.cornerRadius = 12
         contentView.layer.masksToBounds = false // 그림자 표시를 위해 false로 설정
 
