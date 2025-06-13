@@ -21,16 +21,8 @@ class BaseViewController: UIViewController {
     func configureUI() {
         // 색상, 폰트 등 뷰 스타일 구성
     }
-    
-    func setLayoutUI() {
-        
-    }
-    
-    func setLayoutUI() {
-        
-    }
 
-    func setupLayout() {
+    func setLayoutUI() {
         // SnapKit을 활용한 레이아웃 설정
     }
     
