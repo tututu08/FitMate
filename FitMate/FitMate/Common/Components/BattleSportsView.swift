@@ -153,6 +153,7 @@ class BattleSportsView: BaseView {
     private let mateCharacterImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "MeoranoL")
+        imageView.transform = CGAffineTransform(scaleX: -1, y: 1)
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
