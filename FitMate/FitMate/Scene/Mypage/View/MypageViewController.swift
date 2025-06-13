@@ -1,10 +1,3 @@
-//
-//  RunningViewController.swift
-//  FitMate
-//
-//  Created by 강성훈 on 6/5/25.
-//
-
 
 import UIKit
 import RxSwift
@@ -24,6 +17,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
         super.viewDidLoad()
         rootView.recordCollectionView.delegate = self
         bindViewModel()
+        bindActions()
         rootView.recordCollectionView.register(WorkRecordCell.self, forCellWithReuseIdentifier: WorkRecordCell.identifier)
     }
 
@@ -37,6 +31,16 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
         output.records
             .drive(rootView.recordCollectionView.rx.items(cellIdentifier: WorkRecordCell.identifier, cellType: WorkRecordCell.self)) { index, record, cell in
                 // 실제 데이터 연결은 추후에 구현
+            }
+            .disposed(by: disposeBag)
+    }
+
+    private func bindActions() {
+        rootView.settingButton.rx.tap
+            .bind { [weak self] in
+                let settingVC = SettingViewController()
+                settingVC.modalPresentationStyle = .overFullScreen
+                self?.present(settingVC, animated: true, completion: nil)
             }
             .disposed(by: disposeBag)
     }
