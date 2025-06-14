@@ -7,12 +7,18 @@
 import UIKit
 import SnapKit
 
-class MainView: UIView {
+class MainView: BaseView {
+    
+    let topBar: UINavigationBar = {
+        let view = UINavigationBar()
+        return view
+    }()
+
     let coinLabel: UILabel = {
         let coin = UILabel()
         coin.text = "100"
-        coin.font = UIFont.systemFont(ofSize: 26)
-        coin.textColor = .systemGreen
+        coin.font = UIFont(name: "DungGeunMo", size: 26)
+        coin.textColor = .secondary400
         return coin
     }()
     
@@ -33,22 +39,23 @@ class MainView: UIView {
     let explainLabel: UILabel = {
         let explain = UILabel()
         explain.text = "함께 운동한지"
-        explain.font = UIFont.systemFont(ofSize: 14)
-        explain.textColor = .systemGreen
+        explain.font = UIFont(name: "Pretendard-Regular", size: 14)
+        explain.textColor = .background400
         return explain
     }()
     
     let dDaysLabel: UILabel = {
         let dDay = UILabel()
         dDay.text = "1일째"
-        dDay.font = .systemFont(ofSize: 40)
-        dDay.textColor = .systemGreen
+        dDay.font = UIFont(name: "DungGeunMo", size: 40)
+        dDay.textColor = .secondary500
         return dDay
     }()
     
     let myNicknameStack = NicknameStackView(
         nickname: "실버웨스트", textColor: .white,
-        font: .systemFont(ofSize: 16), arrowColor: .white
+        font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
+        arrowColor: .white
     )
     let myAvatarImage: UIImageView = {
        let imageView = UIImageView()
@@ -58,8 +65,9 @@ class MainView: UIView {
     }()
     
     let mateNicknameStack = NicknameStackView(
-        nickname: "프린세스훈", textColor: .lightGray,
-        font: .systemFont(ofSize: 14), arrowColor: .darkGray
+        nickname: "프린세스훈", textColor: .background300,
+        font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
+        arrowColor: .background300
     )
     let mateAvatarImage: UIImageView = {
         let imageView = UIImageView()
@@ -71,18 +79,13 @@ class MainView: UIView {
         let exercise = UIButton()
         exercise.setTitle("운동 선택", for: .normal)
         exercise.setTitleColor(.white, for: .normal)
-        exercise.titleLabel?.font = UIFont.systemFont(ofSize: 20)
+        exercise.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         exercise.backgroundColor = .systemPurple
         exercise.layer.cornerRadius = 4
         exercise.clipsToBounds = true
         return exercise
     }()
-    
-    let temporaryBar: UILabel = {
-        let tabBar = UILabel()
-        tabBar.backgroundColor = .white
-        return tabBar
-    }()
+
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -92,33 +95,44 @@ class MainView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+        configureUI()
+        setLayoutUI()
     }
     
-    private func configureUI() {
+    override func configureUI() {
         backgroundColor = .black
-        [coinLabel, coinIcon, bellButton, explainLabel, dDaysLabel,
-         myNicknameStack, myAvatarImage, mateNicknameStack, mateAvatarImage,
-         exerciseButton, temporaryBar].forEach{ addSubview($0) }
+        [topBar, explainLabel, dDaysLabel,myNicknameStack, myAvatarImage,
+         mateNicknameStack, mateAvatarImage,exerciseButton].forEach{ addSubview($0) }
+        
+        [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
     }
     
-    private func setLayoutUI() {
+    override func setLayoutUI() {
+        
+        topBar.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(56)
+        }
+        
         coinIcon.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(-10)
-            make.leading.equalTo(safeAreaLayoutGuide).inset(20)
+            make.centerY.equalTo(topBar)
+            make.leading.equalToSuperview().inset(20)
         }
         
         coinLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(-10)
+            make.centerY.equalTo(topBar)
             make.leading.equalTo(coinIcon.snp.trailing).offset(8)
         }
         
         bellButton.snp.makeConstraints{ make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(-10)
-            make.trailing.equalTo(safeAreaLayoutGuide).inset(20)
+            make.centerY.equalTo(topBar)
+            make.trailing.equalToSuperview().inset(20)
+            make.size.equalTo(28)
         }
         
         explainLabel.snp.makeConstraints { make in
-            make.top.equalTo(coinLabel.snp.bottom).offset(23)
+            make.top.equalTo(coinLabel.snp.bottom).offset(18)
             make.leading.equalToSuperview().inset(28)
         }
         
@@ -128,18 +142,12 @@ class MainView: UIView {
         }
         
         exerciseButton.snp.makeConstraints { make in
-            make.bottom.equalTo(temporaryBar.snp.top).inset(-32)
-            make.leading.trailing.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(112)
+            make.centerX.equalToSuperview()
             make.width.equalTo(335)
             make.height.equalTo(60)
         }
-        
-        temporaryBar.snp.makeConstraints { make in
-            make.bottom.equalToSuperview()
-            make.centerX.equalToSuperview()
-            make.height.equalTo(83)
-            make.width.equalTo(375)
-        }
+
     }
     
     /// 메이트 유무에 따라 레이아웃을 다르게
@@ -166,7 +174,7 @@ class MainView: UIView {
         
         // 상대방 아바타 위치 및 크기 설정
         mateAvatarImage.snp.remakeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).inset(25)
+            make.top.equalTo(topBar.snp.bottom).offset(25)
             make.trailing.equalTo(safeAreaLayoutGuide).inset(40)
             make.height.equalTo(142)
             make.width.equalTo(112)
@@ -174,7 +182,7 @@ class MainView: UIView {
         // 상대방 아바타 상단 닉네임 라벨 위치 설정
         mateNicknameStack.snp.remakeConstraints { make in
             make.centerX.equalTo(mateAvatarImage)
-            make.bottom.equalTo(mateAvatarImage.snp.top)
+            make.bottom.equalTo(mateAvatarImage.snp.top).inset(-10)
         }
         // 메이트 없을 때는 안보이게 처리
         mateAvatarImage.isHidden = !hasMate // = hasMate가 false면 안보이도록
