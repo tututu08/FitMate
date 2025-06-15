@@ -96,20 +96,20 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 let selectedGoal = self.selectedGoalRelay.value
                 // 저장(종목 타이틀, 목표치)
                 
-                
-                // 모드에 따른 화면 전환 분기
-                switch selectedMode {
-                case .cooperation:
-                    // 협력 모드 화면 이동
-                    let runningCooperationVC = RunningCoopViewController(goalText: selectedGoal)
-                    runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
-                    self.navigationController?.pushViewController(runningCooperationVC, animated: true)
-                    
-                case .battle:
-                    // 대결 모드 화면 이동
-                    let runningBattleVC = RunningBattleViewController()
-                    self.navigationController?.pushViewController(runningBattleVC, animated: true)
-                }
+                self.navigationController?.pushViewController(LoadingViewController(), animated: true)
+//                // 모드에 따른 화면 전환 분기
+//                switch selectedMode {
+//                case .cooperation:
+//                    // 협력 모드 화면 이동
+//                    let runningCooperationVC = RunningCoopViewController(goalText: selectedGoal)
+//                    runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
+//                    self.navigationController?.pushViewController(runningCooperationVC, animated: true)
+//                    
+//                case .battle:
+//                    // 대결 모드 화면 이동
+//                    let runningBattleVC = RunningBattleViewController()
+//                    self.navigationController?.pushViewController(runningBattleVC, animated: true)
+//                }
             })
             .disposed(by: disposeBag)
     }

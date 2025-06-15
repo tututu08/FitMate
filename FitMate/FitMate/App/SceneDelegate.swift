@@ -16,12 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        
-        // SportsSelectionViewController는 하나만 생성
-        let rootVC = MypageViewController()
-        let nav = UINavigationController(rootViewController: rootVC)
-
-        window.rootViewController = nav
+        window.rootViewController = TabBarController()
         window.makeKeyAndVisible()
         self.window = window
     }

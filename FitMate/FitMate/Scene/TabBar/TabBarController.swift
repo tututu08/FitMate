@@ -20,30 +20,31 @@ class TabBarController: UITabBarController {
         
         nav1.tabBarItem = UITabBarItem(
             title: "기록",
-            image: UIImage(systemName: "history"),
-            selectedImage: UIImage(systemName: "historyTapped")
+            image: UIImage(named: "history"),
+            selectedImage: UIImage(named: "historyTapped")
         )
         
         let mainVC = MainViewController()
         let nav2 = UINavigationController(rootViewController: mainVC)
         nav2.tabBarItem = UITabBarItem(
             title: "메인",
-            image: UIImage(systemName: "main"),
-            selectedImage: UIImage(systemName: "mainTapped")
+            image: UIImage(named: "main"),
+            selectedImage: UIImage(named: "mainTapped")
         )
         
         let myPageVC = MypageViewController()
         let nav3 = UINavigationController(rootViewController: myPageVC)
         nav3.tabBarItem = UITabBarItem(
             title: "마이페이지",
-            image: UIImage(systemName: "mypage"),
-            selectedImage: UIImage(systemName: "mypageTapped")
+            image: UIImage(named: "mypage"),
+            selectedImage: UIImage(named: "mypageTapped")
         )
         
         viewControllers = [nav1, nav2, nav3]
     }
     
     private func setUp() {
+        tabBar.backgroundColor = .background400
         tabBar.barTintColor = .white
         tabBar.isTranslucent = true
     }

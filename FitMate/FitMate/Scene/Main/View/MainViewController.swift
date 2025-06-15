@@ -15,14 +15,20 @@ class MainViewController: BaseViewController {
     override func loadView() {
         self.view = mainView
         mainView.changeAvatarLayout(hasMate: true)
+        navigationItem.backButtonTitle = ""
     }
     
-    // 네비게이션 영역 숨김
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
+//    // 네비게이션 영역 숨김
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        navigationController?.setNavigationBarHidden(true, animated: false)
+//    }
     
     override func bindViewModel() {
+        mainView.exerciseButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.navigationController?.pushViewController(SportsSelectionViewController(), animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }
