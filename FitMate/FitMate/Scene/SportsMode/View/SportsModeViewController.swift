@@ -23,8 +23,12 @@ class SportsModeViewController: BaseViewController {
     // 모드 선택 이벤트를 전달하는 Relay (Rx 방식)
     private let modeSelectedRelay = PublishRelay<(String, ExerciseMode)>()
     
+    let uid: String // 내 UID
+    
     // 외부에서 운동 항목을 주입받는 초기화 함수
-    init(exerciseItem: CarouselViewModel.ExerciseItem) {
+    init(exerciseItem: CarouselViewModel.ExerciseItem, uid: String) {
+        self.uid = uid
+        print("uid : \(uid)")
         self.exerciseItem = exerciseItem
         super.init(nibName: nil, bundle: nil)
         self.title = "운동 선택"
@@ -140,10 +144,11 @@ class SportsModeViewController: BaseViewController {
         // Relay로부터 선택된 제목을 GoalSelectionViewController에 전달하고 push
         modeSelectedRelay.asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] (title, mode) in
-                let goalVC = GoalSelectionViewController()
+                guard let self else { return }
+                let goalVC = GoalSelectionViewController(uid: self.uid)
                 goalVC.updateSelectedTitle(title) // 선택된 운동 이름 전달
                 goalVC.updateSelectedMode(mode) // 선택된 운동 모드 전달
-                self?.navigationController?.pushViewController(goalVC, animated: true)
+                self.navigationController?.pushViewController(goalVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
