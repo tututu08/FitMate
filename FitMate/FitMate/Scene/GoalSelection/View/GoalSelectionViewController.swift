@@ -186,17 +186,20 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         container.addSubview(label)
         label.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.top.equalToSuperview().offset(24)
-            $0.bottom.equalToSuperview().inset(24)
+            $0.top.bottom.equalToSuperview()
         }
         
         // 현재 선택된 행이라면 진하게 표시
         if row == pickerView.selectedRow(inComponent: component) {
             container.backgroundColor = .darkGray
             label.alpha = 1.0
+            label.layer.borderWidth = 2
+            label.layer.borderColor = UIColor.primary400.cgColor
+            label.layer.cornerRadius = 4
+            label.clipsToBounds = true
         } else {
             container.backgroundColor = UIColor.darkGray.withAlphaComponent(0.3)
-            label.alpha = 0.5
+            label.alpha = 0.7
         }
         
         return container
