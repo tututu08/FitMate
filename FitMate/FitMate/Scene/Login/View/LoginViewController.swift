@@ -52,7 +52,7 @@ class LoginViewController: BaseViewController {
                 // ViewModel에서 전달한 목적에 따라 화면 이동만 수행
                 switch nav {
                 case .goToSeleteSport(let uid):
-                    let vc = SportsSelectionViewController()
+                    let vc = SportsSelectionViewController(uid: uid)
                     self?.navigationController?.pushViewController(vc, animated: true)
                 case .error(let msg):
                     // 에러 발생 시 메시지 띄우기
