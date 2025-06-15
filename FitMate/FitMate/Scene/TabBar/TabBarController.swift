@@ -12,6 +12,7 @@ class TabBarController: UITabBarController {
         setValue(CustomTabBar(), forKey: "tabBar")
         configureTabBar()
         setUp()
+        selectedIndex = 1 // 시작화면을 메인뷰로 시작
     }
     private func configureTabBar() {
         
@@ -44,16 +45,17 @@ class TabBarController: UITabBarController {
     }
     
     private func setUp() {
-        tabBar.backgroundColor = .background400
-        tabBar.barTintColor = .white
-        tabBar.isTranslucent = true
+        tabBar.backgroundColor = .background700
+        tabBar.tintColor = .secondary400
+        tabBar.unselectedItemTintColor = .background400
+        tabBar.isTranslucent = false
     }
     
 }
 class CustomTabBar: UITabBar {
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         var sizeThatFits = super.sizeThatFits(size)
-        sizeThatFits.height = 83 // 원하는 길이
+        sizeThatFits.height = 100 // 원하는 길이
         return sizeThatFits
     }
 }

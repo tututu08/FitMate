@@ -174,7 +174,7 @@ class SportsModeViewController: BaseViewController {
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         descriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(12)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(25)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         effectLabel.snp.makeConstraints {
@@ -186,13 +186,13 @@ class SportsModeViewController: BaseViewController {
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         cooperationModeButton.snp.makeConstraints {
-            $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
+            $0.top.equalTo(caloriesLabel.snp.bottom).offset(80)
             $0.leading.equalToSuperview().inset(20)
             $0.width.equalTo(157.5)
             $0.height.equalTo(60)
         }
         battleModeButton.snp.makeConstraints {
-            $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
+            $0.top.equalTo(caloriesLabel.snp.bottom).offset(80)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo(157.5)
             $0.height.equalTo(60)

@@ -151,11 +151,11 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
             $0.top.equalTo(subInfoLabel.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview()
             $0.width.equalTo(311)
-            $0.height.equalTo(296)
+            $0.height.equalTo(380)
         }
         
         goalSettingButton.snp.makeConstraints {
-            $0.top.equalTo(pickerView.snp.bottom).offset(35)
+            $0.top.equalTo(pickerView.snp.bottom).offset(33)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(335)
             $0.height.equalTo(60)

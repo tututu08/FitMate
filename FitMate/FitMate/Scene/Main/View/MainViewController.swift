@@ -18,11 +18,16 @@ class MainViewController: BaseViewController {
         navigationItem.backButtonTitle = ""
     }
     
-//    // 네비게이션 영역 숨김
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        navigationController?.setNavigationBarHidden(true, animated: false)
-//    }
+    // 네비게이션 영역 숨김
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    // 네비게이션 영역 다시 보여줌
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
     
     override func bindViewModel() {
         mainView.exerciseButton.rx.tap
