@@ -44,7 +44,7 @@ class CarouselViewModel: ViewModelType {
             effect: "복부 근육 강화, 자세 안정"
         ),
         ExerciseItem(
-            image: UIImage(named: "cycling") ?? UIImage(),
+            image: UIImage(named: "bicycle") ?? UIImage(),
             title: "자전거",
             calorie: "250kcal / 30분",
             description: "하체 중심의 유산소 운동",
@@ -54,18 +54,18 @@ class CarouselViewModel: ViewModelType {
             image: UIImage(named: "jumpRope") ?? UIImage(),
             title: "줄넘기",
             calorie: "350kcal / 30분",
-            description: "전신을 사용하는 \n고강도 유산소 운동",
+            description: "전신을 사용하는 고강도 유산소 운동",
             effect: "체지방 감소, 순발력 향상"
         ),
         ExerciseItem(
-            image: UIImage(named: "walking") ?? UIImage(),
+            image: UIImage(named: "walk") ?? UIImage(),
             title: "걷기",
             calorie: "150kcal / 30분",
             description: "가장 기본적인 유산소 운동",
             effect: "심폐 기능 강화, 스트레스 해소"
         ),
         ExerciseItem(
-            image: UIImage(named: "running") ?? UIImage(),
+            image: UIImage(named: "run") ?? UIImage(),
             title: "달리기",
             calorie: "300kcal / 30분",
             description: "강도 높은 유산소 운동",
