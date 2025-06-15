@@ -183,6 +183,31 @@ class FirestoreService {
             })
      */
     
+    func findMateUid(uid: String) -> Single<String> {
+        return Single.create { single in
+            let docRef = self.db.collection("users").document(uid)
+            docRef.getDocument { document, error in
+                if let error = error {
+                    single(.failure(error))
+                } else if let data = document?.data(),
+                          let mate = data["mate"] as? [String: Any],
+                          let mateUid = mate["uid"] as? String {
+                    print("Mate uid: \(mateUid)")
+                    single(.success(mateUid))
+                } else {
+                    // NSError : 직접 에러를 만들때 사용
+                    // domain : 에러의 범주/이름, 모통 모듈 이름이나 기능을 넣음
+                    // code :  에러를 구분하기 위한 숫자 코드, 보통 -1 이 일반적인 실패 의미
+                    // userInfo : 에러에 대한 추가 정보 (딕셔너리), NSLocalizedDescriptionKey 가 중요
+                    // NSLocalizedDescriptionKey : .localizedDescription으로 출력될 때 사용되는 메시지를 담음.
+                    let noDataError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "문서가 존재하지 않거나 데이터가 없습니다."])
+                    single(.failure(noDataError))
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
     // MARK: - Update
     
     func updateDocument(collectionName: String, documentName: String, fields: [String: Any]) -> Single<Void> {
