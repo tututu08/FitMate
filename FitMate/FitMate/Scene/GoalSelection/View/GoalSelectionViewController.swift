@@ -103,7 +103,15 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 
                 // MARK: Firestore 데이터 저장
                 // TODO: "matches" 컬렉션 및 "matchID" 문서 생성
-                
+                FirestoreService.shared.createMatchDocument(
+                    exerciseType: self.selectedTitleRelay.value,
+                    goalValue: self.selectedGoalRelay.value,
+                    mode: self.selectedModeRelay.value.asString
+                )
+                .subscribe(
+                    onSuccess: { print("Match 생성 성공") },
+                    onFailure: { error in print("실패: \(error)") }
+                ).disposed(by: disposeBag)
                 
                 // 모드에 따른 화면 전환 분기
                 switch selectedMode {
