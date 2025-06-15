@@ -5,10 +5,24 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
-class MainViewController: UIViewController {
+class MainViewController: BaseViewController {
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    private let mainView = MainView()
+    
+    override func loadView() {
+        self.view = mainView
+        mainView.changeAvatarLayout(hasMate: true)
+    }
+    
+    // 네비게이션 영역 숨김
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    override func bindViewModel() {
     }
 }

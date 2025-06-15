@@ -13,11 +13,22 @@ class JumpRopeCoopViewController: BaseViewController {
     private let startRelay = PublishRelay<Void>()
     // 메이트 점프 횟수 수신용(상대방이 firebase에서 온 값으로 갱신할 때 쓸 수도 있음)
     private let mateCountRelay = PublishRelay<Int>()
+    private let myCharacter: String
+    private let mateCharacter: String
     
-    init(goalCount: Int) {
-            self.viewModel = JumpRopeCoopViewModel(goalCount: goalCount)
-            super.init(nibName: nil, bundle: nil)
-        }
+    init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
+        self.myCharacter = myCharacter
+        self.mateCharacter = mateCharacter
+        self.viewModel = JumpRopeCoopViewModel(
+               goalCount: goalCount,
+               myCharacter: myCharacter,
+               mateCharacter: mateCharacter
+//               matchID: matchID,
+//               myUID: myUID,
+//               mateUID: mateUID
+        )
+        super.init(nibName: nil, bundle: nil)
+    }
     
     required init?(coder: NSCoder) { fatalError("not implemented") }
     
@@ -31,6 +42,8 @@ class JumpRopeCoopViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         rootView.updateGoal("줄넘기 \(viewModel.goalCount)개")
+        rootView.updateMyCharacter(viewModel.myCharacter)
+        rootView.updateMateCharacter(viewModel.mateCharacter)
         startRelay.accept(())
     }
     // ViewModel과 UI 바인딩
