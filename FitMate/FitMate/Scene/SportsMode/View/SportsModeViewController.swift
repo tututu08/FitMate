@@ -40,14 +40,14 @@ class SportsModeViewController: BaseViewController {
     private let backgroundView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 8
-        view.backgroundColor = .yellow
+        view.backgroundColor = .secondary50
         return view
     }()
     
     // 운동 대표 이미지
     private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .green
+        imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -55,7 +55,8 @@ class SportsModeViewController: BaseViewController {
     // 운동 이름 라벨
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.font = UIFont(name: "DungGeunMo", size: 32)
+        label.textColor = .white
         label.textAlignment = .center
         return label
     }()
@@ -63,7 +64,8 @@ class SportsModeViewController: BaseViewController {
     // 운동 설명 라벨
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont(name: "pretendard-regular", size: 17)
+        label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -72,7 +74,8 @@ class SportsModeViewController: BaseViewController {
     // 운동 효과 설명 라벨
     private let effectLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont(name: "pretendard-regular", size: 17)
+        label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -81,7 +84,8 @@ class SportsModeViewController: BaseViewController {
     // 칼로리 정보 라벨
     private let caloriesLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.font = UIFont(name: "pretendard-regular", size: 17)
+        label.textColor = .white
         label.textAlignment = .center
         return label
     }()
@@ -90,10 +94,11 @@ class SportsModeViewController: BaseViewController {
     private let cooperationModeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.systemBlue, for: .normal)
-        button.backgroundColor = .systemPink
+        button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
         button.setTitle("협력 모드", for: .normal)
+        button.setTitleColor(.white, for: .normal)
         return button
     }()
     
@@ -101,10 +106,11 @@ class SportsModeViewController: BaseViewController {
     private let battleModeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.systemBlue, for: .normal)
-        button.backgroundColor = .systemPink
+        button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
         button.setTitle("대결 모드", for: .normal)
+        button.setTitleColor(.white, for: .normal)
         return button
     }()
     
@@ -145,7 +151,7 @@ class SportsModeViewController: BaseViewController {
     // 전체 UI 구성
     override func configureUI() {
         super.configureUI()
-        view.backgroundColor = .white
+        view.backgroundColor = .background800
         
         backgroundView.addSubview(imageView) // 배경 뷰에 이미지 추가
         [
@@ -158,7 +164,7 @@ class SportsModeViewController: BaseViewController {
             battleModeButton
         ].forEach { view.addSubview($0) } // 모든 요소 메인 뷰에 추가
         
-        // 오토레이아웃 설정 (SnapKit 사용)
+        // 오토레이아웃 설정
         backgroundView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(24)
             $0.leading.trailing.equalToSuperview().inset(20)
@@ -188,16 +194,14 @@ class SportsModeViewController: BaseViewController {
         }
         cooperationModeButton.snp.makeConstraints {
             $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(32)
             $0.leading.equalToSuperview().inset(20)
-            $0.width.equalTo(157)
+            $0.width.equalTo(157.5)
             $0.height.equalTo(60)
         }
         battleModeButton.snp.makeConstraints {
             $0.top.equalTo(caloriesLabel.snp.bottom).offset(32)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(32)
             $0.trailing.equalToSuperview().inset(20)
-            $0.width.equalTo(157)
+            $0.width.equalTo(157.5)
             $0.height.equalTo(60)
         }
     }

@@ -1,43 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-        <key>CFBundleURLTypes</key>
-        <array>
-            <dict>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>CFBundleURLSchemes</key>
-                <array>
-                    <string>com.googleusercontent.apps.45152989960-4qh13i40avkeuos357p4l7qgaf67saq2</string>
-                </array>
-            </dict>
-        </array>
-            <key>UIAppFonts</key>
-            <array>
-                <string>Pretendard-Bold.otf</string>
-                <string>Pretendard-SemiBold.otf</string>
-                <string>Pretendard-Medium.otf</string>
-                <string>Pretendard-Regular.otf</string>
-            </array>
-            <key>UIApplicationSceneManifest</key>
-            <dict>
-                <key>UIApplicationSupportsMultipleScenes</key>
-                <false/>
-                <key>UISceneConfigurations</key>
-                <dict>
-                    <key>UIWindowSceneSessionRoleApplication</key>
-                    <array>
-                        <dict>
-                            <key>UISceneConfigurationName</key>
-                            <string>Default Configuration</string>
-                            <key>UISceneDelegateClassName</key>
-                            <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-                        </dict>
-                    </array>
-                </dict>
-            </dict>
-            <key>NSLocationWhenInUseUsageDescription</key>
-            <string>앱 사용 중 위치를 사용합니다</string>
-        </dict>
-    </plist>
+<dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.45152989960-4qh13i40avkeuos357p4l7qgaf67saq2</string>
+			</array>
+		</dict>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Pretendard-Bold.otf</string>
+		<string>Pretendard-SemiBold.otf</string>
+		<string>Pretendard-Medium.otf</string>
+		<string>Pretendard-Regular.otf</string>
+		<string>DungGeunMo.otf</string>
+	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>앱 사용 중 위치를 사용합니다</string>
+</dict>
+</plist>

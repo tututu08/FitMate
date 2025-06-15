@@ -37,7 +37,7 @@ class TestLoginViewController: UIViewController {
         titleLabel.font = .boldSystemFont(ofSize: 28)
         titleLabel.textAlignment = .center
 
-        googleLoginButton.setImage(.googleLogo, for: .normal)
+        googleLoginButton.setImage(.google, for: .normal)
         googleLoginButton.imageView?.contentMode = .scaleAspectFit
 
         view.addSubview(titleLabel)
