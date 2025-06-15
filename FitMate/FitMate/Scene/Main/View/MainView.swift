@@ -95,8 +95,6 @@ class MainView: BaseView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-        configureUI()
-        setLayoutUI()
     }
     
     override func configureUI() {
@@ -150,10 +148,10 @@ class MainView: BaseView {
 
     }
     
-    /// 메이트 유무에 따라 레이아웃을 다르게
-    /// hasMate를 기준으로 비교 연산자를 활용해서
-    /// true일때 크기 및 위치 / false일 때 크기 및 위치 잡고
-    /// 메이트는 isHidden으로 hasMate: true일때 true로
+    /// - 메이트 유무에 따라 레이아웃을 다르게
+    /// - hasMate를 기준으로 비교 연산자를 활용해서
+    /// - true일때 크기 및 위치 / false일 때 크기 및 위치 잡고
+    /// - 메이트는 isHidden으로 hasMate: true일때 true로
     func changeAvatarLayout(hasMate: Bool) {
         // 내 아바타 위치 및 크기 설정
         myAvatarImage.snp.remakeConstraints { make in
