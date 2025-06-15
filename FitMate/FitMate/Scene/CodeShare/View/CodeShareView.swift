@@ -16,7 +16,7 @@ class CodeShareView: UIView {
     
     let xButton: UIButton = {
         let xButton = UIButton()
-        xButton.setImage(UIImage(named: "X"), for: .normal)
+        xButton.setImage(UIImage(named: "cancel"), for: .normal)
         xButton.contentHorizontalAlignment = .trailing
         return xButton
     }()
