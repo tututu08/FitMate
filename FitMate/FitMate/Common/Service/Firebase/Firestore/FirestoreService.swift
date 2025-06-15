@@ -90,6 +90,47 @@ class FirestoreService {
         )
      */
     
+    func createMatchDocument(exerciseType: String, goalValue: String, mode: String) -> Single<Void> {
+        return Single.create { single in
+            func tryGenerateAndSave() {
+                let matchCode = self.generateInviteCode()
+                // inviteCode 중복 체크
+                self.checkInviteCodeDuplicate(code: matchCode) { isDuplicate in
+                    if isDuplicate {
+                        // 중복이면 다시 시도 (재귀)
+                        tryGenerateAndSave()
+                    } else {
+                        let newRef = self.db.collection("matches").document(matchCode)
+                        let data: [String: Any] = [
+                            "exerciseType": exerciseType, // 운동 종목
+                            "goalValue": goalValue, // 목표 수치
+                            "mode": mode, // 운동 모드
+                            "status": "wait", // wait or started
+                            "createAt": FieldValue.serverTimestamp(), // 만든 시간
+                            "player": {
+                                
+                            }
+                        ]
+                        
+                        // Match 컬렉션의 MatchID 문서 생성
+                        // 데이터 생성
+                        newRef.setData(data) { error in
+                            if let error = error {
+                                single(.failure(error))
+                                print("Match 데이터 생성 실패: \(error.localizedDescription)")
+                            } else {
+                                single(.success(()))
+                                print("Match 데이터 생성 완료: 매치코드: \(matchCode)")
+                            }
+                        }
+                    }
+                }
+            }
+            tryGenerateAndSave()
+            return Disposables.create()
+        }
+    }
+    
     // MARK: - Read
     
     /// 도큐멘트 데이터 가져오기
