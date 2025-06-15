@@ -12,15 +12,21 @@ import RxCoreLocation
 
 // 네비게이션바 세팅
 extension UINavigationBar {
-    func applyCustomAppearance(backgroundColor: UIColor = .black, titleColor: UIColor = .white, font: UIFont = .boldSystemFont(ofSize: 20)) {
+    func applyCustomAppearance(backgroundColor: UIColor = .black, titleColor: UIColor = .white, font: UIFont = .boldSystemFont(ofSize: 20), backImage: UIImage? = UIImage(named: "back")) {
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = backgroundColor
         
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = .background800
         appearance.titleTextAttributes = [
             .foregroundColor: titleColor,
-            .font: font
+            .font: UIFont(name: "Pretendard-Semibold", size: 20)!
         ]
+        
+        var backImage = backImage
+        backImage = backImage?.withAlignmentRectInsets(.init(top: 0, left: 20, bottom: 20, right: 0))
+        
+        appearance.setBackIndicatorImage(backImage, transitionMaskImage: backImage)
+        
         self.standardAppearance = appearance
         self.scrollEdgeAppearance = appearance
         self.compactAppearance = appearance

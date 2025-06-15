@@ -24,7 +24,7 @@ class SportsSelectionViewController: BaseViewController {
         // 설정한 레이아웃을 바탕으로 CollectionView 생성
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.backgroundColor = .black
+        collectionView.backgroundColor = .background800
         collectionView.register(CarouselCell.self, forCellWithReuseIdentifier: "cell")
         return collectionView
     }()
@@ -41,7 +41,7 @@ class SportsSelectionViewController: BaseViewController {
         DispatchQueue.main.async { [weak self] in
             self?.scrollToMiddle()
         }
-        view.backgroundColor = .darkGray
+        view.backgroundColor = .background800
     }
 
     // UI 요소 배치 설정
