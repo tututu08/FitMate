@@ -28,6 +28,21 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
     
+    // 자신의 uid
+    private let uid: String
+    private var mateUid = ""
+    
+    init(uid: String) {
+        self.uid = uid
+        
+        super.init(nibName: nil, bundle: nil)
+        self.findMateUid(uid: uid)
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
         let label = UILabel()
@@ -74,6 +89,18 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         pickerView.delegate = self
     }
     
+    private func findMateUid(uid: String) {
+        FirestoreService.shared.findMateUid(uid: uid)
+            .subscribe(onSuccess: { data in
+                //guard let self else { return }
+                self.mateUid = data
+                print("메이트 UID 가져오기 성공: \(self.mateUid)")
+            },
+            onFailure: { error in
+                print("문서 가져오기 실패: \(error.localizedDescription)")
+            }).disposed(by: disposeBag)
+    }
+    
     override func bindViewModel() {
         super.bindViewModel()
         
@@ -105,6 +132,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 // MARK: Firestore 데이터 저장
                 // TODO: "matches" 컬렉션 및 "matchID" 문서 생성
                 FirestoreService.shared.createMatchDocument(
+                    inviterUid: self.uid,
+                    inviteeUid: self.mateUid,
                     exerciseType: self.selectedTitleRelay.value,
                     goalValue: self.selectedGoalRelay.value,
                     mode: self.selectedModeRelay.value.asString
