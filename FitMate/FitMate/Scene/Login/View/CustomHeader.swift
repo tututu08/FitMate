@@ -5,8 +5,11 @@
 //  Created by Sophie on 6/6/25.
 //
 import UIKit
+import SnapKit
+import RxSwift
+import RxCocoa
 
-class CustomHeaderLabel: UILabel {
+class CustomHeader: UILabel {
     init(text: String) {
         super.init(frame: .zero)
         self.text = text
