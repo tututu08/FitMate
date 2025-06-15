@@ -152,34 +152,35 @@ class FirestoreService {
     
     /// 도큐멘트 데이터 가져오기
     func fetchDocument(collectionName: String, documentName: String) -> Single<[String: Any]> {
-            return Single.create { single in
-                let ref = self.db.collection(collectionName).document(documentName)
-                ref.getDocument { document, error in
-                    if let error = error {
-                        single(.failure(error))
-                    } else if let data = document?.data() {
-                        single(.success(data))
-                    } else {
-                        // NSError : 직접 에러를 만들때 사용
-                        // domain : 에러의 범주/이름, 모통 모듈 이름이나 기능을 넣음
-                        // code :  에러를 구분하기 위한 숫자 코드, 보통 -1 이 일반적인 실패 의미
-                        // userInfo : 에러에 대한 추가 정보 (딕셔너리), NSLocalizedDescriptionKey 가 중요
-                        // NSLocalizedDescriptionKey : .localizedDescription으로 출력될 때 사용되는 메시지를 담음.
-                        let noDataError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "문서가 존재하지 않거나 데이터가 없습니다."])
-                        single(.failure(noDataError))
-                    }
+        return Single.create { single in
+            let ref = self.db.collection(collectionName).document(documentName)
+            ref.getDocument { document, error in
+                if let error = error {
+                    single(.failure(error))
+                } else if let data = document?.data() {
+                    single(.success(data))
+                } else {
+                    // NSError : 직접 에러를 만들때 사용
+                    // domain : 에러의 범주/이름, 모통 모듈 이름이나 기능을 넣음
+                    // code :  에러를 구분하기 위한 숫자 코드, 보통 -1 이 일반적인 실패 의미
+                    // userInfo : 에러에 대한 추가 정보 (딕셔너리), NSLocalizedDescriptionKey 가 중요
+                    // NSLocalizedDescriptionKey : .localizedDescription으로 출력될 때 사용되는 메시지를 담음.
+                    let noDataError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "문서가 존재하지 않거나 데이터가 없습니다."])
+                    single(.failure(noDataError))
                 }
-                return Disposables.create()
             }
+            return Disposables.create()
         }
+    }
     
     /* fetchDocument 사용 예시
      // 사용자 정보 가져오기
      FirestoreService.shared.fetchDocument(collectionName: "users", documentName: "abc123")
-        .subscribe( data in
-            onSuccess: { print("User 데이터 : \(data)") },
-            onFailure: { print("User 데이터 읽기 실패 : \(error.localizedDescription)") }
-        )
+        .subscribe(onSuccess: { data in
+                print(" 문서 데이터: \(data)")
+            }, onFailure: { error in
+                print(" 문서 가져오기 실패: \(error.localizedDescription)")
+            })
      */
     
     // MARK: - Update
