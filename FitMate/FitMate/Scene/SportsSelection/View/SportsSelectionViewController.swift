@@ -11,6 +11,18 @@ class SportsSelectionViewController: BaseViewController {
     // Carousel 뷰에 연결될 ViewModel
     private let carouselViewModel = CarouselViewModel()
     
+    let uid: String
+    
+    init(uid: String) {
+        self.uid = uid
+        print("uid : \(uid)")
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // 운동 목록을 표시하는 CollectionView (UPCarouselFlowLayout 사용)
     private let collectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
@@ -83,9 +95,10 @@ class SportsSelectionViewController: BaseViewController {
         // 선택된 아이템이 Relay를 통해 전달되면 다음 화면으로 이동
         selectedItemRelay
             .bind(onNext: { [weak self] item in
+                guard let self else { return }
                 // 선택된 운동 아이템을 전달하여 SportsModeViewController로 push
-                let modeVC = SportsModeViewController(exerciseItem: item)
-                self?.navigationController?.pushViewController(modeVC, animated: true)
+                let modeVC = SportsModeViewController(exerciseItem: item, uid: self.uid)
+                self.navigationController?.pushViewController(modeVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
