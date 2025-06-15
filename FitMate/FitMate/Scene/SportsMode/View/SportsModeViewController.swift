@@ -12,6 +12,13 @@ class SportsModeViewController: BaseViewController {
     enum ExerciseMode {
         case cooperation
         case battle
+        
+        var asString: String {
+            switch self {
+            case .cooperation: return "cooperation"
+            case .battle: return "battle"
+            }
+        }
     }
     // 모드 선택 이벤트를 전달하는 Relay (Rx 방식)
     private let modeSelectedRelay = PublishRelay<(String, ExerciseMode)>()
