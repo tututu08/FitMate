@@ -90,7 +90,7 @@ class FirestoreService {
         )
      */
     
-    func createMatchDocument(exerciseType: String, goalValue: String, mode: String) -> Single<Void> {
+    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: String, mode: String) -> Single<Void> {
         return Single.create { single in
             func tryGenerateAndSave() {
                 let matchCode = self.generateInviteCode()
@@ -105,11 +105,28 @@ class FirestoreService {
                             "exerciseType": exerciseType, // 운동 종목
                             "goalValue": goalValue, // 목표 수치
                             "mode": mode, // 운동 모드
-                            "status": "wait", // wait or started
+                            "matchStatus": "waiting", // waiting or started
+                            "inviterUid": inviterUid, // 운동 생성자 uid
+                            "inviteeUid": inviteeUid, // 운동 초대 받는 uid (mate)
                             "createAt": FieldValue.serverTimestamp(), // 만든 시간
-                            "player": {
-                                
-                            }
+                            // "startedAt": FieldValue.serverTimestamp(),     // 실제 시작 시각 넣을 땐 따로 업데이트
+                            // "finishedAt": FieldValue.serverTimestamp(),    // 실제 종료 시각 넣을 땐 따로 업데이트
+                            "player": [
+                                inviterUid: [
+                                    // "avatar": "끼리꼬", // 아바타 구현 되면 넣어야됨
+                                    "isOnline": true,
+                                    // "isWinner": true, // (대결모드에만 사용) 실제 게임 종료 후 따로 업데이트
+                                    "progress": 3.0,
+                                    "status": "waiting"
+                                ],
+                                inviteeUid: [
+                                    // "avatar": "끼리꼬",
+                                    "isOnline": true,
+                                    // "isWinner": true,
+                                    "progress": 3.0,
+                                    "status": "waiting"
+                                ]
+                            ]
                         ]
                         
                         // Match 컬렉션의 MatchID 문서 생성
