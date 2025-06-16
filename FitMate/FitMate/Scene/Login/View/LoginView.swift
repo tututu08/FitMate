@@ -24,7 +24,7 @@ class LoginView: UIView {
         return kakaoLabel
     }()
     
-    private let googleLogin: UIButton = {
+    let googleLogin: UIButton = {
         let googleLabel = UIButton()
         googleLabel.setImage(UIImage(named: "google"), for: .normal)
         googleLabel.contentMode = .scaleAspectFit
@@ -67,21 +67,21 @@ class LoginView: UIView {
             make.top.equalTo(fitMateLogo.snp.bottom).offset(140)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(60)
-            make.width.equalTo(343)
+            //make.width.equalTo(343)
         }
         
         googleLogin.snp.makeConstraints { make in
             make.top.equalTo(kakaoLogin.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(60)
-            make.width.equalTo(343)
+            //make.width.equalTo(343)
         }
         
         appleLogin.snp.makeConstraints { make in
             make.top.equalTo(googleLogin.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalTo(60)
-            make.width.equalTo(343)
+            //make.width.equalTo(343)
         }
     }
 }
