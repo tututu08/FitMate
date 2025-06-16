@@ -16,6 +16,7 @@ extension UINavigationBar {
         let appearance = UINavigationBarAppearance()
         
         appearance.configureWithOpaqueBackground()
+        appearance.backgroundEffect = nil 
         appearance.backgroundColor = .background800
         appearance.titleTextAttributes = [
             .foregroundColor: titleColor,
@@ -23,7 +24,7 @@ extension UINavigationBar {
         ]
         
         var backImage = backImage
-        backImage = backImage?.withAlignmentRectInsets(.init(top: 0, left: 20, bottom: 20, right: 0))
+        backImage = backImage?.withAlignmentRectInsets(.init(top: 0, left: 0, bottom: 5, right: 0))
         
         appearance.setBackIndicatorImage(backImage, transitionMaskImage: backImage)
         
