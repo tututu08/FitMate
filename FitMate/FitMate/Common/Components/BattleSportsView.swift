@@ -39,7 +39,6 @@ class BattleSportsView: BaseView {
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
         label.setContentHuggingPriority(.required, for: .horizontal)
-
         return label
     }()
     
@@ -103,13 +102,13 @@ class BattleSportsView: BaseView {
     private let myProgressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.systemPurple.cgColor
+        view.layer.borderColor = UIColor.primary500.cgColor
         return view
     }()
     
     private let myProgressForegroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemPurple
+        view.backgroundColor = .primary500
         return view
     }()
     
@@ -158,15 +157,12 @@ class BattleSportsView: BaseView {
         return imageView
     }()
     
-    private let pauseButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "pause"), for: .normal)
-        return button
-    }()
-    
     private let stopButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "quit"), for: .normal)
+        button.setTitle("그만하기", for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 20)
+        button.setTitleColor(.white, for: .normal)
+        button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         return button
     }()
     
@@ -182,7 +178,6 @@ class BattleSportsView: BaseView {
           goalImage,
           totalVerticalStack,
           battleImage,
-          pauseButton,
           stopButton
         ].forEach{self.addSubview($0)}
         
@@ -248,17 +243,12 @@ class BattleSportsView: BaseView {
             $0.height.equalTo(150)
             $0.width.equalTo(120)
         }
-        pauseButton.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(60)
-            $0.leading.equalToSuperview().offset(20)
-            $0.width.height.equalTo(60)
-        }
         
         stopButton.snp.makeConstraints{
             $0.bottom.equalToSuperview().inset(60)
-            $0.leading.equalTo(pauseButton.snp.trailing).offset(12)
+            $0.centerX.equalToSuperview()
             $0.height.equalTo(60)
-            $0.width.equalTo(260)
+            $0.width.equalTo(350)
         }
     }
     // 내 기록 라벨 갱신
