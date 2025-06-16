@@ -7,6 +7,7 @@
 import UIKit
 
 class TabBarController: UITabBarController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setValue(CustomTabBar(), forKey: "tabBar")
@@ -14,6 +15,7 @@ class TabBarController: UITabBarController {
         setUp()
         selectedIndex = 1 // 시작화면을 메인뷰로 시작
     }
+    
     private func configureTabBar() {
         
         let historyVC = HistoryViewController()
@@ -45,6 +47,7 @@ class TabBarController: UITabBarController {
     }
     
     private func setUp() {
+        tabBar.barTintColor = .background700
         tabBar.backgroundColor = .background700
         tabBar.tintColor = .secondary400
         tabBar.unselectedItemTintColor = .background400
