@@ -4,8 +4,8 @@ import SnapKit
 // 협동 스포츠(여기선 줄넘기 협력 모드) 메인 뷰
 class PlankCoopView: BaseView {
     
-    var alertView: PauseAlertView?
-    var quitAlertView: StopAlertView?
+    var alertView: PauseAlert?
+    var quitAlertView: StopAlert?
     
     // "협력 모드" 라벨(모드 이름 표시)
     private let modeLabel: UILabel = {
@@ -306,17 +306,9 @@ class PlankCoopView: BaseView {
         default :
             break
         }
-        
-        
-        func updateTurn(_ isMyTurn: Bool) {
-            // isMyTurn에 따라 프로그레스바 색이나 캐릭터 강조 등
-        }
-        
     }
-    // PlankCoopView.swift (또는 별도 View 파일)
-
     func showAlert(
-        type: PauseAlertView.AlertType,
+        type: PauseAlert.AlertType,
         onResume: (() -> Void)? = nil,
         onQuit: (() -> Void)? = nil
     ) {
@@ -324,7 +316,7 @@ class PlankCoopView: BaseView {
         if alertView != nil { return }
         
         // PlankPauseAlertView는 커스텀 UIView
-        let alert = PauseAlertView(type: type)
+        let alert = PauseAlert(type: type)
         
         // 버튼 콜백(내가 누를 수 있는 경우에만)
         alert.onResume = { [weak self] in
@@ -335,9 +327,7 @@ class PlankCoopView: BaseView {
         // addSubview로 화면 중앙에 띄우기 (SnapKit or AutoLayout)
         self.addSubview(alert)
         alert.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.width.equalTo(320)
-            $0.height.equalTo(220)
+            $0.edges.equalToSuperview()
         }
         self.alertView = alert
     }
@@ -349,21 +339,19 @@ class PlankCoopView: BaseView {
     }
     // PlankCoopView 확장
     func showQuitAlert(
-        type: StopAlertView.AlertType,
+        type: StopAlert.AlertType,
         onResume: (() -> Void)? = nil,
         onQuit: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil
     ) {
         if quitAlertView != nil { return }
-        let alert = StopAlertView(type: type)
+        let alert = StopAlert(type: type)
         alert.onResume = { [weak self] in onResume?(); self?.hideQuitAlert() }
         alert.onQuit = { [weak self] in onQuit?(); self?.hideQuitAlert() }
         alert.onBack = { [weak self] in onBack?(); self?.hideQuitAlert() }
         self.addSubview(alert)
         alert.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.width.equalTo(320)
-            $0.height.equalTo(320)
+                $0.edges.equalToSuperview()
         }
         self.quitAlertView = alert
     }
@@ -378,7 +366,7 @@ extension PlankCoopView {
     /// 일시정지 버튼 활성/비활성 & 이미지 교체
     func setPauseButtonEnabled(_ enabled: Bool) {
         pauseButton.isEnabled = enabled
-        let imageName = enabled ? "pause" : "lock"
+        let imageName = enabled ? "pause" : "unlockpause"
         pauseButton.setImage(UIImage(named: imageName), for: .normal)
     }
 }

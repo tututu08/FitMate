@@ -69,52 +69,53 @@ final class PlankCoopViewController: BaseViewController {
         
         // phase와 timer 동시 바인딩 → phase별 알럿/상태분기 & UI 업데이트
         Driver
-            .combineLatest(output.phase, output.timerText.map { Int($0) ?? 0 })
-            .drive(with: self) { VC, tuple in
-                    let (phase, timer) = tuple
-                VC.sportsView.updatePhase(phase, timer: timer)
-                // 버튼 enable
+            .combineLatest(output.phase, output.timerText.map { Int($0) })
+            .drive(onNext: { [weak self] tuple in
+                guard let self = self else { return }
+                let (phase, timer) = tuple
+                self.sportsView.updatePhase(phase, timer: timer ?? 0)
                 switch phase {
                 case .myTurn:
-                    VC.sportsView.setPauseButtonEnabled(true)
+                    self.sportsView.setPauseButtonEnabled(true)
                 default:
-                    VC.sportsView.setPauseButtonEnabled(false)
+                    self.sportsView.setPauseButtonEnabled(false)
                 }
                 // 알럿 상태 분기
                 switch phase {
                 case .paused(let isMine):
-                    if VC.sportsView.alertView != nil { return }
+                    if self.sportsView.alertView != nil { return }
                     if isMine {
-                        VC.sportsView.showAlert(
+                        self.sportsView.showAlert(
                             type: .myPause,
-                            onResume: { VC.resumeRelay.accept(()) },
-                            onQuit:   { VC.quitRelay.accept(()) }
+                            onResume: { self.resumeRelay.accept(()) },
+                            onQuit:   { self.quitRelay.accept(()) }
                         )
                     } else {
-                        VC.sportsView.showAlert(type: .matePause)
+                        self.sportsView.showAlert(type: .matePause)
                     }
                 default:
-                    VC.sportsView.hideAlert()
+                    self.sportsView.hideAlert()
                 }
                 // 종료 분기
                 switch phase {
                 case .quitting(let isMine):
+                    if self.sportsView.alertView != nil { return }
                     if isMine {
-                        VC.sportsView.showQuitAlert(
-                            type: .confirmQuit,
-                            onContinue: { VC.sportsView.hideQuitAlert() },
-                            onQuit:     { VC.viewModel.finish(success: false) }
+                        self.sportsView.showQuitAlert(
+                            type: .myQuitConfirm,
+                            onResume: { self.sportsView.hideQuitAlert() },
+                            onQuit:     { self.viewModel.finish(success: false) }
                         )
                     } else {
-                        VC.sportsView.showQuitAlert(
+                        self.sportsView.showQuitAlert(
                             type: .mateQuit,
-                            onBack: { VC.navigationController?.popToRootViewController(animated: true) }
+                            onBack: { self.viewModel.finish(success: false) }
                         )
                     }
                 default:
-                    VC.sportsView.hideQuitAlert()
+                    break
                 }
-            }
+            })
             .disposed(by: disposeBag)
         
         output.timerText
@@ -145,8 +146,10 @@ final class PlankCoopViewController: BaseViewController {
                     finishVC.modalPresentationStyle = .fullScreen
                     owner.present(finishVC, animated: true)
                 } else {
-                    // 실패/중도포기 시
-                    owner.navigationController?.popToRootViewController(animated: true)
+                    // 실패/중도포기 시 임시로 뷰 이동 처리.
+                    let finishVC = FinishViewController()
+                    finishVC.modalPresentationStyle = .fullScreen
+                    owner.present(finishVC, animated: true)
                 }
             }
             .disposed(by: disposeBag)
