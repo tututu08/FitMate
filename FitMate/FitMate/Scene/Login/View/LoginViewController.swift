@@ -51,10 +51,30 @@ class LoginViewController: BaseViewController {
             .drive(onNext: { [weak self] nav in
                 // ViewModel에서 전달한 목적에 따라 화면 이동만 수행
                 switch nav {
-                case .goToSeleteSport(let uid):
-                    // let vc = SportsSelectionViewController(uid: uid)
-                    let vc = TabBarController(uid: uid)
-                    self?.navigationController?.pushViewController(vc, animated: true)
+                case .goToMainViewController(let uid):
+                    // SceneDelegate를 가져오기
+                    // UIApplication.shared.connectedScenes는 현재 앱의 모든 Scene을 반환
+                    // first?.delegate는 첫 번째 Scene의 delegate를 가져옴
+                    //as? SceneDelegate로 다운캐스팅하여 window 속성에 접근
+                    guard let sceneDelegate = UIApplication.shared.connectedScenes
+                        .first?.delegate as? SceneDelegate else { return }
+                    
+                    // 로그인 이후 메인으로 쓸 TabBarController 생성
+                    let tabBarController = TabBarController(uid: uid) // 로그인 후 메인화면
+                    
+                    // 네비게이션 컨트롤러로 감싸기
+                    let nav = UINavigationController(rootViewController: tabBarController)
+                    
+                    // SceneDelegate
+                    guard let window = sceneDelegate.window else { return }
+                    
+                    // 화면 전환
+                    UIView.transition(with: window,
+                                      duration: 0.5,
+                                      options: .transitionCrossDissolve,
+                                      animations: {
+                        sceneDelegate.window?.rootViewController = nav
+                    })
                 case .error(let msg):
                     // 에러 발생 시 메시지 띄우기
                     self?.showErrorAlert(message: msg)
