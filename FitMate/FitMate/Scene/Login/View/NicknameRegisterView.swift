@@ -21,6 +21,8 @@ class NicknameView: UIView {
     let nicknameHeader = CustomHeaderLabel(text: "닉네임")
     let nicknameField = CustomTextField(placeholder: "닉네임을 입력해주세요")
     
+    let validationMessageLabel = UILabel() // 유효성 검사 결과 출력 라벨
+    
     lazy var termsStack: UIStackView = {
         let image = UIImageView(image: UIImage(named: "check_1x"))
         image.contentMode = .scaleAspectFit
@@ -78,8 +80,12 @@ class NicknameView: UIView {
     }
 
     private func setupUI() {
-        [nicknameViewTitle, nicknameHeader, nicknameField,
+        [nicknameViewTitle, nicknameHeader, nicknameField, validationMessageLabel,
          termsStack, privacyStack, registerButton].forEach { addSubview($0) }
+        
+        validationMessageLabel.text = "테스트입니다."
+        validationMessageLabel.textColor = .white
+        validationMessageLabel.font = .systemFont(ofSize: 14, weight: .regular)
     }
     
     private func setupLayout() {
@@ -100,8 +106,13 @@ class NicknameView: UIView {
             make.height.equalTo(60)
         }
         
+        validationMessageLabel.snp.makeConstraints { make in
+            make.top.equalTo(nicknameField.snp.bottom).offset(14)
+            make.leading.equalToSuperview().inset(20)
+        }
+        
         termsStack.snp.makeConstraints { make in
-            make.top.equalTo(nicknameField.snp.bottom).offset(20)
+            make.top.equalTo(validationMessageLabel.snp.bottom).offset(20)
             make.leading.equalToSuperview().inset(20)
         }
         
