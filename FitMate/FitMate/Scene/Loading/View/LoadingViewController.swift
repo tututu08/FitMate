@@ -27,7 +27,6 @@ class LoadingViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view = loadingView
-        bindViewModel() // ViewModel 바인딩
     }
     
     // 네비게이션 영역 숨김
