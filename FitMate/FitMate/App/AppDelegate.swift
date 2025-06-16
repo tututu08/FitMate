@@ -8,6 +8,8 @@
 import UIKit
 import FirebaseCore // Firebase
 import GoogleSignIn // FirebaseAuth google 로그인
+import KakaoSDKAuth
+import KakaoSDKCommon
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,12 +18,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         FirebaseApp.configure() // Firebase
+        KakaoSDK.initSDK(appKey: "f2bf0d2c2849c2afb857d80ca4231f39")
         return true
     }
     
     // MARK: Firebase Auth Google Login
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        let KAKAO_NATIVE_KEY = "f2bf0d2c2849c2afb857d80ca4231f39"
+        
+        /// URL scheme을 기준으로 어떤 소셜 로그인 처리인지 분기
+        switch url.scheme {
+            ///google sdk에 url처리 요청
+        case "com.googleusercontent.apps":
             return GIDSignIn.sharedInstance.handle(url)
+            
+        case "kakaof2bf0d2c2849c2afb857d80ca4231f39":
+            /// url이 카카오 로그인용인지 확인
+            if AuthApi.isKakaoTalkLoginUrl(url) {
+                return AuthController.handleOpenUrl(url: url)
+            }
+            return false
+            
+        default:
+            return false
+        }
     }
 
     // MARK: UISceneSession Lifec

@@ -12,6 +12,18 @@
 				<string>com.googleusercontent.apps.45152989960-4qh13i40avkeuos357p4l7qgaf67saq2</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaof2bf0d2c2849c2afb857d80ca4231f39</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaokompassauth</string>
 	</array>
 	<key>UIAppFonts</key>
 	<array>
@@ -38,7 +50,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>앱 사용 중 위치를 사용합니다</string>
 </dict>
 </plist>

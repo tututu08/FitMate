@@ -17,7 +17,7 @@ class LoginView: UIView {
        return logo
     }()
     
-    private let kakaoLogin: UIButton = {
+    let kakaoLogin: UIButton = {
         let kakaoLabel = UIButton()
         kakaoLabel.setImage(UIImage(named: "kakao"), for: .normal)
         kakaoLabel.contentMode = .scaleAspectFit
@@ -31,7 +31,7 @@ class LoginView: UIView {
         return googleLabel
     }()
     
-    private let appleLogin: UIButton = {
+    let appleLogin: UIButton = {
         let appleLabel = UIButton()
         appleLabel.setImage(UIImage(named: "apple"), for: .normal)
         appleLabel.contentMode = .scaleAspectFit
