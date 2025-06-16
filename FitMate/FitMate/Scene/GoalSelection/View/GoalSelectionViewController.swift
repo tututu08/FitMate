@@ -96,20 +96,20 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 let selectedGoal = self.selectedGoalRelay.value
                 // 저장(종목 타이틀, 목표치)
                 
-                
-                // 모드에 따른 화면 전환 분기
-                switch selectedMode {
-                case .cooperation:
-                    // 협력 모드 화면 이동
-                    let runningCooperationVC = RunningCoopViewController(goalText: selectedGoal)
-                    runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
-                    self.navigationController?.pushViewController(runningCooperationVC, animated: true)
-                    
-                case .battle:
-                    // 대결 모드 화면 이동
-                    let runningBattleVC = RunningBattleViewController()
-                    self.navigationController?.pushViewController(runningBattleVC, animated: true)
-                }
+                self.navigationController?.pushViewController(LoadingViewController(), animated: true)
+//                // 모드에 따른 화면 전환 분기
+//                switch selectedMode {
+//                case .cooperation:
+//                    // 협력 모드 화면 이동
+//                    let runningCooperationVC = RunningCoopViewController(goalText: selectedGoal)
+//                    runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
+//                    self.navigationController?.pushViewController(runningCooperationVC, animated: true)
+//                    
+//                case .battle:
+//                    // 대결 모드 화면 이동
+//                    let runningBattleVC = RunningBattleViewController()
+//                    self.navigationController?.pushViewController(runningBattleVC, animated: true)
+//                }
             })
             .disposed(by: disposeBag)
     }
@@ -151,11 +151,11 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
             $0.top.equalTo(subInfoLabel.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview()
             $0.width.equalTo(311)
-            $0.height.equalTo(296)
+            $0.height.equalTo(380)
         }
         
         goalSettingButton.snp.makeConstraints {
-            $0.top.equalTo(pickerView.snp.bottom).offset(35)
+            $0.top.equalTo(pickerView.snp.bottom).offset(33)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(335)
             $0.height.equalTo(60)
