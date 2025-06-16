@@ -59,7 +59,17 @@ class FirestoreService {
                         let newRef = self.db.collection("users").document(uid)
                         let data: [String: Any] = [
                             "uid": uid,
-                            "inviteCode": inviteCode
+                            "inviteCode": inviteCode,
+                            "totalStats": [ // 총 기록
+                                "walkingKm": 0, // 걷기
+                                "runningKm": 0, // 달리기
+                                "cyclingKm": 0, // 자전거
+                                "plankRounds": 0, // 플랭크
+                                "jumpRopeCount": 0 // 줄넘기
+                            ],
+                            "winCount": 0,
+                            "loseCount": 0,
+                            "createAt": FieldValue.serverTimestamp(), // 만든 시간
                         ]
                         
                         // users 컬렉션의 uid 문서 생성
