@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED068B0A2E00539700986B5D /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ED068B092E00539700986B5D /* FirebaseMessaging */; };
 		ED11842E2DFECC3500ECC6DD /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = ED11842D2DFECC3500ECC6DD /* Lottie */; };
 		ED6AD6B62DF1AA9A004E23D4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B52DF1AA9A004E23D4 /* FirebaseAnalytics */; };
 		ED6AD6B82DF1AA9A004E23D4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B72DF1AA9A004E23D4 /* FirebaseAuth */; };
@@ -62,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED068B0A2E00539700986B5D /* FirebaseMessaging in Frameworks */,
 				F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */,
 				ED6AD6B82DF1AA9A004E23D4 /* FirebaseAuth in Frameworks */,
 				F6DAC1F02DF17CF800FBEBC7 /* SnapKit in Frameworks */,
@@ -134,6 +136,7 @@
 				EDC669B32DF9A27600E5BE4C /* RxCoreLocation */,
 				EDDA5CCA2DFB189E005D0F91 /* GoogleSignIn */,
 				ED11842D2DFECC3500ECC6DD /* Lottie */,
+				ED068B092E00539700986B5D /* FirebaseMessaging */,
 			);
 			productName = FitMate;
 			productReference = F6F3B9CE2DEF095800FA2815 /* FitMate.app */;
@@ -462,6 +465,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		ED068B092E00539700986B5D /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
 		ED11842D2DFECC3500ECC6DD /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ED11842C2DFECC3500ECC6DD /* XCRemoteSwiftPackageReference "lottie-ios" */;
