@@ -144,19 +144,9 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
                 
-                // 모드에 따른 화면 전환 분기
-                switch selectedMode {
-                case .cooperation:
-                    // 협력 모드 화면 이동
-                    let runningCooperationVC = RunningCoopViewController(goalText: selectedGoal)
-                    runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
-                    self.navigationController?.pushViewController(runningCooperationVC, animated: true)
-                    
-                case .battle:
-                    // 대결 모드 화면 이동
-                    let runningBattleVC = RunningBattleViewController()
-                    self.navigationController?.pushViewController(runningBattleVC, animated: true)
-                }
+                // 로딩 화면으로 이동
+                self.navigationController?.pushViewController(LoadingViewController(), animated: true)
+
             })
             .disposed(by: disposeBag)
     }
