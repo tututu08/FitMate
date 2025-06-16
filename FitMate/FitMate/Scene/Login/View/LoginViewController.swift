@@ -62,10 +62,7 @@ class LoginViewController: BaseViewController {
                     // 로그인 이후 메인으로 쓸 TabBarController 생성
                     let tabBarController = TabBarController(uid: uid) // 로그인 후 메인화면
                     
-                    // 네비게이션 컨트롤러로 감싸기
-                    let nav = UINavigationController(rootViewController: tabBarController)
-                    
-                    // SceneDelegate
+                    // SceneDelegate 의 window 없는지 확인
                     guard let window = sceneDelegate.window else { return }
                     
                     // 화면 전환
@@ -73,7 +70,7 @@ class LoginViewController: BaseViewController {
                                       duration: 0.5,
                                       options: .transitionCrossDissolve,
                                       animations: {
-                        sceneDelegate.window?.rootViewController = nav
+                        sceneDelegate.window?.rootViewController = tabBarController
                     })
                 case .error(let msg):
                     // 에러 발생 시 메시지 띄우기
