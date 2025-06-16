@@ -14,7 +14,7 @@ final class LoginViewModel {
     
     // 화면 이동 목적을 나타내는 enum (분기 판단용)
     enum LoginNavigation {
-        case goToSeleteSport(uid: String) // 레디룸으로 이동
+        case goToMainViewController(uid: String) // 레디룸으로 이동
         case error(String) // 에러 발생 (메시지 전달)
     }
 
@@ -46,12 +46,12 @@ final class LoginViewModel {
                     return FirestoreService.shared
                         .fetchDocument(collectionName: "users", documentName: uid) // 사용자 문서 검색
                         .flatMap { data -> Single<LoginNavigation> in
-                            return .just(.goToSeleteSport(uid: uid)) // 사용자 문서가 존재하면 .just(.goToSeleteSport(uid: uid)로 반환
+                            return .just(.goToMainViewController(uid: uid)) // 사용자 문서가 존재하면 .just(.goToSeleteSport(uid: uid)로 반환
                         }
                         .catch { _ in // 사용자 문서가 존재하지 않다면
                             return FirestoreService.shared
                                 .createUserDocument(uid: uid) // 사용자 uid 로 문서를 생성
-                                .map { .goToSeleteSport(uid: uid) } // .just(.goToSeleteSport(uid: uid)로 반환
+                                .map { .goToMainViewController(uid: uid) } // .just(.goToSeleteSport(uid: uid)로 반환
                         }
                         .asObservable()
 
