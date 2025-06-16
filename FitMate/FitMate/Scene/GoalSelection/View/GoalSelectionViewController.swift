@@ -27,22 +27,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
-    
-    // 자신의 uid
-    private let uid: String
-    private var mateUid = ""
-    
-    init(uid: String) {
-        self.uid = uid
-        
-        super.init(nibName: nil, bundle: nil)
-        self.findMateUid(uid: uid)
-    }
-    
-    @MainActor required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
         let label = UILabel()
@@ -76,6 +61,21 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         return button
     }()
     
+    // 자신의 uid
+    private let uid: String // 로그인 유저의 uid
+    private var mateUid = "" // 메이트 uid
+    
+    init(uid: String) {
+        self.uid = uid
+        
+        super.init(nibName: nil, bundle: nil)
+        self.findMateUid(uid: uid) // 메이트 uid 검색
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -89,6 +89,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         pickerView.delegate = self
     }
     
+    /// - 로그인 유저의 uid를 이용해 자신의 메이트 uid 검색
     private func findMateUid(uid: String) {
         FirestoreService.shared.findMateUid(uid: uid)
             .subscribe(onSuccess: { data in

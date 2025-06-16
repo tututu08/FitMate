@@ -9,10 +9,12 @@ class SportsModeViewController: BaseViewController {
     // 선택된 운동 항목
     private let exerciseItem: CarouselViewModel.ExerciseItem
     
+    // 운동 모드
     enum ExerciseMode {
-        case cooperation
-        case battle
+        case cooperation // 협력 모드
+        case battle // 대결 모드
         
+        // 데이터 저장을 위해 문자열 반환
         var asString: String {
             switch self {
             case .cooperation: return "cooperation"
@@ -20,12 +22,17 @@ class SportsModeViewController: BaseViewController {
             }
         }
     }
+    
     // 모드 선택 이벤트를 전달하는 Relay (Rx 방식)
     private let modeSelectedRelay = PublishRelay<(String, ExerciseMode)>()
     
-    let uid: String // 내 UID
+    // 로그인 유저의 UID
+    let uid: String
     
-    // 외부에서 운동 항목을 주입받는 초기화 함수
+    // 초기화 함수
+    // 의존성 주입
+    // - 운동 종목
+    // - 로그인 유저의 uid
     init(exerciseItem: CarouselViewModel.ExerciseItem, uid: String) {
         self.uid = uid
         print("uid : \(uid)")

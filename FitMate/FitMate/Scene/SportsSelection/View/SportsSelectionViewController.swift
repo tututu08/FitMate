@@ -11,10 +11,10 @@ class SportsSelectionViewController: BaseViewController {
     // Carousel 뷰에 연결될 ViewModel
     private let carouselViewModel = CarouselViewModel()
     
-    let uid: String
+    private let uid: String // 로그인 유저의 uid 의존성 주입
     
     init(uid: String) {
-        self.uid = uid
+        self.uid = uid // 외부에서 의존성 주입
         print("uid : \(uid)")
         super.init(nibName: nil, bundle: nil)
     }

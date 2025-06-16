@@ -47,6 +47,9 @@ class MateCodeVIewController: UIViewController {
         return complete
     }()
     
+    // 로그인 유저의 uid
+    private let uid: String = "JAZVy7wRXMUgI5aXH4GCuVG4Tyk2"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
@@ -104,8 +107,9 @@ class MateCodeVIewController: UIViewController {
         completeButton.rx.tap
             .asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] _ in
-                let main = MainViewController()
-                self?.navigationController?.pushViewController(main, animated: true)
+                guard let self else { return }
+                let main = MainViewController(uid: self.uid)
+                self.navigationController?.pushViewController(main, animated: true)
             })
             .disposed(by: disposeBag)
     }
