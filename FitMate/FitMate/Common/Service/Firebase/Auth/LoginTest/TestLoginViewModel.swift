@@ -1,8 +1,8 @@
 //
-//  LoginViewModel.swift
+//  TestLoginViewModel.swift
 //  FitMate
 //
-//  Created by NH on 6/15/25.
+//  Created by NH on 6/12/25.
 //
 
 import RxSwift
@@ -10,12 +10,12 @@ import RxCocoa
 import FirebaseAuth
 import UIKit
 
-final class LoginViewModel {
+final class TestLoginViewModel {
     
     // 화면 이동 목적을 나타내는 enum (분기 판단용)
     enum LoginNavigation {
-        case goToSeleteSport(uid: String) // 레디룸으로 이동
-        case error(String) // 에러 발생 (메시지 전달)
+        case goToSeleteSport(uid: String)         // 레디룸으로 이동
+        case error(String)                      // 에러 발생 (메시지 전달)
     }
 
     struct Input {

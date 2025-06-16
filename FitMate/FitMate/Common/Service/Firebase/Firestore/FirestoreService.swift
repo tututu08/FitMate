@@ -1,18 +1,18 @@
 //
-//  FirestoreManager.swift
+//  FirestoreService.swift
 //  FitMate
 //
-//  Created by NH on 6/6/25.
+//  Created by NH on 6/12/25.
 //
 
 import Foundation
 import FirebaseFirestore
 import RxSwift
 
-class FirestoreManager {
-    static let shared = FirestoreManager() // 싱글턴 패턴 사용
+class FirestoreService {
+    static let shared = FirestoreService() // 싱글턴 패턴 사용
     
-    let db = Firestore.firestore()
+    private let db = Firestore.firestore()
     
     /// 초대코드 생성 메서드
     func generateInviteCode(length: Int = 6) -> String {
@@ -20,32 +20,63 @@ class FirestoreManager {
         return String((0..<length).map { _ in characters.randomElement()! })
     }
     
+    /// 코드 중복 검사
+    /// 초대 코드 및 운동 코드로 사용 예정
+    func checkInviteCodeDuplicate(code: String, completion: @escaping (Bool) -> Void) {
+        db.collection("users")
+            .whereField("inviteCode", isEqualTo: code)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("Firestore error: \(error)")
+                    // 에러가 났을 때는 '중복 아님'으로 처리하는 게 안전하지 않으니 false로 처리
+                    completion(false)
+                    return
+                }
+                // 중복이 있다면 count > 0
+                if let count = snapshot?.documents.count, count > 0 {
+                    completion(true) // 이미 존재(중복)
+                } else {
+                    completion(false) // 중복 아님
+                }
+            }
+    }
+    
     // MARK: - Create
     
     /// user 생성 메소드
     /// 사용자의 정보를 저장하는 문서를 생성합니다.
+
     func createUserDocument(uid: String) -> Single<Void> {
-        // rx로 래핑
         return Single.create { single in
-            
-            let inviteCode = self.generateInviteCode() // 랜덤 코드 생성
-            let newRef = self.db.collection("users").document(uid)
-            let data: [String: Any] = [
-                "uid": uid,
-                "inviteCode": inviteCode
-            ]
-            
-            // users 컬렉션의 uid 문서 생성
-            // 데이터 생성
-            newRef.setData(data) { error in
-                if let error = error {
-                    single(.failure(error))
-                    print("User 데이터 생성 실패: \(error.localizedDescription)") // 에러 처리
-                } else {
-                    single(.success(()))
-                    print("User 데이터 생성 완료: \(uid)")
+            func tryGenerateAndSave() {
+                let inviteCode = self.generateInviteCode()
+                // inviteCode 중복 체크
+                self.checkInviteCodeDuplicate(code: inviteCode) { isDuplicate in
+                    if isDuplicate {
+                        // 중복이면 다시 시도 (재귀)
+                        tryGenerateAndSave()
+                    } else {
+                        let newRef = self.db.collection("users").document(uid)
+                        let data: [String: Any] = [
+                            "uid": uid,
+                            "inviteCode": inviteCode
+                        ]
+                        
+                        // users 컬렉션의 uid 문서 생성
+                        // 데이터 생성
+                        newRef.setData(data) { error in
+                            if let error = error {
+                                single(.failure(error))
+                                print("User 데이터 생성 실패: \(error.localizedDescription)")
+                            } else {
+                                single(.success(()))
+                                print("User 데이터 생성 완료: \(uid), 초대코드: \(inviteCode)")
+                            }
+                        }
+                    }
                 }
             }
+            tryGenerateAndSave()
             return Disposables.create()
         }
     }
@@ -87,7 +118,7 @@ class FirestoreManager {
     /* fetchDocument 사용 예시
      // 사용자 정보 가져오기
      FirestoreService.shared.fetchDocument(collectionName: "users", documentName: "abc123")
-        .subscribe(
+        .subscribe( data in
             onSuccess: { print("User 데이터 : \(data)") },
             onFailure: { print("User 데이터 읽기 실패 : \(error.localizedDescription)") }
         )
