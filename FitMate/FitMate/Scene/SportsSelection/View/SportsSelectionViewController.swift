@@ -44,10 +44,8 @@ class SportsSelectionViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""  // 뒤로가기 버튼 타이틀 제거
-        
         self.title = "운동 선택"
         navigationController?.navigationBar.applyCustomAppearance()
-        navigationItem.backButtonTitle = ""
         
         // 레이아웃 완료 후 무한 스크롤용 중간 위치로 스크롤
         DispatchQueue.main.async { [weak self] in
