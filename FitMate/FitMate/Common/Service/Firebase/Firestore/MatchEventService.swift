@@ -21,7 +21,7 @@ final class MatchEventService {
     let matchEventRelay = PublishRelay<String>() // matchCode 데이터
     
     // matchCode 별 status 이벤트 스트림
-    let matchStatusRelay = PublishRelay<(matchId: String, status: String)>()
+    let matchStatusRelay = PublishRelay<(matchCode: String, status: String)>()
     
     private init() { }
     

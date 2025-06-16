@@ -8,11 +8,15 @@
 import Foundation
 import FirebaseFirestore
 
-class MatchAcceptViewModel {
-    func respondToMatch(matchId: String, myUid: String, accept: Bool) {
+final class MatchAcceptViewModel {
+    
+    /// 초대 응답 결과에 따른 Firestore의 운동 경기 상태 값 업데이트
+    func respondToMatch(matchCode: String, myUid: String, accept: Bool) {
         let db = Firestore.firestore()
+        
+        // 매개변수 accept 참, 거짓 여부에 따라 matchStatus 값 결정
         let newStatus = accept ? "accepted" : "rejected"
-        db.collection("matches").document(matchId).updateData([
+        db.collection("matches").document(matchCode).updateData([
             "matchStatus": newStatus,
             "players.\(myUid).status": newStatus
         ])
