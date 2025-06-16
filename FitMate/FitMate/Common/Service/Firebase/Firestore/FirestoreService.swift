@@ -14,6 +14,8 @@ class FirestoreService {
     
     private let db = Firestore.firestore()
     
+    private init() {}
+    
     /// 초대코드 생성 메서드
     func generateInviteCode(length: Int = 6) -> String {
         let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
