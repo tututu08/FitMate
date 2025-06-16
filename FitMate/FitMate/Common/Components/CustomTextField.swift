@@ -6,11 +6,14 @@
 //
 
 import UIKit
-
+import RxSwift
+import RxCocoa
 
 class CustomTextField: UITextField {
+    // 텍스트 필드에 입력될 문자열 리밋 설정
+    var stringLimit: Int = Int.max
+    let overLimitRelay = PublishRelay<Void>()
     
-  
     init(placeholder: String) {
         super.init(frame: .zero)
         self.placeholder = placeholder
@@ -18,33 +21,44 @@ class CustomTextField: UITextField {
             string: placeholder,
             attributes: [.foregroundColor: UIColor.lightGray] // 컬러 변경 필요
         )
-
+        self.contentVerticalAlignment = .center
         self.borderStyle = .line
         self.layer.borderColor = UIColor.systemPurple.cgColor // 컬러 변경 필요
         self.layer.borderWidth = 1.5
         self.backgroundColor = .darkGray // 컬러 변경 필요
         self.translatesAutoresizingMaskIntoConstraints = false
-    
+        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // 기존 상태에서의 플레이스 홀더 위치
-    override func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0))
-    }
-    /// 입력 중의 텍스트 위치
-    override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0))
-    }
-    /// 두 메서드는 각각 다른 상황에서 텍스트 위치를 제어함
-    ///placeholder와 실제 텍스트의 위치가 따로 놀지 않게 하려면 둘 다 같은 inset을 적용해야 자연스러움
-
-    override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
-        let original = super.rightViewRect(forBounds: bounds)
-        return original.offsetBy(dx: -8, dy: 0)
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        self.delegate = self
     }
     
 }
+
+/// shouldChangeCharactersIn는 텍스트 필드에 사용자가 입력할 때마다 호출되는 메서드
+///
+extension CustomTextField: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        //// 현재 텍스트 필드에 입력되어 있는 문자열
+        let fillInText = textField.text ?? ""
+        /// 입력 범위 range 설정
+        guard let stringRange = Range(range, in: fillInText) else { return false }
+        /// 사용자가 입력하려는 값을 기존 문자열에 반영한 결과
+        let updatedText = fillInText.replacingCharacters(in: stringRange, with: string)
+        /// 글자 수가 제한을 초과한 경우 입력 막고
+        if updatedText.count > stringLimit {
+            overLimitRelay.accept(())
+            return false
+        }
+        /// 제한 범위 이내면 입력 허용
+        return true
+    }
+}
+
+

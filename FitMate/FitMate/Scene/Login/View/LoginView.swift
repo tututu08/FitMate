@@ -7,7 +7,7 @@
 import UIKit
 import SnapKit
 
-class LoginView: UIView {
+class LoginView: BaseView {
     
     private let fitMateLogo: UIImageView = {
        let logo = UIImageView()
@@ -40,22 +40,22 @@ class LoginView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setUpUI()
-        setUpLayout()
+        configureUI()
+        setLayoutUI()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setUpUI() {
+    override func configureUI() {
         backgroundColor = .background800
         
         [fitMateLogo, kakaoLogin, googleLogin,
          appleLogin].forEach({addSubview($0)})
     }
     
-    func setUpLayout() {
+    override func setLayoutUI() {
         fitMateLogo.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide).offset(144)
             make.centerX.equalToSuperview()
