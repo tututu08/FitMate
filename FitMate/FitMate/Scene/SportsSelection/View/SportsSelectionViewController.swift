@@ -11,6 +11,18 @@ class SportsSelectionViewController: BaseViewController {
     // Carousel 뷰에 연결될 ViewModel
     private let carouselViewModel = CarouselViewModel()
     
+    private let uid: String // 로그인 유저의 uid 의존성 주입
+    
+    init(uid: String) {
+        self.uid = uid // 외부에서 의존성 주입
+        print("uid : \(uid)")
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // 운동 목록을 표시하는 CollectionView (UPCarouselFlowLayout 사용)
     private let collectionView: UICollectionView = {
         let layout = UPCarouselFlowLayout()
@@ -32,10 +44,8 @@ class SportsSelectionViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""  // 뒤로가기 버튼 타이틀 제거
-        
         self.title = "운동 선택"
         navigationController?.navigationBar.applyCustomAppearance()
-        navigationItem.backButtonTitle = ""
         
         // 레이아웃 완료 후 무한 스크롤용 중간 위치로 스크롤
         DispatchQueue.main.async { [weak self] in
@@ -83,9 +93,10 @@ class SportsSelectionViewController: BaseViewController {
         // 선택된 아이템이 Relay를 통해 전달되면 다음 화면으로 이동
         selectedItemRelay
             .bind(onNext: { [weak self] item in
+                guard let self else { return }
                 // 선택된 운동 아이템을 전달하여 SportsModeViewController로 push
-                let modeVC = SportsModeViewController(exerciseItem: item)
-                self?.navigationController?.pushViewController(modeVC, animated: true)
+                let modeVC = SportsModeViewController(exerciseItem: item, uid: self.uid)
+                self.navigationController?.pushViewController(modeVC, animated: true)
             })
             .disposed(by: disposeBag)
     }

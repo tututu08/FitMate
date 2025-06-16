@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED11842E2DFECC3500ECC6DD /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = ED11842D2DFECC3500ECC6DD /* Lottie */; };
 		ED6AD6B62DF1AA9A004E23D4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B52DF1AA9A004E23D4 /* FirebaseAnalytics */; };
 		ED6AD6B82DF1AA9A004E23D4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B72DF1AA9A004E23D4 /* FirebaseAuth */; };
 		ED6AD6BA2DF1AA9A004E23D4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B92DF1AA9A004E23D4 /* FirebaseCore */; };
 		ED6AD6BC2DF1AA9A004E23D4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6BB2DF1AA9A004E23D4 /* FirebaseFirestore */; };
 		EDC669B42DF9A27600E5BE4C /* RxCoreLocation in Frameworks */ = {isa = PBXBuildFile; productRef = EDC669B32DF9A27600E5BE4C /* RxCoreLocation */; };
-		F68242AA2DFF089000017BB6 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = F68242A92DFF089000017BB6 /* Lottie */; };
+		EDDA5CCB2DFB189E005D0F91 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = EDDA5CCA2DFB189E005D0F91 /* GoogleSignIn */; };
 		F6DABEA32DF08E2500FBEBC7 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA22DF08E2500FBEBC7 /* RxCocoa */; };
 		F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA42DF08E2500FBEBC7 /* RxRelay */; };
 		F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F6DABEA62DF08E2500FBEBC7 /* RxSwift */; };
@@ -66,7 +67,8 @@
 				F6DAC1F02DF17CF800FBEBC7 /* SnapKit in Frameworks */,
 				F6DABEA52DF08E2500FBEBC7 /* RxRelay in Frameworks */,
 				ED6AD6BA2DF1AA9A004E23D4 /* FirebaseCore in Frameworks */,
-				F68242AA2DFF089000017BB6 /* Lottie in Frameworks */,
+				EDDA5CCB2DFB189E005D0F91 /* GoogleSignIn in Frameworks */,
+				ED11842E2DFECC3500ECC6DD /* Lottie in Frameworks */,
 				EDC669B42DF9A27600E5BE4C /* RxCoreLocation in Frameworks */,
 				ED6AD6BC2DF1AA9A004E23D4 /* FirebaseFirestore in Frameworks */,
 				ED6AD6B62DF1AA9A004E23D4 /* FirebaseAnalytics in Frameworks */,
@@ -77,10 +79,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EDDA5CDC2DFB23C7005D0F91 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F6F3B9C52DEF095800FA2815 = {
 			isa = PBXGroup;
 			children = (
 				F6F3B9D02DEF095800FA2815 /* FitMate */,
+				EDDA5CDC2DFB23C7005D0F91 /* Frameworks */,
 				F6F3B9CF2DEF095800FA2815 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -122,7 +132,8 @@
 				ED6AD6B92DF1AA9A004E23D4 /* FirebaseCore */,
 				ED6AD6BB2DF1AA9A004E23D4 /* FirebaseFirestore */,
 				EDC669B32DF9A27600E5BE4C /* RxCoreLocation */,
-				F68242A92DFF089000017BB6 /* Lottie */,
+				EDDA5CCA2DFB189E005D0F91 /* GoogleSignIn */,
+				ED11842D2DFECC3500ECC6DD /* Lottie */,
 			);
 			productName = FitMate;
 			productReference = F6F3B9CE2DEF095800FA2815 /* FitMate.app */;
@@ -157,7 +168,8 @@
 				F6DAC1EE2DF17CF800FBEBC7 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				EDC669B22DF9A27600E5BE4C /* XCRemoteSwiftPackageReference "RxCoreLocation" */,
-				F68242A82DFF089000017BB6 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				EDDA5CC92DFB189E005D0F91 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				ED11842C2DFECC3500ECC6DD /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6F3B9CF2DEF095800FA2815 /* Products */;
@@ -399,6 +411,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		ED11842C2DFECC3500ECC6DD /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
 		ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -415,12 +435,12 @@
 				minimumVersion = 1.5.1;
 			};
 		};
-		F68242A82DFF089000017BB6 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+		EDDA5CC92DFB189E005D0F91 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.2;
+				minimumVersion = 8.0.0;
 			};
 		};
 		F6DABEA12DF08E2500FBEBC7 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
@@ -442,6 +462,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		ED11842D2DFECC3500ECC6DD /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED11842C2DFECC3500ECC6DD /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
 		ED6AD6B52DF1AA9A004E23D4 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -467,10 +492,10 @@
 			package = EDC669B22DF9A27600E5BE4C /* XCRemoteSwiftPackageReference "RxCoreLocation" */;
 			productName = RxCoreLocation;
 		};
-		F68242A92DFF089000017BB6 /* Lottie */ = {
+		EDDA5CCA2DFB189E005D0F91 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F68242A82DFF089000017BB6 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
+			package = EDDA5CC92DFB189E005D0F91 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
 		};
 		F6DABEA22DF08E2500FBEBC7 /* RxCocoa */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -8,7 +8,20 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     private let rootView = MypageView()
     private let viewModel = MypageViewModel()
     private let disposeBag = DisposeBag()
-
+    
+    // 로그인 유저의 uid
+    private let uid: String
+    
+    // 초기화 함수
+    init(uid: String) {
+        self.uid = uid // 의존성 주입
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func loadView() {
         self.view = rootView
     }
