@@ -49,13 +49,16 @@ class LoginViewController: BaseViewController {
         
         output.navigation
             .drive(onNext: { [weak self] nav in
+                guard let self else { return }
                 // ViewModel에서 전달한 목적에 따라 화면 이동만 수행
                 switch nav {
                 case .goToMainViewController(let uid):
+                    print("로그인 유져 UID : \(uid)")
+
                     // SceneDelegate를 가져오기
                     // UIApplication.shared.connectedScenes는 현재 앱의 모든 Scene을 반환
                     // first?.delegate는 첫 번째 Scene의 delegate를 가져옴
-                    //as? SceneDelegate로 다운캐스팅하여 window 속성에 접근
+                    // as? SceneDelegate로 다운캐스팅하여 window 속성에 접근
                     guard let sceneDelegate = UIApplication.shared.connectedScenes
                         .first?.delegate as? SceneDelegate else { return }
                     
@@ -74,9 +77,11 @@ class LoginViewController: BaseViewController {
                     })
                 case .error(let msg):
                     // 에러 발생 시 메시지 띄우기
-                    self?.showErrorAlert(message: msg)
+                    self.showErrorAlert(message: msg)
                 }
             }).disposed(by: disposeBag)
+        
+        
     }
     
     func showErrorAlert(message: String) {

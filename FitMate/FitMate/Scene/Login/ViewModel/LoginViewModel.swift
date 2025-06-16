@@ -46,7 +46,7 @@ final class LoginViewModel {
                     return FirestoreService.shared
                         .fetchDocument(collectionName: "users", documentName: uid) // 사용자 문서 검색
                         .flatMap { data -> Single<LoginNavigation> in
-                            return .just(.goToMainViewController(uid: uid)) // 사용자 문서가 존재하면 .just(.goToSeleteSport(uid: uid)로 반환
+                            return .just(.goToMainViewController(uid: uid)) // 사용자 문서가 존재하면 .just(.goToSeleteSport(uid: uid))로 반환
                         }
                         .catch { _ in // 사용자 문서가 존재하지 않다면
                             return FirestoreService.shared

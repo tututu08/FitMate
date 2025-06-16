@@ -140,12 +140,15 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     mode: self.selectedModeRelay.value.asString
                 )
                 .subscribe(
-                    onSuccess: { print("Match 생성 성공") },
+                    onSuccess: { matchCode in
+                        print("Match 생성 성공 \(matchCode)")
+                        // 로딩 화면으로 이동
+                        self.navigationController?.pushViewController(LoadingViewController(matchCode: matchCode), animated: true)
+                    },
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
                 
-                // 로딩 화면으로 이동
-                self.navigationController?.pushViewController(LoadingViewController(), animated: true)
+                
 
             })
             .disposed(by: disposeBag)
