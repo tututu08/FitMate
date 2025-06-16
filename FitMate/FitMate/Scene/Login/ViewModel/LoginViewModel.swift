@@ -121,17 +121,17 @@ final class LoginViewModel {
             .flatMapLatest { result -> Observable<LoginNavigation> in
                 // Firebase 로그인 결과에 따른 다음 화면 결정
                 switch result {
-                case .success(let user):
+                case .success(let user as FirebaseAuth.User):
                     let uid = user.uid
                     // Firestore에 사용자 문서가 있는지 확인
                     return FirestoreService.shared
                         .fetchDocument(collectionName: "users", documentName: uid)
-                        .map { _ in .goToSeleteSport(uid: uid) } // 있으면 해당 화면으로 이동
+                        .map { _ in .goToMainViewController(uid: uid) } // 있으면 해당 화면으로 이동
                         .catch { _ in
                             // 문서가 없으면 새로 생성 후 이동
                             FirestoreService.shared
                                 .createUserDocument(uid: uid)
-                                .map { .goToSeleteSport(uid: uid) }
+                                .map { .goToMainViewController(uid: uid) }
                         }
                         .asObservable()
                 case .failure(let error):
