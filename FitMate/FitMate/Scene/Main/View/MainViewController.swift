@@ -10,6 +10,13 @@ import RxCocoa
 
 class MainViewController: BaseViewController {
     
+    // ViewModel 객체 생성
+    private let viewModel = MainViewModel()
+    
+    // MatchAcceptViewModel 객체 생성
+    // 역할 : 운동 경기 수락 여부에 따른 운동 경기 상태(matchStatus) 변경 ViewModel
+    private let matchAcceptViewModel = MatchAcceptViewModel()
+    
     private let mainView = MainView()
     
     // 로그인 유저의 uid
