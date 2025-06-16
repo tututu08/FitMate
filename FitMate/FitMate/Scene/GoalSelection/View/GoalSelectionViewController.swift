@@ -21,10 +21,13 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // 선택된 운동 제목을 전달하는 Rx Relay
     private let selectedTitleRelay = BehaviorRelay<String>(value: "")
+    
     // 선택된 운동 모드를 전달하는 Rx Relay
     private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
-   // 선택된 목표치를 전달하는 Rx Relay
+    
+    // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
+
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
         let label = UILabel()
@@ -58,6 +61,21 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         return button
     }()
     
+    // 자신의 uid
+    private let uid: String // 로그인 유저의 uid
+    private var mateUid = "" // 메이트 uid
+    
+    init(uid: String) {
+        self.uid = uid
+        
+        super.init(nibName: nil, bundle: nil)
+        self.findMateUid(uid: uid) // 메이트 uid 검색
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -71,14 +89,28 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         pickerView.delegate = self
     }
     
+    /// - 로그인 유저의 uid를 이용해 자신의 메이트 uid 검색
+    private func findMateUid(uid: String) {
+        FirestoreService.shared.findMateUid(uid: uid)
+            .subscribe(onSuccess: { data in
+                //guard let self else { return }
+                self.mateUid = data
+                print("메이트 UID 가져오기 성공: \(self.mateUid)")
+            },
+            onFailure: { error in
+                print("문서 가져오기 실패: \(error.localizedDescription)")
+            }).disposed(by: disposeBag)
+    }
+    
     override func bindViewModel() {
         super.bindViewModel()
         
         // selectedTitleRelay를 ViewModel에 입력으로 전달
         let input = GoalSelectionViewModel.Input(
-            selectedTitle: selectedTitleRelay.asObservable(),
-            selectedMode: selectedModeRelay.asObservable()
+            selectedTitle: selectedTitleRelay.asObservable(), // 운동 종목
+            selectedMode: selectedModeRelay.asObservable()  // 운동 모드
         )
+        
         let output = viewModel.transform(input: input)
         
         // ViewModel에서 전달받은 pickerItems를 구독하여 pickerData에 반영
@@ -88,28 +120,33 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 self?.pickerView.reloadAllComponents()
             })
             .disposed(by: disposeBag)
+        
         // 목표 설정 클릭시 바인딩
         goalSettingButton.rx.tap
             .bind(onNext: { [weak self] selectedGoal in
                 guard let self = self else { return }
-                let selectedMode = self.selectedModeRelay.value
-                let selectedGoal = self.selectedGoalRelay.value
-                // 저장(종목 타이틀, 목표치)
                 
+                // 저장(종목 타이틀, 목표치)
+                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
+                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
+                
+                // MARK: Firestore 데이터 저장
+                // "matches" 컬렉션 및 "matchID" 문서 생성
+                FirestoreService.shared.createMatchDocument(
+                    inviterUid: self.uid,
+                    inviteeUid: self.mateUid,
+                    exerciseType: self.selectedTitleRelay.value,
+                    goalValue: self.selectedGoalRelay.value,
+                    mode: self.selectedModeRelay.value.asString
+                )
+                .subscribe(
+                    onSuccess: { print("Match 생성 성공") },
+                    onFailure: { error in print("실패: \(error)") }
+                ).disposed(by: disposeBag)
+                
+                // 로딩 화면으로 이동
                 self.navigationController?.pushViewController(LoadingViewController(), animated: true)
-//                // 모드에 따른 화면 전환 분기
-//                switch selectedMode {
-//                case .cooperation:
-//                    // 협력 모드 화면 이동
-//                    let runningCooperationVC = RunningCoopViewController(goalText: selectedGoal)
-//                    runningCooperationVC.selectedGoalRelay.accept(selectedGoal)
-//                    self.navigationController?.pushViewController(runningCooperationVC, animated: true)
-//                    
-//                case .battle:
-//                    // 대결 모드 화면 이동
-//                    let runningBattleVC = RunningBattleViewController()
-//                    self.navigationController?.pushViewController(runningBattleVC, animated: true)
-//                }
+
             })
             .disposed(by: disposeBag)
     }
@@ -118,6 +155,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     func updateSelectedTitle(_ title: String) {
         selectedTitleRelay.accept(title)
     }
+    
     // 외부에서 선택된 운동 모드를 업데이트할 때 호출
     func updateSelectedMode(_ mode: SportsModeViewController.ExerciseMode) {
         selectedModeRelay.accept(mode)
