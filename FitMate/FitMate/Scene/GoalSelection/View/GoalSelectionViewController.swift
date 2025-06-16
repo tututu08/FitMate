@@ -127,8 +127,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 guard let self = self else { return }
                 
                 // 저장(종목 타이틀, 목표치)
-                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
-                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
+//                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
+//                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
                 
                 // MARK: Firestore 데이터 저장
                 // "matches" 컬렉션 및 "matchID" 문서 생성
