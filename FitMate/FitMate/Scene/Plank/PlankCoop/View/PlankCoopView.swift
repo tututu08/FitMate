@@ -102,14 +102,14 @@ class PlankCoopView: BaseView {
     private let progressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.systemPurple.cgColor
+        view.layer.borderColor = UIColor.primary500.cgColor
         return view
     }()
     
     // 진행률 바(채워지는 부분)
     private let progressForegroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemPurple
+        view.backgroundColor = .primary500
         return view
     }()
     
@@ -293,13 +293,12 @@ class PlankCoopView: BaseView {
         case .myTurn:
             if timer <= 7 {
                 stateLabel.text = "조금만 더 버텨요! 파이팅!"
-                stateLabel.textColor = .white
                 timerLabel.textColor = .secondary400
             } else {
                 stateLabel.text = "플랭크 시작"
-                stateLabel.textColor = UIColor(red: 206/255, green: 255/255, blue: 67/255, alpha: 1)
                 timerLabel.textColor = .secondary200
             }
+            stateLabel.textColor = .white
         case .mateTurn:
             if timer <= 5 {
                 stateLabel.text = "준비하시고~!"
