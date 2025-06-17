@@ -27,6 +27,10 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
+    // 숫자만
+    private let selectedGoalValueRelay = BehaviorRelay<String>(value: "")
+    // 단위만
+    private let selectedGoalUnitRelay = BehaviorRelay<String>(value: "")
 
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
@@ -148,6 +152,19 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
                 
+                // MARK: Firestore 데이터 저장
+                // "matches" 컬렉션 및 "matchID" 문서 생성
+                FirestoreService.shared.createMatchDocument(
+                    inviterUid: self.uid,
+                    inviteeUid: self.mateUid,
+                    exerciseType: self.selectedTitleRelay.value,
+                    goalValue: self.selectedGoalRelay.value,
+                    mode: self.selectedModeRelay.value.asString
+                )
+                .subscribe(
+                    onSuccess: { _ in print("Match 생성 성공") },
+                    onFailure: { error in print("실패: \(error)") }
+                ).disposed(by: disposeBag)
                 
 
             })
@@ -250,11 +267,43 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selected = pickerData[row]
         selectedGoalRelay.accept(selected)
+        
+        let (value, unit) = splitValueAndUnit(from: selected)
+        selectedGoalValueRelay.accept(value)
+        selectedGoalUnitRelay.accept(unit)
+        
         pickerView.reloadAllComponents()
     }
     
     // 각 행의 높이 설정
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 100
+    }
+    // 문자열 분리 메서드
+    private func splitValueAndUnit(from text: String) -> (String, String) {
+        // 정규식 패턴 정의
+        // ^         : 문자열 시작
+        // (\d+)     : 숫자 한 개 이상을 첫 번째 그룹으로 캡처 (예: "200", "5", "10")
+        // \s*       : 0개 이상의 공백 문자 (숫자와 단위 사이에 공백 있을 수 있음)
+        // ([^\d\s]+): 숫자와 공백이 아닌 문자 한 개 이상을 두 번째 그룹으로 캡처 (단위 부분, 예: "회", "km", "분")
+        // $         : 문자열 끝
+        let pattern = #"^(\d+)\s*([^\d\s]+)$"#
+        // 위 패턴으로 정규식 객체 생성 (대소문자 구분 없이)
+        let regex   = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+        // text에서 정규식과 첫 번째 매칭을 찾기
+        if let match = regex?.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
+           // 매칭된 결과에서 첫 번째 캡처 그룹(숫자)의 범위를 얻음
+           let vR = Range(match.range(at: 1), in: text),
+           // 매칭된 결과에서 두 번째 캡처 그룹(단위)의 범위를 얻음
+           let uR = Range(match.range(at: 2), in: text) {
+            // 숫자 부분을 String로 변환, 실패 시 0으로 처리
+            let value = String(text[vR])
+            // 단위 부분을 String으로 변환하고 앞뒤 공백 제거
+            let unit  = String(text[uR]).trimmingCharacters(in: .whitespaces)
+            // 숫자와 단위를 튜플로 반환
+            return (value, unit)
+        }
+        // 패턴에 맞지 않을 경우 기본값 반환 (빈 문자열)
+        return ("", "")
     }
 }
