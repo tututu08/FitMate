@@ -12,7 +12,15 @@ import RxCocoa
 class CustomTextField: UITextField {
     // 텍스트 필드에 입력될 문자열 리밋 설정
     var stringLimit: Int = Int.max
-    let overLimitRelay = PublishRelay<Void>()
+    
+    // 기존 코드
+    //let overLimitRelay = PublishRelay<Void>()
+    
+    // MARK: 알림 enum 타입으로 변경
+    let overLimitRelay = PublishRelay<SystemAlertType>()
+    
+    // 텍스트 변경을 외부에서 감지
+    let textRelay = BehaviorRelay<String>(value: "")
     
     init(placeholder: String) {
         super.init(frame: .zero)
@@ -28,6 +36,8 @@ class CustomTextField: UITextField {
         self.backgroundColor = .darkGray // 컬러 변경 필요
         self.translatesAutoresizingMaskIntoConstraints = false
         
+        // 텍스트 변경 이벤트 등록
+        self.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
     
     required init?(coder: NSCoder) {
@@ -39,23 +49,38 @@ class CustomTextField: UITextField {
         self.delegate = self
     }
     
+    // MARK: - Editing Changed: 사용자 입력이 확정된 후 텍스트 반영
+    // 아래 shouldChangeCharactersIn 함수는 입력 반영 전에 호출되어 제대로 닉네임 값을 가져오지 못함
+    @objc private func textFieldEditingChanged(_ textField: UITextField) {
+        textRelay.accept(textField.text ?? "")
+    }
+    
 }
 
 /// shouldChangeCharactersIn는 텍스트 필드에 사용자가 입력할 때마다 호출되는 메서드
-///
+/// shouldChangeCharactersIn 입력이 반영되기 전 에 호출
 extension CustomTextField: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
         //// 현재 텍스트 필드에 입력되어 있는 문자열
         let fillInText = textField.text ?? ""
+        
         /// 입력 범위 range 설정
         guard let stringRange = Range(range, in: fillInText) else { return false }
+        
         /// 사용자가 입력하려는 값을 기존 문자열에 반영한 결과
         let updatedText = fillInText.replacingCharacters(in: stringRange, with: string)
+        
         /// 글자 수가 제한을 초과한 경우 입력 막고
         if updatedText.count > stringLimit {
-            overLimitRelay.accept(())
+            // 기존 코드
+            // overLimitRelay.accept(())
+            
+            // MARK: 오류 정보 바로 전달
+            overLimitRelay.accept(.overLimit)
             return false
         }
+        
         /// 제한 범위 이내면 입력 허용
         return true
     }
