@@ -27,6 +27,12 @@ class RunningCoopViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // 네비게이션 영역 숨김
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     // 뷰를 rootView로 설정
     override func loadView() {
         self.view = rootView
