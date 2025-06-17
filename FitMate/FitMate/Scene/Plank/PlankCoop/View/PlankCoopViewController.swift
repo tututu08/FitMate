@@ -67,21 +67,21 @@ final class PlankCoopViewController: BaseViewController {
         )
         let output = viewModel.transform(input: input)
         
-        // phase와 timer 동시 바인딩 → phase별 알럿/상태분기 & UI 업데이트
+        // status와 timer 동시 바인딩 → status별 알럿/상태분기 & UI 업데이트
         Driver
-            .combineLatest(output.phase, output.timerText.map { Int($0) })
+            .combineLatest(output.status, output.timerText.map { Int($0) })
             .drive(onNext: { [weak self] tuple in
                 guard let self = self else { return }
-                let (phase, timer) = tuple
-                self.sportsView.updatePhase(phase, timer: timer ?? 0)
-                switch phase {
+                let (status, timer) = tuple
+                self.sportsView.updateStatus(status, timer: timer ?? 0)
+                switch status {
                 case .myTurn:
                     self.sportsView.setPauseButtonEnabled(true)
                 default:
                     self.sportsView.setPauseButtonEnabled(false)
                 }
                 // 알럿 상태 분기
-                switch phase {
+                switch status {
                 case .paused(let isMine):
                     if self.sportsView.alertView != nil { return }
                     if isMine {
@@ -97,7 +97,7 @@ final class PlankCoopViewController: BaseViewController {
                     self.sportsView.hideAlert()
                 }
                 // 종료 분기
-                switch phase {
+                switch status {
                 case .quitting(let isMine):
                     if self.sportsView.alertView != nil { return }
                     if isMine {

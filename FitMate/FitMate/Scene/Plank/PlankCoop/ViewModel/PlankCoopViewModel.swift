@@ -3,11 +3,11 @@ import RxSwift
 import RxCocoa
 
 // 플랭크 협력 모드 상태 정의
-enum PlankPhase {
+enum PlankStatus {
     case ready                      // 준비 중 (5초)
     case myTurn                     // 내 차례 (30초)
     case mateTurn                   // 메이트 차례 (30초)
-    case paused(isMine: Bool)       // 일시정지 (내가/상대가 누름)
+    case paused(isMine: Bool)       // 일시저ㅇ지 (내가/상대가 누름)
     case quitting(isMine: Bool)     // 그만두기 확인 (내가/상대가)
     case finished(success: Bool)    // 종료(성공/실패)
 }
@@ -24,15 +24,15 @@ final class PlankCoopViewModel: ViewModelType {
         let mateQuit: Observable<Void>      // 그만두기(상대방)
     }
     struct Output {
-        let phase: Driver<PlankPhase>       // 현재 상태(뷰 상태 변경)
+        let status: Driver<PlankStatus>       // 현재 상태(뷰 상태 변경)
         let timerText: Driver<String>       // 타이머 표시
         let myTimeText: Driver<String>      // 내 누적 기록
         let mateTimeText: Driver<String>    // 메이트 누적 기록
-        let progress: Driver<CGFloat>       // 프로그레스바 (0~1)
+        let progress: Driver<CGFloat>       // 프로그레스바 (0 ~1)
         let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
     }
     
-    private let phaseRelay = BehaviorRelay<PlankPhase>(value: .ready)
+    private let statusRelay = BehaviorRelay<PlankStatus>(value: .ready)
     let timerRelay = BehaviorRelay<Int>(value: 10 )
     private let myTimeRelay = BehaviorRelay<Int>(value: 0)
     private let mateTimeRelay = BehaviorRelay<Int>(value: 0)
@@ -86,7 +86,7 @@ final class PlankCoopViewModel: ViewModelType {
             .asDriver(onErrorJustReturn: CGFloat(0))
         
         return Output(
-            phase: phaseRelay.asDriver(onErrorJustReturn: .ready),
+            status: statusRelay.asDriver(onErrorJustReturn: .ready),
             timerText: timerRelay.map { "\($0)" }.asDriver(onErrorJustReturn: "0"),
             myTimeText: myTimeRelay.map { Self.formatTime($0) }.asDriver(onErrorJustReturn: "0초"),
             mateTimeText: mateTimeRelay.map { Self.formatTime($0) }.asDriver(onErrorJustReturn: "0초"),
@@ -96,7 +96,7 @@ final class PlankCoopViewModel: ViewModelType {
     }
     
     private func startGame() {
-        phaseRelay.accept(.ready)
+        statusRelay.accept(.ready)
         timerRelay.accept(5)
         myTimeRelay.accept(0)
         isMyTurn = true
@@ -115,7 +115,7 @@ final class PlankCoopViewModel: ViewModelType {
     
     private func startTurn(isMyTurn: Bool, resumeTime: Int? = nil) {
         self.isMyTurn = isMyTurn
-        phaseRelay.accept(isMyTurn ? .myTurn : .mateTurn)
+        statusRelay.accept(isMyTurn ? .myTurn : .mateTurn)
         let seconds = resumeTime ?? 10 // 이어하기면 pauseRemainTime, 새턴이면 30
         timerRelay.accept(seconds)
         timer?.invalidate()
@@ -146,13 +146,13 @@ final class PlankCoopViewModel: ViewModelType {
     private func pause(isMine: Bool) {
         timer?.invalidate()
         pauseRemainTime = timerRelay.value
-        phaseRelay.accept(.paused(isMine: isMine))
+        statusRelay.accept(.paused(isMine: isMine))
     }
     
     private func resume() {
         timer?.invalidate()
         timerRelay.accept(5)
-        phaseRelay.accept(.ready)
+        statusRelay.accept(.ready)
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] t in
             guard let self else { t.invalidate(); return }
             let remain = self.timerRelay.value - 1
@@ -168,13 +168,13 @@ final class PlankCoopViewModel: ViewModelType {
     
     private func confirmQuit(isMine: Bool) {
         timer?.invalidate()
-        phaseRelay.accept(.quitting(isMine: isMine))
+        statusRelay.accept(.quitting(isMine: isMine))
         // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
     }
     
     func finish(success: Bool) {
         timer?.invalidate()
-        phaseRelay.accept(.finished(success: success))
+        statusRelay.accept(.finished(success: success))
         didFinishRelay.accept(success)
     }
     

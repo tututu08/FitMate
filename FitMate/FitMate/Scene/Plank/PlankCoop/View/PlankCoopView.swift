@@ -284,8 +284,8 @@ class PlankCoopView: BaseView {
         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
         layoutIfNeeded()
     }
-    func updatePhase(_ phase: PlankPhase, timer: Int) {
-        switch phase {
+    func updateStatus(_ status: PlankStatus, timer: Int) {
+        switch status {
         case .ready:
             stateLabel.text = "준비하세요"
             stateLabel.textColor = .white
