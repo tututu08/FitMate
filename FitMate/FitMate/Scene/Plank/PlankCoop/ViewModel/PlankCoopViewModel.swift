@@ -169,6 +169,7 @@ final class PlankCoopViewModel: ViewModelType {
     private func confirmQuit(isMine: Bool) {
         timer?.invalidate()
         statusRelay.accept(.quitting(isMine: isMine))
+        finish(success: false)
         // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
     }
     

@@ -42,7 +42,6 @@ final class PlankCoopViewController: BaseViewController {
                 self?.sportsView.showQuitAlert(
                     type: .myQuitConfirm, // 내가 종료 시도
                     onResume: {
-                        self?.sportsView.hideQuitAlert()
                         // 그냥 닫고 아무 동작 없음 (계속 운동)
                     },
                     onQuit: { [weak self] in
@@ -162,7 +161,7 @@ final class PlankCoopViewController: BaseViewController {
         sportsView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
-                // 메인화면으로 이동 등
+                // 피니쉬화면으로 이동 등
                 self?.navigationController?.popToRootViewController(animated: true)
             }
         )
