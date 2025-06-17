@@ -8,30 +8,42 @@
 import UIKit
 import SnapKit
 
-class NicknameView: UIView {
+class NicknameView: BaseView {
 
     let nicknameViewTitle: UILabel = {
         let title = UILabel()
         title.text = "닉네임 등록"
         title.textColor = .white
-        title.font = .systemFont(ofSize: 20)
+        title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return title
     }()
     
     let nicknameHeader = CustomHeaderLabel(text: "닉네임")
     let nicknameField = CustomTextField(placeholder: "닉네임을 입력해주세요")
     
+    let termsButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "checkBox"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.snp.makeConstraints { $0.size.equalTo(24) }
+        return button
+    }()
+
+    let privacyButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "checkBox"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.snp.makeConstraints { $0.size.equalTo(24) }
+        return button
+    }()
+    
     lazy var termsStack: UIStackView = {
-        let image = UIImageView(image: UIImage(named: "check_1x"))
-        image.contentMode = .scaleAspectFit
-        image.snp.makeConstraints { $0.size.equalTo(24) }
-        
         let label = UILabel()
         label.text = "이용약관(필수)"
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = .lightGray
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.textColor = .background400
         
-        let stack = UIStackView(arrangedSubviews: [image, label])
+        let stack = UIStackView(arrangedSubviews: [termsButton, label])
         stack.axis = .horizontal
         stack.spacing = 8
         stack.alignment = .center
@@ -39,16 +51,12 @@ class NicknameView: UIView {
     }()
     
     lazy var privacyStack: UIStackView = {
-        let image = UIImageView(image: UIImage(named: "check_1x"))
-        image.contentMode = .scaleAspectFit
-        image.snp.makeConstraints { $0.size.equalTo(24) }
-        
         let label = UILabel()
-        label.text = "이용약관(필수)"
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = .lightGray
+        label.text = "개인정보 수집 및 이용동의(필수)"
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.textColor = .background400
         
-        let stack = UIStackView(arrangedSubviews: [image, label])
+        let stack = UIStackView(arrangedSubviews: [privacyButton, label])
         stack.axis = .horizontal
         stack.spacing = 8
         stack.alignment = .center
@@ -57,10 +65,10 @@ class NicknameView: UIView {
     
     let registerButton: UIButton = {
         let register = UIButton()
-        register.setTitle("로그인", for: .normal)
+        register.setTitle("등록완료", for: .normal)
         register.setTitleColor(.white, for: .normal)
-        register.titleLabel?.font = UIFont.systemFont(ofSize: 22)
-        register.backgroundColor = .systemPurple
+        register.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
+        register.backgroundColor = .primary500
         register.layer.cornerRadius = 4
         register.clipsToBounds = true
         return register
@@ -68,23 +76,24 @@ class NicknameView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .black
-        setupUI()
-        setupLayout()
+    
+        configureUI()
+        setLayoutUI()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupUI() {
+    override func configureUI() {
+        backgroundColor = .black
         [nicknameViewTitle, nicknameHeader, nicknameField,
          termsStack, privacyStack, registerButton].forEach { addSubview($0) }
     }
     
-    private func setupLayout() {
+    override func setLayoutUI() {
         nicknameViewTitle.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(-23)
+            make.top.equalTo(safeAreaLayoutGuide).inset(0)
             make.centerX.equalToSuperview()
         }
         

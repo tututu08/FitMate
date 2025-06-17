@@ -22,6 +22,12 @@ class LoginViewController: BaseViewController {
         self.view = logInView
     }
     
+    // 네비게이션 영역 숨김
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         bindButton()
@@ -75,6 +81,15 @@ class LoginViewController: BaseViewController {
                                       animations: {
                         sceneDelegate.window?.rootViewController = tabBarController
                     })
+                case .goToInputMateCode(let uid):
+                    // 닉네임만 있음, 메이트 없음 → 메이트코드 입력
+                    let vc = CodeShareViewController(uid: uid)
+                    self.navigationController?.pushViewController(vc, animated: true)
+                case .goToInputNickName(let uid):
+                    // 닉네임이 없음 → 닉네임 입력
+                    let vc = NicknameViewController(uid: uid)
+                    self.navigationController?.pushViewController(vc, animated: true)
+
                 case .error(let msg):
                     // 에러 발생 시 메시지 띄우기
                     self.showErrorAlert(message: msg)

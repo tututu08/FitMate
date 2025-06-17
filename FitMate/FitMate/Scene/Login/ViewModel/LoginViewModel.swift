@@ -14,7 +14,9 @@ final class LoginViewModel {
     
     // 화면 이동 목적을 나타내는 enum (분기 판단용)
     enum LoginNavigation {
-        case goToMainViewController(uid: String) // 레디룸으로 이동
+        case goToMainViewController(uid: String) // 메인 뷰로 이동
+        case goToInputMateCode(uid: String)     // 메이트 코드 입력 화면으로 이동
+        case goToInputNickName(uid: String)     // 닉네임 입력 화면으로 이동
         case error(String) // 에러 발생 (메시지 전달)
     }
 
@@ -46,12 +48,26 @@ final class LoginViewModel {
                     return FirestoreService.shared
                         .fetchDocument(collectionName: "users", documentName: uid) // 사용자 문서 검색
                         .flatMap { data -> Single<LoginNavigation> in
-                            return .just(.goToMainViewController(uid: uid)) // 사용자 문서가 존재하면 .just(.goToSeleteSport(uid: uid))로 반환
+                            // 닉네임이 있고
+                            if let nickname = data["nickname"] as? String,
+                               !nickname.isEmpty {
+                                // 메이트가 있으면
+                                if let mate = data["mate"] as? String, !mate.isEmpty {
+                                    // 메인 뷰로 이동
+                                    return .just(.goToMainViewController(uid: uid))
+                                } else {
+                                    // 메이트가 없으면 메이트 등록 화면으로 이동
+                                    return .just(.goToInputMateCode(uid: uid))
+                                }
+                            } else {
+                                // 닉네임이 없으면 닉네임 입력 화면으로 이동
+                                return .just(.goToInputNickName(uid: uid))
+                            }
                         }
                         .catch { _ in // 사용자 문서가 존재하지 않다면
                             return FirestoreService.shared
                                 .createUserDocument(uid: uid) // 사용자 uid 로 문서를 생성
-                                .map { .goToMainViewController(uid: uid) } // .just(.goToSeleteSport(uid: uid)로 반환
+                                .map { .goToInputNickName(uid: uid) } // .just(.goToInputNickName(uid: uid)로 반환
                         }
                         .asObservable()
 

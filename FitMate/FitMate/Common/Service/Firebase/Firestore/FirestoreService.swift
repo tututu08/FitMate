@@ -221,6 +221,23 @@ class FirestoreService {
         }
     }
     
+    /// 닉네임 중복 여부 검사
+    func nicknameCheck(nickname: String) -> Single<Bool> {
+        return Single<Bool>.create { single in
+            self.db.collection("users")
+                .whereField("nickname", isEqualTo: nickname)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else {
+                        let isExist = (snapshot?.documents.count ?? 0) > 0
+                        single(.success(isExist))
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
     // MARK: - Update
     
     func updateDocument(collectionName: String, documentName: String, fields: [String: Any]) -> Single<Void> {
