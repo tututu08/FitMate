@@ -50,5 +50,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>KAKAO_NATIVE_APP_KEY</key>
+	<string>$(KAKAO_NATIVE_APP_KEY)</string>
 </dict>
 </plist>
