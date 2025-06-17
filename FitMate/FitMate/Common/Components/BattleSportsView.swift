@@ -39,7 +39,6 @@ class BattleSportsView: BaseView {
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
         label.setContentHuggingPriority(.required, for: .horizontal)
-
         return label
     }()
     
@@ -103,13 +102,13 @@ class BattleSportsView: BaseView {
     private let myProgressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.systemPurple.cgColor
+        view.layer.borderColor = UIColor.primary500.cgColor
         return view
     }()
     
     private let myProgressForegroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemPurple
+        view.backgroundColor = .primary500
         return view
     }()
     
@@ -146,7 +145,7 @@ class BattleSportsView: BaseView {
     private let myCharacterImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "KaepyR")
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -154,19 +153,16 @@ class BattleSportsView: BaseView {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "MeoranoL")
         imageView.transform = CGAffineTransform(scaleX: -1, y: 1)
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
-    }()
-    
-    private let pauseButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "pause"), for: .normal)
-        return button
     }()
     
     private let stopButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "stop"), for: .normal)
+        button.setTitle("그만하기", for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 20)
+        button.setTitleColor(.white, for: .normal)
+        button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         return button
     }()
     
@@ -182,7 +178,6 @@ class BattleSportsView: BaseView {
           goalImage,
           totalVerticalStack,
           battleImage,
-          pauseButton,
           stopButton
         ].forEach{self.addSubview($0)}
         
@@ -190,7 +185,7 @@ class BattleSportsView: BaseView {
     
     override func setLayoutUI() {
         modeLabel.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(0)
+            $0.top.equalToSuperview().offset(60)
             $0.centerX.equalToSuperview()
         }
         
@@ -229,36 +224,31 @@ class BattleSportsView: BaseView {
         }
         
         battleImage.snp.makeConstraints {
-            $0.bottom.equalTo(stopButton.snp.top).inset(-40)
+            $0.bottom.equalTo(stopButton.snp.top).inset(-50)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(350)
-            $0.height.equalTo(340)
+            $0.height.equalTo(310)
         }
         
         myCharacterImage.snp.makeConstraints{
-            $0.leading.equalTo(battleImage.snp.leading).inset(10)
-            $0.bottom.equalTo(battleImage.snp.bottom).inset(41)
+            $0.leading.equalTo(battleImage.snp.leading).inset(13)
+            $0.bottom.equalTo(battleImage.snp.bottom).inset(10)
             $0.height.equalTo(150)
             $0.width.equalTo(120)
         }
         
         mateCharacterImage.snp.makeConstraints{
-            $0.trailing.equalTo(battleImage.snp.trailing).inset(10)
-            $0.bottom.equalTo(battleImage.snp.bottom).inset(160)
+            $0.trailing.equalTo(battleImage.snp.trailing).inset(13)
+            $0.bottom.equalTo(battleImage.snp.bottom).inset(150)
             $0.height.equalTo(150)
             $0.width.equalTo(120)
         }
-        pauseButton.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(30)
-            $0.leading.equalToSuperview().offset(20)
-            $0.width.height.equalTo(60)
-        }
         
         stopButton.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(30)
-            $0.leading.equalTo(pauseButton.snp.trailing).offset(12)
+            $0.bottom.equalToSuperview().inset(60)
+            $0.centerX.equalToSuperview()
             $0.height.equalTo(60)
-            $0.width.equalTo(260)
+            $0.width.equalTo(350)
         }
     }
     // 내 기록 라벨 갱신
