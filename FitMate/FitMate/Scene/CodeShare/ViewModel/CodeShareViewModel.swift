@@ -14,6 +14,11 @@ class CodeShareViewModel {
     private let copyTapRelay = PublishRelay<Void>()
     private let alertRelay = PublishRelay<SystemAlertType>()
     
+    let uid: String
+    
+    init(uid: String) {
+        self.uid = uid
+    }
     
     var disposeBag = DisposeBag()
     
@@ -27,12 +32,10 @@ class CodeShareViewModel {
     }
     
     func setCode(_ code: String) {
-        // 아직 구현 중
         copyRelay.accept(code)
     }
     
     func transform(input: Input) -> Output {
-        // 아직 구현 중
         FirestoreService.shared
                 .fetchDocument(collectionName: "codes", documentName: "mateCode")
                 .map { $0["value"] as? String ?? "" }
@@ -40,9 +43,9 @@ class CodeShareViewModel {
                         self?.setCode(code)
                     }, onFailure: { error in
                         print("Firestore fetch error: \(error.localizedDescription)")
-                    })
                 .disposed(by: disposeBag)
         
+        // 복사 버튼
         input.copyTab
             .withLatestFrom(copyRelay)
             .do(onNext: { code in
@@ -59,5 +62,4 @@ class CodeShareViewModel {
             showAlert: alertRelay.asDriver(onErrorDriveWith: .empty())
         )
     }
-    
 }
