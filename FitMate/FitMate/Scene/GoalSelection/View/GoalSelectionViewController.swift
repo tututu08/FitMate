@@ -127,8 +127,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 guard let self = self else { return }
                 
                 // 저장(종목 타이틀, 목표치)
-                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
-                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
+//                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
+//                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
                 
                 // MARK: Firestore 데이터 저장
                 // "matches" 컬렉션 및 "matchID" 문서 생성
@@ -140,12 +140,15 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     mode: self.selectedModeRelay.value.asString
                 )
                 .subscribe(
-                    onSuccess: { print("Match 생성 성공") },
+                    onSuccess: { matchCode in
+                        print("Match 생성 성공 \(matchCode)")
+                        // 로딩 화면으로 이동
+                        self.navigationController?.pushViewController(LoadingViewController(matchCode: matchCode), animated: true)
+                    },
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
                 
-                // 로딩 화면으로 이동
-                self.navigationController?.pushViewController(LoadingViewController(), animated: true)
+                
 
             })
             .disposed(by: disposeBag)

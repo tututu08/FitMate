@@ -27,6 +27,14 @@ class TabBarController: UITabBarController {
         configureTabBar()
         setUp()
         selectedIndex = 1 // 시작화면을 메인뷰로 시작
+        
+        // 운동 매칭 글로벌 리스너 서비스 시작
+        MatchEventService.shared.startListening(for: uid)
+    }
+    
+    deinit {
+        // 운동 매칭 글로벌 리스너 서비스 중지
+        MatchEventService.shared.stopListening()
     }
     
     private func configureTabBar() {
