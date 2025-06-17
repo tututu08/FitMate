@@ -93,7 +93,7 @@ class NicknameView: BaseView {
     
     override func setLayoutUI() {
         nicknameViewTitle.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(-23)
+            make.top.equalTo(safeAreaLayoutGuide).inset(0)
             make.centerX.equalToSuperview()
         }
         
