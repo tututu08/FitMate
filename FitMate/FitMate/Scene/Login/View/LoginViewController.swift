@@ -13,6 +13,7 @@ class LoginViewController: BaseViewController {
     
     let viewModel = LoginViewModel() // 뷰모델
     let googleLoginTrigger = PublishRelay<Void>() // 로그인 버튼 클릭 이벤트 전달
+    let kakaoLoginTrigger = PublishRelay<Void>()
     let nextViewRelay = PublishRelay<Void>() // 다음 버튼 클릭 이벤트 전달
     
     let logInView = LoginView()
@@ -38,6 +39,11 @@ class LoginViewController: BaseViewController {
             // UI에서 발생한 이벤트를 Relay로 보내는 상황
             .bind(to: googleLoginTrigger) // relay에 이벤트(빈 값)를 흘려보내라
             .disposed(by: disposeBag)
+        // 사용자가 카카오 버튼을 누르면 이벤트가 ViewModel로 흐름
+        self.logInView.kakaoLogin.rx.tap
+            .bind(to: kakaoLoginTrigger)
+            .disposed(by: disposeBag)
+        
     }
     
     override func bindViewModel() {
@@ -48,8 +54,10 @@ class LoginViewController: BaseViewController {
             // 이렇게 되면 값을 방출 할 수 없음,
             //.subscribe()는 가능
             //.onNext(), .accpet()로 값을 방출하는건 불가능
-            googleLoginTrigger: googleLoginTrigger.asObservable()
+            googleLoginTrigger: googleLoginTrigger.asObservable(),
+            kakaoLoginTrigger: kakaoLoginTrigger.asObservable()
         )
+        
         
         let output = viewModel.transform(input: input, presentingVC: self)
         

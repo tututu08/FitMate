@@ -1,0 +1,12 @@
+//
+//  Config.xcconfig
+//  FitMate
+//
+//  Created by soophie on 6/17/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+KAKAO_NATIVE_APP_KEY = f2bf0d2c2849c2afb857d80ca4231f39
+
