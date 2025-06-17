@@ -25,7 +25,7 @@ class CodeShareViewModel {
         let copiedText: Observable<String>
         let showAlert: Driver<SystemAlertType>
     }
-    
+    /// 외부에서 전달받은 코드를 내부 relay로 전달
     func setCode(_ code: String) {
         // 아직 구현 중
         copyRelay.accept(code)
@@ -35,8 +35,10 @@ class CodeShareViewModel {
         // 아직 구현 중
         FirestoreService.shared
                 .fetchDocument(collectionName: "codes", documentName: "mateCode")
+                // 가져온 Document에서 "value" 필드를 꺼내 String으로 변환
                 .map { $0["value"] as? String ?? "" }
                 .subscribe(onSuccess: { [weak self] code in
+                    // 성공적으로 값을 받아오면 setCode 메서드를 통해 relay에 저장
                         self?.setCode(code)
                     }, onFailure: { error in
                         print("Firestore fetch error: \(error.localizedDescription)")
