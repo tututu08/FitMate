@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import RxSwift
 
 class MyRandomCodeButton: UIButton {
     
@@ -75,3 +76,18 @@ class MyRandomCodeButton: UIButton {
     }
     
 }
+
+// MyRandomCodeButton에 대한 Rx 확장 정의
+extension Reactive where Base: MyRandomCodeButton {
+    /// `codeText`는 외부에서 전달받은 문자열(String)을
+    /// MyRandomCodeButton 내부의 `randomCode` 라벨의 `text` 속성에 바인딩하는 역할을 한다.
+    /// RxSwift의 `bind(to:)`를 사용할 때, 이 Binder를 통해 버튼에 텍스트를 손쉽게 전달할 수 있음.
+    var codeText: Binder<String> {
+        return Binder(base) { button, text in
+            // `base`는 MyRandomCodeButton 인스턴스이며,
+            // 그 내부의 UILabel인 `randomCode`에 text 값을 설정한다.
+            button.randomCode.text = text
+        }
+    }
+}
+
