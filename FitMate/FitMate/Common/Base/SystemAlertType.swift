@@ -12,6 +12,7 @@ enum SystemAlertType {
     case invalidCode
     case codeSent
     case overLimit
+    case duplicateNickname
     case custom(title: String, Message: String? = nil)
     
     var title: String {
@@ -24,6 +25,8 @@ enum SystemAlertType {
             return "메이트에게 요청을 보냈습니다"
         case .overLimit:
             return "8자 이하로 입력해주세요"
+        case .duplicateNickname:
+            return "중복된 닉네임 입니다."
         case .custom(let title, _):
             return title
         }
@@ -31,7 +34,7 @@ enum SystemAlertType {
     
     var message: String? {
         switch self {
-        case .copied, .invalidCode, .codeSent, .overLimit:
+        case .copied, .invalidCode, .codeSent, .overLimit, .duplicateNickname:
             return nil
         case .custom(_, let message):
             return message
@@ -40,7 +43,7 @@ enum SystemAlertType {
     
     var actions: [UIAlertAction] {
         switch self {
-        case .copied, .invalidCode, .codeSent, .overLimit, .custom:
+        case .copied, .invalidCode, .codeSent, .overLimit, .duplicateNickname, .custom:
             return [
                 UIAlertAction(title: "확인", style: .default, handler: nil)
             ]
