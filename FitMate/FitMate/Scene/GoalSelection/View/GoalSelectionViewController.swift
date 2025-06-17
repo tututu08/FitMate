@@ -256,8 +256,6 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         selectedGoalValueRelay.accept(value)
         selectedGoalUnitRelay.accept(unit)
         
-        print("선택된 목표치: \(value), 단위: \(unit)")
-        
         pickerView.reloadAllComponents()
     }
     
