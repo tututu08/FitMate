@@ -24,6 +24,7 @@ final class CodeShareViewModel: ViewModelType {
         let dismiss: Driver<Void>
         let showInviteAlert: Signal<String>
         let inviteCode: Driver<String>
+        let transitionToMain: Signal<Void>
     }
 
     // MARK: - Properties
@@ -36,6 +37,11 @@ final class CodeShareViewModel: ViewModelType {
     private let inviteCodeRelay = BehaviorRelay<String>(value: "")
     private var nickname: String = ""
     private var listener: ListenerRegistration?
+    private let acceptanceRelay = PublishRelay<Void>()
+
+    var acceptanceDetected: Signal<Void> {
+        return acceptanceRelay.asSignal()
+    }
     
     init(uid: String) {
         self.uid = uid
@@ -71,7 +77,8 @@ final class CodeShareViewModel: ViewModelType {
             navigateToMateCode: navigateToMateCode,
             dismiss: dismiss,
             showInviteAlert: inviteAlertRelay.asSignal(),
-            inviteCode: inviteCodeRelay.asDriver()
+            inviteCode: inviteCodeRelay.asDriver(),
+            transitionToMain: acceptanceDetected
         )
     }
     
@@ -90,40 +97,67 @@ final class CodeShareViewModel: ViewModelType {
     // MARK: - Listen for Invite
     private func startListeningInviteStatus() {
         let ref = db.collection("users").document(uid)
-        
+
         listener = ref.addSnapshotListener { [weak self] snapshot, error in
             guard let self = self,
                   let data = snapshot?.data(),
-                  let status = data["inviteStatus"] as? String,
-                  status == "invited",
-                  let fromUid = data["fromUid"] as? String else {
+                  let status = data["inviteStatus"] as? String else {
                 return
             }
-            
-            self.firestoreService.fetchDocument(collectionName: "users", documentName: fromUid)
-                .subscribe(onSuccess: { doc in
-                    let nickname = doc["nickname"] as? String ?? "상대방"
-                    self.inviteAlertRelay.accept(nickname)
-                })
-                .disposed(by: self.disposeBag)
+
+            if status == "invited", let fromUid = data["fromUid"] as? String {
+                self.firestoreService.fetchDocument(collectionName: "users", documentName: fromUid)
+                    .subscribe(onSuccess: { doc in
+                        let nickname = doc["nickname"] as? String ?? "상대방"
+                        self.inviteAlertRelay.accept(nickname)
+                    })
+                    .disposed(by: self.disposeBag)
+            }
+
+            if status == "accepted" {
+                self.acceptanceRelay.accept(())
+            }
         }
     }
 
     // MARK: - Actions
     func acceptInvite(fromUid: String) -> Completable {
-        let updateMyDoc = firestoreService.updateDocument(collectionName: "users", documentName: uid, fields: [
-            "inviteStatus": "accepted",
-            "mate": ["uid": fromUid, "nickname": "상대방"],
-            "updatedAt": FieldValue.serverTimestamp()
-        ])
-        
-        let updateOtherDoc = firestoreService.updateDocument(collectionName: "users", documentName: fromUid, fields: [
-            "inviteStatus": "accepted",
-            "mate": ["uid": uid, "nickname": nickname],
-            "updatedAt": FieldValue.serverTimestamp()
-        ])
-        
-        return Completable.zip(updateMyDoc.asCompletable(), updateOtherDoc.asCompletable())
+        // Step 1: 먼저 상대방의 사용자 문서를 가져와야 함
+        return firestoreService.fetchDocument(collectionName: "users", documentName: fromUid)
+            .flatMapCompletable { [weak self] data in
+                guard let self = self else {
+                    return .error(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "self 해제됨"]))
+                }
+                
+                let opponentNickname = data["nickname"] as? String ?? "상대방"
+                
+                // 내 문서 업데이트 (상대방 uid, 닉네임 포함)
+                let updateMyDoc = self.firestoreService.updateDocument(collectionName: "users", documentName: self.uid, fields: [
+                    "inviteStatus": "accepted",
+                    "mate": [
+                        "uid": fromUid,
+                        "nickname": opponentNickname
+                    ],
+                    "hasMate": true,
+                    "updatedAt": FieldValue.serverTimestamp()
+                ])
+                
+                // 상대방 문서 업데이트 (나의 uid, 닉네임 포함)
+                let updateOtherDoc = self.firestoreService.updateDocument(collectionName: "users", documentName: fromUid, fields: [
+                    "inviteStatus": "accepted",
+                    "mate": [
+                        "uid": self.uid,
+                        "nickname": self.nickname
+                    ],
+                    "hasMate": true,
+                    "updatedAt": FieldValue.serverTimestamp()
+                ])
+                
+                return Completable.zip(
+                    updateMyDoc.asCompletable(),
+                    updateOtherDoc.asCompletable()
+                )
+            }
     }
     
     func rejectInvite() -> Completable {
@@ -138,68 +172,3 @@ final class CodeShareViewModel: ViewModelType {
         listener?.remove()
     }
 }
-
-// MARK: - 수정 전
-//import UIKit
-//import RxSwift
-//import RxCocoa
-//
-//class CodeShareViewModel {
-//    
-//    private let copyRelay = BehaviorRelay<String>(value: "")
-//    private let copyTapRelay = PublishRelay<Void>()
-//    private let alertRelay = PublishRelay<SystemAlertType>()
-//    
-//    let uid: String
-//    
-//    init(uid: String) {
-//        self.uid = uid
-//    }
-//    
-//    var disposeBag = DisposeBag()
-//    
-//    struct Input {
-//        let copyTab: Observable<Void>
-//    }
-//    
-//    struct Output {
-//        let copiedText: Observable<String>
-//        let showAlert: Driver<SystemAlertType>
-//    }
-//    
-//    /// 외부에서 전달받은 코드를 내부 relay로 전달
-//    func setCode(_ code: String) {
-//        copyRelay.accept(code)
-//    }
-//    
-//    func transform(input: Input) -> Output {
-//        FirestoreService.shared
-//            .fetchDocument(collectionName: "codes", documentName: "mateCode")
-//        // 가져온 Document에서 "value" 필드를 꺼내 String으로 변환
-//            .map { $0["value"] as? String ?? "" }
-//            .subscribe(onSuccess: { [weak self] code in
-//                // 성공적으로 값을 받아오면 setCode 메서드를 통해 relay에 저장
-//                self?.setCode(code)
-//            }, onFailure: { error in
-//                print("Firestore fetch error: \(error.localizedDescription)")
-//            })
-//            .disposed(by: disposeBag)
-//        
-//        // 복사 버튼
-//        input.copyTab
-//            .withLatestFrom(copyRelay)
-//            .do(onNext: { code in
-//                UIPasteboard.general.string = code
-//            })
-//            .map { _ in
-//                SystemAlertType.copied
-//            }
-//            .bind(to: alertRelay)
-//            .disposed(by: disposeBag)
-//        
-//        return Output(
-//            copiedText: copyRelay.asObservable(),
-//            showAlert: alertRelay.asDriver(onErrorDriveWith: .empty())
-//        )
-//    }
-//}
