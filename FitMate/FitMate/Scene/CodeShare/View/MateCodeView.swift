@@ -101,7 +101,7 @@ class MateCodeView: BaseView {
         completeButton.snp.makeConstraints { make in
             make.top.equalTo(fillInMateCode.snp.bottom).offset(20)
             make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(20)
-            make.width.equalTo(335)
+            //make.width.equalTo(335)
             make.height.equalTo(60)
         }
     }
