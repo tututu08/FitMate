@@ -23,7 +23,7 @@ class NicknameViewController: BaseViewController {
         nicknameView.registerButton.rx.tap
             .asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] _ in
-                let codeShareView = CodeShareVIewController()
+                let codeShareView = CodeShareViewController()
                 self?.navigationController?.pushViewController(
                     codeShareView, animated: true)
             })

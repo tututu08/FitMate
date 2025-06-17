@@ -9,7 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class CodeShareVIewController: BaseViewController {
+class CodeShareViewController: BaseViewController {
     
     private let codeShareView = CodeShareView()
     private let viewModel = CodeShareViewModel()

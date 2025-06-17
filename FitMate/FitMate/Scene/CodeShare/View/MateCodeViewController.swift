@@ -16,7 +16,6 @@ class MateCodeViewController: BaseViewController {
     
     override func loadView() {
         self.view = mateCodeView
-        bindViewModel()
     }
     // 시스템 네비게이션바 숨김
     override func viewWillAppear(_ animated: Bool) {
