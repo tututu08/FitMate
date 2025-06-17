@@ -238,6 +238,27 @@ class FirestoreService {
         }
     }
     
+    // 초대 코드 읽기
+    func fetchUserByInviteCode(_ code: String) -> Single<[String: Any]> {
+        return Single.create { single in
+            self.db.collection("users")
+                .whereField("inviteCode", isEqualTo: code)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else if let document = snapshot?.documents.first {
+                        single(.success(document.data()))
+                    } else {
+                        let error = NSError(domain: "", code: -1, userInfo: [
+                            NSLocalizedDescriptionKey: "해당 초대 코드를 가진 사용자를 찾을 수 없습니다."
+                        ])
+                        single(.failure(error))
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
     // MARK: - Update
     
     func updateDocument(collectionName: String, documentName: String, fields: [String: Any]) -> Single<Void> {
