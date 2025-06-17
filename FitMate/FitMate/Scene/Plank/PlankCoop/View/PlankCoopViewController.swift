@@ -30,7 +30,7 @@ final class PlankCoopViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        sportsView.updateGoal("플랭크 \(viewModel.goalMinutes)분을 버텨라") // 또는 회, 개, whatever
+        sportsView.updateGoal("플랭크 \(viewModel.goalMinutes)분") // 또는 회, 개, whatever
         bind()
         startRelay.accept(())
         // 버튼 Rx 바인딩

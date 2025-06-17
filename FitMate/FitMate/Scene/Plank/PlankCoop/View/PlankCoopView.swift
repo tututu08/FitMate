@@ -289,20 +289,26 @@ class PlankCoopView: BaseView {
         case .ready:
             stateLabel.text = "준비하세요"
             stateLabel.textColor = .white
-            timerLabel.textColor = .orange
+            timerLabel.textColor = .red
         case .myTurn:
-            stateLabel.text = "내 차례"
-            stateLabel.textColor = UIColor(red: 206/255, green: 255/255, blue: 67/255, alpha: 1)
-            timerLabel.textColor = .systemGreen
+            if timer <= 7 {
+                stateLabel.text = "조금만 더 버텨요! 파이팅!"
+                stateLabel.textColor = .white
+                timerLabel.textColor = .secondary400
+            } else {
+                stateLabel.text = "플랭크 시작"
+                stateLabel.textColor = UIColor(red: 206/255, green: 255/255, blue: 67/255, alpha: 1)
+                timerLabel.textColor = .secondary200
+            }
         case .mateTurn:
             if timer <= 5 {
-                stateLabel.text = "준비하세요 곧 내 차례 입니다!"
-                stateLabel.textColor = .orange
+                stateLabel.text = "준비하시고~!"
+                timerLabel.textColor = .red
             } else {
-                stateLabel.text = "쉬는 시간"
-                stateLabel.textColor = .systemPurple
+                stateLabel.text = "휴식 타임"
+                timerLabel.textColor = .primary300
             }
-            timerLabel.textColor = .systemPurple
+            stateLabel.textColor = .white
         default :
             break
         }
