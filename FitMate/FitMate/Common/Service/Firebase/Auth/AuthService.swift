@@ -9,6 +9,10 @@ import FirebaseAuth
 import GoogleSignIn
 import FirebaseCore
 import RxSwift
+import KakaoSDKUser
+import KakaoSDKAuth
+
+typealias KakaoUser = KakaoSDKUser.User
 
 final class AuthService {
 
@@ -71,4 +75,46 @@ final class AuthService {
             return Disposables.create()
         }
     }
+    
+    /// 카카오 사용자 정보로 firebase 이메일/비번 방식 로그인 시도
+    /// 이메일 = kakaoUser.kakaoAccount?.email
+    /// 비번 = kakaoUser.id를 문자열로 변환해서 사용
+    /// 이미 가입됐으면 로그인 / 아니면 회원가입
+    func signInWithKakao(kakaoUser: KakaoUser) -> Single<FirebaseAuth.User> {
+        return Single.create { single in
+            Task {
+                do {
+                    // 이메일 및 id가 nil인지 확인 후 언래핑
+                    guard let email = kakaoUser.kakaoAccount?.email,
+                          let id = kakaoUser.id else {
+                        // nil이면 실패
+                        single(.failure(NSError(domain: "kakaoAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "이메일 또는 ID 없음"])))
+                        return
+                    }
+                    // 카카오 id를 문자열로 변환하고 비번처럼 사용
+                    let password = String(id)
+                    
+                    do {
+                        // firebase에 새 사용자로 회원가입 시도
+                        let user = try await Auth.auth().createUser(withEmail: email, password: password).user
+                        // 성공하면 결과 방출
+                        single(.success(user))
+                    } catch let error as NSError {
+                        // 이미 존재하는 이메일이면 로그인 시도
+                        if error.code == AuthErrorCode.emailAlreadyInUse.rawValue {
+                            let user = try await Auth.auth().signIn(withEmail: email, password: password).user
+                            single(.success(user))
+                        } else {
+                            // 다른 에러면 그대로 실패 처리
+                            single(.failure(error))
+                        }
+                    }
+                } catch {
+                    single(.failure(error))
+                }
+            }
+            return Disposables.create()
+        }
+    }
+
 }

@@ -7,7 +7,7 @@
 import UIKit
 import SnapKit
 
-class CodeShareView: UIView {
+class CodeShareView: BaseView {
     
     let customNavBar: UIView = {
         let view = UIView()
@@ -25,15 +25,15 @@ class CodeShareView: UIView {
         let title = UILabel()
         title.text = "코드 공유"
         title.textColor = .white
-        title.font = .systemFont(ofSize: 20)
+        title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return title
     }()
     
     let guideMent: UILabel = {
         let guide = UILabel()
         guide.text = "파트너 연결 후 시작해보세요"
-        guide.textColor = .lightGray
-        guide.font = .systemFont(ofSize: 16)
+        guide.textColor = .background100
+        guide.font = UIFont(name: "Pretendard-Regular", size: 16)
         return guide
     }()
     
@@ -45,11 +45,12 @@ class CodeShareView: UIView {
         return image
     }()
     
-    let copyRandomCodeView = MyRandomCodeView()
+    let copyRandomCodeButton = MyRandomCodeButton()
+    
     
     let line: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemPurple
+        view.backgroundColor = .primary200
         return view
     }()
     
@@ -57,8 +58,8 @@ class CodeShareView: UIView {
         let button = UIButton()
         button.setTitle("메이트 코드 입력", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 22)
-        button.backgroundColor = .purple
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
+        button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
         button.clipsToBounds = true
         return button
@@ -66,24 +67,24 @@ class CodeShareView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .black
-        setupUI()
-        setupConstraints()
+        backgroundColor = .background800
+        configureUI()
+        setLayoutUI()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI() {
+    override func configureUI() {
         [customNavBar,titleLabel, guideMent, defaultAvatarImage,
-         copyRandomCodeView, line, mateCodeButton].forEach { addSubview($0) }
+         copyRandomCodeButton, line, mateCodeButton].forEach { addSubview($0) }
         
         customNavBar.addSubview(xButton)
         customNavBar.addSubview(titleLabel)
     }
     
-    private func setupConstraints() {
+    override func setLayoutUI() {
         customNavBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
@@ -111,14 +112,14 @@ class CodeShareView: UIView {
             make.height.equalTo(defaultAvatarImage.snp.width)
         }
         
-        copyRandomCodeView.snp.makeConstraints { make in
+        copyRandomCodeButton.snp.makeConstraints { make in
             make.top.equalTo(defaultAvatarImage.snp.bottom).offset(113)
             make.centerX.equalToSuperview()
             make.width.equalTo(335)
         }
         
         line.snp.makeConstraints { make in
-            make.top.equalTo(copyRandomCodeView.snp.bottom).offset(20)
+            make.top.equalTo(copyRandomCodeButton.snp.bottom).offset(20)
             make.height.equalTo(1)
             make.width.equalTo(335)
             make.centerX.equalToSuperview()

@@ -14,8 +14,8 @@ class CustomHeaderLabel: UILabel {
     init(text: String) {
         super.init(frame: .zero)
         self.text = text
-        self.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        self.textColor = .black
+        self.font = UIFont(name: "Pretendard-Medium", size: 14)
+        self.textColor = .background500
         self.translatesAutoresizingMaskIntoConstraints = false
     }
     

@@ -102,7 +102,7 @@ class FirestoreService {
         )
      */
     
-    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: String, mode: String) -> Single<Void> {
+    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: String, mode: String) -> Single<String> {
         return Single.create { single in
             func tryGenerateAndSave() {
                 let matchCode = self.generateInviteCode()
@@ -123,7 +123,7 @@ class FirestoreService {
                             "createAt": FieldValue.serverTimestamp(), // 만든 시간
                             // "startedAt": FieldValue.serverTimestamp(),     // 실제 시작 시각 넣을 땐 따로 업데이트
                             // "finishedAt": FieldValue.serverTimestamp(),    // 실제 종료 시각 넣을 땐 따로 업데이트
-                            "player": [
+                            "players": [
                                 inviterUid: [
                                     // "avatar": "끼리꼬", // 아바타 구현 되면 넣어야됨
                                     "isOnline": true,
@@ -141,14 +141,15 @@ class FirestoreService {
                             ]
                         ]
                         
-                        // Match 컬렉션의 MatchID 문서 생성
+                        // Match 컬렉션의 MatchCode 문서 생성
                         // 데이터 생성
                         newRef.setData(data) { error in
                             if let error = error {
                                 single(.failure(error))
                                 print("Match 데이터 생성 실패: \(error.localizedDescription)")
                             } else {
-                                single(.success(()))
+                                // MatchCode 반환
+                                single(.success(newRef.documentID))
                                 print("Match 데이터 생성 완료: 매치코드: \(matchCode)")
                             }
                         }
@@ -216,6 +217,23 @@ class FirestoreService {
                     single(.failure(noDataError))
                 }
             }
+            return Disposables.create()
+        }
+    }
+    
+    /// 닉네임 중복 여부 검사
+    func nicknameCheck(nickname: String) -> Single<Bool> {
+        return Single<Bool>.create { single in
+            self.db.collection("users")
+                .whereField("nickname", isEqualTo: nickname)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else {
+                        let isExist = (snapshot?.documents.count ?? 0) > 0
+                        single(.success(isExist))
+                    }
+                }
             return Disposables.create()
         }
     }
