@@ -3,7 +3,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-final class StopAlert: UIView {
+final class QuitAlert: UIView {
     
     // 종류(내가 누름/상대가 누름)
     enum AlertType {

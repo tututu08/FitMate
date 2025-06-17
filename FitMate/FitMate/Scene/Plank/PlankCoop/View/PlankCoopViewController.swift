@@ -85,16 +85,16 @@ final class PlankCoopViewController: BaseViewController {
                 case .paused(let isMine):
                     if self.sportsView.alertView != nil { return }
                     if isMine {
-                        self.sportsView.showAlert(
+                        self.sportsView.showPauseAlert(
                             type: .myPause,
                             onResume: { self.resumeRelay.accept(()) },
                             onQuit:   { self.quitRelay.accept(()) }
                         )
                     } else {
-                        self.sportsView.showAlert(type: .matePause)
+                        self.sportsView.showPauseAlert(type: .matePause)
                     }
                 default:
-                    self.sportsView.hideAlert()
+                    self.sportsView.hidePauseAlert()
                 }
                 // 종료 분기
                 switch status {

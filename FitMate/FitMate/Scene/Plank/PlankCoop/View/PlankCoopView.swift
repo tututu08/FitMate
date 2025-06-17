@@ -5,7 +5,7 @@ import SnapKit
 class PlankCoopView: BaseView {
     
     var alertView: PauseAlert?
-    var quitAlertView: StopAlert?
+    var quitAlertView: QuitAlert?
     
     // "협력 모드" 라벨(모드 이름 표시)
     private let modeLabel: UILabel = {
@@ -312,7 +312,7 @@ class PlankCoopView: BaseView {
             break
         }
     }
-    func showAlert(
+    func showPauseAlert(
         type: PauseAlert.AlertType,
         onResume: (() -> Void)? = nil,
         onQuit: (() -> Void)? = nil
@@ -326,7 +326,7 @@ class PlankCoopView: BaseView {
         // 버튼 콜백(내가 누를 수 있는 경우에만)
         alert.onResume = { [weak self] in
             onResume?()
-            self?.hideAlert()
+            self?.hidePauseAlert()
         }
         
         // addSubview로 화면 중앙에 띄우기 (SnapKit or AutoLayout)
@@ -338,19 +338,19 @@ class PlankCoopView: BaseView {
     }
 
 
-    func hideAlert() {
+    func hidePauseAlert() {
         alertView?.removeFromSuperview()
         alertView = nil
     }
     // PlankCoopView 확장
     func showQuitAlert(
-        type: StopAlert.AlertType,
+        type: QuitAlert.AlertType,
         onResume: (() -> Void)? = nil,
         onQuit: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil
     ) {
         if quitAlertView != nil { return }
-        let alert = StopAlert(type: type)
+        let alert = QuitAlert(type: type)
         alert.onResume = { [weak self] in onResume?(); self?.hideQuitAlert() }
         alert.onQuit = { [weak self] in onQuit?(); self?.hideQuitAlert() }
         alert.onBack = { [weak self] in onBack?(); self?.hideQuitAlert() }
