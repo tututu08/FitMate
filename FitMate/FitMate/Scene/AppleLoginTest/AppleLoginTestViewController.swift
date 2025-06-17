@@ -95,6 +95,7 @@ class AppleLoginTestViewController: UIViewController, ASAuthorizationControllerD
         authorizationController.performRequests()
     }
 }
+
 // Apple 로그인 창을 띄울 때 어느 윈도우에서 띄울지를 지정
 extension AppleLoginTestViewController: ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
