@@ -84,11 +84,11 @@ class LoginViewController: BaseViewController {
                 case .goToInputMateCode(let uid):
                     // 닉네임만 있음, 메이트 없음 → 메이트코드 입력
                     let vc = CodeShareViewController(uid: uid)
-                    self?.navigationController?.pushViewController(vc, animated: true)
+                    self.navigationController?.pushViewController(vc, animated: true)
                 case .goToInputNickName(let uid):
                     // 닉네임이 없음 → 닉네임 입력
                     let vc = NicknameViewController(uid: uid)
-                    self?.navigationController?.pushViewController(vc, animated: true)
+                    self.navigationController?.pushViewController(vc, animated: true)
 
                 case .error(let msg):
                     // 에러 발생 시 메시지 띄우기

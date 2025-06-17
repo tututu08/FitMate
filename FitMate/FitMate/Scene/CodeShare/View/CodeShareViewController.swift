@@ -43,6 +43,8 @@ class CodeShareViewController: BaseViewController {
             .drive(onNext: { [weak self] in
                 let next = MateCodeViewController()
                 self?.navigationController?.pushViewController(next, animated: true)
+            })
+            .disposed(by: disposeBag)
         
         // 상단 X 버튼
         codeShareView.xButton.rx.tap
