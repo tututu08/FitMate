@@ -33,6 +33,7 @@ class LoadingViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        self.hidesBottomBarWhenPushed = true
     }
     
     /// ViewModel 바인딩

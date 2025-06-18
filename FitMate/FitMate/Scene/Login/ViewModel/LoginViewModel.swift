@@ -55,7 +55,7 @@ final class LoginViewModel {
                             if let nickname = data["nickname"] as? String,
                                !nickname.isEmpty {
                                 // 메이트가 있으면
-                                if let mate = data["mate"] as? String, !mate.isEmpty {
+                                if let mate = data["hasMate"] as? Bool, mate == true {
                                     // 메인 뷰로 이동
                                     return .just(.goToMainViewController(uid: uid))
                                 } else {

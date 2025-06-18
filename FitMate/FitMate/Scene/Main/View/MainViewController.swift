@@ -53,7 +53,9 @@ class MainViewController: BaseViewController {
         mainView.exerciseButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self else { return }
-                self.navigationController?.pushViewController(SportsSelectionViewController(uid: self.uid), animated: true)
+                let SportsSelectionVC = SportsSelectionViewController(uid: self.uid)
+                SportsSelectionVC.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(SportsSelectionVC, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -83,7 +85,9 @@ class MainViewController: BaseViewController {
             
             // 게임화면으로 이동
             // 아직 테스트용으로 구현됨
-            self.navigationController?.pushViewController(RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!"), animated: true)
+            let gameVC = RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!")
+            gameVC.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(gameVC, animated: true)
         }))
         // 거절
         alert.addAction(UIAlertAction(title: "거절", style: .destructive, handler: { [weak self] _ in
