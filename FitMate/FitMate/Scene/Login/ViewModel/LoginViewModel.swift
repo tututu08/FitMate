@@ -11,6 +11,7 @@ import FirebaseAuth
 import UIKit
 import KakaoSDKUser
 import KakaoSDKAuth
+import CryptoKit
 
 final class LoginViewModel {
     
@@ -26,6 +27,7 @@ final class LoginViewModel {
         // ViewModel은 오직 구독만 하고, 발행은 하지 않기 위해서
         let googleLoginTrigger: Observable<Void>
         let kakaoLoginTrigger: Observable<Void>
+        let appleLoginTrigger: Observable<Void>
     }
     
     struct Output {
@@ -124,7 +126,7 @@ final class LoginViewModel {
                             }
                         }
                     }
-
+                    
                     return Disposables.create()
                 }
             }
@@ -136,6 +138,7 @@ final class LoginViewModel {
                     .catch { .just(.failure($0)) }
                     .asObservable()
             }
+
         // MARK: - 수정 필요
             .flatMapLatest { result -> Observable<LoginNavigation> in
                 // 로그인 결과에 따라 Firestore 조회 및 화면 분기
@@ -173,11 +176,44 @@ final class LoginViewModel {
                     return .just(.error(error.localizedDescription)) // 에러 메시지 출력
                 }
             }
-        
+        let appleLoginFlow = input.appleLoginTrigger
+            .flatMapLatest {
+                AuthService.shared.signInWithApple(presentingVC: presentingVC)
+                    .map { Result.success($0) }
+                    .catch { .just(.failure($0)) }
+                    .asObservable()
+            }
+            .flatMapLatest { result -> Observable<LoginNavigation> in
+                switch result {
+                case .success(let user):
+                    let uid = user.uid
+                    return FirestoreService.shared
+                        .fetchDocument(collectionName: "users", documentName: uid)
+                        .flatMap { data -> Single<LoginNavigation> in
+                            if let nickname = data["nickname"] as? String, !nickname.isEmpty {
+                                if let mate = data["mate"] as? String, !mate.isEmpty {
+                                    return .just(.goToMainViewController(uid: uid))
+                                } else {
+                                    return .just(.goToInputMateCode(uid: uid))
+                                }
+                            } else {
+                                return .just(.goToInputNickName(uid: uid))
+                            }
+                        }
+                        .catch { _ in
+                            FirestoreService.shared
+                                .createUserDocument(uid: uid)
+                                .map { .goToInputNickName(uid: uid) }
+                        }
+                        .asObservable()
+                case .failure(let error):
+                    return .just(.error(error.localizedDescription))
+                }
+            }
         /// 여러 로그인 플로우를 하나의 Observable로 병합
         /// 둘 중 하나라도 이벤트를 방출하면 mergedFlow에서 이벤트 생성
         let mergedFlow = Observable
-            .merge(gooeleLoginFlow, kakaoLoginFlow)
+            .merge(gooeleLoginFlow, kakaoLoginFlow, appleLoginFlow)
         /// 에러 발생 시 Driver로 변환하면서 기본 에러 처리 로직 지정
             .asDriver(onErrorRecover: { error in
                 return Driver.just(.error(error.localizedDescription))
