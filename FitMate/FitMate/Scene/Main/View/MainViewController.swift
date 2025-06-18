@@ -34,7 +34,17 @@ class MainViewController: BaseViewController {
     
     override func loadView() {
         self.view = mainView
-        mainView.changeAvatarLayout(hasMate: true)
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
+            .subscribe(onSuccess: { [weak self] data in
+                guard let self else { return }
+                
+                if let myNickname = data["nickname"] as? String,
+                let mate = data["mate"] as? [String: Any],
+                   let mateNickname = mate["nickname"] as? String {
+                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
+                }
+            }).disposed(by: disposeBag)
+        
         navigationItem.backButtonTitle = ""
     }
     
