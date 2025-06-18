@@ -1,4 +1,3 @@
-
 import UIKit
 import SnapKit
 
@@ -12,6 +11,14 @@ final class MypageView: UIView {
     }()
 
     let topBar = UIView()
+
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        return label
+    }()
 
     let profileImageView: UIView = {
         let view = UIView()
@@ -86,6 +93,12 @@ final class MypageView: UIView {
         return collectionView
     }()
 
+    convenience init(showSettingButton: Bool = true, titleText: String = "") {
+        self.init(frame: .zero)
+        settingButton.isHidden = !showSettingButton
+        titleLabel.text = titleText
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .black
@@ -102,10 +115,6 @@ final class MypageView: UIView {
         addSubview(nicknameLabel)
         addSubview(underline)
 
-        let titleLabel = UILabel()
-        titleLabel.text = "마이페이지"
-        titleLabel.textColor = .white
-        titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
         topBar.addSubview(titleLabel)
         topBar.addSubview(settingButton)
 
@@ -149,7 +158,7 @@ final class MypageView: UIView {
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(1)
         }
-        
+
         scrollView.snp.makeConstraints {
             $0.top.equalTo(underline.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
@@ -185,8 +194,9 @@ final class MypageView: UIView {
 
         achievementTitleStack.isHidden = true
         achievementImageView.isHidden = true
+
         levelTitle.snp.remakeConstraints {
-            $0.top.equalToSuperview().offset(16) 
+            $0.top.equalToSuperview().offset(16)
             $0.leading.equalToSuperview().offset(20)
         }
     }
