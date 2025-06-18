@@ -1,8 +1,3 @@
-//
-//  FitMate
-//
-//  Created by 강성훈 on 6/5/25.
-//
 
 import Foundation
 
@@ -10,9 +5,9 @@ enum ExerciseType: String, CaseIterable {
     case all = "전체"
     case walk = "걷기"
     case run = "달리기"
-    case bike = "자전거"
+    case bicycle = "자전거"
     case plank = "플랭크"
-    case rope = "줄넘기"
+    case jumprope = "줄넘기"
 }
 
 enum ExerciseResult: String {

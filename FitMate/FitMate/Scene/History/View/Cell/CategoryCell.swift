@@ -1,10 +1,3 @@
-//
-//  CategoryCell.swift
-//  FitMate
-//
-//  Created by 형윤 on 6/9/25.
-//
-//
 
 import UIKit
 
@@ -14,7 +7,7 @@ final class CategoryCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-        label.textColor = .lightGray
+        label.textColor = UIColor(named: "Background50")
         label.textAlignment = .center
         return label
     }()
@@ -22,9 +15,11 @@ final class CategoryCell: UICollectionViewCell {
     override var isSelected: Bool {
         didSet {
             contentView.backgroundColor = isSelected
-                ? UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 1)
+                ? UIColor(named: "Primary500")
                 : .clear
-            titleLabel.textColor = isSelected ? .white : .lightGray
+            titleLabel.textColor = isSelected
+                ? .white
+                : UIColor(named: "Background50")
             titleLabel.font = isSelected
                 ? .boldSystemFont(ofSize: 14)
                 : .systemFont(ofSize: 14)
@@ -37,6 +32,7 @@ final class CategoryCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 10
         contentView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.layer.masksToBounds = true
+
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),

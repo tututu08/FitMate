@@ -11,10 +11,7 @@ final class MypageView: UIView {
         return button
     }()
 
-    let topBar: UIView = {
-        let view = UIView()
-        return view
-    }()
+    let topBar = UIView()
 
     let profileImageView: UIView = {
         let view = UIView()
@@ -85,6 +82,7 @@ final class MypageView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = false
         return collectionView
     }()
 
@@ -103,12 +101,6 @@ final class MypageView: UIView {
         addSubview(profileImageView)
         addSubview(nicknameLabel)
         addSubview(underline)
-        addSubview(scrollView)
-        scrollView.addSubview(contentView)
-
-        [achievementTitleStack, achievementImageView, levelTitle, recordCollectionView].forEach {
-            contentView.addSubview($0)
-        }
 
         let titleLabel = UILabel()
         titleLabel.text = "마이페이지"
@@ -117,23 +109,28 @@ final class MypageView: UIView {
         topBar.addSubview(titleLabel)
         topBar.addSubview(settingButton)
 
-        titleLabel.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview()
-            $0.width.equalTo(87)
-            $0.height.equalTo(28)
-        }
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
 
-        settingButton.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(20)
-            $0.width.height.equalTo(24)
+        [achievementTitleStack, achievementImageView, levelTitle, recordCollectionView].forEach {
+            contentView.addSubview($0)
         }
 
         topBar.snp.makeConstraints {
             $0.top.equalTo(safeAreaLayoutGuide)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(56)
+        }
+
+        titleLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
+        }
+
+        settingButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.trailing.equalToSuperview().inset(20)
+            $0.width.height.equalTo(24)
         }
 
         profileImageView.snp.makeConstraints {
@@ -152,7 +149,7 @@ final class MypageView: UIView {
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(1)
         }
-
+        
         scrollView.snp.makeConstraints {
             $0.top.equalTo(underline.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
@@ -161,6 +158,7 @@ final class MypageView: UIView {
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview()
             $0.width.equalToSuperview()
+            $0.bottom.equalTo(recordCollectionView.snp.bottom)
         }
 
         achievementTitleStack.snp.makeConstraints {
@@ -183,7 +181,13 @@ final class MypageView: UIView {
             $0.top.equalTo(levelTitle.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(700)
-            $0.bottom.equalToSuperview()
+        }
+
+        achievementTitleStack.isHidden = true
+        achievementImageView.isHidden = true
+        levelTitle.snp.remakeConstraints {
+            $0.top.equalToSuperview().offset(16) 
+            $0.leading.equalToSuperview().offset(20)
         }
     }
 }

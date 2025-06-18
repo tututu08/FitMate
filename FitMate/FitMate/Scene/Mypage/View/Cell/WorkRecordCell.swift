@@ -74,10 +74,16 @@ final class WorkRecordCell: UICollectionViewCell {
         containerStack.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(16)
         }
-        
+
         characterImageView.snp.makeConstraints {
             $0.width.equalTo(144)
             $0.height.equalTo(112)
         }
+    }
+
+    func configure(with record: WorkoutRecord) {
+        typeLabel.text = record.type
+        totalLabel.text = record.totalDistance
+        unitLabel.text = record.unit
     }
 }

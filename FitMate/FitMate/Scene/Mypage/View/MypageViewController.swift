@@ -8,11 +8,29 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     private let rootView = MypageView()
     private let viewModel = MypageViewModel()
     private let disposeBag = DisposeBag()
-
+    
+    // 로그인 유저의 uid
+    private let uid: String
+    
+    // 초기화 함수
+    init(uid: String) {
+        self.uid = uid // 의존성 주입
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func loadView() {
         self.view = rootView
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         rootView.recordCollectionView.delegate = self
@@ -29,8 +47,12 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             .disposed(by: disposeBag)
 
         output.records
-            .drive(rootView.recordCollectionView.rx.items(cellIdentifier: WorkRecordCell.identifier, cellType: WorkRecordCell.self)) { index, record, cell in
-                // 실제 데이터 연결은 추후에 구현
+            .drive(rootView.recordCollectionView.rx.items(
+                cellIdentifier: WorkRecordCell.identifier,
+                cellType: WorkRecordCell.self)
+            ) { index, record, cell in
+                //  데이터 연결
+                cell.configure(with: record)
             }
             .disposed(by: disposeBag)
     }
@@ -40,7 +62,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             .bind { [weak self] in
                 let settingVC = SettingViewController()
                 settingVC.modalPresentationStyle = .overFullScreen
-                self?.present(settingVC, animated: true, completion: nil)
+                self?.present(settingVC, animated: false, completion: nil)
             }
             .disposed(by: disposeBag)
     }

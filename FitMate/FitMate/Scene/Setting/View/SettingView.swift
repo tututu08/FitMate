@@ -6,13 +6,13 @@ final class SettingView: UIView {
 
     let backgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        view.backgroundColor = UIColor(named: "Background900")?.withAlphaComponent(0.6)
         return view
     }()
 
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "Background50")
         view.layer.cornerRadius = 8
         return view
     }()
@@ -21,7 +21,7 @@ final class SettingView: UIView {
         let label = UILabel()
         label.text = "설정"
         label.font = .boldSystemFont(ofSize: 18)
-        label.textColor = .black
+        label.textColor = UIColor(named: "Background900")
         label.textAlignment = .center
         return label
     }()
@@ -29,21 +29,21 @@ final class SettingView: UIView {
     let closeButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
-        button.tintColor = .black
+        button.tintColor = UIColor(named: "Background900")
         return button
     }()
 
     let noticeToggle: UISwitch = {
         let toggle = UISwitch()
-        toggle.onTintColor = UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 0.4)
-        toggle.thumbTintColor = UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 0.4)
+        toggle.onTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
+        toggle.thumbTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
         return toggle
     }()
 
     let effectToggle: UISwitch = {
         let toggle = UISwitch()
-        toggle.onTintColor = UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 0.4)
-        toggle.thumbTintColor = UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 0.4)
+        toggle.onTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
+        toggle.thumbTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
         return toggle
     }()
 
@@ -51,7 +51,7 @@ final class SettingView: UIView {
         let label = UILabel()
         label.text = "푸시알림"
         label.font = .systemFont(ofSize: 14)
-        label.textColor = .black
+        label.textColor = UIColor(named: "Background900")
         return label
     }()
 
@@ -59,13 +59,13 @@ final class SettingView: UIView {
         let label = UILabel()
         label.text = "효과음"
         label.font = .systemFont(ofSize: 14)
-        label.textColor = .black
+        label.textColor = UIColor(named: "Background900")
         return label
     }()
 
     private let separator: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 1)
+        view.backgroundColor = UIColor(named: "Primary400")
         return view
     }()
 
@@ -163,8 +163,8 @@ final class SettingView: UIView {
     private static func makeButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
-        button.setTitleColor(.darkGray, for: .normal)
-        button.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        button.setTitleColor(UIColor(named: "Background600"), for: .normal)
+        button.backgroundColor = UIColor(named: "Background100")
         button.layer.cornerRadius = 6
         return button
     }

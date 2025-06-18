@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class MateCodeView: UIView {
+class MateCodeView: BaseView {
     
     let customNavBar: UIView = {
         let view = UIView()
@@ -26,7 +26,7 @@ class MateCodeView: UIView {
        let title = UILabel()
         title.text = "메이트 코드 입력"
         title.textColor = .white
-        title.font = .systemFont(ofSize: 20)
+        title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         title.textAlignment = .center
         return title
     }()
@@ -44,9 +44,9 @@ class MateCodeView: UIView {
     let completeButton: UIButton = {
         let button = UIButton()
         button.setTitle("입력 완료", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 22)
-        button.backgroundColor = .systemPurple
+        button.setTitleColor(.background500, for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
+        button.backgroundColor = .background50
         button.layer.cornerRadius = 4
         button.clipsToBounds = true
         return button
@@ -55,21 +55,21 @@ class MateCodeView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .black
-        setupUI()
-        setupLayout()
+        configureUI()
+        setLayoutUI()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupUI() {
+    override func configureUI() {
         [customNavBar, mateDefaultAvatar, fillInMateCode, completeButton].forEach { addSubview($0) }
         customNavBar.addSubview(backButton)
         customNavBar.addSubview(titleLabel)
     }
 
-    private func setupLayout() {
+    override func setLayoutUI() {
         customNavBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
@@ -95,7 +95,7 @@ class MateCodeView: UIView {
         fillInMateCode.snp.makeConstraints { make in
             make.top.equalTo(mateDefaultAvatar.snp.bottom).offset(83)
             make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(20)
-            make.height.equalTo(60)
+            make.height.equalTo(62)
         }
 
         completeButton.snp.makeConstraints { make in

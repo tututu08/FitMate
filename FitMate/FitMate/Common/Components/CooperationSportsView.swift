@@ -99,14 +99,14 @@ class CooperationSportsView: BaseView {
     private let progressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.systemPurple.cgColor
+        view.layer.borderColor = UIColor.primary500.cgColor
         return view
     }()
     
     // 진행률 바(채워지는 부분)
     private let progressForegroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemPurple
+        view.backgroundColor = .primary500
         return view
     }()
     
@@ -136,18 +136,14 @@ class CooperationSportsView: BaseView {
         return imageView
     }()
     
-    // 일시정지 버튼
-    private let pauseButton: UIButton = {
-        let Button = UIButton()
-        Button.setImage(UIImage(named: "pause"), for: .normal)
-        return Button
-    }()
-    
     // 종료 버튼
     private let stopButton: UIButton = {
-        let Button = UIButton()
-        Button.setImage(UIImage(named: "stop"), for: .normal)
-        return Button
+        let button = UIButton()
+        button.setTitle("그만하기", for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 20)
+        button.setTitleColor(.white, for: .normal)
+        button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
+        return button
     }()
 
     // UI 구성 요소 추가
@@ -163,7 +159,6 @@ class CooperationSportsView: BaseView {
           recordStackView,
           progressBackgroundView,
           coopImage,
-          pauseButton,
           stopButton
         ].forEach{self.addSubview($0)}
     }
@@ -171,7 +166,7 @@ class CooperationSportsView: BaseView {
     // SnapKit으로 레이아웃 제약 설정
     override func setLayoutUI() {
         modeLabel.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(0)
+            $0.top.equalToSuperview().offset(60)
             $0.centerX.equalToSuperview()
         }
         goalImage.snp.makeConstraints {
@@ -197,10 +192,10 @@ class CooperationSportsView: BaseView {
             progressWidthConstraint = $0.width.equalTo(0).constraint // 채워지는 바 width 제약
         }
         coopImage.snp.makeConstraints {
-            $0.bottom.equalTo(stopButton.snp.top).inset(-40)
+            $0.bottom.equalTo(stopButton.snp.top).inset(-50)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(340)
-            $0.height.equalTo(310)
+            $0.width.equalTo(350)
+            $0.height.equalTo(300)
         }
         myCharacterImage.snp.makeConstraints{
             $0.leading.equalTo(coopImage.snp.leading).inset(10)
@@ -214,17 +209,11 @@ class CooperationSportsView: BaseView {
             $0.height.equalTo(150)
             $0.width.equalTo(120)
         }
-        
-        pauseButton.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(30)
-            $0.leading.equalToSuperview().offset(20)
-            $0.width.height.equalTo(60)
-        }
         stopButton.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(30)
-            $0.leading.equalTo(pauseButton.snp.trailing).offset(12)
+            $0.bottom.equalToSuperview().inset(60)
+            $0.centerX.equalToSuperview()
             $0.height.equalTo(60)
-            $0.width.equalTo(260)
+            $0.width.equalTo(350)
         }
     }
     // 내 기록 라벨 갱신
