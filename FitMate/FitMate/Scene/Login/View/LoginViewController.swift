@@ -94,10 +94,12 @@ class LoginViewController: BaseViewController {
                         sceneDelegate.window?.rootViewController = tabBarController
                     })
                 case .goToInputMateCode(let uid):
+                    print("메이트 코드 : \(uid)")
                     // 닉네임만 있음, 메이트 없음 → 메이트코드 입력
                     let vc = CodeShareViewController(uid: uid)
                     self.navigationController?.pushViewController(vc, animated: true)
                 case .goToInputNickName(let uid):
+                    print("닉네임 입력 : \(uid)")
                     // 닉네임이 없음 → 닉네임 입력
                     let vc = NicknameViewController(uid: uid)
                     self.navigationController?.pushViewController(vc, animated: true)
