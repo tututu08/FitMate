@@ -6,7 +6,7 @@ import RxCocoa
 class JumpRopeCoopViewController: BaseViewController {
     
     // 루트 뷰
-    private let rootView = JumpRopeCoopView()
+    private let sportsView = JumpRopeCoopView()
     // 뷰모델 선언
     private var viewModel: JumpRopeCoopViewModel
     // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
@@ -15,6 +15,8 @@ class JumpRopeCoopViewController: BaseViewController {
     private let mateCountRelay = PublishRelay<Int>()
     private let myCharacter: String
     private let mateCharacter: String
+    private let quitRelay = PublishRelay<Void>()
+    private let mateQuitRelay = PublishRelay<Void>()
     
     init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
         self.myCharacter = myCharacter
@@ -35,44 +37,70 @@ class JumpRopeCoopViewController: BaseViewController {
     
     // loadView에서 커스텀 뷰 할당
     override func loadView() {
-        self.view = rootView
+        self.view = sportsView
     }
     
     // viewDidLoad에서 goal값 불러오기, 뷰모델 생성, 시작 신호
     override func viewDidLoad() {
         super.viewDidLoad()
-        rootView.updateGoal("줄넘기 \(viewModel.goalCount)개")
-        rootView.updateMyCharacter(viewModel.myCharacter)
-        rootView.updateMateCharacter(viewModel.mateCharacter)
+        sportsView.updateGoal("줄넘기 \(viewModel.goalCount)개")
+        sportsView.updateMyCharacter(viewModel.myCharacter)
+        sportsView.updateMateCharacter(viewModel.mateCharacter)
         startRelay.accept(())
+        sportsView.stopButton.rx.tap
+            .bind { [weak self] in
+                self?.sportsView.showQuitAlert(
+                    type: .myQuitConfirm, // 내가 종료 시도
+                    onResume: {
+                        // 그냥 닫고 아무 동작 없음 (계속 운동)
+                    },
+                    onQuit: { [weak self] in
+                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
+                        self?.viewModel.finish(success: false)
+                        // 혹은 didFinishRelay 트리거 등
+                    }
+                )
+            }
+            .disposed(by: disposeBag)
     }
     // ViewModel과 UI 바인딩
     override func bindViewModel() {
         let input = JumpRopeCoopViewModel.Input(
             start: startRelay.asObservable(),
-            mateCount: mateCountRelay.asObservable()
+            mateCount: mateCountRelay.asObservable(),
+            quit: quitRelay.asObservable(),
+            mateQuit: mateQuitRelay.asObservable()
         )
         let output = viewModel.transform(input: input)
         
         // 내 점프 횟수 갱신할 때(문자열)
         output.myCountText
             .drive(onNext: { [weak self] text in
-                self?.rootView.updateMyRecord(text)
+                self?.sportsView.updateMyRecord(text)
             })
             .disposed(by: disposeBag)
         
         // 메이트 점프 횟수 갱신할 때(문자열)
         output.mateCountText
             .drive(onNext: { [weak self] text in
-                self?.rootView.updateMateRecord(text)
+                self?.sportsView.updateMateRecord(text)
             })
             .disposed(by: disposeBag)
         
         // 전체 진행률 바 갱신할 때(비율)
         output.progress
             .drive(onNext: { [weak self] ratio in
-                self?.rootView.updateProgress(ratio: ratio)
+                self?.sportsView.updateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
+    }
+    func receiveMateQuit()    {
+        sportsView.showQuitAlert(
+            type: .mateQuit,
+            onBack: { [weak self] in
+                // 피니쉬화면으로 이동 등
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+        )
     }
 }
