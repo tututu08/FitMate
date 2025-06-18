@@ -14,6 +14,7 @@ class LoginViewController: BaseViewController {
     let viewModel = LoginViewModel() // 뷰모델
     let googleLoginTrigger = PublishRelay<Void>() // 로그인 버튼 클릭 이벤트 전달
     let kakaoLoginTrigger = PublishRelay<Void>()
+    let appleLoginTrigger = PublishRelay<Void>()
     let nextViewRelay = PublishRelay<Void>() // 다음 버튼 클릭 이벤트 전달
     
     let logInView = LoginView()
@@ -43,7 +44,9 @@ class LoginViewController: BaseViewController {
         self.logInView.kakaoLogin.rx.tap
             .bind(to: kakaoLoginTrigger)
             .disposed(by: disposeBag)
-        
+        self.logInView.appleLogin.rx.controlEvent(.touchUpInside)
+            .bind(to: appleLoginTrigger)
+            .disposed(by: disposeBag)
     }
     
     override func bindViewModel() {
@@ -55,7 +58,8 @@ class LoginViewController: BaseViewController {
             //.subscribe()는 가능
             //.onNext(), .accpet()로 값을 방출하는건 불가능
             googleLoginTrigger: googleLoginTrigger.asObservable(),
-            kakaoLoginTrigger: kakaoLoginTrigger.asObservable()
+            kakaoLoginTrigger: kakaoLoginTrigger.asObservable(),
+            appleLoginTrigger: appleLoginTrigger.asObservable()
         )
         
         

@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import CoreLocation
 import RxCoreLocation
+import AuthenticationServices
 
 // 네비게이션바 세팅
 extension UINavigationBar {
@@ -43,5 +44,12 @@ extension Reactive where Base: CLLocationManager {
             .map { parameters in
                 parameters[1] as? [CLLocation] ?? []
             }
+    }
+}
+
+// Apple 로그인 창을 띄울 때 어느 윈도우에서 띄울지를 지정
+extension LoginViewController: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
     }
 }

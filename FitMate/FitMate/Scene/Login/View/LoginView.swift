@@ -6,6 +6,7 @@
 
 import UIKit
 import SnapKit
+import AuthenticationServices
 
 class LoginView: BaseView {
     
@@ -31,12 +32,7 @@ class LoginView: BaseView {
         return googleLabel
     }()
     
-    let appleLogin: UIButton = {
-        let appleLabel = UIButton()
-        appleLabel.setImage(UIImage(named: "apple"), for: .normal)
-        appleLabel.contentMode = .scaleAspectFit
-        return appleLabel
-    }()
+    let appleLogin = ASAuthorizationAppleIDButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
