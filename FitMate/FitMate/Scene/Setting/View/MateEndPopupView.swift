@@ -2,7 +2,7 @@
 import UIKit
 import SnapKit
 
-final class WithdrawPopupView: UIView {
+final class MateEndPopupView: UIView {
 
     let backgroundView: UIView = {
         let view = UIView()
@@ -19,7 +19,7 @@ final class WithdrawPopupView: UIView {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "정말 탈퇴하시겠어요?"
+        label.text = "정말 종료하시겠어요?"
         label.font = .systemFont(ofSize: 24, weight: .semibold)
         label.textColor = UIColor(named: "Background900")
         label.textAlignment = .center
@@ -28,7 +28,7 @@ final class WithdrawPopupView: UIView {
 
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "탈퇴 버튼 선택 시, 정보는\n삭제되며 복구되지 않습니다."
+        label.text = "메이트 종료 시 현재 연결된 상대와의\n운동 진행이 중단됩니다."
         label.font = .systemFont(ofSize: 14)
         label.textColor = UIColor(named: "Background600")
         label.textAlignment = .center
@@ -47,7 +47,7 @@ final class WithdrawPopupView: UIView {
 
     let confirmButton: UIButton = {
         let button = UIButton()
-        button.setTitle("탈퇴", for: .normal)
+        button.setTitle("종료", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = UIColor(named: "Primary400")
         button.layer.cornerRadius = 8
