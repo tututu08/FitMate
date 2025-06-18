@@ -26,6 +26,11 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
         self.view = rootView
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         rootView.recordCollectionView.delegate = self
@@ -42,8 +47,12 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             .disposed(by: disposeBag)
 
         output.records
-            .drive(rootView.recordCollectionView.rx.items(cellIdentifier: WorkRecordCell.identifier, cellType: WorkRecordCell.self)) { index, record, cell in
-                // 실제 데이터 연결은 추후에 구현
+            .drive(rootView.recordCollectionView.rx.items(
+                cellIdentifier: WorkRecordCell.identifier,
+                cellType: WorkRecordCell.self)
+            ) { index, record, cell in
+                //  데이터 연결
+                cell.configure(with: record)
             }
             .disposed(by: disposeBag)
     }
@@ -53,7 +62,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             .bind { [weak self] in
                 let settingVC = SettingViewController()
                 settingVC.modalPresentationStyle = .overFullScreen
-                self?.present(settingVC, animated: true, completion: nil)
+                self?.present(settingVC, animated: false, completion: nil)
             }
             .disposed(by: disposeBag)
     }
