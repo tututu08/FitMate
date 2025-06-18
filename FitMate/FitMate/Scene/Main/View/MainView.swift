@@ -52,11 +52,12 @@ class MainView: BaseView {
         return dDay
     }()
     
-    let myNicknameStack = NicknameStackView(
-        nickname: "실버웨스트", textColor: .white,
-        font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
-        arrowColor: .white
-    )
+//    let myNicknameStack = NicknameStackView(
+//        nickname: "실버웨스트", textColor: .white,
+//        font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
+//        arrowColor: .white
+//    )
+    
     let myAvatarImage: UIImageView = {
        let imageView = UIImageView()
         imageView.image = UIImage(named: "KappyAlone")
@@ -64,11 +65,11 @@ class MainView: BaseView {
         return imageView
     }()
     
-    let mateNicknameStack = NicknameStackView(
-        nickname: "프린세스훈", textColor: .background300,
-        font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
-        arrowColor: .background300
-    )
+//    let mateNicknameStack = NicknameStackView(
+//        nickname: "프린세스훈", textColor: .background300,
+//        font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
+//        arrowColor: .background300
+//    )
     let mateAvatarImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "mateKappy")
@@ -99,8 +100,8 @@ class MainView: BaseView {
     
     override func configureUI() {
         backgroundColor = .black
-        [topBar, explainLabel, dDaysLabel,myNicknameStack, myAvatarImage,
-         mateNicknameStack, mateAvatarImage,exerciseButton].forEach{ addSubview($0) }
+        [topBar, explainLabel, dDaysLabel, myAvatarImage,
+          mateAvatarImage, exerciseButton].forEach{ addSubview($0) }
         
         [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
     }
@@ -152,7 +153,24 @@ class MainView: BaseView {
     /// - hasMate를 기준으로 비교 연산자를 활용해서
     /// - true일때 크기 및 위치 / false일 때 크기 및 위치 잡고
     /// - 메이트는 isHidden으로 hasMate: true일때 true로
-    func changeAvatarLayout(hasMate: Bool) {
+    func changeAvatarLayout(hasMate: Bool, myNickname: String, mateNickname: String) {
+        
+        let myNicknameStack = NicknameStackView(
+            nickname: myNickname, textColor: .white,
+            font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
+            arrowColor: .white
+        )
+        
+        addSubview(myNicknameStack)
+        
+        let mateNicknameStack = NicknameStackView(
+            nickname: mateNickname, textColor: .background300,
+            font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
+            arrowColor: .background300
+        )
+        
+        addSubview(mateNicknameStack)
+        
         // 내 아바타 위치 및 크기 설정
         myAvatarImage.snp.remakeConstraints { make in
             make.leading.equalToSuperview().inset(hasMate ? 44: 68)
