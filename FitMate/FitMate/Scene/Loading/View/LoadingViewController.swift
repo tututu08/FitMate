@@ -14,8 +14,11 @@ class LoadingViewController: BaseViewController {
     private let viewModel: LoadingViewModel // ViewModel 의존성 주입
     private let loadingView = LoadingView() // 뷰 객체 생성
     
+    private let matchCode: String
+    
     init(matchCode: String) {
         // ViewModel 의존성 주입을 통해 운동 경기 코드를 전달
+        self.matchCode = matchCode
         self.viewModel = LoadingViewModel(matchCode: matchCode)
         super.init(nibName: nil, bundle: nil)
     }
@@ -54,8 +57,51 @@ class LoadingViewController: BaseViewController {
     /// 게임 화면으로 이동하는 메서드
     private func goToGameScreen() {
         // 게임화면으로 push or present
-        //self.navigationController?.pushViewController(RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!"), animated: true)
-        self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: 5), animated: true)
+        // self.navigationController?.pushViewController(RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!"), animated: true)
+        
+        // MARK: - 게임 선택에 따른 화면 분기처리
+        FirestoreService.shared.fetchDocument(collectionName: "matches", documentName: self.matchCode)
+            .subscribe(onSuccess: { data in
+                if let goalValue = data["goalValue"] as? Int,
+                   let exerciseType = data["exerciseType"] as? String,
+                   let mode = data["mode"] as? String {
+                    if mode == "battle" {
+                        // 배틀모드
+                        switch exerciseType {
+                        case "걷기":
+                            self.navigationController?.pushViewController(RunningCoopViewController(goalText: "\(goalValue)"), animated: true)
+                        case "달리기":
+                            self.navigationController?.pushViewController(RunningCoopViewController(goalText: "\(goalValue)"), animated: true)
+                        case "자전거":
+                            self.navigationController?.pushViewController(RunningCoopViewController(goalText: "\(goalValue)"), animated: true)
+                        case "줄넘기":
+                            self.navigationController?.pushViewController(JumpRopeBattleViewController(goalCount: goalValue), animated: true)
+                        default:
+                            return
+                        }
+                    } else {
+                        // 협동모드
+                        switch exerciseType {
+                        case "걷기":
+                            self.navigationController?.pushViewController(RunningBattleViewController(), animated: true)
+                        case "달리기":
+                            self.navigationController?.pushViewController(RunningBattleViewController(), animated: true)
+                        case "자전거":
+                            self.navigationController?.pushViewController(RunningBattleViewController(), animated: true)
+                        case "플랭크":
+                            self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: goalValue), animated: true)
+                        case "줄넘기":
+                            self.navigationController?.pushViewController(JumpRopeCoopViewController(goalCount: goalValue), animated: true)
+                        default:
+                            return
+                        }
+                    }
+                }
+                
+                
+            }).disposed(by: disposeBag)
+        
+        //self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: 5), animated: true)
     }
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드

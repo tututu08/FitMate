@@ -30,8 +30,8 @@ final class JumpRopeBattleViewModel: ViewModelType {
     
     // 목표 카운트(외부에서 입력, 예: 100)
     let goalCount: Int
-    let myCharacter: String
-    let mateCharacter: String
+    //let myCharacter: String
+    //let mateCharacter: String
     // Firestore 동기화를 위한 변수 (유저 구분/방 구분 등)
     //    private let matchID: String
     //    private let myUID: String
@@ -45,10 +45,10 @@ final class JumpRopeBattleViewModel: ViewModelType {
     
     
     // 생성자 목표 카운트 필수
-    init(goalCount: Int, myCharacter: String, mateCharacter: String/* matchID: String, myUID: String, mateUID: String*/) {
+    init(goalCount: Int/*, myCharacter: String, mateCharacter: String matchID: String, myUID: String, mateUID: String*/) {
         self.goalCount = goalCount
-        self.myCharacter = myCharacter
-        self.mateCharacter = mateCharacter
+        //self.myCharacter = myCharacter
+        //self.mateCharacter = mateCharacter
         //        self.matchID = matchID
         //        self.myUID = myUID
         //        self.mateUID = mateUID

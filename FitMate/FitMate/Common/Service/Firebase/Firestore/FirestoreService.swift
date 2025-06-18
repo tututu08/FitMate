@@ -103,7 +103,7 @@ class FirestoreService {
         )
      */
     
-    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: String, mode: String) -> Single<String> {
+    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: Int, goalUnit: String, mode: String) -> Single<String> {
         return Single.create { single in
             func tryGenerateAndSave() {
                 let matchCode = self.generateInviteCode()
@@ -117,6 +117,7 @@ class FirestoreService {
                         let data: [String: Any] = [
                             "exerciseType": exerciseType, // 운동 종목
                             "goalValue": goalValue, // 목표 수치
+                            "goalUnit": goalUnit,
                             "mode": mode, // 운동 모드
                             "matchStatus": "waiting", // waiting or started
                             "inviterUid": inviterUid, // 운동 생성자 uid

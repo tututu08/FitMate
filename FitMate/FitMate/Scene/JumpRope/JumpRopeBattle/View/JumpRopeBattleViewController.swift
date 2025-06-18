@@ -13,16 +13,18 @@ class JumpRopeBattleViewController: BaseViewController {
     private let startRelay = PublishRelay<Void>()
     // 메이트 점프 횟수 수신용(상대방이 firebase에서 온 값으로 갱신할 때 쓸 수도 있음)
     private let mateCountRelay = PublishRelay<Int>()
-    private let myCharacter: String
-    private let mateCharacter: String
+    //private let myCharacter: String
+    //private let mateCharacter: String
     
-    init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
-        self.myCharacter = myCharacter
+    init(goalCount: Int/*, myCharacter: String, mateCharacter: String matchID: String, myUID: String, mateUID: String*/) {
+        /*
+         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+         */
         self.viewModel = JumpRopeBattleViewModel(
-            goalCount: goalCount,
-            myCharacter: myCharacter,
-            mateCharacter: mateCharacter
+            goalCount: goalCount
+            //myCharacter: myCharacter,
+            //mateCharacter: mateCharacter
 //               matchID: matchID,
 //               myUID: myUID,
 //               mateUID: mateUID
@@ -43,8 +45,8 @@ class JumpRopeBattleViewController: BaseViewController {
         super.viewDidLoad()
         rootView.updateGoal("줄넘기 \(viewModel.goalCount)개")
         //(파이널베이스 내의 만약 캐릭터 이미지 바인딩 시 이곳에서)
-        rootView.updateMyCharacter(myCharacter)
-        rootView.updateMateCharacter(mateCharacter)
+        //rootView.updateMyCharacter(myCharacter)
+        //rootView.updateMateCharacter(mateCharacter)
         startRelay.accept(())
         
     }
