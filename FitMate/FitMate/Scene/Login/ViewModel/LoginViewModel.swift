@@ -106,6 +106,7 @@ final class LoginViewModel {
                     if UserApi.isKakaoTalkLoginAvailable() {
                         UserApi.shared.loginWithKakaoTalk { _, error in
                             if let error = error {
+                                print("카카오톡 앱 로그인 실패: \(error)")
                                 observer.onError(error)
                             } else {
                                 // 로그인 성공하면 사용자 정보 요청
@@ -117,6 +118,7 @@ final class LoginViewModel {
                         UserApi.shared.loginWithKakaoAccount { _, error in
                             if let error = error {
                                 observer.onError(error)
+                                print("카카오톡 웹 로그인 실패: \(error)")
                             } else {
                                 handleUserApiMe()
                             }
@@ -134,26 +136,6 @@ final class LoginViewModel {
                     .catch { .just(.failure($0)) }
                     .asObservable()
             }
-//            .flatMapLatest { result -> Observable<LoginNavigation> in
-//                // Firebase 로그인 결과에 따른 다음 화면 결정
-//                switch result {
-//                case .success(let user as FirebaseAuth.User):
-//                    let uid = user.uid
-//                    // Firestore에 사용자 문서가 있는지 확인
-//                    return FirestoreService.shared
-//                        .fetchDocument(collectionName: "users", documentName: uid)
-//                        .map { _ in .goToMainViewController(uid: uid) } // 있으면 해당 화면으로 이동
-//                        .catch { _ in
-//                            // 문서가 없으면 새로 생성 후 이동
-//                            FirestoreService.shared
-//                                .createUserDocument(uid: uid)
-//                                .map { .goToMainViewController(uid: uid) }
-//                        }
-//                        .asObservable()
-//                case .failure(let error):
-//                    return .just(.error(error.localizedDescription))
-//                }
-//            }
         // MARK: - 수정 필요
             .flatMapLatest { result -> Observable<LoginNavigation> in
                 // 로그인 결과에 따라 Firestore 조회 및 화면 분기
@@ -168,7 +150,7 @@ final class LoginViewModel {
                             if let nickname = data["nickname"] as? String,
                                !nickname.isEmpty {
                                 // 메이트가 있으면
-                                if let mate = data["mate"] as? String, !mate.isEmpty {
+                                if let mate = data["hasMate"] as? Bool, mate == true {
                                     // 메인 뷰로 이동
                                     return .just(.goToMainViewController(uid: uid))
                                 } else {
