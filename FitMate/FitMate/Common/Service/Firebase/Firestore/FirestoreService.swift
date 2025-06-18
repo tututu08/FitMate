@@ -62,6 +62,7 @@ class FirestoreService {
                         let data: [String: Any] = [
                             "uid": uid,
                             "inviteCode": inviteCode,
+                            "hasMate" : false, // 메이트 매칭 여부
                             "totalStats": [ // 총 기록
                                 "walkingKm": 0, // 걷기
                                 "runningKm": 0, // 달리기
