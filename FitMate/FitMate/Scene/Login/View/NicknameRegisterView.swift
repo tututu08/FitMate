@@ -25,7 +25,6 @@ class NicknameView: BaseView {
         let button = UIButton()
         button.setImage(UIImage(named: "checkBox"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
-        button.snp.makeConstraints { $0.size.equalTo(24) }
         return button
     }()
 
@@ -33,7 +32,6 @@ class NicknameView: BaseView {
         let button = UIButton()
         button.setImage(UIImage(named: "checkBox"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFit
-        button.snp.makeConstraints { $0.size.equalTo(24) }
         return button
     }()
     
@@ -123,6 +121,14 @@ class NicknameView: BaseView {
             make.leading.trailing.equalToSuperview().inset(20)
             make.width.equalTo(335)
             make.height.equalTo(60)
+        }
+        
+        termsButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
+        privacyButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
         }
     }
 }

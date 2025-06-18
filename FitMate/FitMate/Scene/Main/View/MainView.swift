@@ -81,7 +81,7 @@ class MainView: BaseView {
         exercise.setTitle("운동 선택", for: .normal)
         exercise.setTitleColor(.white, for: .normal)
         exercise.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
-        exercise.backgroundColor = .systemPurple
+        exercise.backgroundColor = .primary500
         exercise.layer.cornerRadius = 4
         exercise.clipsToBounds = true
         return exercise
@@ -117,6 +117,7 @@ class MainView: BaseView {
         coinIcon.snp.makeConstraints { make in
             make.centerY.equalTo(topBar)
             make.leading.equalToSuperview().inset(20)
+            make.size.equalTo(23)
         }
         
         coinLabel.snp.makeConstraints { make in
@@ -141,7 +142,7 @@ class MainView: BaseView {
         }
         
         exerciseButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(112)
+            make.bottom.equalToSuperview().inset(32)
             make.centerX.equalToSuperview()
             make.width.equalTo(335)
             make.height.equalTo(60)

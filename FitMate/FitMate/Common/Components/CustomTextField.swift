@@ -30,6 +30,7 @@ class CustomTextField: UITextField {
             attributes: [.foregroundColor: UIColor.lightGray] // 컬러 변경 필요
         )
         self.contentVerticalAlignment = .center
+        self.layer.cornerRadius = 4
         self.borderStyle = .line
         self.layer.borderColor = UIColor.systemPurple.cgColor // 컬러 변경 필요
         self.layer.borderWidth = 1.5
@@ -42,6 +43,18 @@ class CustomTextField: UITextField {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        return CGRect(x: 16, y: bounds.origin.y, width: bounds.width - 16, height: bounds.height)
+    }
+
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return CGRect(x: 16, y: bounds.origin.y, width: bounds.width - 16, height: bounds.height)
+    }
+
+    override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return CGRect(x: 16, y: bounds.origin.y, width: bounds.width - 16, height: bounds.height)
     }
     
     override func didMoveToWindow() {

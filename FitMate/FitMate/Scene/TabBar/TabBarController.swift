@@ -11,6 +11,8 @@ class TabBarController: UITabBarController {
     // 로그인 유저의 uid
     private let uid: String
     
+    lazy var mainVC = MainViewController(uid: self.uid)
+    
     // 초기화 함수
     init(uid: String) {
         self.uid = uid // 로그인 유저의 uid 의존성 주입
