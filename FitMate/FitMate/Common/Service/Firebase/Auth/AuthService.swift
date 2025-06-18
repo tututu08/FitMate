@@ -149,7 +149,32 @@ final class AuthService: NSObject {
             return Disposables.create { self.appleObserver = nil }
         }
     }
+    func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result  = ""
+        var remaining = length
+
+        while remaining > 0 {
+            var random: UInt8 = 0
+            guard SecRandomCopyBytes(kSecRandomDefault, 1, &random) == errSecSuccess else {
+                fatalError("Unable to generate nonce.")
+            }
+            if random < charset.count {
+                result.append(charset[Int(random)])
+                remaining -= 1
+            }
+        }
+        return result
+    }
+
+    /// SHA‑256 해시 (hex string)
+    func sha256(_ input: String) -> String {
+        let data = Data(input.utf8)
+        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+    }
 }
+
 // MARK: - Apple Delegate & Presentation
 extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
 
@@ -195,35 +220,5 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
                                  didCompleteWithError error: Error) {
         appleObserver?(.failure(error))
         appleObserver = nil
-    }
-}
-
-// MARK: - Nonce Utilities
-private extension AuthService {
-
-    /// 난수 문자열
-    func randomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        var result  = ""
-        var remaining = length
-
-        while remaining > 0 {
-            var random: UInt8 = 0
-            guard SecRandomCopyBytes(kSecRandomDefault, 1, &random) == errSecSuccess else {
-                fatalError("Unable to generate nonce.")
-            }
-            if random < charset.count {
-                result.append(charset[Int(random)])
-                remaining -= 1
-            }
-        }
-        return result
-    }
-
-    /// SHA‑256 해시 (hex string)
-    func sha256(_ input: String) -> String {
-        let data = Data(input.utf8)
-        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 }
