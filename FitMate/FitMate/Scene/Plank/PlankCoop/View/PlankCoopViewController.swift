@@ -18,14 +18,20 @@ final class PlankCoopViewController: BaseViewController {
     private let mateQuitRelay = PublishRelay<Void>()
     private let myCharacter: String
     private let mateCharacter: String
-
+    let matchCode: String
+    let myUid: String
+    
     
     // 초기화 (목표 분 단위)
-    init(goalMinutes: Int ,myCharacter: String, mateCharacter: String) {
+    init(goalMinutes: Int ,myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
+        self.matchCode = matchCode
+        self.myUid = myUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
         self.viewModel = PlankCoopViewModel(
-            goalMinutes: goalMinutes, myCharacter: myCharacter, mateCharacter: mateCharacter
+            goalMinutes: goalMinutes,
+            myCharacter: myCharacter,
+            mateCharacter: mateCharacter,
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -38,6 +44,9 @@ final class PlankCoopViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         sportsView.updateGoal("플랭크 \(viewModel.goalMinutes)분") // 또는 회, 개, whatever
+        sportsView.updateMyCharacter(myCharacter)
+        sportsView.updateMateCharacter(mateCharacter)
+        
         bind()
         startRelay.accept(())
         // 버튼 Rx 바인딩
@@ -59,7 +68,35 @@ final class PlankCoopViewController: BaseViewController {
                 )
             }
             .disposed(by: disposeBag)
+        
+        MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUid)
+        listenStartTime()
+        
     }
+    
+    private func listenStartTime() {
+            MatchEventService.shared.listenStartTime(matchCode: matchCode)
+                .observe(on: MainScheduler.instance)
+                .subscribe(onNext: { [weak self] startTime in
+                    guard let self = self else { return }
+                    let delay = startTime.timeIntervalSinceNow
+                    print("운동 시작까지 \(delay)초 대기")
+
+                    if delay > 0 {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            self.startWorkout()
+                        }
+                    } else {
+                        self.startWorkout()
+                    }
+                })
+                .disposed(by: disposeBag)
+        }
+
+        private func startWorkout() {
+            print("운동 시작!")
+            // 운동 타이머 시작, UI 업데이트 등
+        }
     
     private func bind() {
         let input = PlankCoopViewModel.Input(

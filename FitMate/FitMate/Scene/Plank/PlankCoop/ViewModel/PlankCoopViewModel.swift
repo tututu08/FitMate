@@ -23,6 +23,7 @@ final class PlankCoopViewModel: ViewModelType {
         let quit: Observable<Void>          // 그만두기(내가)
         let mateQuit: Observable<Void>      // 그만두기(상대방)
     }
+    
     struct Output {
         let status: Driver<PlankStatus>       // 현재 상태(뷰 상태 변경)
         let timerText: Driver<String>       // 타이머 표시

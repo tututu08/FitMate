@@ -331,7 +331,6 @@ class FirestoreService {
         }
     }
     
-    
     // MARK: - Delete
     func deleteDocument(collectionName: String, documentName: String) -> Single<Void> {
             return Single.create { single in
@@ -357,4 +356,124 @@ class FirestoreService {
          )
          .disposed(by: disposeBag)
      */
+}
+
+extension FirestoreService {
+    // MARK: - 플랭크
+    func startPlankSession(matchCode: String, isMyTurn: Bool) -> Completable {
+        let now = Timestamp(date: Date())
+        let turn = isMyTurn ? "my" : "mate"
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).setData([
+                "startedAt": now,
+                "turn": turn,
+                "timerStartAt": now,
+                "paused": false,
+                "quittingUid": NSNull(),
+                "status": "inProgress"
+            ], merge: true) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func listenToMatchStatus(matchCode: String) -> Observable<[String: Any]> {
+        return Observable.create { observer in
+            let ref = self.db.collection("matches").document(matchCode)
+            let listener = ref.addSnapshotListener { snapshot, error in
+                guard let data = snapshot?.data() else { return }
+                observer.onNext(data)
+            }
+            return Disposables.create { listener.remove() }
+        }
+    }
+    
+    func updatePlankTurn(matchCode: String, isMyTurn: Bool) -> Completable {
+        let now = Timestamp(date: Date())
+        let turn = isMyTurn ? "my" : "mate"
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "turn": turn,
+                "timerStartAt": now,
+                "paused": false
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func pausePlank(matchCode: String) -> Completable {
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "paused": true
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func resumePlank(matchCode: String) -> Completable {
+        let now = Timestamp(date: Date())
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "paused": false,
+                "timerStartAt": now
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func quitPlank(matchCode: String, uid: String) -> Completable {
+        let now = Timestamp(date: Date())
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "quittingUid": uid,
+                "status": "finished",
+                "finishedAt": now
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func updatePlankProgress(matchCode: String, uid: String, progress: Int) -> Completable {
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "players.\(uid).progress": progress
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
 }
