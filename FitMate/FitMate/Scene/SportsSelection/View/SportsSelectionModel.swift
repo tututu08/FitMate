@@ -141,7 +141,7 @@ class CarouselCell: UICollectionViewCell {
             $0.top.equalTo(exerciseDescriptionLabel.snp.bottom).offset(2)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)
             $0.height.equalTo(24)
-            $0.width.equalTo(172)
+            $0.width.equalTo(155)
         }
         exerciseEffectLabel.snp.makeConstraints {
             $0.top.equalTo(exerciseDescriptionTextLabel.snp.bottom).offset(8)
@@ -153,7 +153,7 @@ class CarouselCell: UICollectionViewCell {
             $0.top.equalTo(exerciseEffectLabel.snp.bottom).offset(2)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)
             $0.height.equalTo(24)
-            $0.width.equalTo(168)
+            $0.width.equalTo(155)
         }
     }
     

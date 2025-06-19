@@ -91,6 +91,12 @@ class JumpRopeBattleViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
+        output.didFinish
+                   .emit(onNext: { [weak self] success in
+                       self?.navigateToFinish(success: success)
+                   })
+                   .disposed(by: disposeBag)
+        
         // 내 진행률바(비율)
         output.myProgressView
             .drive(onNext: { [weak self] ratio in
@@ -103,6 +109,20 @@ class JumpRopeBattleViewController: BaseViewController {
                 self?.sportsView.myUpdateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
+    }
+    // 피니쉬화면으로 이동
+    private func navigateToFinish(success: Bool) {
+        let finishVM = FinishViewModel(
+            mode: .battle,
+            sport: "줄넘기",
+            goal: viewModel.goalCount,
+            goalUnit: "개",
+            character: myCharacter,
+            success: success
+        )
+        let vc = FinishViewController(viewModel: finishVM)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     func receiveMateQuit()    {
         sportsView.showQuitAlert(

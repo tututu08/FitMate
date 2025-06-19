@@ -93,6 +93,26 @@ class JumpRopeCoopViewController: BaseViewController {
                 self?.sportsView.updateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
+        
+        output.didFinish
+                    .emit(onNext: { [weak self] success in
+                        self?.navigateToFinish(success: success)
+                    })
+                    .disposed(by: disposeBag)
+            }
+
+            private func navigateToFinish(success: Bool) {
+                let finishVM = FinishViewModel(
+                    mode: .cooperation,
+                    sport: "줄넘기",
+                    goal: viewModel.goalCount,
+                    goalUnit: "개",
+                    character: myCharacter,
+                    success: success
+                )
+                let vc = FinishViewController(viewModel: finishVM)
+                vc.modalPresentationStyle = .fullScreen
+                present(vc, animated: true)
     }
     func receiveMateQuit()    {
         sportsView.showQuitAlert(

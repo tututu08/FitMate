@@ -21,7 +21,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
         let mateCountText: Driver<String>     // 메이트 점프 수(문자열)
         let progress: Driver<CGFloat>         // 전체 진행률(비율)
         let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
-
+        
     }
     
     private let disposeBag = DisposeBag()
@@ -32,10 +32,13 @@ final class JumpRopeCoopViewModel: ViewModelType {
     private let mateCountRelay = BehaviorRelay<Int>(value: 0)
     private let didFinishRelay = PublishRelay<Bool>()
     
+    
     // 목표 카운트(외부에서 입력, 예: 100)
     let goalCount: Int
-    //let myCharacter: String
-    //let mateCharacter: String
+    let myCharacter: String
+    let mateCharacter: String
+    var myCount: Int { myCountRelay.value }
+    var mateCount: Int { mateCountRelay.value }
     // Firestore 동기화를 위한 변수 (유저 구분/방 구분 등)
     //    private let matchID: String
     //    private let myUID: String
@@ -68,7 +71,13 @@ final class JumpRopeCoopViewModel: ViewModelType {
         
         // 메이트 점프 수가 들어오면 Relay에 바인딩
         input.mateCount
-            .bind(to: mateCountRelay)
+            .subscribe(onNext: { [weak self] count in
+                guard let self else { return }
+                self.mateCountRelay.accept(count)
+                if Double(self.myCountRelay.value) + Double(self.mateCountRelay.value) >= Double(self.goalCount) {
+                    self.finish(success: true)
+                            }
+                        })
             .disposed(by: disposeBag)
         
         input.quit
@@ -104,7 +113,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
             mateCountText: mateText,
             progress: progress,
             didFinish: didFinish
-
+            
         )
     }
     
@@ -126,6 +135,9 @@ final class JumpRopeCoopViewModel: ViewModelType {
                 self.canCount = false                  // 쿨타임 시작
                 DispatchQueue.main.asyncAfter(deadline: .now() + self.cooldown) { [weak self] in
                     self?.canCount = true              // 쿨타임 끝나면 다시 감지 가능
+                }
+                if Double(self.myCountRelay.value) + Double(self.mateCountRelay.value) >= Double(self.goalCount) {
+                    self.finish(success: true)
                 }
             }
         }

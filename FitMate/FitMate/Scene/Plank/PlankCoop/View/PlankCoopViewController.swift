@@ -16,10 +16,17 @@ final class PlankCoopViewController: BaseViewController {
     private let matePauseRelay = PublishRelay<Void>()
     private let mateResumeRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
+    private let myCharacter: String
+    private let mateCharacter: String
+
     
     // 초기화 (목표 분 단위)
-    init(goalMinutes: Int) {
-        self.viewModel = PlankCoopViewModel(goalMinutes: goalMinutes)
+    init(goalMinutes: Int ,myCharacter: String, mateCharacter: String) {
+        self.myCharacter = myCharacter
+        self.mateCharacter = mateCharacter
+        self.viewModel = PlankCoopViewModel(
+            goalMinutes: goalMinutes, myCharacter: myCharacter, mateCharacter: mateCharacter
+        )
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) { fatalError("not implemented") }
@@ -140,20 +147,23 @@ final class PlankCoopViewController: BaseViewController {
         
         output.didFinish
             .emit(with: self) { owner, success in
-                if success {
-                    let finishVC = FinishViewController()
-                    finishVC.modalPresentationStyle = .fullScreen
-                    owner.present(finishVC, animated: true)
-                } else {
-                    // 실패/중도포기 시 임시로 뷰 이동 처리.
-                    let finishVC = FinishViewController()
-                    finishVC.modalPresentationStyle = .fullScreen
-                    owner.present(finishVC, animated: true)
-                }
+                owner.navigateToFinish(success: success)
             }
             .disposed(by: disposeBag)
     }
-    
+    private func navigateToFinish(success: Bool) {
+        let finishVM = FinishViewModel(
+            mode: .cooperation,
+            sport: "플랭크",
+            goal: viewModel.goalMinutes,
+            goalUnit: "분",
+            character: myCharacter,
+            success: success
+        )
+        let finishVC = FinishViewController(viewModel: finishVM)
+        finishVC.modalPresentationStyle = .fullScreen
+        present(finishVC, animated: true)
+    }
     // 외부(네트워크 등)에서 상대방 이벤트 수신 시 호출
     func receiveMatePaused() { matePauseRelay.accept(()) }
     func receiveMateResumed() { mateResumeRelay.accept(()) }

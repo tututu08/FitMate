@@ -27,6 +27,8 @@ final class RunningCoopViewModel: ViewModelType {
     let matchCode: String
     let myUid: String
     
+    var myDistance: Int { Int(myDistanceRelay.value) }
+    var mateDistance: Int { Int(mateDistanceRelay.value) }
     init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
         self.goalDistance = goalDistance
         self.myCharacter = myCharacter
@@ -136,6 +138,9 @@ final class RunningCoopViewModel: ViewModelType {
                     let intMeter = Int(self.totalDistance.rounded())
                     self.myDistanceRelay.accept(Double(intMeter))
                     self.myDistanceTextRelay.accept("\(String(format: "%.1f", self.totalDistance)) m")
+                    if Int(self.myDistanceRelay.value + self.mateDistanceRelay.value) >= self.goalDistance {
+                                           self.finish(success: true)
+                                       }
                 }
                 self.previousLocation = loc
             })
@@ -153,6 +158,9 @@ final class RunningCoopViewModel: ViewModelType {
     
     func updateMateDistance(_ meter: Int) {
         mateDistanceRelay.accept(Double(meter))
+        if Int(myDistanceRelay.value + mateDistanceRelay.value) >= goalDistance {
+                   finish(success: true)
+               }
     }
     
     deinit {
