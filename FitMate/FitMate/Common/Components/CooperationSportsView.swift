@@ -137,7 +137,7 @@ class CooperationSportsView: BaseView {
     }()
     
     // 종료 버튼
-    private let stopButton: UIButton = {
+    let stopButton: UIButton = {
         let button = UIButton()
         button.setTitle("그만하기", for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 20)

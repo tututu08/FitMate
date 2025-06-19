@@ -4,30 +4,72 @@
 //
 //  Created by 강성훈 on 6/5/25.
 //
-import UIKit
-import SnapKit
+import RxSwift
+import Foundation
+import RxCocoa
 
 class RunningBattleViewController: BaseViewController {
-    private let battleView = BattleSportsView()
+
+    private let rootView = RunningBattleView()
+    private let viewModel: RunningBattleViewModel
+    // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
+    private let startTrriger = PublishRelay<Void>()
+    
+    private let mateDistanceRelay = PublishRelay<Double>()
+    private let myCharacter: String
+    private let mateCharacter: String
+    
+    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+        self.myCharacter = myCharacter
+        self.mateCharacter = mateCharacter
+        self.viewModel = RunningBattleViewModel(
+            goalDistance: goalDistance,
+            myCharacter: myCharacter,
+            mateCharacter: mateCharacter
+        )
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { fatalError("not implemented") }
+    
+    override func loadView() {
+        self.view = rootView
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    override func configureUI() {
-        super.configureUI()
-        
-        view.backgroundColor = .black
-        
-        view.addSubview(battleView)
-        
-        battleView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
+        rootView.updateGoal("\(viewModel.goalDistance)Km")
+        rootView.updateMyCharacter(myCharacter)
+        rootView.updateMateCharacter(mateCharacter)
+        startTrriger.accept(())
     }
     
     override func bindViewModel() {
         super.bindViewModel()
+        let input = RunningBattleViewModel.Input(
+            startTracking: startTrriger.asObservable(),
+            mateDistance: mateDistanceRelay.asObservable()
+        )
+        let output = viewModel.transform(input: input)
+        
+        output.myDistanceText
+            .drive(onNext: { [weak self] text in
+                self?.rootView.updateMyRecord(text)
+            })
+            .disposed(by: disposeBag)
+        output.mateDistanceText
+            .drive(onNext: { [weak self] text in
+                self?.rootView.updateMateRecord(text)
+            })
+            .disposed(by: disposeBag)
+        output.myProgress
+            .drive(onNext: { [weak self] progress in
+                self?.rootView.myUpdateProgress(ratio: progress)
+            })
+            .disposed(by: disposeBag)
+        output.mateProgress
+            .drive(onNext: { [weak self] progress in
+                self?.rootView.mateUpdateProgress(ratio: progress)
+            })
+            .disposed(by: disposeBag)
     }
-    
 }
