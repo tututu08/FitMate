@@ -81,6 +81,12 @@ final class RunningCoopViewModel: ViewModelType {
             .asDriver(onErrorJustReturn: "0")
         
         let progress = Observable
+            .combineLatest(myDistanceRelay, mateDistanceRelay)
+            .map { [weak self] my, mate -> CGFloat in
+                guard let self, self.goalDistance > 0 else { return 0 }
+                return CGFloat(min(1, Float(my + mate) / Float(self.goalDistance)))
+            }
+            .asDriver(onErrorJustReturn: 0)
         
         // Firestore에 값을 push
         myDistanceRelay
@@ -96,13 +102,6 @@ final class RunningCoopViewModel: ViewModelType {
             }
             .subscribe()
             .disposed(by: disposeBag)
-        
-            .combineLatest(myDistanceRelay, mateDistanceRelay)
-            .map { [weak self] my, mate -> CGFloat in
-                guard let self, self.goalDistance > 0 else { return 0 }
-                return CGFloat(min(1, Float(my + mate) / Float(self.goalDistance)))
-            }
-            .asDriver(onErrorJustReturn: 0)
         
         let didFinish = didFinishRelay
             .asSignal(onErrorJustReturn: false)
