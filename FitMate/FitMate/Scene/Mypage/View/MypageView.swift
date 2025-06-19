@@ -109,7 +109,7 @@ final class MypageView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .black
+        backgroundColor = .background800
         setupLayout()
     }
 
