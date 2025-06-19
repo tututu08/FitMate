@@ -11,13 +11,13 @@ import RxCocoa
 class MainViewController: BaseViewController {
     
     // ViewModel 객체 생성
-    private let viewModel = MainViewModel()
+    private let viewModel: MainViewModel
     
     // MatchAcceptViewModel 객체 생성
     // 역할 : 운동 경기 수락 여부에 따른 운동 경기 상태(matchStatus) 변경 ViewModel
     private let matchAcceptViewModel = MatchAcceptViewModel()
     
-    private let mainView = MainView()
+    let mainView = MainView()
     
     // 로그인 유저의 uid
     private let uid: String
@@ -25,6 +25,7 @@ class MainViewController: BaseViewController {
     // 초기화 함수
     init(uid: String) {
         self.uid = uid // 의존성 주입
+        self.viewModel = MainViewModel(uid: uid)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,7 +40,7 @@ class MainViewController: BaseViewController {
                 guard let self else { return }
                 
                 if let myNickname = data["nickname"] as? String,
-                let mate = data["mate"] as? [String: Any],
+                   let mate = data["mate"] as? [String: Any],
                    let mateNickname = mate["nickname"] as? String {
                     self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
                 }
@@ -60,25 +61,52 @@ class MainViewController: BaseViewController {
     }
     
     override func bindViewModel() {
-        mainView.exerciseButton.rx.tap
-            .subscribe(onNext: { [weak self] in
+        /// 뷰모델에 전달할 입력 정의
+        let input = MainViewModel.Input(
+            exerciseTap: mainView.exerciseButton.rx.tap.asObservable(),
+            mateAvatarTap: mainView.mateAvatarImage.rx.tap
+        )
+
+        ///  transform 통해 output 정의
+        let output = viewModel.transform(input: input)
+
+        /// 메이트가 없을 때 → 커스텀 얼럿 띄우기
+        output.hasNoMate
+            .drive(onNext: { [weak self] in
                 guard let self else { return }
-                let SportsSelectionVC = SportsSelectionViewController(uid: self.uid)
-                SportsSelectionVC.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(SportsSelectionVC, animated: true)
+                let alertVC = HasNoMateViewController(uid: self.uid)
+                alertVC.modalPresentationStyle = .overFullScreen
+                self.present(alertVC, animated: false)
+            })
+            .disposed(by: disposeBag)
+
+        /// 메이트가 있을 때 → 운동 선택 화면 이동
+        output.moveToExercise
+            .drive(onNext: { [weak self] in
+                guard let self else { return }
+                let selectSports = SportsSelectionViewController(uid: self.uid)
+                selectSports.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(selectSports, animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        /// 운동 초대 수신 → alert 띄우기
+        output.showMatchEvent
+            .drive(onNext: { [weak self] matchCode in
+                self?.presentAlertForMatch(matchCode: matchCode)
             })
             .disposed(by: disposeBag)
         
-        // 운동 초대 감지
-        viewModel.matchEvent
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] matchCode in
-                self?.presentAlertForMatch(matchCode: matchCode)
-                
+        output.moveToMatePage
+            .drive(onNext: { [weak self] mateUid in
+                guard let self else { return }
+                let vc = MatepageViewController(mateUid: mateUid)
+                vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
     }
-    
+
     /// 운동 초대 알림창 띄우는 메서드
     func presentAlertForMatch(matchCode: String) {
         let alert = UIAlertController(
@@ -95,7 +123,11 @@ class MainViewController: BaseViewController {
             
             // 게임화면으로 이동
             // 아직 테스트용으로 구현됨
-            let gameVC = RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!")
+            let gameVC = RunningCoopViewController(
+                    goalDistance: 1000,
+                    myCharacter: "morano",
+                    mateCharacter: "mora"
+                )
             gameVC.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(gameVC, animated: true)
         }))
@@ -107,5 +139,21 @@ class MainViewController: BaseViewController {
             self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
         }))
         present(alert, animated: true)
+    }
+}
+
+/// UIImageView에 rx.tap 기능 확장
+extension Reactive where Base: UIImageView {
+    /// UIImageView에 UITapGestureRecognizer를 붙이고
+    ///  Void 이벤트를 Observable로 방출
+    var tap: Observable<Void> {
+        let tapGesture = UITapGestureRecognizer()
+        
+        base.addGestureRecognizer(tapGesture)
+        base.isUserInteractionEnabled = true
+        
+        return tapGesture.rx.event
+            .map { _ in () } // 이벤트 무시하고 Void 반환
+            .asObservable()
     }
 }

@@ -1,70 +1,138 @@
-//
-//  RunningViewModel.swift
-//  FitMate
-//
-//  Created by 강성훈 on 6/5/25.
-//
-
 import RxSwift
+import RxCocoa
 import CoreLocation
 import RxCoreLocation
-import RxCocoa
 
-class RunningCoopViewModel: ViewModelType {
-    private let disposeBag = DisposeBag() // Rx 구독 해제를 위한 DisposeBag
-    private let locationManager = CLLocationManager() // 위치 추적을 위한 CLLocationManager 인스턴스
-    private var totalDistance: CLLocationDistance = 0 // 총 이동 거리 저장 변수
-    private var previousLocation: CLLocation? // 이전 위치 저장 변수
+final class RunningCoopViewModel: ViewModelType {
     
-    // ViewModel의 Input 구조체
+    private let disposeBag = DisposeBag()
+    private let locationManager = CLLocationManager()
+    
+    private var totalDistance: CLLocationDistance = 0
+    private var previousLocation: CLLocation?
+    
+    private let didFinishRelay = PublishRelay<Bool>()
+    // 내 누적 거리 (m)
+    private let myDistanceRelay = BehaviorRelay<Double>(value: 0)
+    // 메이트 누적 거리 (m)
+    private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
+    
+    // UI 출력용 텍스트
+    private let myDistanceTextRelay = BehaviorRelay<String>(value: "0.0 m")
+    private let mateDistanceTextRelay = BehaviorRelay<String>(value: "0.0 m")
+    
+    let goalDistance: Int
+    let myCharacter: String
+    let mateCharacter: String
+    
+    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+        self.goalDistance = goalDistance
+        self.myCharacter = myCharacter
+        self.mateCharacter = mateCharacter
+    }
+    
     struct Input {
-        let selectedGoalRelay: Observable<String> // 사용자가 설정한 목표
+        let startTracking: Observable<Void>     // 위치 추적 시작 트리거
+        let mateDistance: Observable<Double>       // 메이트 거리 실시간
+        let quit: Observable<Void>
+        let mateQuit: Observable<Void>
     }
     
-    // ViewModel의 Output 구조체
     struct Output {
-        let distanceText: Driver<String> // 총 이동 거리 텍스트 형식으로 출력
+        let myDistanceText: Driver<String>
+        let mateDistanceText: Driver<String>
+        let progress: Driver<CGFloat>
+        let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
     }
     
-    // 거리 텍스트를 저장하는 BehaviorRelay, 초기값은 "0.0 m"
-    private let distanceTextRelay = BehaviorRelay<String>(value: "0.0 m")
-    
-    // transform 메서드
     func transform(input: Input) -> Output {
+        input.startTracking
+            .subscribe(onNext: { [weak self] in
+                self?.startLocationUpdates()
+            })
+            .disposed(by: disposeBag)
         
-        // 위치 권한 요청
+        input.quit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
+            .disposed(by: disposeBag)
+        
+        input.mateQuit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
+            .disposed(by: disposeBag)
+        
+        input.mateDistance
+            .subscribe(onNext: { [weak self] distance in
+                self?.mateDistanceRelay.accept(Double(distance))
+            })
+            .disposed(by: disposeBag)
+        
+        // 내 점프 수를 문자열로 변환(Driver로 변환)
+        let myText = myDistanceRelay
+            .map { "\($0)개" }
+            .asDriver(onErrorJustReturn: "0")
+        
+        // 메이트 점프 수를 문자열로 변환(Driver로 변환)
+        let mateText = mateDistanceRelay
+            .map { "\($0)개" }
+            .asDriver(onErrorJustReturn: "0")
+        
+        let progress = Observable
+            .combineLatest(myDistanceRelay, mateDistanceRelay)
+            .map { [weak self] my, mate -> CGFloat in
+                guard let self, self.goalDistance > 0 else { return 0 }
+                return CGFloat(min(1, Float(my + mate) / Float(self.goalDistance)))
+            }
+            .asDriver(onErrorJustReturn: 0)
+        
+        let didFinish = didFinishRelay
+            .asSignal(onErrorJustReturn: false)
+        
+        return Output(
+            myDistanceText: myText,
+            mateDistanceText: mateText,
+            progress: progress,
+            didFinish: didFinish
+        )
+    }
+    
+    private func startLocationUpdates() {
         locationManager.requestWhenInUseAuthorization()
-        // 위치 정확도 설정 (가장 정확하게)
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        // 활동 유형 설정 (피트니스 활동으로 설정)
         locationManager.activityType = .fitness
-        // 위치 업데이트 시작
         locationManager.startUpdatingLocation()
         
-        // 위치가 업데이트될 때마다 처리
         locationManager.rx.didUpdateLocations
-            .compactMap { $0.last } // 가장 최근 위치만 사용
-            .filter { $0.horizontalAccuracy < 20 } // 정확도가 20m 미만일 때만 사용
-            .observe(on: MainScheduler.instance) // UI 업데이트를 위해 메인 스레드에서 관찰
-            .subscribe(onNext: { [weak self] newLocation in
+            .compactMap { $0.last }
+            .filter { $0.horizontalAccuracy < 20 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] loc in
                 guard let self = self else { return }
-                
-                // 이전 위치가 있다면 거리 계산
-                if let lastLocation = self.previousLocation {
-                    let distance = newLocation.distance(from: lastLocation) // 두 위치 간 거리 계산
-                    self.totalDistance += distance // 총 거리 누적
-                    
-                    // 거리 소수점 1자리까지 포맷팅 후 Relay에 저장
-                    let formattedDistance = String(format: "%.1f", self.totalDistance)
-                    self.distanceTextRelay.accept(formattedDistance + "m")
+                if let prev = self.previousLocation {
+                    let delta = loc.distance(from: prev)
+                    self.totalDistance += delta
+                    let intMeter = Int(self.totalDistance.rounded())
+                    self.myDistanceRelay.accept(Double(intMeter))
+                    self.myDistanceTextRelay.accept("\(String(format: "%.1f", self.totalDistance)) m")
                 }
-                
-                // 현재 위치를 이전 위치로 저장 (다음 거리 계산을 위해)
-                self.previousLocation = newLocation
+                self.previousLocation = loc
             })
-            .disposed(by: disposeBag) // 메모리 누수 방지를 위한 dispose 처리
-        
-        // Output으로 거리 텍스트 Relay를 Driver로 변환하여 반환
-        return Output(distanceText: distanceTextRelay.asDriver())
+            .disposed(by: disposeBag)
+    }
+    private func confirmQuit(isMine: Bool) {
+        locationManager.stopUpdatingLocation()
+        finish(success: false)
+        // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+    }
+    func finish(success: Bool) {
+        locationManager.stopUpdatingLocation()
+        didFinishRelay.accept(success)
+    }
+    
+    func updateMateDistance(_ meter: Int) {
+        mateDistanceRelay.accept(Double(meter))
+    }
+    
+    deinit {
+        locationManager.stopUpdatingLocation()
     }
 }
