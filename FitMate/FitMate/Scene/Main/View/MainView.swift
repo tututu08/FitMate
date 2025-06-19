@@ -141,6 +141,15 @@ class MainView: BaseView {
             make.leading.equalToSuperview().inset(28)
         }
         
+        myAvatarImage.snp.makeConstraints { make in
+//            make.top.equalTo(dDaysLabel.snp.bottom).offset(45)
+            make.leading.equalToSuperview().inset(68)
+            make.trailing.equalToSuperview().inset(67)
+            make.bottom.equalTo(exerciseButton.snp.top).offset(-40)
+//            make.width.equalTo(hasMate ? 208 : 240)
+            make.height.equalTo(309)
+        }
+        
         exerciseButton.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(32)
             make.centerX.equalToSuperview()
@@ -174,10 +183,11 @@ class MainView: BaseView {
         
         // 내 아바타 위치 및 크기 설정
         myAvatarImage.snp.remakeConstraints { make in
+//            make.top.equalTo(dDaysLabel.snp.bottom).offset(45)
             make.leading.equalToSuperview().inset(hasMate ? 44: 68)
             make.trailing.equalToSuperview().inset(hasMate ? 123 : 67)
             make.bottom.equalTo(exerciseButton.snp.top).offset(-40)
-            make.width.equalTo(hasMate ? 208 : 240)
+//            make.width.equalTo(hasMate ? 208 : 240)
             make.height.equalTo(hasMate ? 267 : 309)
         }
         // 내 아바타 상단 닉네임 라벨 위치 설정
@@ -203,6 +213,7 @@ class MainView: BaseView {
         }
         // 메이트 없을 때는 안보이게 처리
         mateAvatarImage.isHidden = !hasMate // = hasMate가 false면 안보이도록
+        print("기대값false:\(hasMate)")
         mateNicknameStack.isHidden = !hasMate
     }
 }
