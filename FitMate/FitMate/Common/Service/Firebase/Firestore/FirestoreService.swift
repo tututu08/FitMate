@@ -292,6 +292,46 @@ class FirestoreService {
          .disposed(by: disposeBag)
      */
     
+    /// 프로그레스 업데이트 함수
+    func updateMyProgressToFirestore(matchCode: String, uid: String, progress: Double) -> Completable {
+        return Completable.create { completable in
+            let db = Firestore.firestore()
+            db.collection("matches").document(matchCode)
+                .updateData([
+                    "players.\(uid).progress": progress,
+                    "players.\(uid).status": "playing"
+                ]) { error in
+                    if let error = error {
+                        completable(.error(error))
+                    } else {
+                        completable(.completed)
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
+    // 메이트 거리 실시간 리스닝 추가
+    func observeMateProgress(matchCode: String, mateUid: String) -> Observable<Double> {
+        return Observable.create { observer in
+            let listener = Firestore.firestore()
+                .collection("matches").document(matchCode)
+                .addSnapshotListener { snapshot, error in
+                    if let data = snapshot?.data(),
+                       let players = data["players"] as? [String: Any],
+                       let mate = players[mateUid] as? [String: Any],
+                       let progress = mate["progress"] as? Double {
+                        observer.onNext(progress)
+                    }
+                }
+
+            return Disposables.create {
+                listener.remove()
+            }
+        }
+    }
+    
+    
     // MARK: - Delete
     func deleteDocument(collectionName: String, documentName: String) -> Single<Void> {
             return Single.create { single in
