@@ -130,14 +130,14 @@ class FirestoreService {
                                     // "avatar": "끼리꼬", // 아바타 구현 되면 넣어야됨
                                     "isOnline": true,
                                     // "isWinner": true, // (대결모드에만 사용) 실제 게임 종료 후 따로 업데이트
-                                    "progress": 3.0,
+                                    "progress": 0.0,
                                     "status": "waiting"
                                 ],
                                 inviteeUid: [
                                     // "avatar": "끼리꼬",
                                     "isOnline": true,
                                     // "isWinner": true,
-                                    "progress": 3.0,
+                                    "progress": 0.0,
                                     "status": "waiting"
                                 ]
                             ]
