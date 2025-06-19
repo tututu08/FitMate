@@ -30,17 +30,17 @@ class FinishViewController: BaseViewController {
             .drive(onNext: { [weak self] text in self?.finishView.updateGoal(text)})
             .disposed(by: disposeBag)
         
-        output.rewardText
-            .drive(onNext: { [weak self] text in
-                self?.finishView.rewardLabel.text = text
-            })
-            .disposed(by: disposeBag)
-
-        output.hideCoin
-            .drive(onNext: { [weak self] hide in
-                self?.finishView.coinBackImage.isHidden = hide
-            })
-            .disposed(by: disposeBag)
+//        output.rewardText
+//            .drive(onNext: { [weak self] text in
+//                self?.finishView.rewardLabel.text = text
+//            })
+//            .disposed(by: disposeBag)
+//
+//        output.hideCoin
+//            .drive(onNext: { [weak self] hide in
+//                self?.finishView.coinBackImage.isHidden = hide
+//            })
+//            .disposed(by: disposeBag)
 
         output.resultText
             .drive(onNext: { [weak self] text in self?.finishView.resultLabel.text = text })

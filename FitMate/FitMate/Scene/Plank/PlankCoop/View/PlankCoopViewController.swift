@@ -146,7 +146,7 @@ final class PlankCoopViewController: BaseViewController {
                     goal: 100,                  // 목표 수치
                     goalUnit: "개",              // 목표 단위
                     character: "kkuluber",         // 캐릭터 이름
-                    success: true               // 성공/실패 여부
+                    success: success               // 성공/실패 여부
                 )
                 let finishVC = FinishViewController(viewModel: finishVM)
 

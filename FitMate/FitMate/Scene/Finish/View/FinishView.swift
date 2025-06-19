@@ -67,56 +67,35 @@ final class FinishView: BaseView {
         return imageView
     }()
     
-    let coinBackImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "coinbackground")
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
-    // 코인 이미지 (성공 시 노출)
-    let coinImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "blackcoin")
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
-//    let attachment = NSTextAttachment()
-//    attachment.image = UIImage(named: "new")
-//    let attachmentString = NSAttributedString(attachment: attachment)
-//    let contentString = NSMutableAttributedString(string: originalString)
-//    contentString.append(attachmentString)
-//    contentsLabel.attributedText = contentString
+//    let coinBackImage: UIImageView = {
+//        let imageView = UIImageView()
+//        imageView.image = UIImage(named: "coinbackground")
+//        imageView.contentMode = .scaleAspectFit
+//        return imageView
+//    }()
+//
+//    // 코인 이미지 (성공 시 노출)
+//    let coinImage: UIImageView = {
+//        let imageView = UIImageView()
+//        imageView.image = UIImage(named: "blackcoin")
+//        imageView.contentMode = .scaleAspectFit
+//        return imageView
+//    }()
     
     // 보상 라벨(예: 10코인)
 //    let rewardLabel: UILabel = {
 //        let label = UILabel()
-//            let attachment = NSTextAttachment()
-//            attachment.image = UIImage(named: "blackcoin")
-//            let attachmentString = NSAttributedString(attachment: attachment)
-//            let contentString = NSMutableAttributedString(string: originalString)
-//            contentString.append(attachmentString)
-//        label.attributedText = contentString
+//        label.textAlignment = .center
 //        label.font = .boldSystemFont(ofSize: 15)
 //        label.textColor = .black
-//        label.textAlignment = .center
 //        return label
 //    }()
-    let rewardLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.font = .boldSystemFont(ofSize: 15)
-        label.textColor = .black
-
-        return label
-    }()
 
     // 보상 수령 버튼
     let rewardButton: UIButton = {
         let button = UIButton(type: .system)
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
-        button.setTitle("보상 수령", for: .normal)
+        button.setTitle("돌아가기", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 20)
         return button
@@ -127,14 +106,14 @@ final class FinishView: BaseView {
         goalImage.addSubview(goalLabel)
         backgroundImage.addSubview(resultImage)
         backgroundImage.addSubview(characterImage)
-        coinBackImage.addSubview(coinImage)
-        coinBackImage.addSubview(rewardLabel)
+//        coinBackImage.addSubview(coinImage)
+//        coinBackImage.addSubview(rewardLabel)
         
         [modeLabel,
          goalImage,
          resultLabel,
          backgroundImage,
-         coinBackImage,
+//         coinBackImage,
          rewardButton
         ].forEach{self.addSubview($0)}
     }
@@ -150,9 +129,9 @@ final class FinishView: BaseView {
             $0.width.equalTo(350)
             $0.height.equalTo(55)
         }
-        rewardLabel.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
+//        rewardLabel.snp.makeConstraints {
+//            $0.center.equalToSuperview()
+//        }
         
         goalLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
@@ -180,25 +159,25 @@ final class FinishView: BaseView {
             $0.width.height.equalTo(150)
         }
         
-        coinBackImage.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalTo(rewardButton.snp.top).offset(-7)
-            $0.height.equalTo(50)
-            $0.width.equalTo(130)
-        }
-        
-        coinImage.snp.makeConstraints {
-            $0.width.height.equalTo(20)
-            $0.top.equalTo(coinBackImage.snp.top).offset(7)
-            $0.leading.equalTo(coinBackImage.snp.leading).offset(30)
-
-        }
-        rewardLabel.snp.makeConstraints {
-            $0.height.equalTo(24)
-            $0.width.equalTo(20)
-            $0.top.equalTo(coinBackImage.snp.top).offset(7)
-            $0.trailing.equalTo(coinBackImage.snp.trailing).inset(-5)
-        }
+//        coinBackImage.snp.makeConstraints {
+//            $0.centerX.equalToSuperview()
+//            $0.bottom.equalTo(rewardButton.snp.top).offset(-7)
+//            $0.height.equalTo(50)
+//            $0.width.equalTo(130)
+//        }
+//
+//        coinImage.snp.makeConstraints {
+//            $0.width.height.equalTo(20)
+//            $0.top.equalTo(coinBackImage.snp.top).offset(7)
+//            $0.leading.equalTo(coinBackImage.snp.leading).offset(30)
+//
+//        }
+//        rewardLabel.snp.makeConstraints {
+//            $0.height.equalTo(24)
+//            $0.width.equalTo(20)
+//            $0.top.equalTo(coinBackImage.snp.top).offset(7)
+//            $0.trailing.equalTo(coinBackImage.snp.trailing).inset(-5)
+//        }
         
         rewardButton.snp.makeConstraints {
             $0.bottom.equalToSuperview().inset(60)
@@ -215,10 +194,10 @@ final class FinishView: BaseView {
     func updateGoal(_ text: String) {
         goalLabel.text = text
     }
-    func updateReward(text: String, hideCoin: Bool) {
-        rewardLabel.text = text
-        coinBackImage.isHidden = hideCoin
-    }
+//    func updateReward(text: String, hideCoin: Bool) {
+//        rewardLabel.text = text
+//        coinBackImage.isHidden = hideCoin
+//    }
     
     func updateResult(text: String, imageName: String) {
         resultLabel.text = text
