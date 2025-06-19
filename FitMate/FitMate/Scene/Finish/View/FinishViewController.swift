@@ -67,5 +67,4 @@ class FinishViewController: BaseViewController {
                 }
             }
             .disposed(by: disposeBag)
-    }
 }

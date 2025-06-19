@@ -29,7 +29,7 @@ class SportsSelectionViewController: BaseViewController {
         layout.scrollDirection = .vertical             // 세로 스크롤
         layout.itemSize = CGSize(width: 355, height: 266) // 셀 크기 설정
         layout.sideItemScale = 0.85                     // 양옆 아이템 크기 축소 비율
-        layout.sideItemAlpha = 0.6                     // 양옆 아이템 투명도
+        layout.sideItemAlpha = 0.4               // 양옆 아이템 투명도
         layout.sideItemShift = 10                      // 셀 이동 오프셋 (약간 겹치게 표현)
         layout.spacingMode = .fixed(spacing: -10)      // 셀 간 간격 설정
         
