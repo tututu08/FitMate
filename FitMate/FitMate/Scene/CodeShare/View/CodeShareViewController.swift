@@ -101,6 +101,22 @@ final class CodeShareViewController: BaseViewController {
                 self?.transitionToMain(uid: self?.uid ?? "")
             })
             .disposed(by: disposeBag)
+        
+        output.rejectionAlert
+            .emit(onNext: { [weak self] message in
+                self?.showRejectionAlert(message: message)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func showRejectionAlert(message: String) {
+        let alert = UIAlertController(
+            title: "메이트 요청이 거절됨",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
     }
     
     // MARK: - Alert
