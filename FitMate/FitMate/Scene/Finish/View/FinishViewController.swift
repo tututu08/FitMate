@@ -4,24 +4,24 @@ import RxCocoa
 
 // 운동 종료 결과를 보여주는 컨트롤러
 class FinishViewController: BaseViewController {
-
+    
     private let finishView = FinishView()
     private let viewModel: FinishViewModel
-
+    
     init(viewModel: FinishViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder: NSCoder) { fatalError("not implemented") }
-
+    
     override func loadView() {
         self.view = finishView
     }
-
+    
     override func bindViewModel() {
         let output = viewModel.transform(input: .init())
-
+        
         output.modeText
             .drive(onNext: { [weak self] text in self?.finishView.updateMode(text) })
             .disposed(by: disposeBag)
@@ -67,4 +67,5 @@ class FinishViewController: BaseViewController {
                 }
             }
             .disposed(by: disposeBag)
+    }
 }

@@ -9,6 +9,13 @@ final class MypageView: UIView {
         button.tintColor = .white
         return button
     }()
+    
+    let backButton: UIButton = {
+        let back = UIButton()
+        back.setImage(UIImage(named: "backButton"), for: .normal)
+        back.contentHorizontalAlignment = .leading
+        return back
+    }()
 
     let topBar = UIView()
 
@@ -123,7 +130,8 @@ final class MypageView: UIView {
         addSubview(nicknameLabel)
         addSubview(underline)
         addSubview(contentLabel)
-
+        
+        topBar.addSubview(backButton)
         topBar.addSubview(titleLabel)
         topBar.addSubview(settingButton)
 
@@ -148,6 +156,12 @@ final class MypageView: UIView {
         settingButton.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.trailing.equalToSuperview().inset(20)
+            $0.width.height.equalTo(24)
+        }
+        
+        backButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.equalToSuperview().inset(20)
             $0.width.height.equalTo(24)
         }
 
