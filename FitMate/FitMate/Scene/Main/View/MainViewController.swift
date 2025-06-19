@@ -63,7 +63,8 @@ class MainViewController: BaseViewController {
     override func bindViewModel() {
         /// 뷰모델에 전달할 입력 정의
         let input = MainViewModel.Input(
-            exerciseTap: mainView.exerciseButton.rx.tap.asObservable()
+            exerciseTap: mainView.exerciseButton.rx.tap.asObservable(),
+            mateAvatarTap: mainView.mateAvatarImage.rx.tap
         )
 
         ///  transform 통해 output 정의
@@ -93,6 +94,15 @@ class MainViewController: BaseViewController {
         output.showMatchEvent
             .drive(onNext: { [weak self] matchCode in
                 self?.presentAlertForMatch(matchCode: matchCode)
+            })
+            .disposed(by: disposeBag)
+        
+        output.moveToMatePage
+            .drive(onNext: { [weak self] mateUid in
+                guard let self else { return }
+                let vc = MatepageViewController(mateUid: mateUid)
+                vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -125,5 +135,21 @@ class MainViewController: BaseViewController {
             self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
         }))
         present(alert, animated: true)
+    }
+}
+
+/// UIImageView에 rx.tap 기능 확장
+extension Reactive where Base: UIImageView {
+    /// UIImageView에 UITapGestureRecognizer를 붙이고
+    ///  Void 이벤트를 Observable로 방출
+    var tap: Observable<Void> {
+        let tapGesture = UITapGestureRecognizer()
+        
+        base.addGestureRecognizer(tapGesture)
+        base.isUserInteractionEnabled = true
+        
+        return tapGesture.rx.event
+            .map { _ in () } // 이벤트 무시하고 Void 반환
+            .asObservable()
     }
 }
