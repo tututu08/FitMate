@@ -7,11 +7,13 @@ class FinishViewController: BaseViewController {
     
     private let finishView = FinishView()
     private let viewModel: FinishViewModel
-    
-    init(viewModel: FinishViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
+    let uid: String
+
+    init(uid: String, viewModel: FinishViewModel) {
+           self.uid = uid
+           self.viewModel = viewModel
+           super.init(nibName: nil, bundle: nil)
+       }
     
     required init?(coder: NSCoder) { fatalError("not implemented") }
     
@@ -58,12 +60,14 @@ class FinishViewController: BaseViewController {
         finishView.rewardButton.rx.tap
             .bind { [weak self] in
                 guard let self else { return }
-                if let nav = self.presentingViewController?.navigationController {
-                    self.dismiss(animated: true) {
-                        nav.popToRootViewController(animated: true)
-                    }
-                } else {
-                    self.dismiss(animated: true)
+                let tabBarVC = TabBarController(uid: self.uid)
+                       tabBarVC.modalPresentationStyle = .fullScreen
+                // rootViewController를 통째로 교체
+                if let window = UIApplication.shared.connectedScenes
+                    .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                    .first {
+                    window.rootViewController = tabBarVC
+                    window.makeKeyAndVisible()
                 }
             }
             .disposed(by: disposeBag)

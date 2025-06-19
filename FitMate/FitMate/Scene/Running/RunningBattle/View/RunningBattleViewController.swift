@@ -127,7 +127,7 @@ class RunningBattleViewController: BaseViewController {
                    character: myCharacter,
                    success: success
                )
-               let vc = FinishViewController(viewModel: finishVM)
+               let vc = FinishViewController(uid: myUid, viewModel: finishVM)
                vc.modalPresentationStyle = .fullScreen
                present(vc, animated: true)
     }
