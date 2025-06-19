@@ -96,7 +96,7 @@ class JumpRopeBattleViewController: BaseViewController {
                 self?.sportsView.myUpdateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
-        // 메이트 진행률바(비율)
+        // 메이트 진행률바(비율)x
         output.mateProgressView
             .drive(onNext: { [weak self] ratio in
                 self?.sportsView.myUpdateProgress(ratio: ratio)
