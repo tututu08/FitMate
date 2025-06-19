@@ -49,6 +49,9 @@ final class PlankCoopViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         sportsView.updateGoal("플랭크 \(viewModel.goalMinutes)분") // 또는 회, 개, whatever
+        sportsView.updateMyCharacter(myCharacter)
+        sportsView.updateMateCharacter(mateCharacter)
+        
         bind()
         startRelay.accept(())
         // 버튼 Rx 바인딩
@@ -70,7 +73,35 @@ final class PlankCoopViewController: BaseViewController {
                 )
             }
             .disposed(by: disposeBag)
+        
+        MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUid)
+        listenStartTime()
+        
     }
+    
+    private func listenStartTime() {
+            MatchEventService.shared.listenStartTime(matchCode: matchCode)
+                .observe(on: MainScheduler.instance)
+                .subscribe(onNext: { [weak self] startTime in
+                    guard let self = self else { return }
+                    let delay = startTime.timeIntervalSinceNow
+                    print("운동 시작까지 \(delay)초 대기")
+
+                    if delay > 0 {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            self.startWorkout()
+                        }
+                    } else {
+                        self.startWorkout()
+                    }
+                })
+                .disposed(by: disposeBag)
+        }
+
+        private func startWorkout() {
+            print("운동 시작!")
+            // 운동 타이머 시작, UI 업데이트 등
+        }
     
     private func bind() {
         let input = PlankCoopViewModel.Input(

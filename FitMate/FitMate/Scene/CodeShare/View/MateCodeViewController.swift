@@ -120,7 +120,7 @@ final class MateCodeViewController: BaseViewController {
             )
         case .requestFailed(let message):
             alertController = UIAlertController(
-                title: "실패",
+                title: "초대 요청 실패",
                 message: message,
                 preferredStyle: .alert
             )

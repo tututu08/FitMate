@@ -22,7 +22,8 @@ class LoadingViewController: BaseViewController {
         // ViewModel 의존성 주입을 통해 운동 경기 코드를 전달
         self.uid = uid
         self.matchCode = matchCode
-        self.viewModel = LoadingViewModel(matchCode: matchCode)
+        //self.viewModel = LoadingViewModel(matchCode: matchCode)
+        self.viewModel = LoadingViewModel(matchCode: matchCode, myUid: uid)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -45,12 +46,17 @@ class LoadingViewController: BaseViewController {
     /// ViewModel 바인딩
     override func bindViewModel() {
         super.bindViewModel()
+        
         viewModel.matchStatusEvent
             .observe(on: MainScheduler.instance)
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] status in
+                print("🔥 받은 상태: \(status)")
                 guard let self else { return }
-                if status == "accepted" && !self.hasNavigatedToGame {
+                
+                // started 상태가 되면 시작
+                if status == "started" && !self.hasNavigatedToGame {
+                    print("✅ 동시에 시작 조건 충족 → 게임화면 이동")
                     self.hasNavigatedToGame = true
                     
                     // 실시간 감지 리스너 종료
@@ -99,7 +105,15 @@ class LoadingViewController: BaseViewController {
                         case "달리기":
                             self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "자전거":
-                            self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
+                            self.navigationController?.pushViewController(
+                                RunningCoopViewController(
+                                    goalDistance: goalValue,
+                                    matchCode: self.matchCode,
+                                    myUid: self.uid,
+                                    mateUid: mateUid,
+                                    myCharacter: "kaepy",
+                                    mateCharacter: "kaepy"
+                                ), animated: true)
                         case "플랭크":
                             self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: goalValue, matchCode: self.matchCode, myUID: self.uid, mateUID: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "줄넘기":
