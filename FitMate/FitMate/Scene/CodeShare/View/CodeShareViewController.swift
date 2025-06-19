@@ -43,6 +43,12 @@ final class CodeShareViewController: BaseViewController {
         bind()
     }
     
+    // 시스템 네비게이션바 숨김
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
     // MARK: - Binding
     
     /// ViewModel의 Input/Output을 구성하고 UI 이벤트에 바인딩

@@ -50,31 +50,46 @@ class NicknameViewModel {
     func transform(input: Input) -> Output {
         let nicknameSaved = PublishRelay<Void>()
         
-        let buttonActivated = input.enteredCode
-            // 개행이랑 공백일 경우 버튼 활성화 제한
-            .map { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty } /// 사용자가 입력한 문자열에서 앞뒤 공백과 줄바꿈
-            .distinctUntilChanged() // 이전 값과 같으면 무시
-            
+        let buttonActivated = Observable
+            .combineLatest(
+                input.enteredCode.asObservable()
+                    // // 입력된 닉네임이 공백이 아닌지 판단
+                    .map { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty },
+                // 닉네임 중복 검사를 통과했는지
+                isValidNicknameRelay.asObservable(),
+                // 약관 체크박스가 체크되었는지
+                termsChecked.asObservable(),
+                // 개인정보 처리방침 체크박스가 체크되었는지
+                privacyChecked.asObservable()
+            )
+            // 위 네 조건이 모두 true일 때만 버튼을 활성화/
+            .map { inputNotEmpty, isValidNickname, termsOK, privacyOK in
+                inputNotEmpty && isValidNickname && termsOK && privacyOK
+            }
+            // 이전 값과 같으면 무시하고 변경된 경우에만 전달
+            .distinctUntilChanged()
+            .asDriver(onErrorDriveWith: .empty())
+        
         input.textFieldLimit
-            //.map { SystemAlertType.overLimit } // 문자열 길이 초과 시 알림 타입 생성
+        //.map { SystemAlertType.overLimit } // 문자열 길이 초과 시 알림 타입 생성
             .drive(onNext: { [weak self] alert in
-                    self?.textLimitRelay.accept(alert)
-                })
+                self?.textLimitRelay.accept(alert)
+            })
             .disposed(by: disposeBag)
         
         // 닉네임 중복이면 알림 띄움
         input.nicknameText
-            // 사용자가 타이핑을 멈춘 뒤 0.3초 동안 입력이 없을 때만 다음 로직을 실행
+        // 사용자가 타이핑을 멈춘 뒤 0.3초 동안 입력이 없을 때만 다음 로직을 실행
             .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
-            // 동일한 닉네임이 연속해서 들어오면 무시
+        // 동일한 닉네임이 연속해서 들어오면 무시
             .distinctUntilChanged()
-            // 닉네임이 바뀔 때마다 Firestore에 중복 체크 요청
+        // 닉네임이 바뀔 때마다 Firestore에 중복 체크 요청
             .flatMapLatest { nickname in
                 //Firestore에 해당 닉네임이 이미 존재하는지 확인하는 메서드를 호출
                 FirestoreService.shared.nicknameCheck(nickname: nickname)
                     .map { (nickname, $0) } // 튜플로 전달
                     .asObservable()
-                    // Firestore 에러가 발생해도 스트림을 끊지 않고 false를 대신 반환
+                // Firestore 에러가 발생해도 스트림을 끊지 않고 false를 대신 반환
                     .catchAndReturn((nickname, false))
             }
             .observe(on: MainScheduler.instance)
@@ -92,16 +107,32 @@ class NicknameViewModel {
             .disposed(by: disposeBag)
         
         input.registerTap
-            .withLatestFrom(Observable.combineLatest(isValidNicknameRelay, currentNicknameRelay))
-            .filter { isValid, _ in isValid } // 유효할 때만 저장
-            .flatMapLatest { _, nickname in
-                FirestoreService.shared.updateDocument(collectionName: "users", documentName: self.uid, fields: ["nickname": nickname])
-                    .asObservable()
-                    .catchAndReturn(())
+        // 버튼이 눌렸을 때 최신 상태의 4가지 => 닉네임 유효성, 닉네임 값, 약관 체크, 개인정보 체크
+            .withLatestFrom(
+                Observable.combineLatest(
+                    isValidNicknameRelay, // 닉네임 중복 검사 통과 여부
+                    currentNicknameRelay, // 현재 입력된 닉네임
+                    termsChecked, // 약관 체크 여부
+                    privacyChecked // 개인정보 체크 여부
+                )
+            )
+            // 세 가지 조건이 모두 true인 경우에만 저장
+            .filter { isValidNickname, _, termsOK, privacyOK in
+                isValidNickname && termsOK && privacyOK
+            }
+            // 조건이 통과되면 닉네임만 추출해서 Firestore에 저장 요청
+            .flatMapLatest { _, nickname, _, _ in
+                FirestoreService.shared.updateDocument(
+                    collectionName: "users", // users 컬렉션
+                    documentName: self.uid, // 현재 로그인한 유저 문서
+                    fields: ["nickname": nickname] // 업데이트할 필드
+                )
+                .asObservable()
+                .catchAndReturn(())
             }
             .bind(to: nicknameSaved)
             .disposed(by: disposeBag)
-        
+
         input.termsTap
             .bind { [weak self] in
                 guard let self = self else { return }

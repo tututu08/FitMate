@@ -99,7 +99,7 @@ class MainView: BaseView {
     }
     
     override func configureUI() {
-        backgroundColor = .black
+        backgroundColor = .background800
         [topBar, explainLabel, dDaysLabel, myAvatarImage,
           mateAvatarImage, exerciseButton].forEach{ addSubview($0) }
         
