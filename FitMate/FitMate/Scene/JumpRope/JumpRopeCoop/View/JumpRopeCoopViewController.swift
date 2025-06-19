@@ -13,18 +13,18 @@ class JumpRopeCoopViewController: BaseViewController {
     private let startRelay = PublishRelay<Void>()
     // 메이트 점프 횟수 수신용(상대방이 firebase에서 온 값으로 갱신할 때 쓸 수도 있음)
     private let mateCountRelay = PublishRelay<Int>()
-    private let myCharacter: String
-    private let mateCharacter: String
+    //private let myCharacter: String
+    //private let mateCharacter: String
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
     
-    init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
-        self.myCharacter = myCharacter
-        self.mateCharacter = mateCharacter
+    init(goalCount: Int/*, myCharacter: String, mateCharacter: String matchID: String, myUID: String, mateUID: String*/) {
+        //self.myCharacter = myCharacter
+        //self.mateCharacter = mateCharacter
         self.viewModel = JumpRopeCoopViewModel(
                goalCount: goalCount,
-               myCharacter: myCharacter,
-               mateCharacter: mateCharacter
+               //myCharacter: myCharacter,
+               //mateCharacter: mateCharacter
 //               matchID: matchID,
 //               myUID: myUID,
 //               mateUID: mateUID

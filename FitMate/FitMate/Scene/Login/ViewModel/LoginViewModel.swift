@@ -191,7 +191,7 @@ final class LoginViewModel {
                         .fetchDocument(collectionName: "users", documentName: uid)
                         .flatMap { data -> Single<LoginNavigation> in
                             if let nickname = data["nickname"] as? String, !nickname.isEmpty {
-                                if let mate = data["mate"] as? String, !mate.isEmpty {
+                                if let mate = data["hasMate"] as? Bool, mate == true {
                                     return .just(.goToMainViewController(uid: uid))
                                 } else {
                                     return .just(.goToInputMateCode(uid: uid))

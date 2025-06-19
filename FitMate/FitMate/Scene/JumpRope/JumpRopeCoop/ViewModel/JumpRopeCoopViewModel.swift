@@ -51,10 +51,10 @@ final class JumpRopeCoopViewModel: ViewModelType {
     private let cooldown = 0.45            // 연속 감지 방지(0.45초 쿨타임)
     
     // 생성자 목표 카운트 필수
-    init(goalCount: Int, myCharacter: String, mateCharacter: String/* matchID: String, myUID: String, mateUID: String*/) {
+    init(goalCount: Int/*, myCharacter: String, mateCharacter: String matchID: String, myUID: String, mateUID: String*/) {
         self.goalCount = goalCount
-        self.myCharacter = myCharacter
-        self.mateCharacter = mateCharacter
+        //self.myCharacter = myCharacter
+        //self.mateCharacter = mateCharacter
         //        self.matchID = matchID
         //        self.myUID = myUID
         //        self.mateUID = mateUID

@@ -28,7 +28,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
     // 숫자만
-    private let selectedGoalValueRelay = BehaviorRelay<String>(value: "")
+    private let selectedGoalValueRelay = BehaviorRelay<Int>(value: 0)
     // 단위만
     private let selectedGoalUnitRelay = BehaviorRelay<String>(value: "")
 
@@ -140,33 +140,18 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     inviterUid: self.uid,
                     inviteeUid: self.mateUid,
                     exerciseType: self.selectedTitleRelay.value,
-                    goalValue: self.selectedGoalRelay.value,
+                    goalValue: self.selectedGoalValueRelay.value,
+                    goalUnit: self.selectedGoalUnitRelay.value,
                     mode: self.selectedModeRelay.value.asString
                 )
                 .subscribe(
                     onSuccess: { matchCode in
                         print("Match 생성 성공 \(matchCode)")
                         // 로딩 화면으로 이동
-                        self.navigationController?.pushViewController(LoadingViewController(matchCode: matchCode), animated: true)
+                        self.navigationController?.pushViewController(LoadingViewController(uid: self.uid, matchCode: matchCode), animated: true)
                     },
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
-                
-                // MARK: Firestore 데이터 저장
-                // "matches" 컬렉션 및 "matchID" 문서 생성
-                FirestoreService.shared.createMatchDocument(
-                    inviterUid: self.uid,
-                    inviteeUid: self.mateUid,
-                    exerciseType: self.selectedTitleRelay.value,
-                    goalValue: self.selectedGoalRelay.value,
-                    mode: self.selectedModeRelay.value.asString
-                )
-                .subscribe(
-                    onSuccess: { success in print("Match 생성 성공") },
-                    onFailure: { error in print("실패: \(error)") }
-                ).disposed(by: disposeBag)
-                
-
             })
             .disposed(by: disposeBag)
     }
@@ -267,7 +252,11 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         selectedGoalRelay.accept(selected)
         
         let (value, unit) = splitValueAndUnit(from: selected)
-        selectedGoalValueRelay.accept(value)
+        guard let intValue = Int(value) else {
+            print("Picker 목표치 Int 변환 실패.")
+            return
+        }
+        selectedGoalValueRelay.accept(intValue)
         selectedGoalUnitRelay.accept(unit)
         
         pickerView.reloadAllComponents()

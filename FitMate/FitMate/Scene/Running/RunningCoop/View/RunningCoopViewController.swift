@@ -19,19 +19,28 @@ final class RunningCoopViewController: BaseViewController {
     // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
     private let startRelay = PublishRelay<Void>()
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
+    
+    private let matchCode: String
+    private let mateUid: String
+    private let myUid: String
     private let myCharacter: String
     private let mateCharacter: String
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
 
-    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+    init(goalDistance: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+        self.matchCode = matchCode
+        self.myUid = myUid
+        self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
         
         self.runningCoopViewModel = RunningCoopViewModel(
             goalDistance: goalDistance,
             myCharacter: myCharacter,
-            mateCharacter: mateCharacter
+            mateCharacter: mateCharacter,
+            matchCode: matchCode,
+            myUid: myUid
         )
         
         super.init(nibName: nil, bundle: nil)
@@ -40,14 +49,14 @@ final class RunningCoopViewController: BaseViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func loadView() {
+        self.view = rootView
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
-    override func loadView() {
-        self.view = rootView
     }
 
     override func viewDidLoad() {
@@ -56,6 +65,14 @@ final class RunningCoopViewController: BaseViewController {
         rootView.updateGoal("\(runningCoopViewModel.goalDistance)Km")
         rootView.updateMyCharacter(runningCoopViewModel.myCharacter)
         rootView.updateMateCharacter(runningCoopViewModel.mateCharacter)
+        
+        // MARK: - Firestore로부터 메이트 거리 수신
+        FirestoreService.shared
+            .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
+            .bind(to: mateDistanceRelay)
+            .disposed(by: disposeBag)
+
+        // 위치 추적 시작
         startRelay.accept(())
         rootView.stopButton.rx.tap
             .bind { [weak self] in

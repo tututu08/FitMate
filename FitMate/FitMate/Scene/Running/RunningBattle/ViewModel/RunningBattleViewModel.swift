@@ -25,11 +25,15 @@ final class RunningBattleViewModel: ViewModelType {
     let goalDistance: Int
     let myCharacter: String
     let mateCharacter: String
+    let matchCode: String
+    let myUid: String
     
-    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+    init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
         self.goalDistance = goalDistance
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        self.matchCode = matchCode
+        self.myUid = myUid
     }
     
     struct Input {
@@ -80,18 +84,39 @@ final class RunningBattleViewModel: ViewModelType {
             .map { "\($0) m" }
             .asDriver(onErrorJustReturn: "0.0 m")
         
+        // Firestore에 값을 push
+        myDistanceRelay
+            .distinctUntilChanged()
+            .skip(1)
+            .flatMapLatest { [weak self] distance -> Completable in
+                guard let self = self else { return .empty() }
+                return FirestoreService.shared.updateMyProgressToFirestore(
+                    matchCode: self.matchCode,
+                    uid: self.myUid,
+                    progress: distance
+                )
+            }
+            .subscribe()
+            .disposed(by: disposeBag)
+        
         // 내 점프 수와 메이트 점프 수를 더해서, 목표 대비 진행률 계산
-        let myProgress = myDistanceTextRelay
+        let myProgress = myDistanceRelay
             .map { [weak self] my -> CGFloat in
                 guard let self else { return 0 }
-                return CGFloat(min(1, (Float(my) ?? 0) / Float(self.goalDistance)))
+                //return CGFloat(min(1, (Float(my) ?? 0) / Float(self.goalDistance)))
+                let goalDistanceMeter = goalDistance * 1000
+                let ratio = CGFloat((my) / Double(goalDistanceMeter))
+                return min(1, max(0, ratio))
             }
             .asDriver(onErrorJustReturn: 0)
         
-        let mateProgress = mateDistanceTextRelay
+        let mateProgress = mateDistanceRelay
             .map { [weak self] mate -> CGFloat in
                 guard let self else { return 0 }
-                return CGFloat(min(1, (Float(mate) ?? 0) / Float(self.goalDistance)))
+                //return CGFloat(min(1, (Float(mate) ?? 0) / Float(self.goalDistance)))
+                let goalDistanceMeter = goalDistance * 1000
+                let ratio = CGFloat((mate) / Double(goalDistanceMeter))
+                return min(1, max(0, ratio))
             }
             .asDriver(onErrorJustReturn: 0)
         
@@ -105,6 +130,8 @@ final class RunningBattleViewModel: ViewModelType {
             didFinish: didFinish
         )
     }
+    
+    
     
     private func startLocationUpdates() {
         locationManager.requestWhenInUseAuthorization()

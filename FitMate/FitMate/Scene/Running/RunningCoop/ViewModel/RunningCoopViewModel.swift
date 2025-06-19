@@ -24,14 +24,17 @@ final class RunningCoopViewModel: ViewModelType {
     let goalDistance: Int
     let myCharacter: String
     let mateCharacter: String
+    let matchCode: String
+    let myUid: String
     
     var myDistance: Int { Int(myDistanceRelay.value) }
     var mateDistance: Int { Int(mateDistanceRelay.value) }
-    
-    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+    init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
         self.goalDistance = goalDistance
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        self.matchCode = matchCode
+        self.myUid = myUid
     }
     
     struct Input {
@@ -66,26 +69,45 @@ final class RunningCoopViewModel: ViewModelType {
         input.mateDistance
             .subscribe(onNext: { [weak self] distance in
                 self?.mateDistanceRelay.accept(Double(distance))
+                self?.mateDistanceTextRelay.accept("\(String(format: "%.1f", distance)) m") //ㅏㅏㅏ
             })
             .disposed(by: disposeBag)
         
         // 내 점프 수를 문자열로 변환(Driver로 변환)
         let myText = myDistanceRelay
-            .map { "\($0)개" }
-            .asDriver(onErrorJustReturn: "0")
+            .map { "\($0) m" }
+            .asDriver(onErrorJustReturn: "0.0 m")
         
         // 메이트 점프 수를 문자열로 변환(Driver로 변환)
         let mateText = mateDistanceRelay
-            .map { "\($0)개" }
-            .asDriver(onErrorJustReturn: "0")
+            .map { "\($0) m" }
+            .asDriver(onErrorJustReturn: "0.0 m")
         
         let progress = Observable
             .combineLatest(myDistanceRelay, mateDistanceRelay)
             .map { [weak self] my, mate -> CGFloat in
                 guard let self, self.goalDistance > 0 else { return 0 }
-                return CGFloat(min(1, Float(my + mate) / Float(self.goalDistance)))
+                let goalDistanceMeter = goalDistance * 1000
+                //return CGFloat(min(1, Float(my + mate) / Float(self.goalDistance)))
+                let ratio = CGFloat((my + mate) / Double(goalDistanceMeter))
+                                return min(1, max(0, ratio))
             }
             .asDriver(onErrorJustReturn: 0)
+        
+        // Firestore에 값을 push
+        myDistanceRelay
+            .distinctUntilChanged()
+            .skip(1)
+            .flatMapLatest { [weak self] distance -> Completable in
+                guard let self = self else { return .empty() }
+                return FirestoreService.shared.updateMyProgressToFirestore(
+                    matchCode: self.matchCode,
+                    uid: self.myUid,
+                    progress: distance
+                )
+            }
+            .subscribe()
+            .disposed(by: disposeBag)
         
         let didFinish = didFinishRelay
             .asSignal(onErrorJustReturn: false)

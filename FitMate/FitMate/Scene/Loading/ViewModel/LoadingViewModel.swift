@@ -23,9 +23,11 @@ class LoadingViewModel {
     
     private func bindMatchStatus() {
         MatchEventService.shared.listenMatchStatus(matchCode: matchCode)
+        
         MatchEventService.shared.matchStatusRelay
-            .filter { $0.matchCode == self.matchCode }
-            .map { $0.status }
+            .map { $0[self.matchCode] ?? "" }
+            .distinctUntilChanged()
+            .filter { !$0.isEmpty }
             .do(onNext: { status in
                 print("ViewModel: matchStatusRelay에서 \(status) 받음")
             })

@@ -15,17 +15,18 @@ class JumpRopeBattleViewController: BaseViewController {
     private let mateCountRelay = PublishRelay<Int>()
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
-    private let myCharacter: String
-    private let mateCharacter: String
+    //private let myCharacter: String
+    //private let mateCharacter: String
     
-    
-    init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
-        self.myCharacter = myCharacter
+    init(goalCount: Int/*, myCharacter: String, mateCharacter: String matchID: String, myUID: String, mateUID: String*/) {
+        /*
+         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+         */
         self.viewModel = JumpRopeBattleViewModel(
-            goalCount: goalCount,
-            myCharacter: myCharacter,
-            mateCharacter: mateCharacter
+            goalCount: goalCount
+            //myCharacter: myCharacter,
+            //mateCharacter: mateCharacter
 //               matchID: matchID,
 //               myUID: myUID,
 //               mateUID: mateUID

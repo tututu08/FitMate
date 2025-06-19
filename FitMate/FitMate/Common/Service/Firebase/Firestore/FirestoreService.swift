@@ -103,7 +103,7 @@ class FirestoreService {
         )
      */
     
-    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: String, mode: String) -> Single<String> {
+    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: Int, goalUnit: String, mode: String) -> Single<String> {
         return Single.create { single in
             func tryGenerateAndSave() {
                 let matchCode = self.generateInviteCode()
@@ -117,6 +117,7 @@ class FirestoreService {
                         let data: [String: Any] = [
                             "exerciseType": exerciseType, // 운동 종목
                             "goalValue": goalValue, // 목표 수치
+                            "goalUnit": goalUnit,
                             "mode": mode, // 운동 모드
                             "matchStatus": "waiting", // waiting or started
                             "inviterUid": inviterUid, // 운동 생성자 uid
@@ -129,14 +130,14 @@ class FirestoreService {
                                     // "avatar": "끼리꼬", // 아바타 구현 되면 넣어야됨
                                     "isOnline": true,
                                     // "isWinner": true, // (대결모드에만 사용) 실제 게임 종료 후 따로 업데이트
-                                    "progress": 3.0,
+                                    "progress": 0.0,
                                     "status": "waiting"
                                 ],
                                 inviteeUid: [
                                     // "avatar": "끼리꼬",
                                     "isOnline": true,
                                     // "isWinner": true,
-                                    "progress": 3.0,
+                                    "progress": 0.0,
                                     "status": "waiting"
                                 ]
                             ]
@@ -290,6 +291,46 @@ class FirestoreService {
          )
          .disposed(by: disposeBag)
      */
+    
+    /// 프로그레스 업데이트 함수
+    func updateMyProgressToFirestore(matchCode: String, uid: String, progress: Double) -> Completable {
+        return Completable.create { completable in
+            let db = Firestore.firestore()
+            db.collection("matches").document(matchCode)
+                .updateData([
+                    "players.\(uid).progress": progress,
+                    "players.\(uid).status": "playing"
+                ]) { error in
+                    if let error = error {
+                        completable(.error(error))
+                    } else {
+                        completable(.completed)
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
+    // 메이트 거리 실시간 리스닝 추가
+    func observeMateProgress(matchCode: String, mateUid: String) -> Observable<Double> {
+        return Observable.create { observer in
+            let listener = Firestore.firestore()
+                .collection("matches").document(matchCode)
+                .addSnapshotListener { snapshot, error in
+                    if let data = snapshot?.data(),
+                       let players = data["players"] as? [String: Any],
+                       let mate = players[mateUid] as? [String: Any],
+                       let progress = mate["progress"] as? Double {
+                        observer.onNext(progress)
+                    }
+                }
+
+            return Disposables.create {
+                listener.remove()
+            }
+        }
+    }
+    
     
     // MARK: - Delete
     func deleteDocument(collectionName: String, documentName: String) -> Single<Void> {
