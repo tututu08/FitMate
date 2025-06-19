@@ -96,7 +96,7 @@ class LoginViewController: BaseViewController {
                 case .goToInputMateCode(let uid):
                     print("메이트 코드 : \(uid)")
                     // 닉네임만 있음, 메이트 없음 → 메이트코드 입력
-                    let vc = CodeShareViewController(uid: uid)
+                    let vc = CodeShareViewController(uid: uid, hasMate: false)
                     self.navigationController?.pushViewController(vc, animated: true)
                 case .goToInputNickName(let uid):
                     print("닉네임 입력 : \(uid)")
