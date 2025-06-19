@@ -13,6 +13,7 @@ class LoadingViewController: BaseViewController {
     
     private let viewModel: LoadingViewModel // ViewModel 의존성 주입
     private let loadingView = LoadingView() // 뷰 객체 생성
+    private var hasNavigatedToGame = false
     
     private let matchCode: String
     
@@ -45,10 +46,12 @@ class LoadingViewController: BaseViewController {
         viewModel.matchStatusEvent
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] status in
-                if status == "accepted" {
-                    self?.goToGameScreen()
+                guard let self else { return }
+                if status == "accepted" && !self.hasNavigatedToGame {
+                    self.hasNavigatedToGame = true
+                    self.goToGameScreen()
                 } else if status == "rejected" {
-                    self?.presentRejectedAlert()
+                    self.presentRejectedAlert()
                 }
             })
             .disposed(by: disposeBag)
