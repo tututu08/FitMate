@@ -11,6 +11,8 @@ class TabBarController: UITabBarController {
     // 로그인 유저의 uid
     private let uid: String
     
+    lazy var mainVC = MainViewController(uid: self.uid)
+    
     // 초기화 함수
     init(uid: String) {
         self.uid = uid // 로그인 유저의 uid 의존성 주입
@@ -75,11 +77,11 @@ class TabBarController: UITabBarController {
         tabBar.isTranslucent = false
     }
     
-}
-class CustomTabBar: UITabBar {
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        var sizeThatFits = super.sizeThatFits(size)
-        sizeThatFits.height = 100 // 원하는 길이
-        return sizeThatFits
+    class CustomTabBar: UITabBar {
+        override func sizeThatFits(_ size: CGSize) -> CGSize {
+            var sizeThatFits = super.sizeThatFits(size)
+            sizeThatFits.height = 100 // 원하는 길이
+            return sizeThatFits
+        }
     }
 }
