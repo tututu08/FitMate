@@ -53,5 +53,19 @@ class FinishViewController: BaseViewController {
         output.characterImageName
             .drive(onNext: { [weak self] name in self?.finishView.updateCharacter(name) })
             .disposed(by: disposeBag)
+        
+        
+        finishView.rewardButton.rx.tap
+            .bind { [weak self] in
+                guard let self else { return }
+                if let nav = self.presentingViewController?.navigationController {
+                    self.dismiss(animated: true) {
+                        nav.popToRootViewController(animated: true)
+                    }
+                } else {
+                    self.dismiss(animated: true)
+                }
+            }
+            .disposed(by: disposeBag)
     }
 }
