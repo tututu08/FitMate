@@ -140,13 +140,21 @@ final class PlankCoopViewController: BaseViewController {
         
         output.didFinish
             .emit(with: self) { owner, success in
+                let finishVM = FinishViewModel(
+                    mode: .battle,              // or .cooperation
+                    sport: "줄넘기",            // 종목 이름
+                    goal: 100,                  // 목표 수치
+                    goalUnit: "개",              // 목표 단위
+                    character: "kkuluber",         // 캐릭터 이름
+                    success: success               // 성공/실패 여부
+                )
+                let finishVC = FinishViewController(viewModel: finishVM)
+
                 if success {
-                    let finishVC = FinishViewController()
                     finishVC.modalPresentationStyle = .fullScreen
                     owner.present(finishVC, animated: true)
                 } else {
                     // 실패/중도포기 시 임시로 뷰 이동 처리.
-                    let finishVC = FinishViewController()
                     finishVC.modalPresentationStyle = .fullScreen
                     owner.present(finishVC, animated: true)
                 }
