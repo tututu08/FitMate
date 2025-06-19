@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 class CustomAlertView: UIView {
-
+    
     private let containerVIew = UIView() // alert 본체
     private let iconContainer = UIView()
     private var hasIcon: UIImageView? = nil
@@ -47,13 +47,25 @@ class CustomAlertView: UIView {
         alertTitle.textColor = .background500
         alertTitle.textAlignment = .center
         alertTitle.numberOfLines = 0
-           
-        alertMessage.text = message
-        alertMessage.font = UIFont(name: "Pretendard-Medium", size: 14)
-        alertMessage.textColor = .background400
-        alertMessage.textAlignment = .center
-        alertMessage.numberOfLines = 0
-           
+        
+        if let message = message {
+            let alertStyle = NSMutableParagraphStyle()
+            alertStyle.lineSpacing = 6
+            alertStyle.alignment = .center
+            
+            let messageStyle = NSAttributedString(
+                string: message,
+                attributes: [
+                    .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14),
+                    .foregroundColor: UIColor.background400,
+                    .paragraphStyle: alertStyle
+                ]
+            )
+            alertMessage.numberOfLines = 0
+            alertMessage.attributedText = messageStyle
+        }
+        
+        
         buttonStack.axis = .horizontal
         buttonStack.spacing = 20
         buttonStack.distribution = .fillEqually
@@ -70,9 +82,6 @@ class CustomAlertView: UIView {
     }
     
     func setConstraints() {
-        self.snp.makeConstraints { make in
-            make.width.equalTo(326)
-        }
         
         if let icon = hasIcon {
             icon.snp.makeConstraints { make in
@@ -95,13 +104,14 @@ class CustomAlertView: UIView {
         alertMessage.snp.makeConstraints { make in
             make.top.equalTo(alertTitle.snp.bottom).offset(12)
             make.leading.trailing.equalToSuperview().inset(26)
+            make.bottom.lessThanOrEqualTo(buttonStack.snp.top).offset(-24)
         }
         
         buttonStack.snp.makeConstraints { make in
             make.top.equalTo(alertMessage.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(48)
-            make.bottom.equalToSuperview().inset(26)
+            make.bottom.equalToSuperview().inset(20)
         }
         
     }

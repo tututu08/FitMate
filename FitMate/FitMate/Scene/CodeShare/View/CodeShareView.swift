@@ -115,13 +115,13 @@ class CodeShareView: BaseView {
         copyRandomCodeButton.snp.makeConstraints { make in
             make.top.equalTo(defaultAvatarImage.snp.bottom).offset(113)
             make.centerX.equalToSuperview()
-            make.width.equalTo(335)
+            make.leading.trailing.equalToSuperview().inset(20)
         }
         
         line.snp.makeConstraints { make in
             make.top.equalTo(copyRandomCodeButton.snp.bottom).offset(20)
             make.height.equalTo(1)
-            make.width.equalTo(335)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.centerX.equalToSuperview()
         }
         

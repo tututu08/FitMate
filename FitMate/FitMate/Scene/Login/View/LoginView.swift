@@ -18,21 +18,23 @@ class LoginView: BaseView {
        return logo
     }()
     
-    let kakaoLogin: UIButton = {
-        let kakaoLabel = UIButton()
-        kakaoLabel.setImage(UIImage(named: "kakao"), for: .normal)
-        kakaoLabel.contentMode = .scaleAspectFit
-        return kakaoLabel
+    let kakaoLogin: SocialLoginButton = {
+        let button = SocialLoginButton()
+        button.configureUI(for: .kakao)
+        return button
     }()
     
-    let googleLogin: UIButton = {
-        let googleLabel = UIButton()
-        googleLabel.setImage(UIImage(named: "google"), for: .normal)
-        googleLabel.contentMode = .scaleAspectFit
-        return googleLabel
+    let googleLogin: SocialLoginButton = {
+        let button = SocialLoginButton()
+        button.configureUI(for: .google)
+        return button
     }()
     
-    let appleLogin = ASAuthorizationAppleIDButton()
+    let appleLogin: SocialLoginButton = {
+        let button = SocialLoginButton()
+        button.configureUI(for: .apple)
+        return button
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,29 +57,26 @@ class LoginView: BaseView {
         fitMateLogo.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide).offset(144)
             make.centerX.equalToSuperview()
-            make.width.equalTo(200)
+//            make.leading.trailing.equalTo(87)
             make.height.equalTo(60)
         }
        
         kakaoLogin.snp.makeConstraints { make in
             make.top.equalTo(fitMateLogo.snp.bottom).offset(140)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(60)
-            //make.width.equalTo(343)
         }
         
         googleLogin.snp.makeConstraints { make in
             make.top.equalTo(kakaoLogin.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(60)
-            //make.width.equalTo(343)
         }
         
         appleLogin.snp.makeConstraints { make in
             make.top.equalTo(googleLogin.snp.bottom).offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(60)
-            //make.width.equalTo(343)
         }
     }
 }

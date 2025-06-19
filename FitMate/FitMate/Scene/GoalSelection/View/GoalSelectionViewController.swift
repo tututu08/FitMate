@@ -152,6 +152,22 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     },
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
+                
+                // MARK: Firestore 데이터 저장
+                // "matches" 컬렉션 및 "matchID" 문서 생성
+                FirestoreService.shared.createMatchDocument(
+                    inviterUid: self.uid,
+                    inviteeUid: self.mateUid,
+                    exerciseType: self.selectedTitleRelay.value,
+                    goalValue: self.selectedGoalRelay.value,
+                    mode: self.selectedModeRelay.value.asString
+                )
+                .subscribe(
+                    onSuccess: { success in print("Match 생성 성공") },
+                    onFailure: { error in print("실패: \(error)") }
+                ).disposed(by: disposeBag)
+                
+
             })
             .disposed(by: disposeBag)
     }

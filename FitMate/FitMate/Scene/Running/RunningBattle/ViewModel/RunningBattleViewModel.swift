@@ -10,7 +10,7 @@ final class RunningBattleViewModel: ViewModelType {
     
     private var totalDistance: CLLocationDistance = 0
     private var previousLocation: CLLocation?
-    
+    private let didFinishRelay = PublishRelay<Bool>()
     // 내 누적 거리 (m)
     private let myDistanceRelay = BehaviorRelay<Double>(value: 0)
     // 메이트 누적 거리 (m)
@@ -37,6 +37,8 @@ final class RunningBattleViewModel: ViewModelType {
     struct Input {
         let startTracking: Observable<Void>     // 위치 추적 시작 트리거
         let mateDistance: Observable<Double>       // 메이트 거리 실시간
+        let quit: Observable<Void>
+        let mateQuit: Observable<Void>
     }
     
     struct Output {
@@ -44,6 +46,7 @@ final class RunningBattleViewModel: ViewModelType {
         let mateDistanceText: Driver<String>
         let myProgress: Driver<CGFloat>
         let mateProgress: Driver<CGFloat>
+        let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
     }
     
     func transform(input: Input) -> Output {
@@ -51,6 +54,14 @@ final class RunningBattleViewModel: ViewModelType {
             .subscribe(onNext: { [weak self] in
                 self?.startLocationUpdates()
             })
+            .disposed(by: disposeBag)
+        
+        input.quit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
+            .disposed(by: disposeBag)
+        
+        input.mateQuit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
             .disposed(by: disposeBag)
         
         input.mateDistance
@@ -97,11 +108,14 @@ final class RunningBattleViewModel: ViewModelType {
             }
             .asDriver(onErrorJustReturn: 0)
         
+        let didFinish = didFinishRelay
+            .asSignal(onErrorJustReturn: false)
         return Output(
             myDistanceText: myDistanceText,
             mateDistanceText: mateDistanceText,
             myProgress: myProgress,
-            mateProgress: mateProgress
+            mateProgress: mateProgress,
+            didFinish: didFinish
         )
     }
     
@@ -129,6 +143,17 @@ final class RunningBattleViewModel: ViewModelType {
                 self.previousLocation = loc
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func confirmQuit(isMine: Bool) {
+        locationManager.stopUpdatingLocation()
+        finish(success: false)
+        // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+    }
+    
+    func finish(success: Bool) {
+        locationManager.stopUpdatingLocation()
+        didFinishRelay.accept(success)
     }
     
     deinit {

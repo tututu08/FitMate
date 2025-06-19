@@ -14,7 +14,8 @@ class RunningBattleViewController: BaseViewController {
     private let viewModel: RunningBattleViewModel
     // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
     private let startTrriger = PublishRelay<Void>()
-    
+    private let quitRelay = PublishRelay<Void>()
+    private let mateQuitRelay = PublishRelay<Void>()
     private let mateDistanceRelay = PublishRelay<Double>()
     
     private let matchCode: String
@@ -59,6 +60,21 @@ class RunningBattleViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         startTrriger.accept(())
+        rootView.stopButton.rx.tap
+            .bind { [weak self] in
+                self?.rootView.showQuitAlert(
+                    type: .myQuitConfirm, // 내가 종료 시도
+                    onResume: {
+                        // 그냥 닫고 아무 동작 없음 (계속 운동)
+                    },
+                    onQuit: { [weak self] in
+                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
+                        self?.viewModel.finish(success: false)
+                        // 혹은 didFinishRelay 트리거 등
+                    }
+                )
+            }
+            .disposed(by: disposeBag)
     }
     
     override func bindViewModel() {
@@ -66,7 +82,9 @@ class RunningBattleViewController: BaseViewController {
         
         let input = RunningBattleViewModel.Input(
             startTracking: startTrriger.asObservable(),
-            mateDistance: mateDistanceRelay.asObservable()
+            mateDistance: mateDistanceRelay.asObservable(),
+            quit: quitRelay.asObservable(),
+            mateQuit: mateQuitRelay.asObservable()
         )
         let output = viewModel.transform(input: input)
         
@@ -93,5 +111,15 @@ class RunningBattleViewController: BaseViewController {
                 self?.rootView.mateUpdateProgress(ratio: progress)
             })
             .disposed(by: disposeBag)
+    }
+    
+    func receiveMateQuit()    {
+        rootView.showQuitAlert(
+            type: .mateQuit,
+            onBack: { [weak self] in
+                // 피니쉬화면으로 이동 등
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+        )
     }
 }

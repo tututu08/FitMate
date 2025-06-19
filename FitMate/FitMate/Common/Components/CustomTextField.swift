@@ -30,12 +30,13 @@ class CustomTextField: UITextField {
             attributes: [.foregroundColor: UIColor.lightGray] // 컬러 변경 필요
         )
         self.contentVerticalAlignment = .center
+        self.layer.cornerRadius = 4
         self.borderStyle = .line
         self.layer.borderColor = UIColor.systemPurple.cgColor // 컬러 변경 필요
         self.layer.borderWidth = 1.5
         self.backgroundColor = .darkGray // 컬러 변경 필요
         self.translatesAutoresizingMaskIntoConstraints = false
-        
+        self.leftPadding()
         // 텍스트 변경 이벤트 등록
         self.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
     }
@@ -84,6 +85,15 @@ extension CustomTextField: UITextFieldDelegate {
         /// 제한 범위 이내면 입력 허용
         return true
     }
+    
+    /// UITextField의 leftView는 내부 좌측에 뷰를 추가해서 텍스트 입력 시작 위치를 오른쪽으로 밀어주는 용도
+    /// leftViewMode를 항상 활성화 시켜서 padding 효과를 나타내주는것처럼 해줍니다.
+    func leftPadding() {
+            // paddingView의 크기를 텍스트필드 높이에 맞추기
+            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 0))
+            self.leftView = paddingView
+            self.leftViewMode = ViewMode.always // 항상 이 뷰를 보이게 설정
+        }
 }
 
 

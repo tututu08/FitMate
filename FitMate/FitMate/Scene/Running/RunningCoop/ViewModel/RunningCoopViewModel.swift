@@ -11,6 +11,7 @@ final class RunningCoopViewModel: ViewModelType {
     private var totalDistance: CLLocationDistance = 0
     private var previousLocation: CLLocation?
     
+    private let didFinishRelay = PublishRelay<Bool>()
     // 내 누적 거리 (m)
     private let myDistanceRelay = BehaviorRelay<Double>(value: 0)
     // 메이트 누적 거리 (m)
@@ -37,12 +38,15 @@ final class RunningCoopViewModel: ViewModelType {
     struct Input {
         let startTracking: Observable<Void>     // 위치 추적 시작 트리거
         let mateDistance: Observable<Double>       // 메이트 거리 실시간
+        let quit: Observable<Void>
+        let mateQuit: Observable<Void>
     }
     
     struct Output {
         let myDistanceText: Driver<String>
         let mateDistanceText: Driver<String>
         let progress: Driver<CGFloat>
+        let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
     }
     
     func transform(input: Input) -> Output {
@@ -52,19 +56,31 @@ final class RunningCoopViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
+        input.quit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
+            .disposed(by: disposeBag)
+        
+        input.mateQuit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
+            .disposed(by: disposeBag)
+        
         input.mateDistance
             .subscribe(onNext: { [weak self] distance in
                 self?.mateDistanceRelay.accept(Double(distance))
             })
             .disposed(by: disposeBag)
         
-        let mateDistanceText = mateDistanceRelay
-            .map { "\($0) m" }
-            .asDriver(onErrorJustReturn: "0.0 m")
+        // 내 점프 수를 문자열로 변환(Driver로 변환)
+        let myText = myDistanceRelay
+            .map { "\($0)개" }
+            .asDriver(onErrorJustReturn: "0")
         
-        let myDistanceText = myDistanceRelay
-            .map { "\($0) m" }
-            .asDriver(onErrorJustReturn: "0.0 m")
+        // 메이트 점프 수를 문자열로 변환(Driver로 변환)
+        let mateText = mateDistanceRelay
+            .map { "\($0)개" }
+            .asDriver(onErrorJustReturn: "0")
+        
+        let progress = Observable
         
         // Firestore에 값을 push
         myDistanceRelay
@@ -81,8 +97,6 @@ final class RunningCoopViewModel: ViewModelType {
             .subscribe()
             .disposed(by: disposeBag)
         
-        // MARK: - 프로그레스 바 움직이기.
-        let progressDriver = Observable
             .combineLatest(myDistanceRelay, mateDistanceRelay)
             .map { [weak self] my, mate -> CGFloat in
                 guard let self, self.goalDistance > 0 else { return 0 }
@@ -90,10 +104,14 @@ final class RunningCoopViewModel: ViewModelType {
             }
             .asDriver(onErrorJustReturn: 0)
         
+        let didFinish = didFinishRelay
+            .asSignal(onErrorJustReturn: false)
+        
         return Output(
-            myDistanceText: myDistanceText,
-            mateDistanceText: mateDistanceText,
-            progress: progressDriver
+            myDistanceText: myText,
+            mateDistanceText: mateText,
+            progress: progress,
+            didFinish: didFinish
         )
     }
     
@@ -119,6 +137,15 @@ final class RunningCoopViewModel: ViewModelType {
                 self.previousLocation = loc
             })
             .disposed(by: disposeBag)
+    }
+    private func confirmQuit(isMine: Bool) {
+        locationManager.stopUpdatingLocation()
+        finish(success: false)
+        // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+    }
+    func finish(success: Bool) {
+        locationManager.stopUpdatingLocation()
+        didFinishRelay.accept(success)
     }
     
     func updateMateDistance(_ meter: Int) {
