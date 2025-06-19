@@ -40,12 +40,17 @@ final class PlankCoopViewModel: ViewModelType {
     private let disposeBag = DisposeBag()
     private var pauseRemainTime: Int?
 
-    
+    var myTime: Int { myTimeRelay.value }
+    var mateTime: Int { mateTimeRelay.value }
+    let myCharacter: String
+    let mateCharacter: String
     let goalMinutes: Int                // 목표 시간(분 단위)
     private var isMyTurn = true
     private var timer: Timer?
     
-    init(goalMinutes: Int) {
+    init(goalMinutes: Int ,myCharacter: String, mateCharacter: String) {
+        self.myCharacter = myCharacter
+        self.mateCharacter = mateCharacter
         self.goalMinutes = goalMinutes
     }
     

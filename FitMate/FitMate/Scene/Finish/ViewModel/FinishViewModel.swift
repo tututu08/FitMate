@@ -41,7 +41,7 @@ final class FinishViewModel: ViewModelType {
         let modeText = Observable.just(mode == .battle ? "대결 모드" : "협력 모드")
         let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
 //        let reward = Observable.just("\(rewardCoin)")
-        let hideCoin = Observable.just(!success)
+//        let hideCoin = Observable.just(!success)
         let result = Observable.just(resultMessage)
         let resultImage = Observable.just(success ? "win" : "lose")
         let characterImage = Observable.just(success ? character : "\(character)Lose")
