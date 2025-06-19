@@ -29,6 +29,7 @@ final class CodeShareViewModel: ViewModelType {
         let showInviteAlert: Signal<String>    // 상대방으로부터 초대 요청 받음 Alert
         let inviteCode: Driver<String>         // 현재 사용자 초대 코드
         let transitionToMain: Signal<Void>     // 매칭 완료 시 TabBarController로 전환
+        let rejectionAlert: Signal<String>
     }
 
     // MARK: - Properties
@@ -43,7 +44,12 @@ final class CodeShareViewModel: ViewModelType {
     private var nickname: String = ""                      // 현재 사용자 닉네임 저장
     private var listener: ListenerRegistration?            // Firestore 실시간 리스너 핸들러
     private let acceptanceRelay = PublishRelay<Void>()     // 매칭 완료 시 화면 전환 Trigger
+    private let rejectionAlertRelay = PublishRelay<String>()
 
+    var rejectionAlert: Signal<String> {
+        return rejectionAlertRelay.asSignal()
+    }
+    
     var acceptanceDetected: Signal<Void> {
         return acceptanceRelay.asSignal()
     }
@@ -84,7 +90,8 @@ final class CodeShareViewModel: ViewModelType {
             dismiss: dismiss,
             showInviteAlert: inviteAlertRelay.asSignal(),
             inviteCode: inviteCodeRelay.asDriver(),
-            transitionToMain: acceptanceDetected
+            transitionToMain: acceptanceDetected,
+            rejectionAlert: rejectionAlert
         )
     }
 
@@ -126,6 +133,11 @@ final class CodeShareViewModel: ViewModelType {
             // 상대방이 수락 완료 → accepted 상태
             if status == "accepted" {
                 self.acceptanceRelay.accept(())
+            }
+            
+            // 상대방이 초대를 거절함 → rejected 상태
+            if status == "rejected" {
+                rejectionAlertRelay.accept("상대방이 메이트 요청을 거절했습니다.")
             }
         }
     }
@@ -172,11 +184,26 @@ final class CodeShareViewModel: ViewModelType {
 
     // MARK: - 초대 거절 처리
     func rejectInvite() -> Completable {
-        return firestoreService.updateDocument(collectionName: "users", documentName: uid, fields: [
-            "fromUid": FieldValue.delete(),
-            "inviteStatus": "waiting",
-            "updatedAt": FieldValue.serverTimestamp()
-        ]).asCompletable()
+        return firestoreService.fetchDocument(collectionName: "users", documentName: uid)
+            .flatMapCompletable { [weak self] data in
+                guard let self = self else { return .empty() }
+                guard let fromUid = data["fromUid"] as? String else { return .empty() }
+
+                // 내 문서 초기화
+                let resetMyDoc = self.firestoreService.updateDocument(collectionName: "users", documentName: self.uid, fields: [
+                    "fromUid": FieldValue.delete(),
+                    "inviteStatus": "waiting",
+                    "updatedAt": FieldValue.serverTimestamp()
+                ])
+
+                // 상대방 문서 → rejected 상태로 업데이트
+                let updateSenderDoc = self.firestoreService.updateDocument(collectionName: "users", documentName: fromUid, fields: [
+                    "inviteStatus": "rejected",
+                    "updatedAt": FieldValue.serverTimestamp()
+                ])
+
+                return Completable.zip(resetMyDoc.asCompletable(), updateSenderDoc.asCompletable())
+            }
     }
 
     // MARK: - 실시간 리스너 종료 (화면 전환 시)
