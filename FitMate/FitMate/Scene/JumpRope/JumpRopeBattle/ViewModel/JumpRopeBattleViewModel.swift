@@ -22,7 +22,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
         let myProgressView: Driver<CGFloat>         // 내 진행률(비율)
         let mateProgressView: Driver<CGFloat>       // 메이트 진행률(비율0
         let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
-
+        
     }
     
     private let disposeBag = DisposeBag()
@@ -37,10 +37,10 @@ final class JumpRopeBattleViewModel: ViewModelType {
     let goalCount: Int
     let myCharacter: String
     let mateCharacter: String
-    // Firestore 동기화를 위한 변수 (유저 구분/방 구분 등)
-    //    private let matchID: String
-    //    private let myUID: String
-    //    private let mateUID: String
+    //     Firestore 동기화를 위한 변수 (유저 구분/방 구분 등)
+    private let matchCode: String
+    private let myUID: String
+    private let mateUID: String
     var myCount: Int { myCountRelay.value }
     var mateCount: Int { mateCountRelay.value }
     // 점프 카운트 계산용 변수, 민감도랑 쿨다운 시간은 나중에 테스트하면서 수정할 예정.
@@ -51,13 +51,13 @@ final class JumpRopeBattleViewModel: ViewModelType {
     
     
     // 생성자 목표 카운트 필수
-    init(goalCount: Int, myCharacter: String, mateCharacter: String/* matchID: String, myUID: String, mateUID: String*/) {
+    init(goalCount: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUID: String, mateUID: String) {
         self.goalCount = goalCount
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
-        //        self.matchID = matchID
-        //        self.myUID = myUID
-        //        self.mateUID = mateUID
+        self.matchCode = matchCode
+        self.myUID = myUID
+        self.mateUID = mateUID
     }
     
     // ViewModel의 Input을 받아 Output을 반환
@@ -66,19 +66,19 @@ final class JumpRopeBattleViewModel: ViewModelType {
         input.start
             .subscribe(onNext: { [weak self] in
                 self?.startAccelerometer()
-                //                self?.observeMateCount()
+                //                                self?.observeMateCount()
             })
             .disposed(by: disposeBag)
         
         // 메이트 점프 수가 들어오면 Relay에 바인딩
         input.mateCount
             .subscribe(onNext: { [weak self] count in
-                            guard let self else { return }
-                            self.mateCountRelay.accept(count)
-                            if self.mateCountRelay.value >= self.goalCount {
-                                self.finish(success: false)
-                            }
-                        })
+                guard let self else { return }
+                self.mateCountRelay.accept(count)
+                if self.mateCountRelay.value >= self.goalCount {
+                    self.finish(success: false)
+                }
+            })
             .disposed(by: disposeBag)
         
         input.quit
@@ -146,8 +146,8 @@ final class JumpRopeBattleViewModel: ViewModelType {
                     self?.canCount = true              // 쿨타임 끝나면 다시 감지 가능
                 }
                 if self.myCountRelay.value >= self.goalCount {
-                                    self.finish(success: true)
-                                }
+                    self.finish(success: true)
+                }
             }
         }
     }

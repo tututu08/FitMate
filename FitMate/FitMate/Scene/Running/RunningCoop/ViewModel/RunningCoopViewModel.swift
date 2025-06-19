@@ -90,7 +90,7 @@ final class RunningCoopViewModel: ViewModelType {
                 let goalDistanceMeter = goalDistance * 1000
                 //return CGFloat(min(1, Float(my + mate) / Float(self.goalDistance)))
                 let ratio = CGFloat((my + mate) / Double(goalDistanceMeter))
-                                return min(1, max(0, ratio))
+                return min(1, max(0, ratio))
             }
             .asDriver(onErrorJustReturn: 0)
         
@@ -138,9 +138,11 @@ final class RunningCoopViewModel: ViewModelType {
                     let intMeter = Int(self.totalDistance.rounded())
                     self.myDistanceRelay.accept(Double(intMeter))
                     self.myDistanceTextRelay.accept("\(String(format: "%.1f", self.totalDistance)) m")
-                    if Int(self.myDistanceRelay.value + self.mateDistanceRelay.value) >= self.goalDistance {
-                                           self.finish(success: true)
-                                       }
+                    let transKm = self.goalDistance * 1000
+                    if Int(self.myDistanceRelay.value + self.mateDistanceRelay.value) >= transKm
+                    {
+                        self.finish(success: true)
+                    }
                 }
                 self.previousLocation = loc
             })
@@ -159,8 +161,8 @@ final class RunningCoopViewModel: ViewModelType {
     func updateMateDistance(_ meter: Int) {
         mateDistanceRelay.accept(Double(meter))
         if Int(myDistanceRelay.value + mateDistanceRelay.value) >= goalDistance {
-                   finish(success: true)
-               }
+            finish(success: true)
+        }
     }
     
     deinit {

@@ -18,20 +18,25 @@ final class PlankCoopViewController: BaseViewController {
     private let mateQuitRelay = PublishRelay<Void>()
     private let myCharacter: String
     private let mateCharacter: String
-    let matchCode: String
-    let myUid: String
-    
+    private let matchCode: String
+    private let mateUID: String
+    private let myUID: String
     
     // 초기화 (목표 분 단위)
-    init(goalMinutes: Int ,myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
+    init(goalMinutes: Int, matchCode: String, myUID: String, mateUID: String,  myCharacter: String, mateCharacter: String) {
         self.matchCode = matchCode
-        self.myUid = myUid
+        self.myUID = myUID
+        self.mateUID = mateUID
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        
         self.viewModel = PlankCoopViewModel(
             goalMinutes: goalMinutes,
-            myCharacter: myCharacter,
-            mateCharacter: mateCharacter,
+            matchCode: myCharacter,
+            myUID: mateCharacter,
+            mateUID: matchCode,
+            myCharacter: myUID,
+            mateCharacter: mateCharacter
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -197,9 +202,9 @@ final class PlankCoopViewController: BaseViewController {
             character: myCharacter,
             success: success
         )
-        let finishVC = FinishViewController(viewModel: finishVM)
-        finishVC.modalPresentationStyle = .fullScreen
-        present(finishVC, animated: true)
+        let vc = FinishViewController(uid: myUID, viewModel: finishVM)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     // 외부(네트워크 등)에서 상대방 이벤트 수신 시 호출
     func receiveMatePaused() { matePauseRelay.accept(()) }

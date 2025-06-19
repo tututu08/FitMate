@@ -17,17 +17,24 @@ class JumpRopeBattleViewController: BaseViewController {
     private let mateQuitRelay = PublishRelay<Void>()
     private let myCharacter: String
     private let mateCharacter: String
+    private let matchCode: String
+    private let mateUid: String
+    private let myUid: String
     
-    init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
+    init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+        self.matchCode = matchCode
+        self.myUid = myUid
+        self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        
         self.viewModel = JumpRopeBattleViewModel(
             goalCount: goalCount,
             myCharacter: myCharacter,
-            mateCharacter: mateCharacter
-//               matchID: matchID,
-//               myUID: myUID,
-//               mateUID: mateUID
+            mateCharacter: mateCharacter,
+            matchCode: matchCode,
+            myUID: mateUid,
+            mateUID: myUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -118,7 +125,7 @@ class JumpRopeBattleViewController: BaseViewController {
             character: myCharacter,
             success: success
         )
-        let vc = FinishViewController(viewModel: finishVM)
+        let vc = FinishViewController(uid: myUid, viewModel: finishVM)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }

@@ -66,11 +66,13 @@ final class RunningBattleViewModel: ViewModelType {
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
             .disposed(by: disposeBag)
         
+        
         input.mateDistance
             .subscribe(onNext: { [weak self] distance in
                 guard let self else { return }
                 self.mateDistanceRelay.accept(Double(distance))
-                if Int(self.mateDistanceRelay.value) >= self.goalDistance {
+                let transKm = self.goalDistance * 1000
+                if Int(self.mateDistanceRelay.value) >= transKm {
                     self.finish(success: false)
                 }
             })
@@ -151,7 +153,8 @@ final class RunningBattleViewModel: ViewModelType {
                     let intMeter = Int(self.totalDistance.rounded())
                     self.myDistanceRelay.accept(Double(intMeter))
                     self.myDistanceTextRelay.accept("\(String(format: "%.1f", self.totalDistance)) m")
-                    if Int(self.myDistanceRelay.value) >= self.goalDistance {
+                    let transKm = self.goalDistance * 1000
+                    if Int(self.myDistanceRelay.value) >= transKm {
                         self.finish(success: true)
                     }
                 }

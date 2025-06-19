@@ -46,13 +46,19 @@ final class PlankCoopViewModel: ViewModelType {
     let myCharacter: String
     let mateCharacter: String
     let goalMinutes: Int                // 목표 시간(분 단위)
+    private let matchCode: String
+    private let myUID: String
+    private let mateUID: String
     private var isMyTurn = true
     private var timer: Timer?
     
-    init(goalMinutes: Int ,myCharacter: String, mateCharacter: String) {
+    init(goalMinutes: Int , matchCode: String, myUID: String, mateUID: String, myCharacter: String, mateCharacter: String) {
+        self.goalMinutes = goalMinutes
+        self.matchCode = matchCode
+        self.myUID = myUID
+        self.mateUID = mateUID
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
-        self.goalMinutes = goalMinutes
     }
     
     func transform(input: Input) -> Output {
