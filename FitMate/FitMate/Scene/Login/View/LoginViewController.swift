@@ -14,6 +14,7 @@ class LoginViewController: BaseViewController {
     let viewModel = LoginViewModel() // 뷰모델
     let googleLoginTrigger = PublishRelay<Void>() // 로그인 버튼 클릭 이벤트 전달
     let kakaoLoginTrigger = PublishRelay<Void>()
+    let appleLoginTrigger = PublishRelay<Void>()
     let nextViewRelay = PublishRelay<Void>() // 다음 버튼 클릭 이벤트 전달
     
     let logInView = LoginView()
@@ -43,7 +44,9 @@ class LoginViewController: BaseViewController {
         self.logInView.kakaoLogin.rx.tap
             .bind(to: kakaoLoginTrigger)
             .disposed(by: disposeBag)
-        
+        self.logInView.appleLogin.rx.controlEvent(.touchUpInside)
+            .bind(to: appleLoginTrigger)
+            .disposed(by: disposeBag)
     }
     
     override func bindViewModel() {
@@ -55,7 +58,8 @@ class LoginViewController: BaseViewController {
             //.subscribe()는 가능
             //.onNext(), .accpet()로 값을 방출하는건 불가능
             googleLoginTrigger: googleLoginTrigger.asObservable(),
-            kakaoLoginTrigger: kakaoLoginTrigger.asObservable()
+            kakaoLoginTrigger: kakaoLoginTrigger.asObservable(),
+            appleLoginTrigger: appleLoginTrigger.asObservable()
         )
         
         
@@ -90,10 +94,12 @@ class LoginViewController: BaseViewController {
                         sceneDelegate.window?.rootViewController = tabBarController
                     })
                 case .goToInputMateCode(let uid):
+                    print("메이트 코드 : \(uid)")
                     // 닉네임만 있음, 메이트 없음 → 메이트코드 입력
                     let vc = CodeShareViewController(uid: uid)
                     self.navigationController?.pushViewController(vc, animated: true)
                 case .goToInputNickName(let uid):
+                    print("닉네임 입력 : \(uid)")
                     // 닉네임이 없음 → 닉네임 입력
                     let vc = NicknameViewController(uid: uid)
                     self.navigationController?.pushViewController(vc, animated: true)

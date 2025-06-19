@@ -22,7 +22,8 @@ class MyRandomCodeButton: UIButton {
         return title
     }()
     
-    let copyIcon = UIImageView()
+    //let copyIcon = UIImageView()
+    let copyIcon = UIButton()
     let randomCode = UILabel()
     
     private lazy var randomCodeStack: UIStackView = setrandomCodeStack()
@@ -37,8 +38,12 @@ class MyRandomCodeButton: UIButton {
     }
     
     private func setrandomCodeStack() -> UIStackView {
-        copyIcon.image = UIImage(named: "copy")
-        copyIcon.contentMode = .scaleAspectFit
+        //copyIcon.image = UIImage(named: "copy")
+//        copyIcon.contentMode = .scaleAspectFit
+        
+        copyIcon.setImage(UIImage(named: "copy"), for: .normal)
+        copyIcon.imageView?.contentMode = .scaleAspectFit
+        
         copyIcon.snp.makeConstraints { $0.size.equalTo(28) }
     
         randomCode.text = ""

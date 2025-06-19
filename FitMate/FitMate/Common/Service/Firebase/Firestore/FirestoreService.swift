@@ -62,6 +62,7 @@ class FirestoreService {
                         let data: [String: Any] = [
                             "uid": uid,
                             "inviteCode": inviteCode,
+                            "hasMate" : false, // 메이트 매칭 여부
                             "totalStats": [ // 총 기록
                                 "walkingKm": 0, // 걷기
                                 "runningKm": 0, // 달리기
@@ -232,6 +233,27 @@ class FirestoreService {
                     } else {
                         let isExist = (snapshot?.documents.count ?? 0) > 0
                         single(.success(isExist))
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
+    // 초대 코드 읽기
+    func fetchUserByInviteCode(_ code: String) -> Single<[String: Any]> {
+        return Single.create { single in
+            self.db.collection("users")
+                .whereField("inviteCode", isEqualTo: code)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else if let document = snapshot?.documents.first {
+                        single(.success(document.data()))
+                    } else {
+                        let error = NSError(domain: "", code: -1, userInfo: [
+                            NSLocalizedDescriptionKey: "해당 초대 코드를 가진 사용자를 찾을 수 없습니다."
+                        ])
+                        single(.failure(error))
                     }
                 }
             return Disposables.create()

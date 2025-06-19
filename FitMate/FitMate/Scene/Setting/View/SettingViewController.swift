@@ -5,18 +5,26 @@ import RxCocoa
 
 final class SettingViewController: UIViewController {
 
+    private let container = UIView()
     private let settingView = SettingView()
     private let viewModel = SettingViewModel()
     private let disposeBag = DisposeBag()
 
     private var withdrawPopupView: WithdrawPopupView?
+    private var mateEndPopupView: MateEndPopupView?
 
     override func loadView() {
-        self.view = settingView
+        self.view = container
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.backgroundColor = .clear
+
+        view.addSubview(settingView)
+        settingView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
         bindViewModel()
         bindCloseButton()
     }
@@ -41,14 +49,14 @@ final class SettingViewController: UIViewController {
             .disposed(by: disposeBag)
 
         output.partnerEvent
-            .emit(onNext: {
-                // 파트너 끊기 로직 추가예정
+            .emit(onNext: { [weak self] in
+                self?.showMateEndPopup()
             })
             .disposed(by: disposeBag)
 
         output.logoutEvent
             .emit(onNext: {
-                // 로그아웃 로직 추가예정
+                // 로그아웃연결부분
             })
             .disposed(by: disposeBag)
 
@@ -60,6 +68,8 @@ final class SettingViewController: UIViewController {
     }
 
     private func showWithdrawPopup() {
+        settingView.isHidden = true
+
         let popup = WithdrawPopupView()
         self.withdrawPopupView = popup
         popup.frame = view.bounds
@@ -68,13 +78,35 @@ final class SettingViewController: UIViewController {
         popup.cancelButton.rx.tap
             .bind { [weak self] in
                 self?.withdrawPopupView?.removeFromSuperview()
+                self?.settingView.isHidden = false
             }
             .disposed(by: disposeBag)
 
         popup.confirmButton.rx.tap
             .bind {
-                // 탈퇴 처리 로직 추가 예정
-                print("탈퇴")
+                print("탈퇴") //탈퇴연결부분
+            }
+            .disposed(by: disposeBag)
+    }
+
+    private func showMateEndPopup() {
+        settingView.isHidden = true
+
+        let popup = MateEndPopupView()
+        self.mateEndPopupView = popup
+        popup.frame = self.view.bounds
+        self.view.addSubview(popup)
+
+        popup.cancelButton.rx.tap
+            .bind { [weak self] in
+                self?.mateEndPopupView?.removeFromSuperview()
+                self?.settingView.isHidden = false
+            }
+            .disposed(by: disposeBag)
+
+        popup.confirmButton.rx.tap
+            .bind {
+                print("메이트 종료") //메이트연결부분
             }
             .disposed(by: disposeBag)
     }

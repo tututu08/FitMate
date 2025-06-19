@@ -11,23 +11,26 @@ import FirebaseCore
 import RxSwift
 import KakaoSDKUser
 import KakaoSDKAuth
+import AuthenticationServices
+import CryptoKit
 
 typealias KakaoUser = KakaoSDKUser.User
 
-final class AuthService {
-
+final class AuthService: NSObject {
+    
     static let shared = AuthService()
-
-    private init() {
+    
+    private override init() {
+        super.init()
         configureGoogleSignIn()
     }
-
+    
     private func configureGoogleSignIn() {
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
     }
-
+    
     /// - 구글 로그인 화면을 띄움
     /// - 사용자 로그인 성공 시, Firebase 인증 처리
     /// - 성공한 사용자를 Rx의 Single<User> 로 방출
@@ -41,7 +44,7 @@ final class AuthService {
                     // 로그인 결과(GIDGoogleUser)를 await으로 돌려줌
                     // await : 비동기 함수의 결과가 올 때까지 잠깐 멈췄다가 다시 이어서 실행하라는 뜻.
                     let signInResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC)
-
+                    
                     // 구글 로그인 결과에서 idToken 을 꺼냄
                     // idToken은 구글이 "이 유저는 인증됨"을 보증해주는 서명된 문자열
                     // 값이 없으면, 실패로 간주하고 .failure 이벤트를 내보냄
@@ -49,14 +52,14 @@ final class AuthService {
                         observer(.failure(NSError(domain: "GoogleAuth", code: -2)))
                         return
                     }
-
+                    
                     // Firebase 인증용 Credential 만들기
                     // Firebase에게 “이 사람은 구글에서 인증됐어요”라고 증명하기 위한 자격 증명 (credential)을 생성
                     let credential = GoogleAuthProvider.credential(
                         withIDToken: idToken,
                         accessToken: signInResult.user.accessToken.tokenString
                     )
-
+                    
                     // Firebase에 구글 로그인 결과를 전달해서, Firebase 인증을 시도
                     // 성공하면 Firebase User 객체 리턴
                     Auth.auth().signIn(with: credential) { result, error in
@@ -116,5 +119,106 @@ final class AuthService {
             return Disposables.create()
         }
     }
+    private var currentNonce: String?              // 요청‑응답 매칭용
+    private var appleObserver: ((SingleEvent<FirebaseAuth.User>) -> Void)? // Rx 콜백 저장
+    
+    func signInWithApple(presentingVC: UIViewController) -> Single<FirebaseAuth.User> {
+        return Single.create { [weak self] observer in
+            guard let self = self else {
+                return Disposables.create()
+            }
+            
+            // 1) nonce 생성
+            let rawNonce = self.randomNonceString()
+            self.currentNonce = rawNonce
+            
+            // 2) 애플 요청 생성
+            let request = ASAuthorizationAppleIDProvider().createRequest()
+            request.requestedScopes = [.fullName, .email]
+            request.nonce = self.sha256(rawNonce)
+            
+            // 3) 컨트롤러 설정
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = self
+            controller.presentationContextProvider = self
+            controller.performRequests()
+            
+            // 4) Rx observer 저장 (delegate에서 호출)
+            self.appleObserver = observer
+            
+            return Disposables.create { self.appleObserver = nil }
+        }
+    }
+    func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result  = ""
+        var remaining = length
 
+        while remaining > 0 {
+            var random: UInt8 = 0
+            guard SecRandomCopyBytes(kSecRandomDefault, 1, &random) == errSecSuccess else {
+                fatalError("Unable to generate nonce.")
+            }
+            if random < charset.count {
+                result.append(charset[Int(random)])
+                remaining -= 1
+            }
+        }
+        return result
+    }
+
+    /// SHA‑256 해시 (hex string)
+    func sha256(_ input: String) -> String {
+        let data = Data(input.utf8)
+        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+    }
+}
+
+// MARK: - Apple Delegate & Presentation
+extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        // 최상위 window 반환
+        UIApplication.shared.windows.first { $0.isKeyWindow } ?? ASPresentationAnchor()
+    }
+
+    /// 성공
+    func authorizationController(controller: ASAuthorizationController,
+                                 didCompleteWithAuthorization authorization: ASAuthorization) {
+
+        guard
+            let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+            let identityTokenData = appleIDCredential.identityToken,
+            let idTokenString     = String(data: identityTokenData, encoding: .utf8),
+            let rawNonce          = currentNonce
+        else {
+            appleObserver?(.failure(NSError(domain: "AppleAuth", code: -1)))
+            return
+        }
+
+        let credential = OAuthProvider.appleCredential(
+            withIDToken: idTokenString,
+            rawNonce: rawNonce,
+            fullName: appleIDCredential.fullName
+        )
+
+        Auth.auth().signIn(with: credential) { [weak self] result, error in
+            if let error {
+                self?.appleObserver?(.failure(error))
+            } else if let user = result?.user {
+                self?.appleObserver?(.success(user))
+            } else {
+                self?.appleObserver?(.failure(NSError(domain: "FirebaseAuth", code: -2)))
+            }
+            self?.appleObserver = nil   // clean‑up
+        }
+    }
+
+    /// 실패
+    func authorizationController(controller: ASAuthorizationController,
+                                 didCompleteWithError error: Error) {
+        appleObserver?(.failure(error))
+        appleObserver = nil
+    }
 }

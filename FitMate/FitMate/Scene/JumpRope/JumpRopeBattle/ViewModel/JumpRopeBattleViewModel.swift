@@ -11,14 +11,18 @@ final class JumpRopeBattleViewModel: ViewModelType {
     struct Input {
         let start: Observable<Void>           // 측정 시작 트리거
         let mateCount: Observable<Int>        // 메이트의 점프 수(네트워크 등에서 들어올 수 있음)
+        let quit: Observable<Void>
+        let mateQuit: Observable<Void>
     }
     
     // Output: View/VC에서 구독할 신호 정의
     struct Output {
         let myCountText: Driver<String>       // 내 점프 수(문자열)
         let mateCountText: Driver<String>     // 메이트 점프 수(문자열)
-        let myProgressView: Driver<CGFloat>         // 전체 진행률(비율)
-        let mateProgressView: Driver<CGFloat>
+        let myProgressView: Driver<CGFloat>         // 내 진행률(비율)
+        let mateProgressView: Driver<CGFloat>       // 메이트 진행률(비율0
+        let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
+
     }
     
     private let disposeBag = DisposeBag()
@@ -27,6 +31,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
     // 내/메이트 점프 수 Relay
     private let myCountRelay = BehaviorRelay<Int>(value: 0)
     private let mateCountRelay = BehaviorRelay<Int>(value: 0)
+    private let didFinishRelay = PublishRelay<Bool>()
     
     // 목표 카운트(외부에서 입력, 예: 100)
     let goalCount: Int
@@ -69,6 +74,14 @@ final class JumpRopeBattleViewModel: ViewModelType {
             .bind(to: mateCountRelay)
             .disposed(by: disposeBag)
         
+        input.quit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
+            .disposed(by: disposeBag)
+        
+        input.mateQuit
+            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
+            .disposed(by: disposeBag)
+        
         // 내 점프 수를 문자열로 변환(Driver로 변환)
         let myText = myCountRelay
             .map { "\($0)개" }
@@ -94,11 +107,15 @@ final class JumpRopeBattleViewModel: ViewModelType {
             }
             .asDriver(onErrorJustReturn: 0)
         
+        let didFinish = didFinishRelay
+            .asSignal(onErrorJustReturn: false)
+        
         return Output(
             myCountText: myText,
             mateCountText: mateText,
             myProgressView: myProgress,
-            mateProgressView: mateProgress
+            mateProgressView: mateProgress,
+            didFinish: didFinish
         )
     }
     
@@ -123,6 +140,16 @@ final class JumpRopeBattleViewModel: ViewModelType {
                 }
             }
         }
+    }
+    private func confirmQuit(isMine: Bool) {
+        motionManager.stopAccelerometerUpdates()
+        finish(success: false)
+        // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+    }
+    
+    func finish(success: Bool) {
+        motionManager.stopAccelerometerUpdates()
+        didFinishRelay.accept(success)
     }
     // 내 점프수 Firestore에 저장 (실시간)
     //        private func updateMyCountToFirestore(_ count: Int) {
