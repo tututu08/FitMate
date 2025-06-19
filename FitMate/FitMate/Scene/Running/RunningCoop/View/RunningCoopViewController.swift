@@ -21,6 +21,8 @@ final class RunningCoopViewController: BaseViewController {
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     private let myCharacter: String
     private let mateCharacter: String
+    private let quitRelay = PublishRelay<Void>()
+    private let mateQuitRelay = PublishRelay<Void>()
 
     init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
         self.myCharacter = myCharacter
@@ -54,11 +56,22 @@ final class RunningCoopViewController: BaseViewController {
         rootView.updateGoal("\(runningCoopViewModel.goalDistance)Km")
         rootView.updateMyCharacter(runningCoopViewModel.myCharacter)
         rootView.updateMateCharacter(runningCoopViewModel.mateCharacter)
-
-        // 위치 추적 시작
         startRelay.accept(())
-
-        bindViewModel()
+        rootView.stopButton.rx.tap
+            .bind { [weak self] in
+                self?.rootView.showQuitAlert(
+                    type: .myQuitConfirm, // 내가 종료 시도
+                    onResume: {
+                        // 그냥 닫고 아무 동작 없음 (계속 운동)
+                    },
+                    onQuit: { [weak self] in
+                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
+                        self?.runningCoopViewModel.finish(success: false)
+                        // 혹은 didFinishRelay 트리거 등
+                    }
+                )
+            }
+            .disposed(by: disposeBag)
     }
 
     override func bindViewModel() {
@@ -66,7 +79,9 @@ final class RunningCoopViewController: BaseViewController {
 
         let input = RunningCoopViewModel.Input(
             startTracking: startRelay.asObservable(),
-            mateDistance: mateDistanceRelay.asObservable()
+            mateDistance: mateDistanceRelay.asObservable(),
+            quit: quitRelay.asObservable(),
+            mateQuit: mateQuitRelay.asObservable()
         )
 
         let output = runningCoopViewModel.transform(input: input)
@@ -88,5 +103,14 @@ final class RunningCoopViewController: BaseViewController {
                 self?.rootView.updateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
+    }
+    func receiveMateQuit()    {
+        rootView.showQuitAlert(
+            type: .mateQuit,
+            onBack: { [weak self] in
+                // 피니쉬화면으로 이동 등
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+        )
     }
 }

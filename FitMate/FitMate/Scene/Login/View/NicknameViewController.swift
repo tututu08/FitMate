@@ -61,7 +61,7 @@ class NicknameViewController: BaseViewController {
         output.nicknameSaved
             .drive(onNext: { [weak self] in
                 guard let self else { return }
-                let codeShareView = CodeShareViewController(uid: self.uid)
+                let codeShareView = CodeShareViewController(uid: self.uid, hasMate: false)
                 self.navigationController?.pushViewController(codeShareView, animated: true)
             })
             .disposed(by: disposeBag)
@@ -103,5 +103,26 @@ class NicknameViewController: BaseViewController {
                 self.nicknameView.privacyButton.setImage(image, for: .normal)
             })
             .disposed(by: disposeBag)
+        
+        input.termsTap
+            .bind { [weak self] in
+                let vc = WebViewController()
+                vc.urlString = "https://www.notion.so/2151c704065180778da1d2d1dfc4629d"
+                vc.urlTitle = "이용약관"
+                vc.modalPresentationStyle = .pageSheet // 또는 .automatic, .formSheet 등 취향대로
+                self?.present(vc, animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        input.privacyTap
+            .bind { [weak self] in
+                let vc = WebViewController()
+                vc.urlString = "https://www.notion.so/2151c7040651805f89e8f53d7777c91a"
+                vc.urlTitle = "개인정보처리방침"
+                vc.modalPresentationStyle = .pageSheet
+                self?.present(vc, animated: true)
+            }
+            .disposed(by: disposeBag)
+
     }
 }

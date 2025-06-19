@@ -162,7 +162,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     mode: self.selectedModeRelay.value.asString
                 )
                 .subscribe(
-                    onSuccess: { _ in print("Match 생성 성공") },
+                    onSuccess: { success in print("Match 생성 성공") },
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
                 
