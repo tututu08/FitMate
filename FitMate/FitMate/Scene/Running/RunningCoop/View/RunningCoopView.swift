@@ -44,26 +44,33 @@ final class RunningCoopView: BaseView {
         }
         self.quitAlertView = alert
     }
+    
     func hideQuitAlert() {
         quitAlertView?.removeFromSuperview()
         quitAlertView = nil
     }
+    
     // 아래 함수들은 뷰모델/컨트롤러에서 기록,진행률,목표치를 갱신할 때 호출
     func updateMyRecord(_ text: String) {
         sportsView.updateMyRecord(text)
     }
+    
     func updateMateRecord(_ text: String) {
         sportsView.updateMateRecord(text)
     }
+    
     func updateMyCharacter(_ name: String) {
         sportsView.updateMyCharacter(name)
     }
+    
     func updateMateCharacter(_ name: String) {
         sportsView.updateMateCharacter(name)
     }
+    
     func updateProgress(ratio: CGFloat) {
         sportsView.updateProgress(ratio: ratio)
     }
+    
     func updateGoal(_ text: String) {
         sportsView.updateGoal(text)
     }
