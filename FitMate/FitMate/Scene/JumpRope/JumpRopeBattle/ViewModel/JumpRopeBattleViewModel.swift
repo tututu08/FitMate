@@ -41,7 +41,8 @@ final class JumpRopeBattleViewModel: ViewModelType {
     //    private let matchID: String
     //    private let myUID: String
     //    private let mateUID: String
-    
+    var myCount: Int { myCountRelay.value }
+    var mateCount: Int { mateCountRelay.value }
     // 점프 카운트 계산용 변수, 민감도랑 쿨다운 시간은 나중에 테스트하면서 수정할 예정.
     private var count = 0
     private var canCount = true
@@ -71,7 +72,13 @@ final class JumpRopeBattleViewModel: ViewModelType {
         
         // 메이트 점프 수가 들어오면 Relay에 바인딩
         input.mateCount
-            .bind(to: mateCountRelay)
+            .subscribe(onNext: { [weak self] count in
+                            guard let self else { return }
+                            self.mateCountRelay.accept(count)
+                            if self.mateCountRelay.value >= self.goalCount {
+                                self.finish(success: false)
+                            }
+                        })
             .disposed(by: disposeBag)
         
         input.quit
@@ -138,6 +145,9 @@ final class JumpRopeBattleViewModel: ViewModelType {
                 DispatchQueue.main.asyncAfter(deadline: .now() + self.cooldown) { [weak self] in
                     self?.canCount = true              // 쿨타임 끝나면 다시 감지 가능
                 }
+                if self.myCountRelay.value >= self.goalCount {
+                                    self.finish(success: true)
+                                }
             }
         }
     }
