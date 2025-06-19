@@ -47,10 +47,12 @@ class LoadingViewController: BaseViewController {
         super.bindViewModel()
         viewModel.matchStatusEvent
             .observe(on: MainScheduler.instance)
+            .distinctUntilChanged()
             .subscribe(onNext: { [weak self] status in
                 guard let self else { return }
                 if status == "accepted" && !self.hasNavigatedToGame {
                     self.hasNavigatedToGame = true
+                    MatchEventService.shared.stopMatchListening()
                     self.goToGameScreen()
                 } else if status == "rejected" {
                     self.presentRejectedAlert()
