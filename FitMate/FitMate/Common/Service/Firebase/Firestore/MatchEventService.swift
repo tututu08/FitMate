@@ -21,9 +21,10 @@ final class MatchEventService {
     let matchEventRelay = PublishRelay<String>() // matchCode 데이터
     
     // matchCode 별 status 이벤트 스트림
-    let matchStatusRelay = PublishRelay<(matchCode: String, status: String)>()
+    let matchStatusRelay = BehaviorRelay<[String: String]>(value: [:])
     
     private var lastSentMatchCode: String?
+    private var lastSentStatus: [String: String] = [:] // 상태 중복 방지용 캐시 추가
     
     private init() { }
     
@@ -36,16 +37,6 @@ final class MatchEventService {
         matchListener = db.collection("matches")
             .whereField("inviteeUid", isEqualTo: uid) // 초대 받는 유저의 uid가 내 uid 일때
             .whereField("matchStatus", isEqualTo: "waiting") // 운동 경기 상태가 waiting 일때
-//            .addSnapshotListener { [weak self] snapshot, error in // 실시간으로 감지해서 쿼리 결과 혹은 에러를 방출
-//                guard let self = self,
-//                      // 쿼리 결과를 배열로 받아오지만, 쿼리 결과는 유일하므로 첫번째 값을 꺼냄
-//                      let doc = snapshot?.documents.first,
-//                      error == nil else { return }
-//                
-//                // 쿼리 결과의 matchCode를 방출
-//                let matchCode = doc.documentID
-//                self.matchEventRelay.accept(matchCode)
-//            }
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self, let snapshot = snapshot, error == nil else { return }
 
@@ -88,8 +79,19 @@ final class MatchEventService {
                 }
                 print("Firestore에서 matchStatus 변화 감지: \(status)")
                 
+                // 중복 방출 방지
+                if self.lastSentStatus[matchCode] == status {
+                    print("중복 상태(\(status)) 무시")
+                    return
+                }
+                
+                self.lastSentStatus[matchCode] = status
+                
                 // 운동 경기 코드와, 해당 운동 경기의 상태를 방출!
-                self.matchStatusRelay.accept((matchCode, status))
+//                self.matchStatusRelay.accept((matchCode, status))
+                var current = self.matchStatusRelay.value
+                current[matchCode] = status
+                self.matchStatusRelay.accept(current)
             }
     }
     
@@ -97,5 +99,9 @@ final class MatchEventService {
     func stopListening() {
         listener?.remove()
         listener = nil
+        
+        if let code = lastSentMatchCode {
+            lastSentStatus.removeValue(forKey: code)
+        }
     }
 }

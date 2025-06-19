@@ -52,6 +52,8 @@ class LoadingViewController: BaseViewController {
                 guard let self else { return }
                 if status == "accepted" && !self.hasNavigatedToGame {
                     self.hasNavigatedToGame = true
+                    
+                    // 실시간 감지 리스너 종료
                     MatchEventService.shared.stopMatchListening()
                     self.goToGameScreen()
                 } else if status == "rejected" {
@@ -63,14 +65,10 @@ class LoadingViewController: BaseViewController {
     
     /// 게임 화면으로 이동하는 메서드
     private func goToGameScreen() {
-        // 게임화면으로 push or present
-        // self.navigationController?.pushViewController(RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!"), animated: true)
         
         // MARK: - 게임 선택에 따른 화면 분기처리
         FirestoreService.shared.fetchDocument(collectionName: "matches", documentName: self.matchCode)
             .subscribe(onSuccess: { data in
-                
-                
                 if let goalValue = data["goalValue"] as? Int,
                    let inviterUid = data["inviterUid"] as? String,
                    let inviteeUid = data["inviteeUid"] as? String,
@@ -111,11 +109,7 @@ class LoadingViewController: BaseViewController {
                         }
                     }
                 }
-                
-                
             }).disposed(by: disposeBag)
-        
-        //self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: 5), animated: true)
     }
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드
