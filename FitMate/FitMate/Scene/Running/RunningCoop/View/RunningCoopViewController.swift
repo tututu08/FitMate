@@ -18,7 +18,7 @@ final class RunningCoopViewController: BaseViewController {
     private let runningCoopViewModel: RunningCoopViewModel
     // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
     private let startRelay = PublishRelay<Void>()
-    private let mateDistanceRelay = BehaviorRelay<Int>(value: 0)
+    private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     private let myCharacter: String
     private let mateCharacter: String
 
