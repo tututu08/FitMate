@@ -23,6 +23,9 @@ final class RunningBattleViewModel: ViewModelType {
     let goalDistance: Int
     let myCharacter: String
     let mateCharacter: String
+
+    var myDistance: Int { Int(myDistanceRelay.value) }
+    var mateDistance: Int { Int(mateDistanceRelay.value) }
     
     init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
         self.goalDistance = goalDistance
@@ -62,7 +65,11 @@ final class RunningBattleViewModel: ViewModelType {
         
         input.mateDistance
             .subscribe(onNext: { [weak self] distance in
-                self?.mateDistanceRelay.accept(Double(distance))
+                guard let self else { return }
+                self.mateDistanceRelay.accept(Double(distance))
+                if Int(self.mateDistanceRelay.value) >= self.goalDistance {
+                    self.finish(success: false)
+                }
             })
             .disposed(by: disposeBag)
         
@@ -118,6 +125,9 @@ final class RunningBattleViewModel: ViewModelType {
                     let intMeter = Int(self.totalDistance.rounded())
                     self.myDistanceRelay.accept(Double(intMeter))
                     self.myDistanceTextRelay.accept("\(String(format: "%.1f", self.totalDistance)) m")
+                    if Int(self.myDistanceRelay.value) >= self.goalDistance {
+                        self.finish(success: true)
+                    }
                 }
                 self.previousLocation = loc
             })

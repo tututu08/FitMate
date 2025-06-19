@@ -37,6 +37,9 @@ final class JumpRopeBattleViewModel: ViewModelType {
     let goalCount: Int
     let myCharacter: String
     let mateCharacter: String
+
+    var myCount: Int { myCountRelay.value }
+    var mateCount: Int { mateCountRelay.value }
     // Firestore 동기화를 위한 변수 (유저 구분/방 구분 등)
     //    private let matchID: String
     //    private let myUID: String
@@ -71,7 +74,13 @@ final class JumpRopeBattleViewModel: ViewModelType {
         
         // 메이트 점프 수가 들어오면 Relay에 바인딩
         input.mateCount
-            .bind(to: mateCountRelay)
+            .subscribe(onNext: { [weak self] count in
+                guard let self else { return }
+                self.mateCountRelay.accept(count)
+                if self.mateCountRelay.value >= self.goalCount {
+                    self.finish(success: false)
+                }
+            })
             .disposed(by: disposeBag)
         
         input.quit
@@ -137,6 +146,9 @@ final class JumpRopeBattleViewModel: ViewModelType {
                 self.canCount = false                  // 쿨타임 시작
                 DispatchQueue.main.asyncAfter(deadline: .now() + self.cooldown) { [weak self] in
                     self?.canCount = true              // 쿨타임 끝나면 다시 감지 가능
+                }
+                if self.myCountRelay.value >= self.goalCount {
+                    self.finish(success: true)
                 }
             }
         }

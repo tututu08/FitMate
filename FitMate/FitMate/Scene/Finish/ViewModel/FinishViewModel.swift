@@ -14,8 +14,8 @@ final class FinishViewModel: ViewModelType {
     struct Output {
         let modeText: Driver<String>
         let goalText: Driver<String>
-        let rewardText: Driver<String>
-        let hideCoin: Driver<Bool>
+        //let rewardText: Driver<String>   // Coin feature excluded in MVP
+        //let hideCoin: Driver<Bool>
         let resultText: Driver<String>
         let resultImageName: Driver<String>
         let characterImageName: Driver<String>
@@ -40,8 +40,8 @@ final class FinishViewModel: ViewModelType {
     func transform(input: Input) -> Output {
         let modeText = Observable.just(mode == .battle ? "대결 모드" : "협력 모드")
         let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
-        let reward = Observable.just("\(rewardCoin)")
-        let hideCoin = Observable.just(!success)
+        //let reward = Observable.just("\(rewardCoin)")
+        //let hideCoin = Observable.just(!success)
         let result = Observable.just(resultMessage)
         let resultImage = Observable.just(success ? "win" : "lose")
         let characterImage = Observable.just(success ? character : "\(character)Lose")
@@ -49,8 +49,8 @@ final class FinishViewModel: ViewModelType {
         return Output(
             modeText: modeText.asDriver(onErrorJustReturn: ""),
             goalText: goalText.asDriver(onErrorJustReturn: ""),
-            rewardText: reward.asDriver(onErrorJustReturn: ""),
-            hideCoin: hideCoin.asDriver(onErrorJustReturn: true),
+            //rewardText: reward.asDriver(onErrorJustReturn: ""),
+            //hideCoin: hideCoin.asDriver(onErrorJustReturn: true),
             resultText: result.asDriver(onErrorJustReturn: ""),
             resultImageName: resultImage.asDriver(onErrorJustReturn: ""),
             characterImageName: characterImage.asDriver(onErrorJustReturn: "")
@@ -58,13 +58,13 @@ final class FinishViewModel: ViewModelType {
     }
 
     // 간단한 보상 계산 로직
-    private var rewardCoin: Int {
-        guard success else { return 0 }
-        switch mode {
-        case .battle: return goal * 2
-        case .cooperation: return goal
-        }
-    }
+    //private var rewardCoin: Int {
+    //    guard success else { return 0 }
+    //    switch mode {
+    //    case .battle: return goal * 2
+    //    case .cooperation: return goal
+    //    }
+    //}
 
     // 성공/실패에 따른 문구 반환
     private var resultMessage: String {
