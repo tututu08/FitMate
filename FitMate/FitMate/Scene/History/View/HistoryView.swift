@@ -45,7 +45,7 @@ final class HistoryView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor(named: "Background900")
+        backgroundColor = UIColor(named: "Background800")
 
         categoryCollectionView.register(CategoryCell.self, forCellWithReuseIdentifier: CategoryCell.identifier)
         recordCollectionView.register(WalkRecordCell.self, forCellWithReuseIdentifier: WalkRecordCell.identifier)

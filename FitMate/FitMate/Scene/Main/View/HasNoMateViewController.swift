@@ -81,17 +81,17 @@ class HasNoMateViewController: UIViewController {
     }
     
     @objc private func goToAddMate() {
-            let codeShareVC = CodeShareViewController(uid: self.uid, hasMate: false)
+        // 먼저 dismiss 전에 safe하게 저장해놓기
+        guard let presentingVC = self.presentingViewController else { return }
 
-            // 네비게이션 컨트롤러 래핑해서 모달 전체화면으로 present
+        dismiss(animated: true) {
+            let codeShareVC = CodeShareViewController(uid: self.uid, hasMate: false)
             let nav = UINavigationController(rootViewController: codeShareVC)
             nav.modalPresentationStyle = .fullScreen
             
-            // 현재 모달 닫고 새로운 네비게이션 흐름 시작
-            self.dismiss(animated: true) {
-                // presentingViewController 기준으로 present
-                self.presentingViewController?.present(nav, animated: true, completion: nil)
-            }
+            presentingVC.present(nav, animated: true)
+        }
     }
+
 
 }
