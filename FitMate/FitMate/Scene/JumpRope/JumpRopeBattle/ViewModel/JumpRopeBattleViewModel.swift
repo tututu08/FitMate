@@ -66,7 +66,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
         input.start
             .subscribe(onNext: { [weak self] in
                 self?.startAccelerometer()
-                //                self?.observeMateCount()
+//                                self?.observeMateCount()
             })
             .disposed(by: disposeBag)
         
