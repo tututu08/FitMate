@@ -55,7 +55,7 @@ class LoadingViewController: BaseViewController {
     private func goToGameScreen() {
         // 게임화면으로 push or present
         //self.navigationController?.pushViewController(RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!"), animated: true)
-        self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: 5), animated: true)
+        self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: 5, myCharacter: "mumu", mateCharacter: "mumu"), animated: true)
     }
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드
