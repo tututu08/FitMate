@@ -92,6 +92,14 @@ final class MypageView: UIView {
         collectionView.isScrollEnabled = false
         return collectionView
     }()
+    
+    private let contentLabel: UILabel = {
+       let label = UILabel()
+        label.text = "기록이 없습니다"
+        label.font = UIFont(name: "DungGeunMo", size: 20)
+        label.textColor = .background500
+        return label
+    }()
 
     convenience init(showSettingButton: Bool = true, titleText: String = "") {
         self.init(frame: .zero)
@@ -114,6 +122,7 @@ final class MypageView: UIView {
         addSubview(profileImageView)
         addSubview(nicknameLabel)
         addSubview(underline)
+        addSubview(contentLabel)
 
         topBar.addSubview(titleLabel)
         topBar.addSubview(settingButton)
@@ -186,10 +195,15 @@ final class MypageView: UIView {
             $0.leading.equalToSuperview().offset(20)
         }
 
-        recordCollectionView.snp.makeConstraints {
-            $0.top.equalTo(levelTitle.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(700)
+//        recordCollectionView.snp.makeConstraints {
+//            $0.top.equalTo(levelTitle.snp.bottom).offset(8)
+//            $0.leading.trailing.equalToSuperview()
+//            $0.height.equalTo(700)
+//        }
+        
+        contentLabel.snp.makeConstraints { make in
+            make.top.equalTo(levelTitle.snp.bottom).offset(100)
+            make.center.equalToSuperview()
         }
 
         achievementTitleStack.isHidden = true

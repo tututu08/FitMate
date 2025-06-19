@@ -77,11 +77,11 @@ class TabBarController: UITabBarController {
         tabBar.isTranslucent = false
     }
     
-}
-class CustomTabBar: UITabBar {
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        var sizeThatFits = super.sizeThatFits(size)
-        sizeThatFits.height = 100 // 원하는 길이
-        return sizeThatFits
+    class CustomTabBar: UITabBar {
+        override func sizeThatFits(_ size: CGSize) -> CGSize {
+            var sizeThatFits = super.sizeThatFits(size)
+            sizeThatFits.height = 100 // 원하는 길이
+            return sizeThatFits
+        }
     }
 }
