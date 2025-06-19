@@ -16,16 +16,25 @@ class RunningBattleViewController: BaseViewController {
     private let startTrriger = PublishRelay<Void>()
     
     private let mateDistanceRelay = PublishRelay<Double>()
+    
+    private let matchCode: String
+    private let mateUid: String
+    private let myUid: String
     private let myCharacter: String
     private let mateCharacter: String
     
-    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+    init(goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
+        self.matchCode = matchCode
+        self.myUid = myUid
+        self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
         self.viewModel = RunningBattleViewModel(
             goalDistance: goalDistance,
             myCharacter: myCharacter,
-            mateCharacter: mateCharacter
+            mateCharacter: mateCharacter,
+            matchCode: matchCode,
+            myUid: myUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -40,6 +49,13 @@ class RunningBattleViewController: BaseViewController {
         rootView.updateGoal("\(viewModel.goalDistance)Km")
         rootView.updateMyCharacter(myCharacter)
         rootView.updateMateCharacter(mateCharacter)
+        
+        // Firestore로부터 메이트 거리 수신
+        FirestoreService.shared
+            .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
+            .bind(to: mateDistanceRelay)
+            .disposed(by: disposeBag)
+        
         startTrriger.accept(())
     }
     
@@ -56,16 +72,19 @@ class RunningBattleViewController: BaseViewController {
                 self?.rootView.updateMyRecord(text)
             })
             .disposed(by: disposeBag)
+        
         output.mateDistanceText
             .drive(onNext: { [weak self] text in
                 self?.rootView.updateMateRecord(text)
             })
             .disposed(by: disposeBag)
+        
         output.myProgress
             .drive(onNext: { [weak self] progress in
                 self?.rootView.myUpdateProgress(ratio: progress)
             })
             .disposed(by: disposeBag)
+        
         output.mateProgress
             .drive(onNext: { [weak self] progress in
                 self?.rootView.mateUpdateProgress(ratio: progress)
