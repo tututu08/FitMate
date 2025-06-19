@@ -95,7 +95,11 @@ class MainViewController: BaseViewController {
             
             // 게임화면으로 이동
             // 아직 테스트용으로 구현됨
-            let gameVC = RunningCoopViewController(goalText: "매칭 테스트 화면입니다!!")
+            let gameVC = RunningCoopViewController(
+                    goalDistance: 1000,
+                    myCharacter: "morano",
+                    mateCharacter: "mora"
+                )
             gameVC.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(gameVC, animated: true)
         }))
