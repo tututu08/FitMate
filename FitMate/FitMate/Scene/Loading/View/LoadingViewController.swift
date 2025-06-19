@@ -101,7 +101,7 @@ class LoadingViewController: BaseViewController {
                         case "자전거":
                             self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "플랭크":
-                            self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: goalValue), animated: true)
+                            self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: goalValue, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "줄넘기":
                             self.navigationController?.pushViewController(JumpRopeCoopViewController(goalCount: goalValue, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         default:
