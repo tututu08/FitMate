@@ -15,9 +15,13 @@ class LoadingViewModel {
     private let disposeBag = DisposeBag()
     private let matchCode: String
     
-    init(matchCode: String) {
+    init(matchCode: String, myUid: String) {
         self.matchCode = matchCode
         print("matchCode : \(matchCode)")
+        
+        // Firestore에 나의 준비 상태 표시
+        MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUid)
+
         bindMatchStatus()
     }
     

@@ -65,33 +65,46 @@ final class MatchEventService {
         
         print("listenMatchStatus 등록, matchId: \(matchCode)")
         
-        listener = db.collection("matches").document(matchCode) // 특정 운동 경기 실시간 감지
+        listener = db.collection("matches").document(matchCode)
             .addSnapshotListener { [weak self] snapshot, error in
                 print("addSnapshotListener 콜백 호출")
                 
                 guard let self = self,
-                      // 결과를 딕셔너리 형태로 변형
-                      let data = snapshot?.data(),
-                      // matchStatus 의 값을 추출
-                      let status = data["matchStatus"] as? String else {
+                      let data = snapshot?.data() else {
                     print("콜백에서 데이터 없음, error: \(String(describing: error))")
                     return
                 }
-                print("Firestore에서 matchStatus 변화 감지: \(status)")
                 
-                // 중복 방출 방지
-                if self.lastSentStatus[matchCode] == status {
-                    print("중복 상태(\(status)) 무시")
-                    return
+                // 1. matchStatus 받아서 matchStatusRelay 업데이트
+                if let status = data["matchStatus"] as? String {
+                    print("Firestore에서 matchStatus 변화 감지: \(status)")
+                    
+                    if self.lastSentStatus[matchCode] != status {
+                        self.lastSentStatus[matchCode] = status
+                        var current = self.matchStatusRelay.value
+                        current[matchCode] = status
+                        self.matchStatusRelay.accept(current)
+                    } else {
+                        print("중복 상태(\(status)) 무시")
+                    }
                 }
                 
-                self.lastSentStatus[matchCode] = status
+                // 2. players 안에 모두 isReady == true 인지 확인
+                if let players = data["players"] as? [String: [String: Any]],
+                   let status = data["matchStatus"] as? String,
+                   status != "started" {
+                    
+                    let allReady = players.values.allSatisfy { $0["isReady"] as? Bool == true }
+                    
+                    if allReady {
+                        print("양쪽 모두 준비 완료! matchStatus → started 로 업데이트")
+                        db.collection("matches").document(matchCode).updateData([
+                            "matchStatus": "started",
+                            "startTime": FieldValue.serverTimestamp()
+                        ])
+                    }
+                }
                 
-                // 운동 경기 코드와, 해당 운동 경기의 상태를 방출!
-//                self.matchStatusRelay.accept((matchCode, status))
-                var current = self.matchStatusRelay.value
-                current[matchCode] = status
-                self.matchStatusRelay.accept(current)
             }
     }
     
@@ -102,6 +115,32 @@ final class MatchEventService {
         
         if let code = lastSentMatchCode {
             lastSentStatus.removeValue(forKey: code)
+        }
+    }
+    
+    // 준비 상태 저장
+    func markReady(matchCode: String, myUid: String) {
+        let db = Firestore.firestore()
+        print("markReady: \(myUid) → true")
+        db.collection("matches").document(matchCode).updateData([
+            "players.\(myUid).isReady": true
+        ])
+    }
+    
+    func listenStartTime(matchCode: String) -> Observable<Date> {
+        return Observable.create { observer in
+            let listener = Firestore.firestore().collection("matches").document(matchCode)
+                .addSnapshotListener { snapshot, error in
+                    guard let data = snapshot?.data(),
+                          let timestamp = data["startTime"] as? Timestamp else { return }
+
+                    let startDate = timestamp.dateValue()
+                    observer.onNext(startDate)
+                }
+
+            return Disposables.create {
+                listener.remove()
+            }
         }
     }
 }
