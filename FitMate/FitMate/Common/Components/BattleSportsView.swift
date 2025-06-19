@@ -271,15 +271,36 @@ class BattleSportsView: BaseView {
     }
     // 진행률 바 갱신(0~1 비율)
     func myUpdateProgress(ratio: CGFloat) {
-         layoutIfNeeded()
-         let width = myProgressBackgroundView.bounds.width - 12 // inset 보정
-         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
-         layoutIfNeeded()
+//         layoutIfNeeded()
+//         let width = myProgressBackgroundView.bounds.width - 12 // inset 보정
+//         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+//         layoutIfNeeded()
+        
+        DispatchQueue.main.async {
+            self.layoutIfNeeded()
+            let width = self.myProgressBackgroundView.bounds.width - 12
+            self.myProgressForegroundView.snp.updateConstraints {
+                $0.width.equalTo(width * min(1, max(0, ratio)))
+            }
+            UIView.animate(withDuration: 0.3) {
+                self.layoutIfNeeded()
+            }
+        }
     }
     func mateUpdateProgress(ratio: CGFloat) {
-         layoutIfNeeded()
-         let width = mateProgressBackgroundView.bounds.width - 12 // inset 보정
-         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
-         layoutIfNeeded()
+//         layoutIfNeeded()
+//         let width = mateProgressBackgroundView.bounds.width - 12 // inset 보정
+//         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+//         layoutIfNeeded()
+        DispatchQueue.main.async {
+            self.layoutIfNeeded()
+            let width = self.mateProgressBackgroundView.bounds.width - 12
+            self.mateProgressForegroundView.snp.updateConstraints {
+                $0.width.equalTo(width * min(1, max(0, ratio)))
+            }
+            UIView.animate(withDuration: 0.3) {
+                self.layoutIfNeeded()
+            }
+        }
     }
 }

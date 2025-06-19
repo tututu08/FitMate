@@ -235,10 +235,20 @@ class CooperationSportsView: BaseView {
         mateCharacterImage.image = UIImage(named: name)
     }
     // 진행률 바 갱신(0~1 비율)
+//    func updateProgress(ratio: CGFloat) {
+//         layoutIfNeeded()
+//         let width = progressBackgroundView.bounds.width - 12 // inset 보정
+//         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+//         layoutIfNeeded()
+//    }
     func updateProgress(ratio: CGFloat) {
-         layoutIfNeeded()
-         let width = progressBackgroundView.bounds.width - 12 // inset 보정
-         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
-         layoutIfNeeded()
+        DispatchQueue.main.async {
+            self.layoutIfNeeded()
+            let width = self.progressBackgroundView.bounds.width - 12
+            self.progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
+            UIView.animate(withDuration: 0.3) {
+                self.layoutIfNeeded()
+            }
+        }
     }
 }
