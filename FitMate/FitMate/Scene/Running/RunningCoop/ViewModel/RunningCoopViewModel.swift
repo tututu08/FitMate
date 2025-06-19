@@ -23,11 +23,15 @@ final class RunningCoopViewModel: ViewModelType {
     let goalDistance: Int
     let myCharacter: String
     let mateCharacter: String
+    let matchCode: String
+    let myUid: String
     
-    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+    init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
         self.goalDistance = goalDistance
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        self.matchCode = matchCode
+        self.myUid = myUid
     }
     
     struct Input {
@@ -54,11 +58,30 @@ final class RunningCoopViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        mateDistanceRelay
+        let mateDistanceText = mateDistanceRelay
             .map { "\($0) m" }
-            .bind(to: mateDistanceTextRelay)
+            .asDriver(onErrorJustReturn: "0.0 m")
+        
+        let myDistanceText = myDistanceRelay
+            .map { "\($0) m" }
+            .asDriver(onErrorJustReturn: "0.0 m")
+        
+        // Firestore에 값을 push
+        myDistanceRelay
+            .distinctUntilChanged()
+            .skip(1)
+            .flatMapLatest { [weak self] distance -> Completable in
+                guard let self = self else { return .empty() }
+                return FirestoreService.shared.updateMyProgressToFirestore(
+                    matchCode: self.matchCode,
+                    uid: self.myUid,
+                    progress: distance
+                )
+            }
+            .subscribe()
             .disposed(by: disposeBag)
         
+        // MARK: - 프로그레스 바 움직이기.
         let progressDriver = Observable
             .combineLatest(myDistanceRelay, mateDistanceRelay)
             .map { [weak self] my, mate -> CGFloat in
@@ -68,8 +91,8 @@ final class RunningCoopViewModel: ViewModelType {
             .asDriver(onErrorJustReturn: 0)
         
         return Output(
-            myDistanceText: myDistanceTextRelay.asDriver(),
-            mateDistanceText: mateDistanceTextRelay.asDriver(),
+            myDistanceText: myDistanceText,
+            mateDistanceText: mateDistanceText,
             progress: progressDriver
         )
     }

@@ -36,8 +36,10 @@ class RunningBattleViewController: BaseViewController {
             matchCode: matchCode,
             myUid: myUid
         )
+        
         super.init(nibName: nil, bundle: nil)
     }
+    
     required init?(coder: NSCoder) { fatalError("not implemented") }
     
     override func loadView() {
@@ -50,7 +52,7 @@ class RunningBattleViewController: BaseViewController {
         rootView.updateMyCharacter(myCharacter)
         rootView.updateMateCharacter(mateCharacter)
         
-        // Firestore로부터 메이트 거리 수신
+        // MARK: - Firestore로부터 메이트 거리 수신
         FirestoreService.shared
             .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
             .bind(to: mateDistanceRelay)
@@ -61,6 +63,7 @@ class RunningBattleViewController: BaseViewController {
     
     override func bindViewModel() {
         super.bindViewModel()
+        
         let input = RunningBattleViewModel.Input(
             startTracking: startTrriger.asObservable(),
             mateDistance: mateDistanceRelay.asObservable()

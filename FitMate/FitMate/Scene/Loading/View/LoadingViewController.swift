@@ -95,11 +95,11 @@ class LoadingViewController: BaseViewController {
                         // 협동모드
                         switch exerciseType {
                         case "걷기":
-                            self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
+                            self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "달리기":
-                            self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
+                            self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "자전거":
-                            self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
+                            self.navigationController?.pushViewController(RunningCoopViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "플랭크":
                             self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: goalValue), animated: true)
                         case "줄넘기":
