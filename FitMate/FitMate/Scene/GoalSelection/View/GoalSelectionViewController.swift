@@ -148,7 +148,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                     onSuccess: { matchCode in
                         print("Match 생성 성공 \(matchCode)")
                         // 로딩 화면으로 이동
-                        self.navigationController?.pushViewController(LoadingViewController(matchCode: matchCode), animated: true)
+                        self.navigationController?.pushViewController(LoadingViewController(uid: self.uid, matchCode: matchCode), animated: true)
                     },
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
