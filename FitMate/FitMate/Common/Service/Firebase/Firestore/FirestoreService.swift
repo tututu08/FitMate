@@ -477,3 +477,83 @@ extension FirestoreService {
         }
     }
 }
+extension FirestoreService {
+    func saveExerciseRecord(uid: String, record: ExerciseRecord) -> Completable {
+        let db = Firestore.firestore()
+        let ref = db.collection("users").document(uid).collection("records").document() // autoId 생성
+
+        let data: [String: Any] = [
+            "type": record.type.rawValue,
+            "date": record.date,
+            "result": record.result.rawValue,
+            "detail1": record.detail1,
+            "detail2": record.detail2,
+            "detail3": record.detail3
+        ]
+
+        return Completable.create { completable in
+            ref.setData(data) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}
+extension FirestoreService {
+    func fetchExerciseRecords(uid: String) -> Single<[ExerciseRecord]> {
+        let ref = db.collection("users").document(uid).collection("records")
+
+        return Single.create { single in
+            ref.getDocuments { snapshot, error in
+                if let error = error {
+                    single(.failure(error))
+                    return
+                }
+
+                guard let documents = snapshot?.documents else {
+                    single(.success([]))
+                    return
+                }
+
+                let records: [ExerciseRecord] = documents.compactMap { doc in
+                    let data = doc.data()
+                    guard let typeString = data["type"] as? String,
+                          let type = ExerciseType(rawValue: typeString),
+                          let date = data["date"] as? String,
+                          let resultString = data["result"] as? String,
+                          let result = ExerciseResult(rawValue: resultString),
+                          let detail1 = data["detail1"] as? String,
+                          let detail2 = data["detail2"] as? String,
+                          let detail3 = data["detail3"] as? String
+                    else {
+                        print("❌ 잘못된 type 값: \(data["type"] ?? "")")
+                        return nil
+                    }
+                    
+                    guard let resultString = data["result"] as? String,
+                          let result = ExerciseResult(rawValue: resultString) else {
+                        print("❌ 잘못된 result 값: \(data["result"] ?? "")")
+                        return nil
+                    }
+
+                    return ExerciseRecord(
+                        type: type,
+                        date: date,
+                        result: result,
+                        detail1: detail1,
+                        detail2: detail2,
+                        detail3: detail3
+                    )
+                }
+
+                single(.success(records))
+            }
+
+            return Disposables.create()
+        }
+    }
+}
