@@ -35,7 +35,7 @@ final class HistoryView: UIView {
         return label
     }()
     
-    private let contentLabel: UILabel = {
+    let contentLabel: UILabel = {
        let label = UILabel()
         label.text = "기록이 없습니다"
         label.font = UIFont(name: "DungGeunMo", size: 20)
@@ -86,10 +86,10 @@ final class HistoryView: UIView {
             $0.height.equalTo(1)
         }
 
-//        recordCollectionView.snp.makeConstraints {
-//            $0.top.equalTo(categoryUnderlineView.snp.bottom).offset(8)
-//            $0.leading.trailing.bottom.equalToSuperview()
-//        }
+        recordCollectionView.snp.makeConstraints {
+            $0.top.equalTo(categoryUnderlineView.snp.bottom).offset(8)
+            $0.leading.trailing.bottom.equalToSuperview()
+        }
         
         contentLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
