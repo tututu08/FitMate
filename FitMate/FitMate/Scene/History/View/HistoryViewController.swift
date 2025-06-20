@@ -46,7 +46,7 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
     }
 
     private func bindViewModel() {
-        Observable.just(ExerciseType.allCases)
+        Observable.just(ExerciseType.allCases.filter { $0 != .plank }) //플랭크 필터링
             .bind(to: rootView.categoryCollectionView.rx.items(
                 cellIdentifier: CategoryCell.identifier,
                 cellType: CategoryCell.self)
@@ -67,9 +67,8 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
 
         output.filteredRecords
             .drive(onNext: { [weak self] records in
-                print("✅ ViewController: reload 호출됨, \(records.count)건")
+                print(" ViewController: reload 호출됨, \(records.count)건")
                 self?.rootView.recordCollectionView.reloadData()
-                // ✅ 내용 유무에 따라 "기록이 없습니다" 문구 숨김 처리
                 self?.rootView.contentLabel.isHidden = !records.isEmpty
             })
             .disposed(by: disposeBag)
@@ -80,8 +79,8 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
             let width = collectionView.frame.width - 32
             return CGSize(width: width, height: 120)
         } else {
-            let width: CGFloat = floor(collectionView.frame.width / CGFloat(ExerciseType.allCases.count))
-            return CGSize(width: width, height: 40)
+            //let width: CGFloat = floor(collectionView.frame.width / CGFloat(ExerciseType.allCases.count))
+            return CGSize(width: 78.4 , height: 40)
         }
     }
 }
@@ -115,11 +114,11 @@ extension HistoryViewController: UICollectionViewDataSource {
             cell.configure(with: record)
             return cell
         
-        case .plank:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlankRecordCell.identifier, for: indexPath) as! PlankRecordCell
-            cell.configure(with: record)
-            return cell
-            
+        case .plank: //플랭크 핉러링으로 인한 주석처리
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlankRecordCell.identifier, for: indexPath) as! PlankRecordCell
+//            cell.configure(with: record)
+//            return cell
+            fallthrough
         default:
             fatalError("종목 없음")
         }

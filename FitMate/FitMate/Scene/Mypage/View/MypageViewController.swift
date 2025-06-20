@@ -1,11 +1,10 @@
-// MypageViewController.swift
 import UIKit
 import RxSwift
 import RxCocoa
 
 final class MypageViewController: UIViewController, UICollectionViewDelegateFlowLayout {
 
-    private let rootView = MypageView(showSettingButton: true, titleText: "마이페이지")
+    private let rootView = MypageView(showSettingButton: true, titleText: "마이페이지", showBackButton: false)
     private let viewModel: MypageViewModel
     private let disposeBag = DisposeBag()
     

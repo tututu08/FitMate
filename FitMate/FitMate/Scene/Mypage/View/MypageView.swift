@@ -1,5 +1,3 @@
-// MypageView.swift
-
 import UIKit
 import SnapKit
 
@@ -13,10 +11,10 @@ final class MypageView: UIView {
     }()
     
     let backButton: UIButton = {
-        let back = UIButton()
-        back.setImage(UIImage(named: "backButton"), for: .normal)
-        back.contentHorizontalAlignment = .leading
-        return back
+        let button = UIButton()
+        button.setImage(UIImage(named: "backButton"), for: .normal)
+        button.contentHorizontalAlignment = .leading
+        return button
     }()
 
     let topBar = UIView()
@@ -29,11 +27,13 @@ final class MypageView: UIView {
         return label
     }()
 
-    let profileImageView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .lightGray
-        view.layer.cornerRadius = 4
-        return view
+    let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "KappyAlone")
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = UIColor(named: "Secondary50")
+        imageView.layer.cornerRadius = 4
+        return imageView
     }()
 
     let nicknameLabel: UILabel = {
@@ -46,7 +46,7 @@ final class MypageView: UIView {
 
     private let underline: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 138/255, green: 43/255, blue: 226/255, alpha: 1)
+        view.backgroundColor = UIColor(named: "Primary500")
         return view
     }()
 
@@ -101,18 +101,20 @@ final class MypageView: UIView {
         collectionView.isScrollEnabled = false
         return collectionView
     }()
-    
+
     private let contentLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.text = "기록이 없습니다"
         label.font = UIFont(name: "DungGeunMo", size: 20)
         label.textColor = .background500
         return label
     }()
 
-    convenience init(showSettingButton: Bool = true, titleText: String = "") {
+    // ✅ 백버튼 제어 가능한 이니셜라이저
+    convenience init(showSettingButton: Bool = true, titleText: String = "", showBackButton: Bool = true) {
         self.init(frame: .zero)
         settingButton.isHidden = !showSettingButton
+        backButton.isHidden = !showBackButton
         titleLabel.text = titleText
     }
 
@@ -131,11 +133,11 @@ final class MypageView: UIView {
         addSubview(profileImageView)
         addSubview(nicknameLabel)
         addSubview(underline)
-        addSubview(contentLabel)
-        
-        topBar.addSubview(backButton)
+        contentView.addSubview(contentLabel)
+
         topBar.addSubview(titleLabel)
         topBar.addSubview(settingButton)
+        topBar.addSubview(backButton) 
 
         addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -160,7 +162,7 @@ final class MypageView: UIView {
             $0.trailing.equalToSuperview().inset(20)
             $0.width.height.equalTo(24)
         }
-        
+
         backButton.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.leading.equalToSuperview().inset(20)
@@ -216,10 +218,10 @@ final class MypageView: UIView {
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(700)
         }
-        
-        contentLabel.snp.makeConstraints { make in
-            make.top.equalTo(levelTitle.snp.bottom).offset(100)
-            make.center.equalToSuperview()
+
+        contentLabel.snp.makeConstraints {
+            $0.top.equalTo(levelTitle.snp.bottom).offset(100)
+            $0.center.equalToSuperview()
         }
 
         achievementTitleStack.isHidden = true
