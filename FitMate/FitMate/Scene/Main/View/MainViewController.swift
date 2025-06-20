@@ -140,7 +140,36 @@ class MainViewController: BaseViewController {
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
+        
+        viewModel.showMateDisconnectedAlert
+            .bind(onNext: { [weak self] in
+                self?.showMateDisconnectedPopup()
+            })
+            .disposed(by: disposeBag)
     }
+    
+    private func showMateDisconnectedPopup() {
+        let alert = UIAlertController(
+            title: "메이트 연결 종료",
+            message: "상대방이 메이트 연결을 끊었습니다.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { [weak self] _ in
+            guard let self else { return }
+
+            FirestoreService.shared.deleteMate(myUid: self.uid)
+                .subscribe(onSuccess: {
+                    print("내 메이트 정보 삭제 완료")
+                }, onFailure: { error in
+                    print("삭제 실패: \(error.localizedDescription)")
+                })
+                .disposed(by: self.disposeBag)
+        }))
+
+        present(alert, animated: true)
+    }
+    
 
     /// 운동 초대 알림창 띄우는 메서드
     func presentAlertForMatch(matchCode: String) {
