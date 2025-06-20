@@ -52,7 +52,7 @@ final class HistoryView: UIView {
         recordCollectionView.register(JumpRopeRecordCell.self, forCellWithReuseIdentifier: JumpRopeRecordCell.identifier)
         recordCollectionView.register(BicycleRecordCell.self, forCellWithReuseIdentifier: BicycleRecordCell.identifier)
         recordCollectionView.register(RunRecordCell.self, forCellWithReuseIdentifier: RunRecordCell.identifier)
-        recordCollectionView.register(PlankRecordCell.self, forCellWithReuseIdentifier: PlankRecordCell.identifier)
+        //recordCollectionView.register(PlankRecordCell.self, forCellWithReuseIdentifier: PlankRecordCell.identifier)
 
         setupLayout()
     }
@@ -69,7 +69,7 @@ final class HistoryView: UIView {
         addSubview(contentLabel)
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(12)
+            $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(-10)
             $0.centerX.equalToSuperview()
         }
 
