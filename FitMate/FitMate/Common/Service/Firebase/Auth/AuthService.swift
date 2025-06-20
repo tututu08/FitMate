@@ -154,7 +154,7 @@ final class AuthService: NSObject {
         let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
         var result  = ""
         var remaining = length
-
+        
         while remaining > 0 {
             var random: UInt8 = 0
             guard SecRandomCopyBytes(kSecRandomDefault, 1, &random) == errSecSuccess else {
@@ -167,26 +167,67 @@ final class AuthService: NSObject {
         }
         return result
     }
-
+    
     /// SHA‑256 해시 (hex string)
     func sha256(_ input: String) -> String {
         let data = Data(input.utf8)
         return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
+    
+    func logout()-> Single<Void> {
+        return Single.create { single in
+            let firebaseAuth = Auth.auth()
+            do {
+                try firebaseAuth.signOut()
+                single(.success(()))
+            } catch {
+                single(.failure(error))
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func deleteAccount() -> Single<Void> {
+        return Single.create { single in
+            /// // 현재 로그인한 유저가 있는지 확인
+            if let user = Auth.auth().currentUser {
+                // 유저 삭제 요청
+                user.delete { error in
+                    if let error = error {
+                        // 실패 시 에러 반환
+                        single(.failure(error))
+                    } else {
+                        print("탈퇴 성공")
+                        // 성공 시 빈 성공 값 반환
+                        single(.success(()))
+                    }
+                }
+            } else {
+                // 로그인 정보가 없을 경우 커스텀 에러 반환
+                let error = NSError(
+                    domain: "FirebaseAuth",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "로그인 정보가 존재하지 않습니다."]
+                )
+                single(.failure(error))
+            }
+            return Disposables.create()
+        }
+    }
 }
 
 // MARK: - Apple Delegate & Presentation
 extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-
+    
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         // 최상위 window 반환
         UIApplication.shared.windows.first { $0.isKeyWindow } ?? ASPresentationAnchor()
     }
-
+    
     /// 성공
     func authorizationController(controller: ASAuthorizationController,
                                  didCompleteWithAuthorization authorization: ASAuthorization) {
-
+        
         guard
             let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
             let identityTokenData = appleIDCredential.identityToken,
@@ -196,13 +237,13 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
             appleObserver?(.failure(NSError(domain: "AppleAuth", code: -1)))
             return
         }
-
+        
         let credential = OAuthProvider.appleCredential(
             withIDToken: idTokenString,
             rawNonce: rawNonce,
             fullName: appleIDCredential.fullName
         )
-
+        
         Auth.auth().signIn(with: credential) { [weak self] result, error in
             if let error {
                 self?.appleObserver?(.failure(error))
@@ -214,11 +255,12 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
             self?.appleObserver = nil   // clean‑up
         }
     }
-
+    
     /// 실패
     func authorizationController(controller: ASAuthorizationController,
                                  didCompleteWithError error: Error) {
         appleObserver?(.failure(error))
         appleObserver = nil
     }
+    
 }
