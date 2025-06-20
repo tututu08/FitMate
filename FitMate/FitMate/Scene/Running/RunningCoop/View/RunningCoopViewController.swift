@@ -19,6 +19,7 @@ final class RunningCoopViewController: BaseViewController {
     // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
     private let startRelay = PublishRelay<Void>()
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
+    private let goalselecionViewModel = GoalSelectionViewModel()
     
     private let matchCode: String
     private let mateUid: String
@@ -61,8 +62,8 @@ final class RunningCoopViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        rootView.updateGoal("\(runningCoopViewModel.goalDistance)Km")
+        let goalTitle = goalselecionViewModel.selectedGoalTitleRelay.value
+        rootView.updateGoal("\(goalTitle) \(runningCoopViewModel.goalDistance)Km")
         rootView.updateMyCharacter(runningCoopViewModel.myCharacter)
         rootView.updateMateCharacter(runningCoopViewModel.mateCharacter)
         

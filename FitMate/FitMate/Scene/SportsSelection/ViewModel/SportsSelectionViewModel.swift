@@ -36,13 +36,13 @@ class CarouselViewModel: ViewModelType {
 
     // 실제 운동 아이템 원본 배열
     private let originalItemsSource: [ExerciseItem] = [
-        ExerciseItem(
-            image: UIImage(named: "plank") ?? UIImage(),
-            title: "플랭크",
-            calorie: "150kcal / 10분",
-            description: "정적인 코어 운동",
-            effect: "복부 근육 강화, 자세 안정"
-        ),
+//        ExerciseItem(
+//            image: UIImage(named: "plank") ?? UIImage(),
+//            title: "플랭크",
+//            calorie: "150kcal / 10분",
+//            description: "정적인 코어 운동",
+//            effect: "복부 근육 강화, 자세 안정"
+//        ),
         ExerciseItem(
             image: UIImage(named: "bicycle") ?? UIImage(),
             title: "자전거",

@@ -35,6 +35,9 @@ final class MypageViewModel {
         
         let records = FirestoreService.shared
             .fetchTotalStats(uid: uid)
+            .map { records in
+                records.filter { $0.type != "플랭크" }  //플랭크 필터처리
+            }
             .do(onSuccess: { print("🏁 ViewModel에서 받은 기록: \($0)") })
             .asDriver(onErrorJustReturn: [])
         

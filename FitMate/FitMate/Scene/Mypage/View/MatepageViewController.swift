@@ -1,4 +1,3 @@
-// MatepageViewController.swift
 import UIKit
 import RxSwift
 import RxCocoa
@@ -14,7 +13,11 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
     init(mateUid: String) {
         self.mateUid = mateUid
         self.viewModel = MypageViewModel(uid: mateUid)
-        self.rootView = MypageView(showSettingButton: false, titleText: "메이트페이지")
+        self.rootView = MypageView(
+            showSettingButton: false,
+            titleText: "메이트페이지",
+            showBackButton: true
+        )
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -37,8 +40,12 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
         rootView.recordCollectionView.delegate = self
         bindViewModel()
 
-        rootView.recordCollectionView.register(WorkRecordCell.self, forCellWithReuseIdentifier: WorkRecordCell.identifier)
-        setupActions()
+        rootView.recordCollectionView.register(
+            WorkRecordCell.self,
+            forCellWithReuseIdentifier: WorkRecordCell.identifier
+        )
+
+        setupBackButtonAction()
     }
 
     private func bindViewModel() {
@@ -57,8 +64,8 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
             }
             .disposed(by: disposeBag)
     }
-    
-    private func setupActions() {
+
+    private func setupBackButtonAction() {
         rootView.backButton.rx.tap
             .bind { [weak self] in
                 self?.navigationController?.popViewController(animated: true)

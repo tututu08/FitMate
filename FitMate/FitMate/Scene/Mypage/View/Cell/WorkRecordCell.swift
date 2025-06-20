@@ -1,4 +1,3 @@
-// WorkRecordCell.swift
 import UIKit
 import SnapKit
 
@@ -15,9 +14,17 @@ final class WorkRecordCell: UICollectionViewCell {
 
     private let characterImageView: UIView = {
         let view = UIView()
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .white
         view.layer.cornerRadius = 4
+        view.clipsToBounds = true
         return view
+    }()
+
+    private let characterImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
     }()
 
     private let typeLabel: UILabel = {
@@ -61,6 +68,13 @@ final class WorkRecordCell: UICollectionViewCell {
             $0.width.equalTo(335)
         }
 
+        characterImageView.addSubview(characterImage)
+        characterImage.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.equalTo(88)
+            $0.height.equalTo(88)
+        }
+
         let infoStack = UIStackView(arrangedSubviews: [typeLabel, totalLabel, unitLabel])
         infoStack.axis = .vertical
         infoStack.spacing = 4
@@ -85,5 +99,20 @@ final class WorkRecordCell: UICollectionViewCell {
         typeLabel.text = record.type
         totalLabel.text = record.totalDistance
         unitLabel.text = record.unit
+
+        switch record.type {
+        case "걷기":
+            characterImage.image = UIImage(named: "walk")
+        case "달리기":
+            characterImage.image = UIImage(named: "run")
+        case "자전거":
+            characterImage.image = UIImage(named: "bicycle")
+        case "줄넘기":
+            characterImage.image = UIImage(named: "jumpRope")
+        case "플랭크":
+            characterImage.image = UIImage(named: "plank")
+        default:
+            characterImage.image = nil
+        }
     }
 }
