@@ -55,8 +55,8 @@ final class SettingViewController: UIViewController {
             .disposed(by: disposeBag)
 
         output.logoutEvent
-            .emit(onNext: {
-                // 로그아웃연결부분
+            .emit(onNext: { [weak self] in
+                self?.logoutFunc()
             })
             .disposed(by: disposeBag)
 
@@ -83,8 +83,22 @@ final class SettingViewController: UIViewController {
             .disposed(by: disposeBag)
 
         popup.confirmButton.rx.tap
-            .bind {
-                print("탈퇴") //탈퇴연결부분
+            .bind {[weak self] in
+                guard let self = self else { return }
+                guard let presentingVC = self.presentingViewController else { return }
+
+                AuthService.shared.deleteAccount()
+                    .subscribe(onSuccess: {
+                        self.dismiss(animated: true) {
+                            let loginVC = LoginViewController()
+                            let nav = UINavigationController(rootViewController: loginVC)
+                            nav.modalPresentationStyle = .fullScreen
+                            presentingVC.present(nav, animated: true)
+                        }
+                    }, onFailure: { error in
+                        print("회원 탈퇴 실패: \(error)")
+                    })
+                    .disposed(by: self.disposeBag)
             }
             .disposed(by: disposeBag)
     }
@@ -118,4 +132,29 @@ final class SettingViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
+    
+    private func logoutFunc() {
+        /// navigationController를 통한 push는 불가능
+        /// 해당 모달 띄운 뷰컨 -> presentingViewController을 안전하게 저장 후
+        /// dismiss 후 그 뷰컨이 화면 전환을 맡도록 처리해야 함
+        /// 뷰컨 간 이동 로직 썼는데 죽어라 안됐으
+        guard let presentingVC = self.presentingViewController else { return }
+
+        AuthService.shared.logout()
+            .subscribe(onSuccess: { [weak self] in
+                guard let self else { return }
+                
+                self.dismiss(animated: true) {
+                    let loginVC = LoginViewController()
+                    let nav = UINavigationController(rootViewController: loginVC)
+                    nav.modalPresentationStyle = .fullScreen
+                    presentingVC.present(nav, animated: true)
+                }
+            }, onFailure: { error in
+                print("로그아웃 실패: \(error)")
+            })
+            .disposed(by: disposeBag)
+    }
+
+
 }
