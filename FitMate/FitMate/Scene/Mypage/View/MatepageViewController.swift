@@ -1,3 +1,4 @@
+// MatepageViewController.swift
 import UIKit
 import RxSwift
 import RxCocoa
@@ -37,6 +38,7 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
         bindViewModel()
 
         rootView.recordCollectionView.register(WorkRecordCell.self, forCellWithReuseIdentifier: WorkRecordCell.identifier)
+        setupActions()
     }
 
     private func bindViewModel() {
@@ -52,6 +54,14 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
                 cellType: WorkRecordCell.self)
             ) { index, record, cell in
                 cell.configure(with: record)
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func setupActions() {
+        rootView.backButton.rx.tap
+            .bind { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
     }

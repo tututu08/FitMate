@@ -1,3 +1,5 @@
+// MypageView.swift
+
 import UIKit
 import SnapKit
 
@@ -8,6 +10,13 @@ final class MypageView: UIView {
         button.setImage(UIImage(systemName: "gearshape"), for: .normal)
         button.tintColor = .white
         return button
+    }()
+    
+    let backButton: UIButton = {
+        let back = UIButton()
+        back.setImage(UIImage(named: "backButton"), for: .normal)
+        back.contentHorizontalAlignment = .leading
+        return back
     }()
 
     let topBar = UIView()
@@ -109,7 +118,7 @@ final class MypageView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .black
+        backgroundColor = .background800
         setupLayout()
     }
 
@@ -123,7 +132,8 @@ final class MypageView: UIView {
         addSubview(nicknameLabel)
         addSubview(underline)
         addSubview(contentLabel)
-
+        
+        topBar.addSubview(backButton)
         topBar.addSubview(titleLabel)
         topBar.addSubview(settingButton)
 
@@ -148,6 +158,12 @@ final class MypageView: UIView {
         settingButton.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.trailing.equalToSuperview().inset(20)
+            $0.width.height.equalTo(24)
+        }
+        
+        backButton.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.equalToSuperview().inset(20)
             $0.width.height.equalTo(24)
         }
 
@@ -195,11 +211,11 @@ final class MypageView: UIView {
             $0.leading.equalToSuperview().offset(20)
         }
 
-//        recordCollectionView.snp.makeConstraints {
-//            $0.top.equalTo(levelTitle.snp.bottom).offset(8)
-//            $0.leading.trailing.equalToSuperview()
-//            $0.height.equalTo(700)
-//        }
+        recordCollectionView.snp.makeConstraints {
+            $0.top.equalTo(levelTitle.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(700)
+        }
         
         contentLabel.snp.makeConstraints { make in
             make.top.equalTo(levelTitle.snp.bottom).offset(100)

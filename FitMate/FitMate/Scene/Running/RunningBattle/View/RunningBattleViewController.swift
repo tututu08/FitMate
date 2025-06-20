@@ -17,19 +17,30 @@ class RunningBattleViewController: BaseViewController {
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
     private let mateDistanceRelay = PublishRelay<Double>()
+    
+    private let matchCode: String
+    private let mateUid: String
+    private let myUid: String
     private let myCharacter: String
     private let mateCharacter: String
     
-    init(goalDistance: Int, myCharacter: String, mateCharacter: String) {
+    init(goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
+        self.matchCode = matchCode
+        self.myUid = myUid
+        self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
         self.viewModel = RunningBattleViewModel(
             goalDistance: goalDistance,
             myCharacter: myCharacter,
-            mateCharacter: mateCharacter
+            mateCharacter: mateCharacter,
+            matchCode: matchCode,
+            myUid: myUid
         )
+        
         super.init(nibName: nil, bundle: nil)
     }
+    
     required init?(coder: NSCoder) { fatalError("not implemented") }
     
     override func loadView() {
@@ -41,6 +52,13 @@ class RunningBattleViewController: BaseViewController {
         rootView.updateGoal("\(viewModel.goalDistance)Km")
         rootView.updateMyCharacter(myCharacter)
         rootView.updateMateCharacter(mateCharacter)
+        
+        // MARK: - Firestore로부터 메이트 거리 수신
+        FirestoreService.shared
+            .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
+            .bind(to: mateDistanceRelay)
+            .disposed(by: disposeBag)
+        
         startTrriger.accept(())
         rootView.stopButton.rx.tap
             .bind { [weak self] in
@@ -61,6 +79,7 @@ class RunningBattleViewController: BaseViewController {
     
     override func bindViewModel() {
         super.bindViewModel()
+        
         let input = RunningBattleViewModel.Input(
             startTracking: startTrriger.asObservable(),
             mateDistance: mateDistanceRelay.asObservable(),
@@ -74,21 +93,49 @@ class RunningBattleViewController: BaseViewController {
                 self?.rootView.updateMyRecord(text)
             })
             .disposed(by: disposeBag)
+        
         output.mateDistanceText
             .drive(onNext: { [weak self] text in
                 self?.rootView.updateMateRecord(text)
             })
             .disposed(by: disposeBag)
+        
         output.myProgress
             .drive(onNext: { [weak self] progress in
                 self?.rootView.myUpdateProgress(ratio: progress)
             })
             .disposed(by: disposeBag)
+        
         output.mateProgress
             .drive(onNext: { [weak self] progress in
                 self?.rootView.mateUpdateProgress(ratio: progress)
             })
             .disposed(by: disposeBag)
+        
+        output.didFinish
+            .emit(onNext: { [weak self] (success, myDistance) in
+                self?.navigateToFinish(success: success, distance: myDistance)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func navigateToFinish(success: Bool, distance: Double) {
+        let finishVM = FinishViewModel(
+            mode: .battle,
+            sport: "달리기",
+            goal: Int(distance),
+            goalUnit: "Km",
+            character: myCharacter,
+            success: success
+        )
+        let vc = FinishViewController(
+            uid: myUid,
+            mateUid: mateUid,
+            matchCode: matchCode,
+            viewModel: finishVM
+        )
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     
     func receiveMateQuit()    {

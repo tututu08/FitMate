@@ -54,7 +54,7 @@ class MateCodeView: BaseView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .black
+        backgroundColor = .background800
         configureUI()
         setLayoutUI()
     }

@@ -103,7 +103,7 @@ class FirestoreService {
         )
      */
     
-    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: String, mode: String) -> Single<String> {
+    func createMatchDocument(inviterUid: String, inviteeUid: String, exerciseType: String, goalValue: Int, goalUnit: String, mode: String) -> Single<String> {
         return Single.create { single in
             func tryGenerateAndSave() {
                 let matchCode = self.generateInviteCode()
@@ -117,6 +117,7 @@ class FirestoreService {
                         let data: [String: Any] = [
                             "exerciseType": exerciseType, // 운동 종목
                             "goalValue": goalValue, // 목표 수치
+                            "goalUnit": goalUnit,
                             "mode": mode, // 운동 모드
                             "matchStatus": "waiting", // waiting or started
                             "inviterUid": inviterUid, // 운동 생성자 uid
@@ -129,14 +130,14 @@ class FirestoreService {
                                     // "avatar": "끼리꼬", // 아바타 구현 되면 넣어야됨
                                     "isOnline": true,
                                     // "isWinner": true, // (대결모드에만 사용) 실제 게임 종료 후 따로 업데이트
-                                    "progress": 3.0,
+                                    "progress": 0.0,
                                     "status": "waiting"
                                 ],
                                 inviteeUid: [
                                     // "avatar": "끼리꼬",
                                     "isOnline": true,
                                     // "isWinner": true,
-                                    "progress": 3.0,
+                                    "progress": 0.0,
                                     "status": "waiting"
                                 ]
                             ]
@@ -291,6 +292,45 @@ class FirestoreService {
          .disposed(by: disposeBag)
      */
     
+    /// 프로그레스 업데이트 함수
+    func updateMyProgressToFirestore(matchCode: String, uid: String, progress: Double) -> Completable {
+        return Completable.create { completable in
+            let db = Firestore.firestore()
+            db.collection("matches").document(matchCode)
+                .updateData([
+                    "players.\(uid).progress": progress,
+                    "players.\(uid).status": "playing"
+                ]) { error in
+                    if let error = error {
+                        completable(.error(error))
+                    } else {
+                        completable(.completed)
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
+    // 메이트 거리 실시간 리스닝 추가
+    func observeMateProgress(matchCode: String, mateUid: String) -> Observable<Double> {
+        return Observable.create { observer in
+            let listener = Firestore.firestore()
+                .collection("matches").document(matchCode)
+                .addSnapshotListener { snapshot, error in
+                    if let data = snapshot?.data(),
+                       let players = data["players"] as? [String: Any],
+                       let mate = players[mateUid] as? [String: Any],
+                       let progress = mate["progress"] as? Double {
+                        observer.onNext(progress)
+                    }
+                }
+
+            return Disposables.create {
+                listener.remove()
+            }
+        }
+    }
+    
     // MARK: - Delete
     func deleteDocument(collectionName: String, documentName: String) -> Single<Void> {
             return Single.create { single in
@@ -316,4 +356,304 @@ class FirestoreService {
          )
          .disposed(by: disposeBag)
      */
+}
+
+extension FirestoreService {
+    // MARK: - 플랭크
+    func startPlankSession(matchCode: String, isMyTurn: Bool) -> Completable {
+        let now = Timestamp(date: Date())
+        let turn = isMyTurn ? "my" : "mate"
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).setData([
+                "startedAt": now,
+                "turn": turn,
+                "timerStartAt": now,
+                "paused": false,
+                "quittingUid": NSNull(),
+                "status": "inProgress"
+            ], merge: true) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func listenToMatchStatus(matchCode: String) -> Observable<[String: Any]> {
+        return Observable.create { observer in
+            let ref = self.db.collection("matches").document(matchCode)
+            let listener = ref.addSnapshotListener { snapshot, error in
+                guard let data = snapshot?.data() else { return }
+                observer.onNext(data)
+            }
+            return Disposables.create { listener.remove() }
+        }
+    }
+    
+    func updatePlankTurn(matchCode: String, isMyTurn: Bool) -> Completable {
+        let now = Timestamp(date: Date())
+        let turn = isMyTurn ? "my" : "mate"
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "turn": turn,
+                "timerStartAt": now,
+                "paused": false
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func pausePlank(matchCode: String) -> Completable {
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "paused": true
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func resumePlank(matchCode: String) -> Completable {
+        let now = Timestamp(date: Date())
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "paused": false,
+                "timerStartAt": now
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func quitPlank(matchCode: String, uid: String) -> Completable {
+        let now = Timestamp(date: Date())
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "quittingUid": uid,
+                "status": "finished",
+                "finishedAt": now
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func updatePlankProgress(matchCode: String, uid: String, progress: Int) -> Completable {
+        return Completable.create { completable in
+            self.db.collection("matches").document(matchCode).updateData([
+                "players.\(uid).progress": progress
+            ]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}
+
+extension FirestoreService {
+    // 게임 종료 결과 업데이트
+        func updateMatchResult(
+            matchCode: String,
+            myUid: String,
+            mateUid: String,
+            mode: FinishViewModel.Mode,
+            isWinner: Bool,
+            goal: Int,
+            exerciseType: String
+        ) -> Completable {
+            let batch = db.batch()
+
+            // 1. matches/{matchCode} 문서 업데이트
+            let matchRef = db.collection("matches").document(matchCode)
+            var matchData: [String: Any] = [
+                "matchStatus": "finished",
+                "finishedAt": FieldValue.serverTimestamp(),
+                "players.\(myUid).status": "finished",
+                "players.\(mateUid).status": "finished"
+            ]
+            if mode == .battle {
+                matchData["players.\(myUid).isWinner"] = isWinner
+            }
+            batch.updateData(matchData, forDocument: matchRef)
+
+            // 2. users/{myUid} 문서 업데이트
+            let userRef = db.collection("users").document(myUid)
+            var userData: [String: Any] = [:]
+
+            if mode == .battle {
+                userData["winCount"] = FieldValue.increment(Int64(isWinner ? 1 : 0))
+                userData["loseCount"] = FieldValue.increment(Int64(!isWinner ? 1 : 0))
+            }
+
+            userData.merge(makeExerciseStatField(exerciseType: exerciseType, goal: goal)) { _, new in new }
+
+            batch.updateData(userData, forDocument: userRef)
+
+            return Completable.create { completable in
+                batch.commit { error in
+                    if let error = error {
+                        completable(.error(error))
+                    } else {
+                        completable(.completed)
+                    }
+                }
+                return Disposables.create()
+            }
+        }
+
+        // 운동 타입별 누적 필드 반환
+        private func makeExerciseStatField(exerciseType: String, goal: Int) -> [String: Any] {
+            switch exerciseType {
+            case "달리기": return ["totalStats.runningKm": FieldValue.increment(Double(goal))]
+            case "걷기": return ["totalStats.walkingKm": FieldValue.increment(Double(goal))]
+            case "자전거": return ["totalStats.cyclingKm": FieldValue.increment(Double(goal))]
+            case "줄넘기": return ["totalStats.jumpRopeCount": FieldValue.increment(Int64(goal))]
+            case "플랭크": return ["totalStats.plankRounds": FieldValue.increment(Int64(goal))]
+            default: return [:]
+            }
+        }
+}
+
+extension FirestoreService {
+    func saveExerciseRecord(uid: String, record: ExerciseRecord) -> Completable {
+        let db = Firestore.firestore()
+        let ref = db.collection("users").document(uid).collection("records").document() // autoId 생성
+
+        let data: [String: Any] = [
+            "type": record.type.rawValue,
+            "date": record.date,
+            "result": record.result.rawValue,
+            "detail1": record.detail1,
+            "detail2": record.detail2,
+            "detail3": record.detail3
+        ]
+
+        return Completable.create { completable in
+            ref.setData(data) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}
+
+extension FirestoreService {
+    func fetchExerciseRecords(uid: String) -> Single<[ExerciseRecord]> {
+        let ref = db.collection("users").document(uid).collection("records")
+
+        return Single.create { single in
+            ref.getDocuments { snapshot, error in
+                if let error = error {
+                    single(.failure(error))
+                    return
+                }
+
+                guard let documents = snapshot?.documents else {
+                    single(.success([]))
+                    return
+                }
+
+                let records: [ExerciseRecord] = documents.compactMap { doc in
+                    let data = doc.data()
+                    guard let typeString = data["type"] as? String,
+                          let type = ExerciseType(rawValue: typeString),
+                          let date = data["date"] as? String,
+                          let resultString = data["result"] as? String,
+                          let result = ExerciseResult(rawValue: resultString),
+                          let detail1 = data["detail1"] as? String,
+                          let detail2 = data["detail2"] as? String,
+                          let detail3 = data["detail3"] as? String
+                    else {
+                        print("❌ 잘못된 type 값: \(data["type"] ?? "")")
+                        return nil
+                    }
+                    
+                    guard let resultString = data["result"] as? String,
+                          let result = ExerciseResult(rawValue: resultString) else {
+                        print("❌ 잘못된 result 값: \(data["result"] ?? "")")
+                        return nil
+                    }
+
+                    return ExerciseRecord(
+                        type: type,
+                        date: date,
+                        result: result,
+                        detail1: detail1,
+                        detail2: detail2,
+                        detail3: detail3
+                    )
+                }
+
+                single(.success(records))
+            }
+
+            return Disposables.create()
+        }
+    }
+}
+
+
+extension FirestoreService {
+    func fetchTotalStats(uid: String) -> Single<[WorkoutRecord]> {
+        let ref = Firestore.firestore().collection("users").document(uid)
+        
+        return Single.create { single in
+            ref.getDocument { snapshot, error in
+                if let error = error {
+                    single(.failure(error))
+                    return
+                }
+                
+                guard let data = snapshot?.data(),
+                      let stats = data["totalStats"] as? [String: Any] else {
+                    single(.success([])) // 없으면 빈 배열 반환
+                    return
+                }
+                print("📦 totalStats 데이터: \(stats)")
+
+                let records: [WorkoutRecord] = [
+                    WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Int ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Int ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Int ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
+                    WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
+                ]
+                print("✅ WorkoutRecord 생성 완료: \(records)")
+                single(.success(records))
+            }
+            return Disposables.create()
+        }
+    }
 }

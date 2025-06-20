@@ -23,6 +23,7 @@ final class PlankCoopViewModel: ViewModelType {
         let quit: Observable<Void>          // 그만두기(내가)
         let mateQuit: Observable<Void>      // 그만두기(상대방)
     }
+    
     struct Output {
         let status: Driver<PlankStatus>       // 현재 상태(뷰 상태 변경)
         let timerText: Driver<String>       // 타이머 표시
@@ -40,13 +41,24 @@ final class PlankCoopViewModel: ViewModelType {
     private let disposeBag = DisposeBag()
     private var pauseRemainTime: Int?
 
-    
+    var myTime: Int { myTimeRelay.value }
+    var mateTime: Int { mateTimeRelay.value }
+    let myCharacter: String
+    let mateCharacter: String
     let goalMinutes: Int                // 목표 시간(분 단위)
+    private let matchCode: String
+    private let myUID: String
+    private let mateUID: String
     private var isMyTurn = true
     private var timer: Timer?
     
-    init(goalMinutes: Int) {
+    init(goalMinutes: Int , matchCode: String, myUID: String, mateUID: String, myCharacter: String, mateCharacter: String) {
         self.goalMinutes = goalMinutes
+        self.matchCode = matchCode
+        self.myUID = myUID
+        self.mateUID = mateUID
+        self.myCharacter = myCharacter
+        self.mateCharacter = mateCharacter
     }
     
     func transform(input: Input) -> Output {

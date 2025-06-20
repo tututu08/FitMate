@@ -13,21 +13,28 @@ class JumpRopeCoopViewController: BaseViewController {
     private let startRelay = PublishRelay<Void>()
     // 메이트 점프 횟수 수신용(상대방이 firebase에서 온 값으로 갱신할 때 쓸 수도 있음)
     private let mateCountRelay = PublishRelay<Int>()
-    private let myCharacter: String
-    private let mateCharacter: String
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
+    private let myCharacter: String
+    private let mateCharacter: String
+    private let matchCode: String
+    private let mateUid: String
+    private let myUid: String
     
-    init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
+    init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+        self.matchCode = matchCode
+        self.myUid = myUid
+        self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        
         self.viewModel = JumpRopeCoopViewModel(
-               goalCount: goalCount,
-               myCharacter: myCharacter,
-               mateCharacter: mateCharacter
-//               matchID: matchID,
-//               myUID: myUID,
-//               mateUID: mateUID
+            goalCount: goalCount,
+            myCharacter: myCharacter,
+            mateCharacter: mateCharacter,
+            matchCode: matchCode,
+            myUID: mateUid,
+            mateUID: myUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -93,6 +100,29 @@ class JumpRopeCoopViewController: BaseViewController {
                 self?.sportsView.updateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
+        
+        output.didFinish
+                    .emit(onNext: { [weak self] success in
+                        self?.navigateToFinish(success: success)
+                    })
+                    .disposed(by: disposeBag)
+            }
+
+            private func navigateToFinish(success: Bool) {
+                let finishVM = FinishViewModel(
+                    mode: .cooperation,
+                    sport: "줄넘기",
+                    goal: viewModel.goalCount,
+                    goalUnit: "개",
+                    character: myCharacter,
+                    success: success
+                )
+                let vc = FinishViewController(uid: myUid,
+                                              mateUid: mateUid,
+                                              matchCode: matchCode,
+                                              viewModel: finishVM)
+                vc.modalPresentationStyle = .fullScreen
+                present(vc, animated: true)
     }
     func receiveMateQuit()    {
         sportsView.showQuitAlert(

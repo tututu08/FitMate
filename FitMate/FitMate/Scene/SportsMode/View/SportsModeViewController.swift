@@ -71,14 +71,30 @@ class SportsModeViewController: BaseViewController {
         label.textAlignment = .center
         return label
     }()
+    private let descriptionLabelTitle: UILabel = {
+        let label = UILabel()
+        label.text = "운동 설명"
+        label.font = UIFont(name: "pretendard-regular", size: 14)
+        label.textColor = .background500
+        label.textAlignment = .center
+        return label
+    }()
     
     // 운동 설명 라벨
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "pretendard-regular", size: 17)
+        label.font = UIFont(name: "pretendard-regular", size:17)
         label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
+        return label
+    }()
+    private let effectLabelText: UILabel = {
+        let label = UILabel()
+        label.text = "운동 효과"
+        label.font = UIFont(name: "pretendard-regular", size: 14)
+        label.textColor = .background500
+        label.textAlignment = .center
         return label
     }()
     
@@ -89,6 +105,14 @@ class SportsModeViewController: BaseViewController {
         label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
+        return label
+    }()
+    private let caloriesLabelText: UILabel = {
+        let label = UILabel()
+        label.text = "칼로리 소모량"
+        label.font = UIFont(name: "pretendard-regular", size: 14)
+        label.textColor = .background500
+        label.textAlignment = .center
         return label
     }()
     
@@ -169,8 +193,11 @@ class SportsModeViewController: BaseViewController {
         [
             backgroundView,
             titleLabel,
+            descriptionLabelTitle,
             descriptionLabel,
+            effectLabelText,
             effectLabel,
+            caloriesLabelText,
             caloriesLabel,
             cooperationModeButton,
             battleModeButton
@@ -192,26 +219,38 @@ class SportsModeViewController: BaseViewController {
             $0.top.equalTo(backgroundView.snp.bottom).offset(24)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-        descriptionLabel.snp.makeConstraints {
+        descriptionLabelTitle.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(25)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
+        descriptionLabel.snp.makeConstraints {
+            $0.top.equalTo(descriptionLabelTitle.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        effectLabelText.snp.makeConstraints {
+            $0.top.equalTo(descriptionLabel.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
         effectLabel.snp.makeConstraints {
-            $0.top.equalTo(descriptionLabel.snp.bottom).offset(12)
+            $0.top.equalTo(effectLabelText.snp.bottom).offset(10)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        caloriesLabelText.snp.makeConstraints {
+            $0.top.equalTo(effectLabel.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         caloriesLabel.snp.makeConstraints {
-            $0.top.equalTo(effectLabel.snp.bottom).offset(12)
+            $0.top.equalTo(caloriesLabelText.snp.bottom).offset(10)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         cooperationModeButton.snp.makeConstraints {
-            $0.top.equalTo(caloriesLabel.snp.bottom).offset(80)
+            $0.top.equalTo(caloriesLabel.snp.bottom).offset(19)
             $0.leading.equalToSuperview().inset(20)
             $0.width.equalTo(157.5)
             $0.height.equalTo(60)
         }
         battleModeButton.snp.makeConstraints {
-            $0.top.equalTo(caloriesLabel.snp.bottom).offset(80)
+            $0.top.equalTo(caloriesLabel.snp.bottom).offset(19)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo(157.5)
             $0.height.equalTo(60)

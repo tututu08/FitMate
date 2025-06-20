@@ -17,18 +17,24 @@ class JumpRopeBattleViewController: BaseViewController {
     private let mateQuitRelay = PublishRelay<Void>()
     private let myCharacter: String
     private let mateCharacter: String
+    private let matchCode: String
+    private let mateUid: String
+    private let myUid: String
     
-    
-    init(goalCount: Int, myCharacter: String, mateCharacter: String /*matchID: String, myUID: String, mateUID: String*/) {
+    init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+        self.matchCode = matchCode
+        self.myUid = myUid
+        self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        
         self.viewModel = JumpRopeBattleViewModel(
             goalCount: goalCount,
             myCharacter: myCharacter,
-            mateCharacter: mateCharacter
-//               matchID: matchID,
-//               myUID: myUID,
-//               mateUID: mateUID
+            mateCharacter: mateCharacter,
+            matchCode: matchCode,
+            myUID: mateUid,
+            mateUID: myUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -90,6 +96,12 @@ class JumpRopeBattleViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
+        output.didFinish
+                   .emit(onNext: { [weak self] success in
+                       self?.navigateToFinish(success: success)
+                   })
+                   .disposed(by: disposeBag)
+        
         // 내 진행률바(비율)
         output.myProgressView
             .drive(onNext: { [weak self] ratio in
@@ -102,6 +114,20 @@ class JumpRopeBattleViewController: BaseViewController {
                 self?.sportsView.myUpdateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
+    }
+    // 피니쉬화면으로 이동
+    private func navigateToFinish(success: Bool) {
+        let finishVM = FinishViewModel(
+            mode: .battle,
+            sport: "줄넘기",
+            goal: viewModel.goalCount,
+            goalUnit: "개",
+            character: myCharacter,
+            success: success
+        )
+        let vc = FinishViewController(uid: myUid, mateUid: mateUid, matchCode: matchCode, viewModel: finishVM)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     func receiveMateQuit()    {
         sportsView.showQuitAlert(

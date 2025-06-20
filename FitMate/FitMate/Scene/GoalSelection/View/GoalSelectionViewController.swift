@@ -28,10 +28,10 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
     // 숫자만
-    private let selectedGoalValueRelay = BehaviorRelay<String>(value: "")
+    private let selectedGoalValueRelay = BehaviorRelay<Int>(value: 0)
     // 단위만
     private let selectedGoalUnitRelay = BehaviorRelay<String>(value: "")
-
+    
     // 타이틀 라벨: 안내 문구
     private let infoLabel: UILabel = {
         let label = UILabel()
@@ -100,8 +100,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 //guard let self else { return }
                 self.mateUid = data
                 print("메이트 UID 가져오기 성공: \(self.mateUid)")
-            },
-            onFailure: { error in
+            },onFailure: { error in
                 print("문서 가져오기 실패: \(error.localizedDescription)")
             }).disposed(by: disposeBag)
     }
@@ -120,8 +119,14 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         // ViewModel에서 전달받은 pickerItems를 구독하여 pickerData에 반영
         output.pickerItems
             .drive(onNext: { [weak self] data in
-                self?.pickerData = data
-                self?.pickerView.reloadAllComponents()
+                guard let self else { return }
+                self.pickerData = data
+                self.pickerView.reloadAllComponents()
+                // 초기 로드 시 첫 번째 항목을 선택 상태로 설정
+                if let first = data.first {
+                    self.pickerView.selectRow(0, inComponent: 0, animated: false)
+                    self.updateGoalSelection(with: first)
+                }
             })
             .disposed(by: disposeBag)
         
@@ -131,42 +136,31 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 guard let self = self else { return }
                 
                 // 저장(종목 타이틀, 목표치)
-//                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
-//                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
-                
+                //                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
+                //                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
+                if self.selectedGoalValueRelay.value == 0,
+                   self.pickerData.indices.contains(self.pickerView.selectedRow(inComponent: 0)) {
+                    let text = self.pickerData[self.pickerView.selectedRow(inComponent: 0)]
+                    self.updateGoalSelection(with: text)
+                }
                 // MARK: Firestore 데이터 저장
                 // "matches" 컬렉션 및 "matchID" 문서 생성
                 FirestoreService.shared.createMatchDocument(
                     inviterUid: self.uid,
                     inviteeUid: self.mateUid,
                     exerciseType: self.selectedTitleRelay.value,
-                    goalValue: self.selectedGoalRelay.value,
+                    goalValue: self.selectedGoalValueRelay.value,
+                    goalUnit: self.selectedGoalUnitRelay.value,
                     mode: self.selectedModeRelay.value.asString
                 )
                 .subscribe(
                     onSuccess: { matchCode in
                         print("Match 생성 성공 \(matchCode)")
                         // 로딩 화면으로 이동
-                        self.navigationController?.pushViewController(LoadingViewController(matchCode: matchCode), animated: true)
+                        self.navigationController?.pushViewController(LoadingViewController(uid: self.uid, matchCode: matchCode), animated: true)
                     },
                     onFailure: { error in print("실패: \(error)") }
                 ).disposed(by: disposeBag)
-                
-                // MARK: Firestore 데이터 저장
-                // "matches" 컬렉션 및 "matchID" 문서 생성
-                FirestoreService.shared.createMatchDocument(
-                    inviterUid: self.uid,
-                    inviteeUid: self.mateUid,
-                    exerciseType: self.selectedTitleRelay.value,
-                    goalValue: self.selectedGoalRelay.value,
-                    mode: self.selectedModeRelay.value.asString
-                )
-                .subscribe(
-                    onSuccess: { success in print("Match 생성 성공") },
-                    onFailure: { error in print("실패: \(error)") }
-                ).disposed(by: disposeBag)
-                
-
             })
             .disposed(by: disposeBag)
     }
@@ -207,15 +201,13 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         
         pickerView.snp.makeConstraints {
             $0.top.equalTo(subInfoLabel.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview()
-            $0.width.equalTo(311)
+            $0.leading.trailing.equalToSuperview().inset(10)
             $0.height.equalTo(380)
         }
         
         goalSettingButton.snp.makeConstraints {
             $0.top.equalTo(pickerView.snp.bottom).offset(33)
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(335)
+            $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(60)
         }
     }
@@ -266,13 +258,15 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     // Picker의 항목을 선택했을 때 호출
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selected = pickerData[row]
-        selectedGoalRelay.accept(selected)
-        
-        let (value, unit) = splitValueAndUnit(from: selected)
-        selectedGoalValueRelay.accept(value)
-        selectedGoalUnitRelay.accept(unit)
-        
+        updateGoalSelection(with: selected)
         pickerView.reloadAllComponents()
+    }
+    private func updateGoalSelection(with text: String) {
+        selectedGoalRelay.accept(text)
+        let (value, unit) = splitValueAndUnit(from: text)
+        guard let intValue = Int(value) else { return }
+        selectedGoalValueRelay.accept(intValue)
+        selectedGoalUnitRelay.accept(unit)
     }
     
     // 각 행의 높이 설정

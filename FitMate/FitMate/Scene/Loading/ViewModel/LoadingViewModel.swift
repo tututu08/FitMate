@@ -15,17 +15,29 @@ class LoadingViewModel {
     private let disposeBag = DisposeBag()
     private let matchCode: String
     
-    init(matchCode: String) {
+    init(matchCode: String, myUid: String) {
         self.matchCode = matchCode
         print("matchCode : \(matchCode)")
+        
+        MatchEventService.shared.updateMyStatus(
+            matchCode: matchCode,
+            myUid: myUid,
+            status: "accepted"
+        )
+        
+        // Firestore에 나의 준비 상태 표시
+        MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUid)
+
         bindMatchStatus()
     }
     
     private func bindMatchStatus() {
         MatchEventService.shared.listenMatchStatus(matchCode: matchCode)
+        
         MatchEventService.shared.matchStatusRelay
-            .filter { $0.matchCode == self.matchCode }
-            .map { $0.status }
+            .map { $0[self.matchCode] ?? "" }
+            .distinctUntilChanged()
+            .filter { $0 == "started" }
             .do(onNext: { status in
                 print("ViewModel: matchStatusRelay에서 \(status) 받음")
             })

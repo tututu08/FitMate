@@ -73,6 +73,11 @@ class MateCodeViewModel {
                               let inviterNickname = inviterData["nickname"] as? String else {
                             return .just((.requestFailed("올바르지 않은 사용자 정보입니다"), nil))
                         }
+                        
+                        // 자신의 초대코드를 입력한 경우 → 에러 처리
+                        if inviterUid == self.uid {
+                            return .just((.requestFailed("자신의 초대 코드는 입력할 수 없습니다."), nil))
+                        }
 
                         // 해당 사용자의 문서에 초대 상태, 보낸 사람 UID 업데이트
                         let fields: [String: Any] = [

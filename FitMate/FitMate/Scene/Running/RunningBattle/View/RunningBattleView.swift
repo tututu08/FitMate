@@ -12,7 +12,7 @@ import SnapKit
 final class RunningBattleView: BaseView {
 
     // 실제 메인 UI 뷰
-    private let sportsView = BattleSportsView()
+    let sportsView = BattleSportsView()
     var quitAlertView: QuitAlert?
     var stopButton: UIButton {
         return sportsView.stopButton

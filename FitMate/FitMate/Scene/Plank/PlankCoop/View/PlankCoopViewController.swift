@@ -16,10 +16,28 @@ final class PlankCoopViewController: BaseViewController {
     private let matePauseRelay = PublishRelay<Void>()
     private let mateResumeRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
+    private let myCharacter: String
+    private let mateCharacter: String
+    private let matchCode: String
+    private let mateUID: String
+    private let myUID: String
     
     // 초기화 (목표 분 단위)
-    init(goalMinutes: Int) {
-        self.viewModel = PlankCoopViewModel(goalMinutes: goalMinutes)
+    init(goalMinutes: Int, matchCode: String, myUID: String, mateUID: String,  myCharacter: String, mateCharacter: String) {
+        self.matchCode = matchCode
+        self.myUID = myUID
+        self.mateUID = mateUID
+        self.myCharacter = myCharacter
+        self.mateCharacter = mateCharacter
+        
+        self.viewModel = PlankCoopViewModel(
+            goalMinutes: goalMinutes,
+            matchCode: myCharacter,
+            myUID: mateCharacter,
+            mateUID: matchCode,
+            myCharacter: myUID,
+            mateCharacter: mateCharacter
+        )
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) { fatalError("not implemented") }
@@ -31,6 +49,9 @@ final class PlankCoopViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         sportsView.updateGoal("플랭크 \(viewModel.goalMinutes)분") // 또는 회, 개, whatever
+        sportsView.updateMyCharacter(myCharacter)
+        sportsView.updateMateCharacter(mateCharacter)
+        
         bind()
         startRelay.accept(())
         // 버튼 Rx 바인딩
@@ -52,7 +73,35 @@ final class PlankCoopViewController: BaseViewController {
                 )
             }
             .disposed(by: disposeBag)
+        
+        MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUID)
+        listenStartTime()
+        
     }
+    
+    private func listenStartTime() {
+            MatchEventService.shared.listenStartTime(matchCode: matchCode)
+                .observe(on: MainScheduler.instance)
+                .subscribe(onNext: { [weak self] startTime in
+                    guard let self = self else { return }
+                    let delay = startTime.timeIntervalSinceNow
+                    print("운동 시작까지 \(delay)초 대기")
+
+                    if delay > 0 {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            self.startWorkout()
+                        }
+                    } else {
+                        self.startWorkout()
+                    }
+                })
+                .disposed(by: disposeBag)
+        }
+
+        private func startWorkout() {
+            print("운동 시작!")
+            // 운동 타이머 시작, UI 업데이트 등
+        }
     
     private func bind() {
         let input = PlankCoopViewModel.Input(
@@ -140,20 +189,26 @@ final class PlankCoopViewController: BaseViewController {
         
         output.didFinish
             .emit(with: self) { owner, success in
-                if success {
-                    let finishVC = FinishViewController()
-                    finishVC.modalPresentationStyle = .fullScreen
-                    owner.present(finishVC, animated: true)
-                } else {
-                    // 실패/중도포기 시 임시로 뷰 이동 처리.
-                    let finishVC = FinishViewController()
-                    finishVC.modalPresentationStyle = .fullScreen
-                    owner.present(finishVC, animated: true)
-                }
+                owner.navigateToFinish(success: success)
             }
             .disposed(by: disposeBag)
     }
-    
+    private func navigateToFinish(success: Bool) {
+        let finishVM = FinishViewModel(
+            mode: .cooperation,
+            sport: "플랭크",
+            goal: viewModel.goalMinutes,
+            goalUnit: "분",
+            character: myCharacter,
+            success: success
+        )
+        let vc = FinishViewController(uid: myUID,
+                                      mateUid: mateUID,
+                                      matchCode: matchCode,
+                                      viewModel: finishVM)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
+    }
     // 외부(네트워크 등)에서 상대방 이벤트 수신 시 호출
     func receiveMatePaused() { matePauseRelay.accept(()) }
     func receiveMateResumed() { mateResumeRelay.accept(()) }
