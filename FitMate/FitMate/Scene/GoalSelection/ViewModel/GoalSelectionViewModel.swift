@@ -16,7 +16,7 @@ class GoalSelectionViewModel: ViewModelType {
     }
     
     // 선택된 운동 제목을 저장하는 BehaviorRelay (초기값은 빈 문자열)
-    private let selectedGoalTitleRelay = BehaviorRelay<String>(value: "")
+    let selectedGoalTitleRelay = BehaviorRelay<String>(value: "")
     // 선택된 운동 모드를 저장
     private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
     
