@@ -35,16 +35,20 @@ class MainViewController: BaseViewController {
     
     override func loadView() {
         self.view = mainView
-        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
-            .subscribe(onSuccess: { [weak self] data in
-                guard let self else { return }
-                
-                if let myNickname = data["nickname"] as? String,
-                   let mate = data["mate"] as? [String: Any],
-                   let mateNickname = mate["nickname"] as? String {
-                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
-                }
-            }).disposed(by: disposeBag)
+        //mainView.alpha = 0
+//        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
+//            .subscribe(onSuccess: { [weak self] data in
+//                guard let self else { return }
+//                
+//                if let myNickname = data["nickname"] as? String,
+//                   let mate = data["mate"] as? [String: Any],
+//                   let mateNickname = mate["nickname"] as? String {
+//                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
+////                    UIView.animate(withDuration: 0.2) {
+////                        self.mainView.alpha = 1
+////                    }
+//                }
+//            }).disposed(by: disposeBag)
         
         navigationItem.backButtonTitle = ""
     }
@@ -53,11 +57,42 @@ class MainViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        fetchMateStatusAndUpdateUI()
     }
+    
     // 네비게이션 영역 다시 보여줌
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    private func fetchMateStatusAndUpdateUI() {
+        mainView.alpha = 0
+        
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
+            .subscribe(onSuccess: { [weak self] data in
+                guard let self else { return }
+
+                let hasMate = data["hasMate"] as? Bool ?? false
+                let myNickname = data["nickname"] as? String ?? "나"
+
+                if hasMate,
+                   let mate = data["mate"] as? [String: Any],
+                   let mateNickname = mate["nickname"] as? String {
+                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
+                    UIView.animate(withDuration: 0.2) {
+                        self.mainView.alpha = 1
+                    }
+                } else {
+                    self.mainView.changeAvatarLayout(hasMate: false, myNickname: myNickname, mateNickname: "")
+                    UIView.animate(withDuration: 0.2) {
+                        self.mainView.alpha = 1
+                    }
+                }
+            }, onFailure: { error in
+                print("메이트 상태 조회 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
     
     override func bindViewModel() {
