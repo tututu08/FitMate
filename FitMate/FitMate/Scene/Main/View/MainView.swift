@@ -14,27 +14,27 @@ class MainView: BaseView {
         return view
     }()
 
-    let coinLabel: UILabel = {
-        let coin = UILabel()
-        coin.text = "100"
-        coin.font = UIFont(name: "DungGeunMo", size: 26)
-        coin.textColor = .secondary400
-        return coin
-    }()
-    
-    let coinIcon: UIImageView = {
-        let coinImg = UIImageView()
-        coinImg.image = UIImage(named: "coin")
-        coinImg.contentMode = .scaleAspectFit
-        coinImg.clipsToBounds = true
-        return coinImg
-    }()
-    
-    let bellButton: UIButton = {
-        let bell = UIButton()
-        bell.setImage(UIImage(named: "bell"), for: .normal)
-        return bell
-    }()
+//    let coinLabel: UILabel = {
+//        let coin = UILabel()
+//        coin.text = "100"
+//        coin.font = UIFont(name: "DungGeunMo", size: 26)
+//        coin.textColor = .secondary400
+//        return coin
+//    }()
+//    
+//    let coinIcon: UIImageView = {
+//        let coinImg = UIImageView()
+//        coinImg.image = UIImage(named: "coin")
+//        coinImg.contentMode = .scaleAspectFit
+//        coinImg.clipsToBounds = true
+//        return coinImg
+//    }()
+//    
+//    let bellButton: UIButton = {
+//        let bell = UIButton()
+//        bell.setImage(UIImage(named: "bell"), for: .normal)
+//        return bell
+//    }()
     
     let explainLabel: UILabel = {
         let explain = UILabel()
@@ -104,8 +104,7 @@ class MainView: BaseView {
             [topBar, explainLabel, dDaysLabel, myAvatarImage,
              mateAvatarImage, exerciseButton,
              myNicknameStack, mateNicknameStack].forEach { addSubview($0) }
-
-            [coinLabel, coinIcon, bellButton].forEach { topBar.addSubview($0) }
+//        [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
     }
     
     override func setLayoutUI() {
@@ -116,25 +115,25 @@ class MainView: BaseView {
             make.height.equalTo(56)
         }
         
-        coinIcon.snp.makeConstraints { make in
-            make.centerY.equalTo(topBar)
-            make.leading.equalToSuperview().inset(20)
-            make.size.equalTo(23)
-        }
-        
-        coinLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(topBar)
-            make.leading.equalTo(coinIcon.snp.trailing).offset(8)
-        }
-        
-        bellButton.snp.makeConstraints{ make in
-            make.centerY.equalTo(topBar)
-            make.trailing.equalToSuperview().inset(20)
-            make.size.equalTo(28)
-        }
+//        coinIcon.snp.makeConstraints { make in
+//            make.centerY.equalTo(topBar)
+//            make.leading.equalToSuperview().inset(20)
+//            make.size.equalTo(23)
+//        }
+//        
+//        coinLabel.snp.makeConstraints { make in
+//            make.centerY.equalTo(topBar)
+//            make.leading.equalTo(coinIcon.snp.trailing).offset(8)
+//        }
+//        
+//        bellButton.snp.makeConstraints{ make in
+//            make.centerY.equalTo(topBar)
+//            make.trailing.equalToSuperview().inset(20)
+//            make.size.equalTo(28)
+//        }
         
         explainLabel.snp.makeConstraints { make in
-            make.top.equalTo(coinLabel.snp.bottom).offset(18)
+            make.top.equalTo(topBar.snp.bottom).offset(18)
             make.leading.equalToSuperview().inset(28)
         }
         
