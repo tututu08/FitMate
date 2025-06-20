@@ -477,3 +477,35 @@ extension FirestoreService {
         }
     }
 }
+extension FirestoreService {
+    func fetchTotalStats(uid: String) -> Single<[WorkoutRecord]> {
+        let ref = Firestore.firestore().collection("users").document(uid)
+        
+        return Single.create { single in
+            ref.getDocument { snapshot, error in
+                if let error = error {
+                    single(.failure(error))
+                    return
+                }
+                
+                guard let data = snapshot?.data(),
+                      let stats = data["totalStats"] as? [String: Any] else {
+                    single(.success([])) // 없으면 빈 배열 반환
+                    return
+                }
+                print("📦 totalStats 데이터: \(stats)")
+
+                let records: [WorkoutRecord] = [
+                    WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Int ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Int ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Int ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
+                    WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
+                ]
+                print("✅ WorkoutRecord 생성 완료: \(records)")
+                single(.success(records))
+            }
+            return Disposables.create()
+        }
+    }
+}
