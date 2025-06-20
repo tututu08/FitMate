@@ -13,6 +13,17 @@ final class SettingViewController: UIViewController {
     private var withdrawPopupView: WithdrawPopupView?
     private var mateEndPopupView: MateEndPopupView?
 
+    private let uid: String
+    
+    init(uid: String) {
+        self.uid = uid
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func loadView() {
         self.view = container
     }
@@ -50,7 +61,19 @@ final class SettingViewController: UIViewController {
 
         output.partnerEvent
             .emit(onNext: { [weak self] in
-                self?.showMateEndPopup()
+                guard let self else { return }
+                
+                FirestoreService.shared.deleteMate(myUid: self.uid)
+                    .subscribe(
+                        onSuccess: {
+                            print("메이트 삭제 성공")
+                        },
+                        onFailure: {error in
+                            print("메이트 삭제 실패: \(error.localizedDescription)")
+                        }
+                    ).disposed(by: self.disposeBag)
+                
+                self.showMateEndPopup()
             })
             .disposed(by: disposeBag)
 
@@ -105,8 +128,10 @@ final class SettingViewController: UIViewController {
             .disposed(by: disposeBag)
 
         popup.confirmButton.rx.tap
-            .bind {
+            .bind { [weak self] in
                 print("메이트 종료") //메이트연결부분
+                self?.mateEndPopupView?.removeFromSuperview()
+                self?.settingView.isHidden = false
             }
             .disposed(by: disposeBag)
     }

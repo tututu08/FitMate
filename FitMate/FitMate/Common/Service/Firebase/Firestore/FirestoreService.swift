@@ -292,6 +292,25 @@ class FirestoreService {
          .disposed(by: disposeBag)
      */
     
+    /// 메이트 삭제 메서드
+    func deleteMate(myUid: String) -> Single<Void> {
+        return Single.create { single in
+            self.db.collection("users").document(myUid).updateData([
+                "mate": FieldValue.delete(),
+                "hasMate": false,
+                "inviteStatus": FieldValue.delete(),
+                "updatedAt": FieldValue.serverTimestamp()
+            ]) { error in
+                if let error = error {
+                    single(.failure(error))
+                } else {
+                    single(.success(()))
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
     /// 프로그레스 업데이트 함수
     func updateMyProgressToFirestore(matchCode: String, uid: String, progress: Double) -> Completable {
         return Completable.create { completable in
