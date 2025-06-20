@@ -1,3 +1,5 @@
+// MypageView.swift
+
 import UIKit
 import SnapKit
 
@@ -209,11 +211,11 @@ final class MypageView: UIView {
             $0.leading.equalToSuperview().offset(20)
         }
 
-//        recordCollectionView.snp.makeConstraints {
-//            $0.top.equalTo(levelTitle.snp.bottom).offset(8)
-//            $0.leading.trailing.equalToSuperview()
-//            $0.height.equalTo(700)
-//        }
+        recordCollectionView.snp.makeConstraints {
+            $0.top.equalTo(levelTitle.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(700)
+        }
         
         contentLabel.snp.makeConstraints { make in
             make.top.equalTo(levelTitle.snp.bottom).offset(100)

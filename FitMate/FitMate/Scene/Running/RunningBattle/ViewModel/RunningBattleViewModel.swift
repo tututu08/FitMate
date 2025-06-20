@@ -10,7 +10,7 @@ final class RunningBattleViewModel: ViewModelType {
     
     private var totalDistance: CLLocationDistance = 0
     private var previousLocation: CLLocation?
-    private let didFinishRelay = PublishRelay<Bool>()
+    private let didFinishRelay = PublishRelay<(Bool, Double)>()
     // 내 누적 거리 (m)
     private let myDistanceRelay = BehaviorRelay<Double>(value: 0)
     // 메이트 누적 거리 (m)
@@ -48,7 +48,7 @@ final class RunningBattleViewModel: ViewModelType {
         let mateDistanceText: Driver<String>
         let myProgress: Driver<CGFloat>
         let mateProgress: Driver<CGFloat>
-        let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
+        let didFinish: Signal<(Bool, Double)>        // 종료 알림(성공/실패)
     }
     
     func transform(input: Input) -> Output {
@@ -122,14 +122,15 @@ final class RunningBattleViewModel: ViewModelType {
             }
             .asDriver(onErrorJustReturn: 0)
         
-        let didFinish = didFinishRelay
-            .asSignal(onErrorJustReturn: false)
+//        let didFinish = didFinishRelay
+//            .asSignal(onErrorJustReturn: false)
+        
         return Output(
             myDistanceText: myDistanceText,
             mateDistanceText: mateDistanceText,
             myProgress: myProgress,
             mateProgress: mateProgress,
-            didFinish: didFinish
+            didFinish: didFinishRelay.asSignal(onErrorJustReturn: (false, 0.0))
         )
     }
     
@@ -171,7 +172,7 @@ final class RunningBattleViewModel: ViewModelType {
     
     func finish(success: Bool) {
         locationManager.stopUpdatingLocation()
-        didFinishRelay.accept(success)
+        didFinishRelay.accept((success,  Double(myDistance)))
     }
     
     deinit {

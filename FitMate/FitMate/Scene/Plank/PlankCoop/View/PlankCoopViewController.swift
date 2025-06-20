@@ -74,7 +74,7 @@ final class PlankCoopViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
-        MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUid)
+        MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUID)
         listenStartTime()
         
     }
@@ -202,7 +202,10 @@ final class PlankCoopViewController: BaseViewController {
             character: myCharacter,
             success: success
         )
-        let vc = FinishViewController(uid: myUID, viewModel: finishVM)
+        let vc = FinishViewController(uid: myUID,
+                                      mateUid: mateUID,
+                                      matchCode: matchCode,
+                                      viewModel: finishVM)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }

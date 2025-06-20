@@ -19,6 +19,12 @@ class LoadingViewModel {
         self.matchCode = matchCode
         print("matchCode : \(matchCode)")
         
+        MatchEventService.shared.updateMyStatus(
+            matchCode: matchCode,
+            myUid: myUid,
+            status: "accepted"
+        )
+        
         // Firestore에 나의 준비 상태 표시
         MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUid)
 
@@ -31,7 +37,7 @@ class LoadingViewModel {
         MatchEventService.shared.matchStatusRelay
             .map { $0[self.matchCode] ?? "" }
             .distinctUntilChanged()
-            .filter { !$0.isEmpty }
+            .filter { $0 == "started" }
             .do(onNext: { status in
                 print("ViewModel: matchStatusRelay에서 \(status) 받음")
             })

@@ -111,25 +111,31 @@ class RunningBattleViewController: BaseViewController {
                 self?.rootView.mateUpdateProgress(ratio: progress)
             })
             .disposed(by: disposeBag)
+        
         output.didFinish
-                   .emit(onNext: { [weak self] success in
-                       self?.navigateToFinish(success: success)
-                   })
-                   .disposed(by: disposeBag)
-           }
-
-           private func navigateToFinish(success: Bool) {
-               let finishVM = FinishViewModel(
-                   mode: .battle,
-                   sport: "달리기",
-                   goal: viewModel.goalDistance,
-                   goalUnit: "Km",
-                   character: myCharacter,
-                   success: success
-               )
-               let vc = FinishViewController(uid: myUid, viewModel: finishVM)
-               vc.modalPresentationStyle = .fullScreen
-               present(vc, animated: true)
+            .emit(onNext: { [weak self] (success, myDistance) in
+                self?.navigateToFinish(success: success, distance: myDistance)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func navigateToFinish(success: Bool, distance: Double) {
+        let finishVM = FinishViewModel(
+            mode: .battle,
+            sport: "달리기",
+            goal: Int(distance),
+            goalUnit: "Km",
+            character: myCharacter,
+            success: success
+        )
+        let vc = FinishViewController(
+            uid: myUid,
+            mateUid: mateUid,
+            matchCode: matchCode,
+            viewModel: finishVM
+        )
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     
     func receiveMateQuit()    {

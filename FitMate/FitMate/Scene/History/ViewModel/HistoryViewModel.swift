@@ -42,15 +42,29 @@ final class HistoryViewModel {
         return Output(filteredRecords: filtered)
     }
 
-    func loadMockData() {
-        let dummy: [ExerciseRecord] = [
-            .init(type: .walk, date: "0000.00.00", result: .versusLose, detail1: "0", detail2: "0", detail3: "0"),
-            .init(type: .jumprope, date: "0000.00.00", result: .versusWin, detail1: "0", detail2: "0", detail3: "0"),
-            .init(type: .bicycle, date: "0000.00.00", result: .versusLose, detail1: "0", detail2: "0", detail3: "0"),
-            .init(type: .run, date: "0000.00.00", result: .versusWin, detail1: "0", detail2: "0", detail3: "0"),
-            .init(type: .plank, date: "0000.00.00", result: .teamSuccess, detail1: "0", detail2: "0", detail3: "")
-        ]
-        recordsRelay.accept(dummy)
+//    func loadMockData() {
+//        let dummy: [ExerciseRecord] = [
+//            .init(type: .walk, date: "0000.00.00", result: .versusLose, detail1: "0", detail2: "0", detail3: "0"),
+//            .init(type: .jumprope, date: "0000.00.00", result: .versusWin, detail1: "0", detail2: "0", detail3: "0"),
+//            .init(type: .bicycle, date: "0000.00.00", result: .versusLose, detail1: "0", detail2: "0", detail3: "0"),
+//            .init(type: .run, date: "0000.00.00", result: .versusWin, detail1: "0", detail2: "0", detail3: "0"),
+//            .init(type: .plank, date: "0000.00.00", result: .teamSuccess, detail1: "0", detail2: "0", detail3: "")
+//        ]
+//        recordsRelay.accept(dummy)
+//    }
+    
+    func loadRemoteData(uid: String) {
+        FirestoreService.shared.fetchExerciseRecords(uid: uid)
+            .subscribe(onSuccess: { [weak self] records in
+                print("🔥 불러온 기록 개수: \(records.count)")
+                for record in records {
+                    print("📌 기록: \(record)")
+                }
+                self?.recordsRelay.accept(records)
+            }, onFailure: { error in
+                print("❌ 기록 로드 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
 
     private let disposeBag = DisposeBag()

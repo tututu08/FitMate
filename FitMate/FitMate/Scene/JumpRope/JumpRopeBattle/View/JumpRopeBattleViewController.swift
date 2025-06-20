@@ -125,7 +125,7 @@ class JumpRopeBattleViewController: BaseViewController {
             character: myCharacter,
             success: success
         )
-        let vc = FinishViewController(uid: myUid, viewModel: finishVM)
+        let vc = FinishViewController(uid: myUid, mateUid: mateUid, matchCode: matchCode, viewModel: finishVM)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }

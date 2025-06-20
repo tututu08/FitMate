@@ -42,7 +42,7 @@ class BattleSportsView: BaseView {
         return label
     }()
     
-    private let myRecordLabel: UILabel = {
+    let myRecordLabel: UILabel = {
         let label = UILabel()
         label.text = "나의기록"
         label.textColor = .gray

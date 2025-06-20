@@ -37,7 +37,8 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
         rootView.recordCollectionView.dataSource = self
         rootView.categoryCollectionView.delegate = self
 
-        viewModel.loadMockData()
+        //viewModel.loadMockData()
+        viewModel.loadRemoteData(uid: uid)
         bindViewModel()
 
         let initialIndexPath = IndexPath(item: 0, section: 0)
@@ -65,8 +66,11 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
         let output = viewModel.transform(input: input)
 
         output.filteredRecords
-            .drive(onNext: { [weak self] _ in
+            .drive(onNext: { [weak self] records in
+                print("✅ ViewController: reload 호출됨, \(records.count)건")
                 self?.rootView.recordCollectionView.reloadData()
+                // ✅ 내용 유무에 따라 "기록이 없습니다" 문구 숨김 처리
+                self?.rootView.contentLabel.isHidden = !records.isEmpty
             })
             .disposed(by: disposeBag)
     }

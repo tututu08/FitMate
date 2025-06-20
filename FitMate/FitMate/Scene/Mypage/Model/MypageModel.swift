@@ -1,4 +1,4 @@
-
+// MypageModel.swift
 import Foundation
 
 struct WorkoutRecord {
