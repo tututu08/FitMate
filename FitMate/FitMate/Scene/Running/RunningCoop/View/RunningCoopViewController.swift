@@ -122,22 +122,29 @@ final class RunningCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.didFinish
-            .emit(onNext: { [weak self] success in
-                self?.navigateToFinish(success: success)
+            .emit(onNext: { [weak self] (success, myDistance) in
+                self?.navigateToFinish(success: success, distance: myDistance)
             })
             .disposed(by: disposeBag)
     }
 
-    private func navigateToFinish(success: Bool) {
+    private func navigateToFinish(success: Bool, distance: Double) {
         let finishVM = FinishViewModel(
             mode: .cooperation,
             sport: "달리기",
-            goal: runningCoopViewModel.goalDistance,
+            goal: Int(distance),
             goalUnit: "Km",
             character: myCharacter,
             success: success
         )
-        let vc = FinishViewController(uid: myUid, viewModel: finishVM)
+        let vc = FinishViewController(
+            uid: myUid,
+                                      
+            mateUid: mateUid,
+                                      
+            matchCode: matchCode,
+                                      
+            viewModel: finishVM)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }

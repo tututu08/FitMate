@@ -78,12 +78,19 @@ final class MatchEventService {
                 // 1. matchStatus 받아서 matchStatusRelay 업데이트
                 if let status = data["matchStatus"] as? String {
                     print("Firestore에서 matchStatus 변화 감지: \(status)")
-                    
+
                     if self.lastSentStatus[matchCode] != status {
                         self.lastSentStatus[matchCode] = status
                         var current = self.matchStatusRelay.value
                         current[matchCode] = status
                         self.matchStatusRelay.accept(current)
+
+                        if status == "started" {
+                            print("matchStatus == started → 리스너 제거 예약")
+                            DispatchQueue.main.async {
+                                self.stopListening()
+                            }
+                        }
                     } else {
                         print("중복 상태(\(status)) 무시")
                     }
@@ -92,10 +99,10 @@ final class MatchEventService {
                 // 2. players 안에 모두 isReady == true 인지 확인
                 if let players = data["players"] as? [String: [String: Any]],
                    let status = data["matchStatus"] as? String,
-                   status != "started" {
-                    
+                   ["waiting", "accepted"].contains(status)  // ✅ 수정
+                {
                     let allReady = players.values.allSatisfy { $0["isReady"] as? Bool == true }
-                    
+
                     if allReady {
                         print("양쪽 모두 준비 완료! matchStatus → started 로 업데이트")
                         db.collection("matches").document(matchCode).updateData([
@@ -125,6 +132,19 @@ final class MatchEventService {
         db.collection("matches").document(matchCode).updateData([
             "players.\(myUid).isReady": true
         ])
+    }
+    
+    func updateMyStatus(matchCode: String, myUid: String, status: String) {
+        let db = Firestore.firestore()
+        db.collection("matches").document(matchCode).updateData([
+            "players.\(myUid).status": status
+        ]) { error in
+            if let error = error {
+                print("🔥 상태 업데이트 실패: \(error.localizedDescription)")
+            } else {
+                print("✅ \(myUid)의 상태를 \(status)로 업데이트 완료")
+            }
+        }
     }
     
     func listenStartTime(matchCode: String) -> Observable<Date> {
