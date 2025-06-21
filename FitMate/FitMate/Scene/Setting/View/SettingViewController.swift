@@ -96,24 +96,92 @@ final class SettingViewController: UIViewController {
             .disposed(by: disposeBag)
 
         popup.confirmButton.rx.tap
-            .bind {[weak self] in
-                guard let self = self else { return }
-                guard let presentingVC = self.presentingViewController else { return }
+            .flatMapLatest { [weak self] _ -> Observable<Void> in
+                guard let self else { return .empty() }
 
-                AuthService.shared.deleteAccount()
-                    .subscribe(onSuccess: {
-                        self.dismiss(animated: true) {
-                            let loginVC = LoginViewController()
-                            let nav = UINavigationController(rootViewController: loginVC)
-                            nav.modalPresentationStyle = .fullScreen
-                            presentingVC.present(nav, animated: true)
-                        }
-                    }, onFailure: { error in
-                        print("회원 탈퇴 실패: \(error)")
+                print("🔵 [1] 탈퇴 프로세스 시작 - UID: \(self.uid)")
+
+                // 1. 메이트 UID 확인 후 있을 경우만 disconnect
+                let disconnectObservable = FirestoreService.shared.findMateUid(uid: self.uid)
+                    .do(onSuccess: { mateUid in
+                        print("🟢 [1-1] findMateUid 완료 → mateUid: \(mateUid)")
+                    }, onError: { error in
+                        print("🔴 [1-1] findMateUid 실패: \(error.localizedDescription)")
                     })
-                    .disposed(by: self.disposeBag)
+                    .flatMap { mateUid -> Single<Void> in
+                        if mateUid.isEmpty {
+                            print("🟡 [1-2] 메이트 없음 → 연결 끊기 생략")
+                            return .just(())
+                        } else {
+                            print("🟢 [1-2] 메이트 있음 → 연결 끊기 시도 for \(mateUid)")
+                            return FirestoreService.shared.disconnectMate(forUid: self.uid, mateUid: mateUid, reason: .byWithdrawal)
+                                .do(onSuccess: {
+                                    print("🟢 [1-3] disconnectMate 성공")
+                                }, onError: { error in
+                                    print("🔴 [1-3] disconnectMate 실패: \(error.localizedDescription)")
+                                })
+                        }
+                    }
+                    .asObservable()
+
+                // 2. 계정 삭제
+                let deleteAccountObservable = AuthService.shared.deleteAccount()
+                    .do(onSuccess: {
+                        print("🟢 [2] Firebase 계정 삭제 성공")
+                    }, onError: { error in
+                        print("🔴 [2] Firebase 계정 삭제 실패: \(error.localizedDescription)")
+                    })
+                    .asObservable()
+
+                // 3. Firestore 문서 삭제
+                let deleteUserDocObservable = FirestoreService.shared
+                    .deleteDocument(collectionName: "users", documentName: self.uid)
+                    .do(onSuccess: {
+                        print("🟢 [3] Firestore 문서 삭제 성공")
+                    }, onError: { error in
+                        print("🔴 [3] Firestore 문서 삭제 실패: \(error.localizedDescription)")
+                    })
+                    .asObservable()
+
+                // 순차 실행
+                return disconnectObservable
+                    .flatMap { deleteAccountObservable }
+                    .flatMap { deleteUserDocObservable }
             }
+            .subscribe(onNext: { [weak self] in
+                guard let self, let presentingVC = self.presentingViewController else { return }
+
+                print("✅ [4] 탈퇴 프로세스 전체 완료 → 로그인 화면 이동")
+
+                self.dismiss(animated: true) {
+                    let loginVC = LoginViewController()
+                    let nav = UINavigationController(rootViewController: loginVC)
+                    nav.modalPresentationStyle = .fullScreen
+                    presentingVC.present(nav, animated: true)
+                }
+            }, onError: { error in
+                print("❌ [에러] 회원 탈퇴 전체 실패: \(error.localizedDescription)")
+            })
             .disposed(by: disposeBag)
+//        popup.confirmButton.rx.tap
+//            .bind {[weak self] in
+//                guard let self = self else { return }
+//                guard let presentingVC = self.presentingViewController else { return }
+//
+//                AuthService.shared.deleteAccount()
+//                    .subscribe(onSuccess: {
+//                        self.dismiss(animated: true) {
+//                            let loginVC = LoginViewController()
+//                            let nav = UINavigationController(rootViewController: loginVC)
+//                            nav.modalPresentationStyle = .fullScreen
+//                            presentingVC.present(nav, animated: true)
+//                        }
+//                    }, onFailure: { error in
+//                        print("회원 탈퇴 실패: \(error)")
+//                    })
+//                    .disposed(by: self.disposeBag)
+//            }
+//            .disposed(by: disposeBag)
     }
 
     private func showMateEndPopup() {

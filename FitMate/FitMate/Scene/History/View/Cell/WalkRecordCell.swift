@@ -4,6 +4,8 @@ import SnapKit
 
 final class WalkRecordCell: UICollectionViewCell {
     static let identifier = "WalkRecordCell"
+    
+    private var detailLabels: [UILabel] = []
 
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
@@ -110,6 +112,8 @@ final class WalkRecordCell: UICollectionViewCell {
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
 
+        detailLabels.append(valueLabel) // ✅ 배열에 저장해두기
+        
         let unitLabel = UILabel()
         unitLabel.text = unit
         unitLabel.font = .systemFont(ofSize: 13)
@@ -125,8 +129,18 @@ final class WalkRecordCell: UICollectionViewCell {
         return stack
     }
 
+//    func configure(with record: ExerciseRecord) {
+//        dateLabel.text = record.date
+//        resultLabel.text = record.result.rawValue
+//    }
     func configure(with record: ExerciseRecord) {
         dateLabel.text = record.date
         resultLabel.text = record.result.rawValue
+        
+        let details = [record.detail1, record.detail2, record.detail3]
+        for (index, label) in detailLabels.enumerated() {
+            guard index < details.count else { break }
+            label.text = details[index]
+        }
     }
 }

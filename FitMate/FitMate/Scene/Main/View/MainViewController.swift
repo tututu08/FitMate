@@ -141,17 +141,29 @@ class MainViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
-        viewModel.showMateDisconnectedAlert
-            .bind(onNext: { [weak self] in
-                self?.showMateDisconnectedPopup()
+//        viewModel.showMateDisconnectedAlert
+//            .bind(onNext: { [weak self] in
+//                self?.showMateDisconnectedPopup()
+//            })
+//            .disposed(by: disposeBag)
+        
+        output.showMateDisconnected
+            .drive(onNext: {
+                self.showMateDisconnectedPopup(message:"상대방이 메이트를 종료했습니다.")
+            })
+            .disposed(by: disposeBag)
+
+        output.showMateWithdrawn
+            .drive(onNext: {
+                self.showMateDisconnectedPopup(message:"상대방이 회원탈퇴하였습니다.")
             })
             .disposed(by: disposeBag)
     }
     
-    private func showMateDisconnectedPopup() {
+    private func showMateDisconnectedPopup(message: String) {
         let alert = UIAlertController(
             title: "메이트 연결 종료",
-            message: "상대방이 메이트 연결을 끊었습니다.",
+            message: message,
             preferredStyle: .alert
         )
 
