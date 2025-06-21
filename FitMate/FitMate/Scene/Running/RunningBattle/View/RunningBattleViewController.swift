@@ -18,13 +18,15 @@ class RunningBattleViewController: BaseViewController {
     private let mateQuitRelay = PublishRelay<Void>()
     private let mateDistanceRelay = PublishRelay<Double>()
     
+    private let exerciseType: String
     private let matchCode: String
     private let mateUid: String
     private let myUid: String
     private let myCharacter: String
     private let mateCharacter: String
     
-    init(goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
+    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
+        self.exerciseType = exerciseType
         self.matchCode = matchCode
         self.myUid = myUid
         self.mateUid = mateUid
@@ -49,7 +51,7 @@ class RunningBattleViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        rootView.updateGoal("\(viewModel.goalDistance)Km")
+        rootView.updateGoal("\(exerciseType) \(viewModel.goalDistance)Km")
         rootView.updateMyCharacter(myCharacter)
         rootView.updateMateCharacter(mateCharacter)
         
