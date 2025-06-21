@@ -6,6 +6,7 @@
 //
 import RxSwift
 import RxCocoa
+import FirebaseFirestore
 
 class MainViewModel {
     
@@ -20,9 +21,34 @@ class MainViewModel {
     // 운동 초대 이벤트: MatchEventService에서 공유되는 relay 사용
     private let matchEventRelay = MatchEventService.shared.matchEventRelay
    
+    let showMateDisconnectedAlert = PublishRelay<Void>()
+    private var listener: ListenerRegistration?
+    
+    
     /// UID 주입을 통해 사용자 정보 가져오기
     init(uid: String) {
         self.uid = uid
+        listenToMateDisconnection()
+    }
+    
+    private func listenToMateDisconnection() {
+        listener = Firestore.firestore()
+            .collection("users")
+            .document(uid)
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self = self,
+                      let data = snapshot?.data(),
+                      error == nil else { return }
+                
+                let status = data["inviteStatus"] as? String
+                if status == "disconnectedByMate" {
+                    self.showMateDisconnectedAlert.accept(())
+                }
+            }
+    }
+    
+    deinit {
+        listener?.remove()
     }
     
     /// 사용자 상호작용 입력 정의

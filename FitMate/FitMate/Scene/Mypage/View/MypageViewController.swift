@@ -60,9 +60,10 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     private func bindActions() {
         rootView.settingButton.rx.tap
             .bind { [weak self] in
-                let settingVC = SettingViewController()
+                guard let self else { return }
+                let settingVC = SettingViewController(uid: self.uid)
                 settingVC.modalPresentationStyle = .overFullScreen
-                self?.present(settingVC, animated: false, completion: nil)
+                self.present(settingVC, animated: false, completion: nil)
             }
             .disposed(by: disposeBag)
     }

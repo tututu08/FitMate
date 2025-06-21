@@ -52,12 +52,6 @@ class MainView: BaseView {
         return dDay
     }()
     
-//    let myNicknameStack = NicknameStackView(
-//        nickname: "실버웨스트", textColor: .white,
-//        font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
-//        arrowColor: .white
-//    )
-    
     let myAvatarImage: UIImageView = {
        let imageView = UIImageView()
         imageView.image = UIImage(named: "KappyAlone")
@@ -65,11 +59,18 @@ class MainView: BaseView {
         return imageView
     }()
     
-//    let mateNicknameStack = NicknameStackView(
-//        nickname: "프린세스훈", textColor: .background300,
-//        font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
-//        arrowColor: .background300
-//    )
+    private let myNicknameStack = NicknameStackView(
+        nickname: "", textColor: .white,
+        font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
+        arrowColor: .white
+    )
+
+    private let mateNicknameStack = NicknameStackView(
+        nickname: "", textColor: .background300,
+        font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
+        arrowColor: .background300
+    )
+    
     let mateAvatarImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "mateKappy")
@@ -100,9 +101,9 @@ class MainView: BaseView {
     
     override func configureUI() {
         backgroundColor = .background800
-        [topBar, explainLabel, dDaysLabel, myAvatarImage,
-          mateAvatarImage, exerciseButton].forEach{ addSubview($0) }
-        
+            [topBar, explainLabel, dDaysLabel, myAvatarImage,
+             mateAvatarImage, exerciseButton,
+             myNicknameStack, mateNicknameStack].forEach { addSubview($0) }
 //        [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
     }
     
@@ -164,22 +165,12 @@ class MainView: BaseView {
     /// - true일때 크기 및 위치 / false일 때 크기 및 위치 잡고
     /// - 메이트는 isHidden으로 hasMate: true일때 true로
     func changeAvatarLayout(hasMate: Bool, myNickname: String, mateNickname: String) {
+        myNicknameStack.updateNickname(myNickname)
+        mateNicknameStack.updateNickname(mateNickname)
         
-        let myNicknameStack = NicknameStackView(
-            nickname: myNickname, textColor: .white,
-            font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
-            arrowColor: .white
-        )
-        
-        addSubview(myNicknameStack)
-        
-        let mateNicknameStack = NicknameStackView(
-            nickname: mateNickname, textColor: .background300,
-            font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
-            arrowColor: .background300
-        )
-        
-        addSubview(mateNicknameStack)
+        myNicknameStack.isHidden = false
+            mateNicknameStack.isHidden = !hasMate
+            mateAvatarImage.isHidden = !hasMate
         
         // 내 아바타 위치 및 크기 설정
         myAvatarImage.snp.remakeConstraints { make in
@@ -211,9 +202,9 @@ class MainView: BaseView {
             make.centerX.equalTo(mateAvatarImage)
             make.bottom.equalTo(mateAvatarImage.snp.top).inset(-10)
         }
-        // 메이트 없을 때는 안보이게 처리
-        mateAvatarImage.isHidden = !hasMate // = hasMate가 false면 안보이도록
-        print("기대값false:\(hasMate)")
-        mateNicknameStack.isHidden = !hasMate
+//        // 메이트 없을 때는 안보이게 처리
+//        mateAvatarImage.isHidden = !hasMate // = hasMate가 false면 안보이도록
+//        print("기대값false:\(hasMate)")
+//        mateNicknameStack.isHidden = !hasMate
     }
 }
