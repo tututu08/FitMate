@@ -161,6 +161,9 @@ class MainViewController: BaseViewController {
             FirestoreService.shared.deleteMate(myUid: self.uid)
                 .subscribe(onSuccess: {
                     print("내 메이트 정보 삭제 완료")
+                    
+                    // UI를 새로 갱신
+                    self.fetchMateStatusAndUpdateUI()
                 }, onFailure: { error in
                     print("삭제 실패: \(error.localizedDescription)")
                 })
