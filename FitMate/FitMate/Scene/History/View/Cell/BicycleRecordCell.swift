@@ -5,6 +5,8 @@ import SnapKit
 final class BicycleRecordCell: UICollectionViewCell {
     static let identifier = "BicycleRecordCell"
 
+    private var detailLabels: [UILabel] = []
+    
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "bicycle")
@@ -110,6 +112,8 @@ final class BicycleRecordCell: UICollectionViewCell {
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
 
+        detailLabels.append(valueLabel) // ✅ 배열에 저장해두기
+        
         let unitLabel = UILabel()
         unitLabel.text = unit
         unitLabel.font = .systemFont(ofSize: 13)
@@ -128,5 +132,11 @@ final class BicycleRecordCell: UICollectionViewCell {
     func configure(with record: ExerciseRecord) {
         dateLabel.text = record.date
         resultLabel.text = record.result.rawValue
+        
+        let details = [record.detail1, record.detail2, record.detail3]
+        for (index, label) in detailLabels.enumerated() {
+            guard index < details.count else { break }
+            label.text = details[index]
+        }
     }
 }
