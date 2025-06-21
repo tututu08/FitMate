@@ -100,63 +100,58 @@ extension FinishViewModel {
         let db = Firestore.firestore()
         let matchRef = db.collection("matches").document(matchCode)
 
-        return Completable.create { completable in
+        return Single<[String: Any]>.create { single in
             matchRef.getDocument { snapshot, error in
                 if let error = error {
-                    completable(.error(error))
+                    single(.failure(error))
                     return
                 }
 
                 guard let data = snapshot?.data() else {
-                    completable(.error(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "경기 데이터를 찾을 수 없습니다."])))
+                    let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "경기 데이터를 찾을 수 없습니다."])
+                    single(.failure(error))
                     return
                 }
 
-                guard let exerciseTypeStr = data["exerciseType"] as? String,
-                      let exerciseType = ExerciseType(rawValue: exerciseTypeStr),
-                      let goalValue = data["goalValue"] as? Int,
-                      let timestamp = data["createAt"] as? Timestamp,
-                      let players = data["players"] as? [String: Any],
-                      let myData = players[uid] as? [String: Any],
-                      let mateData = players[mateUid] as? [String: Any],
-                      let myProgress = myData["progress"] as? Int,
-                      let mateProgress = mateData["progress"] as? Int else {
-                    completable(.error(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "필드 누락 또는 변환 실패"])))
-                    return
-                }
-
-                let isWinner = data["isWinner"] as? Bool ?? false
-                let result: ExerciseResult = {
-                    switch self.mode {
-                    case .battle:
-                        return (isWinner && uid == data["inviterUid"] as? String) ||
-                               (!isWinner && uid == data["inviteeUid"] as? String)
-                            ? .versusWin : .versusLose
-                    case .cooperation:
-                        return self.success ? .teamSuccess : .teamFail
-                    }
-                }()
-
-                let record = ExerciseRecord(
-                    type: exerciseType,
-                    date: self.formatDate(timestamp.dateValue()),
-                    result: result,
-                    detail1: "\(goalValue)",
-                    detail2: "\(myProgress)",
-                    detail3: "\(mateProgress)"
-                )
-
-                FirestoreService.shared
-                    .saveExerciseRecord(uid: uid, record: record)
-                    .subscribe(onCompleted: {
-                        completable(.completed)
-                    }, onError: { error in
-                        completable(.error(error))
-                    })
-                    .dispose()
-
+                single(.success(data))
             }
             return Disposables.create()
+        }
+        .flatMapCompletable { data in
+            guard let exerciseTypeStr = data["exerciseType"] as? String,
+                  let exerciseType = ExerciseType(rawValue: exerciseTypeStr),
+                  let goalValue = data["goalValue"] as? Int,
+                  let timestamp = data["createAt"] as? Timestamp,
+                  let players = data["players"] as? [String: Any],
+                  let myData = players[uid] as? [String: Any],
+                  let mateData = players[mateUid] as? [String: Any],
+                  let myProgress = myData["progress"] as? Int,
+                  let mateProgress = mateData["progress"] as? Int else {
+                return .error(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "필드 누락 또는 변환 실패"]))
+            }
+
+            let isWinner = data["isWinner"] as? Bool ?? false
+            let result: ExerciseResult = {
+                switch self.mode {
+                case .battle:
+                    return (isWinner && uid == data["inviterUid"] as? String) ||
+                           (!isWinner && uid == data["inviteeUid"] as? String)
+                        ? .versusWin : .versusLose
+                case .cooperation:
+                    return self.success ? .teamSuccess : .teamFail
+                }
+            }()
+
+            let record = ExerciseRecord(
+                type: exerciseType,
+                date: self.formatDate(timestamp.dateValue()),
+                result: result,
+                detail1: "\(goalValue)",
+                detail2: "\(myProgress)",
+                detail3: "\(mateProgress)"
+            )
+
+            return FirestoreService.shared.saveExerciseRecord(uid: uid, record: record)
         }
     }
 
