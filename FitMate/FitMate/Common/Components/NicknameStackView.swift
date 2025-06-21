@@ -55,4 +55,9 @@ class NicknameStackView: UIStackView {
         }
        
     }
+    
+    /// 닉네임 변경 시 호출
+    func updateNickname(_ nickname: String) {
+        nicknameLabel.text = nickname
+    }
 }

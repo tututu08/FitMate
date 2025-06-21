@@ -35,16 +35,20 @@ class MainViewController: BaseViewController {
     
     override func loadView() {
         self.view = mainView
-        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
-            .subscribe(onSuccess: { [weak self] data in
-                guard let self else { return }
-                
-                if let myNickname = data["nickname"] as? String,
-                   let mate = data["mate"] as? [String: Any],
-                   let mateNickname = mate["nickname"] as? String {
-                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
-                }
-            }).disposed(by: disposeBag)
+        //mainView.alpha = 0
+//        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
+//            .subscribe(onSuccess: { [weak self] data in
+//                guard let self else { return }
+//                
+//                if let myNickname = data["nickname"] as? String,
+//                   let mate = data["mate"] as? [String: Any],
+//                   let mateNickname = mate["nickname"] as? String {
+//                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
+////                    UIView.animate(withDuration: 0.2) {
+////                        self.mainView.alpha = 1
+////                    }
+//                }
+//            }).disposed(by: disposeBag)
         
         navigationItem.backButtonTitle = ""
     }
@@ -53,11 +57,42 @@ class MainViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        fetchMateStatusAndUpdateUI()
     }
+    
     // 네비게이션 영역 다시 보여줌
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+
+    private func fetchMateStatusAndUpdateUI() {
+        mainView.alpha = 0
+        
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
+            .subscribe(onSuccess: { [weak self] data in
+                guard let self else { return }
+
+                let hasMate = data["hasMate"] as? Bool ?? false
+                let myNickname = data["nickname"] as? String ?? "나"
+
+                if hasMate,
+                   let mate = data["mate"] as? [String: Any],
+                   let mateNickname = mate["nickname"] as? String {
+                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
+                    UIView.animate(withDuration: 0.2) {
+                        self.mainView.alpha = 1
+                    }
+                } else {
+                    self.mainView.changeAvatarLayout(hasMate: false, myNickname: myNickname, mateNickname: "")
+                    UIView.animate(withDuration: 0.2) {
+                        self.mainView.alpha = 1
+                    }
+                }
+            }, onFailure: { error in
+                print("메이트 상태 조회 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
     
     override func bindViewModel() {
@@ -105,7 +140,39 @@ class MainViewController: BaseViewController {
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
+        
+        viewModel.showMateDisconnectedAlert
+            .bind(onNext: { [weak self] in
+                self?.showMateDisconnectedPopup()
+            })
+            .disposed(by: disposeBag)
     }
+    
+    private func showMateDisconnectedPopup() {
+        let alert = UIAlertController(
+            title: "메이트 연결 종료",
+            message: "상대방이 메이트 연결을 끊었습니다.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { [weak self] _ in
+            guard let self else { return }
+
+            FirestoreService.shared.deleteMate(myUid: self.uid)
+                .subscribe(onSuccess: {
+                    print("내 메이트 정보 삭제 완료")
+                    
+                    // UI를 새로 갱신
+                    self.fetchMateStatusAndUpdateUI()
+                }, onFailure: { error in
+                    print("삭제 실패: \(error.localizedDescription)")
+                })
+                .disposed(by: self.disposeBag)
+        }))
+
+        present(alert, animated: true)
+    }
+    
 
     /// 운동 초대 알림창 띄우는 메서드
     func presentAlertForMatch(matchCode: String) {

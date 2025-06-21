@@ -292,6 +292,60 @@ class FirestoreService {
          .disposed(by: disposeBag)
      */
     
+    /// 메이트를 끊을 때 호출
+        func disconnectMate(forUid myUid: String, mateUid: String) -> Single<Void> {
+            let myRef = db.collection("users").document(myUid)
+            let mateRef = db.collection("users").document(mateUid)
+
+            return Single.create { single in
+                let batch = self.db.batch()
+
+                // A 문서 업데이트
+                batch.updateData([
+                    "mate": FieldValue.delete(),
+                    "hasMate": false,
+                    "inviteStatus": "waiting",
+                    "updatedAt": FieldValue.serverTimestamp()
+                ], forDocument: myRef)
+
+                // B 문서에 알림용 상태 전달
+                batch.updateData([
+                    "inviteStatus": "disconnectedByMate",
+                    "updatedAt": FieldValue.serverTimestamp()
+                ], forDocument: mateRef)
+
+                batch.commit { error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else {
+                        single(.success(()))
+                    }
+                }
+
+                return Disposables.create()
+            }
+        }
+
+        /// 메이트가 끊겼다는 알림 확인 시 자신의 데이터 정리
+        func deleteMate(myUid: String) -> Single<Void> {
+            let ref = db.collection("users").document(myUid)
+            return Single.create { single in
+                ref.updateData([
+                    "mate": FieldValue.delete(),
+                    "hasMate": false,
+                    "inviteStatus": "waiting",
+                    "updatedAt": FieldValue.serverTimestamp()
+                ]) { error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else {
+                        single(.success(()))
+                    }
+                }
+                return Disposables.create()
+            }
+        }
+    
     /// 프로그레스 업데이트 함수
     func updateMyProgressToFirestore(matchCode: String, uid: String, progress: Double) -> Completable {
         return Completable.create { completable in
