@@ -69,20 +69,20 @@ class FinishViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         
-        finishView.rewardButton.rx.tap
-            .bind { [weak self] in
-                guard let self else { return }
-                let tabBarVC = TabBarController(uid: self.uid)
-                       tabBarVC.modalPresentationStyle = .fullScreen
-                // rootViewController를 통째로 교체
-                if let window = UIApplication.shared.connectedScenes
-                    .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
-                    .first {
-                    window.rootViewController = tabBarVC
-                    window.makeKeyAndVisible()
-                }
-            }
-            .disposed(by: disposeBag)
+//        finishView.rewardButton.rx.tap
+//            .bind { [weak self] in
+//                guard let self else { return }
+//                let tabBarVC = TabBarController(uid: self.uid)
+//                       tabBarVC.modalPresentationStyle = .fullScreen
+//                // rootViewController를 통째로 교체
+//                if let window = UIApplication.shared.connectedScenes
+//                    .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+//                    .first {
+//                    window.rootViewController = tabBarVC
+//                    window.makeKeyAndVisible()
+//                }
+//            }
+//            .disposed(by: disposeBag)
         
         // 게임 결과 저장
         finishView.rewardButton.rx.tap
