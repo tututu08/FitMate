@@ -167,7 +167,7 @@ class BattleSportsView: BaseView {
     }()
     
     override func configureUI() {
-        self.backgroundColor = .black
+        self.backgroundColor = .background800
         goalImage.addSubview(goalLabel)
         myProgressBackgroundView.addSubview(myProgressForegroundView)
         mateProgressBackgroundView.addSubview(mateProgressForegroundView)
