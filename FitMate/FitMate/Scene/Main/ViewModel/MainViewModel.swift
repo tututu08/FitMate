@@ -21,8 +21,9 @@ class MainViewModel {
     // 운동 초대 이벤트: MatchEventService에서 공유되는 relay 사용
     private let matchEventRelay = MatchEventService.shared.matchEventRelay
    
-    let showMateDisconnectedAlert = PublishRelay<Void>()
-    private var listener: ListenerRegistration?
+    let showMateDisconnectedAlert = PublishRelay<Void>() // 메이트 끊김
+    let showMateWithdrawnAlert = PublishRelay<Void>() // 메이트 회원 탈퇴
+    private var listener: ListenerRegistration? // 메이트 끊김 리스너
     
     
     /// UID 주입을 통해 사용자 정보 가져오기
@@ -41,8 +42,14 @@ class MainViewModel {
                       error == nil else { return }
                 
                 let status = data["inviteStatus"] as? String
-                if status == "disconnectedByMate" {
+                
+                switch status {
+                case "disconnectedByMate":
                     self.showMateDisconnectedAlert.accept(())
+                case "disconnectedByWithdrawal":
+                    self.showMateWithdrawnAlert.accept(())
+                default:
+                    break
                 }
             }
     }
@@ -63,6 +70,8 @@ class MainViewModel {
         let moveToExercise: Driver<Void> // 메이트 있을 때 운동 선택 화면 이동
         let showMatchEvent: Driver<String> // 운동 초대 이벤트 수신
         let moveToMatePage: Driver<String>// 메이트 uid 전달
+        let showMateDisconnected: Driver<Void>      // 끊긴 경우
+        let showMateWithdrawn: Driver<Void>         // 탈퇴한 경우
     }
     
     /// 사용자의 상호작용(Input)을 받아서 이벤트(Output)로 변환
@@ -110,13 +119,15 @@ class MainViewModel {
         let moveToExercise = moveToExerciseRelay.asDriver(onErrorDriveWith: .empty())
         let showMatchEvent = matchEventRelay.asDriver(onErrorDriveWith: .empty())
         let moveToMatePage = moveToMatePageRelay.asDriver(onErrorDriveWith: .empty())
-
+        let showMateDisconnected = showMateDisconnectedAlert.asDriver(onErrorDriveWith: .empty())
+        let showMateWithdrawn = showMateWithdrawnAlert.asDriver(onErrorDriveWith: .empty())
         return Output(
             hasNoMate: hasNoMate,
             moveToExercise: moveToExercise,
             showMatchEvent: showMatchEvent,
-            moveToMatePage: moveToMatePage
-            
+            moveToMatePage: moveToMatePage,
+            showMateDisconnected: showMateDisconnected,
+            showMateWithdrawn: showMateWithdrawn
         )
     }
 }
