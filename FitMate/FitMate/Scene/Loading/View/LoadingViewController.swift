@@ -87,11 +87,11 @@ class LoadingViewController: BaseViewController {
                         // 배틀모드
                         switch exerciseType {
                         case "걷기":
-                            self.navigationController?.pushViewController(RunningBattleViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
+                            self.navigationController?.pushViewController(RunningBattleViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "달리기":
-                            self.navigationController?.pushViewController(RunningBattleViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
+                            self.navigationController?.pushViewController(RunningBattleViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "자전거":
-                            self.navigationController?.pushViewController(RunningBattleViewController(goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
+                            self.navigationController?.pushViewController(RunningBattleViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         case "줄넘기":
                             self.navigationController?.pushViewController(JumpRopeBattleViewController(goalCount: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
                         default:
