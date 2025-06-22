@@ -13,7 +13,7 @@ final class FinishView: BaseView {
     // 모드 표시용 (대결/협력)
     let modeLabel: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 22)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         label.textColor = .white
         return label
     }()
@@ -31,14 +31,14 @@ final class FinishView: BaseView {
         let label = UILabel()
         label.text = "종목 목표치" // 예: "목표 100회"
         label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 20)
+        label.font = UIFont(name: "Pretendard-Regular", size: 20)
         return label
     }()
     
     // 운동 결과 문구 라벨
     let resultLabel: UILabel = {
         let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -97,12 +97,12 @@ final class FinishView: BaseView {
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         button.setTitle("돌아가기", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 20)
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return button
     }()
     
     override func configureUI() {
-        backgroundColor = .black
+        backgroundColor = .background800
         goalImage.addSubview(goalLabel)
         backgroundImage.addSubview(resultImage)
         backgroundImage.addSubview(characterImage)
@@ -139,7 +139,7 @@ final class FinishView: BaseView {
         
         resultLabel.snp.makeConstraints{
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(goalImage.snp.bottom).offset(20)
+            $0.top.equalTo(goalImage.snp.bottom).offset(28)
         }
         
         backgroundImage.snp.makeConstraints {
