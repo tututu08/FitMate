@@ -165,8 +165,8 @@ class RunningBattleViewController: BaseViewController {
                 // 피니쉬화면으로 이동 등
                 //self?.navigationController?.popToRootViewController(animated: true)
                 
-                self?.viewModel.finish(success: false) // ✅ 위치 정지 및 기록 저장
-                self?.navigateToFinish(success: false)
+                self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
+                self?.navigateToFinish(success: true)
             }
         )
     }
