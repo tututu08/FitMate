@@ -108,7 +108,7 @@ class CodeShareView: BaseView {
         
         defaultAvatarImage.snp.makeConstraints { make in
             make.top.equalTo(guideMent.snp.bottom).offset(20)
-//            make.leading.trailing.equalToSuperview().inset(110)
+            make.leading.trailing.equalToSuperview().inset(110)
             make.centerX.equalToSuperview()
             make.height.equalTo(defaultAvatarImage.snp.width)
         }
