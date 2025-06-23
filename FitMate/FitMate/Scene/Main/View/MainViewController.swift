@@ -13,10 +13,6 @@ class MainViewController: BaseViewController {
     // ViewModel 객체 생성
     private let viewModel: MainViewModel
     
-    // MatchAcceptViewModel 객체 생성
-    // 역할 : 운동 경기 수락 여부에 따른 운동 경기 상태(matchStatus) 변경 ViewModel
-    private let matchAcceptViewModel = MatchAcceptViewModel()
-    
     let mainView = MainView()
     
     // 로그인 유저의 uid
@@ -35,20 +31,6 @@ class MainViewController: BaseViewController {
     
     override func loadView() {
         self.view = mainView
-        //mainView.alpha = 0
-//        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
-//            .subscribe(onSuccess: { [weak self] data in
-//                guard let self else { return }
-//                
-//                if let myNickname = data["nickname"] as? String,
-//                   let mate = data["mate"] as? [String: Any],
-//                   let mateNickname = mate["nickname"] as? String {
-//                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
-////                    UIView.animate(withDuration: 0.2) {
-////                        self.mainView.alpha = 1
-////                    }
-//                }
-//            }).disposed(by: disposeBag)
         
         navigationItem.backButtonTitle = ""
     }
@@ -124,13 +106,6 @@ class MainViewController: BaseViewController {
                 self.navigationController?.pushViewController(selectSports, animated: true)
             })
             .disposed(by: disposeBag)
-
-        /// 운동 초대 수신 → alert 띄우기
-        output.showMatchEvent
-            .drive(onNext: { [weak self] matchCode in
-                self?.presentAlertForMatch(matchCode: matchCode)
-            })
-            .disposed(by: disposeBag)
         
         output.moveToMatePage
             .drive(onNext: { [weak self] mateUid in
@@ -141,83 +116,60 @@ class MainViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
-//        viewModel.showMateDisconnectedAlert
-//            .bind(onNext: { [weak self] in
-//                self?.showMateDisconnectedPopup()
-//            })
-//            .disposed(by: disposeBag)
-        
         output.showMateDisconnected
-            .drive(onNext: {
-                self.showMateDisconnectedPopup(message:"상대방이 메이트를 종료했습니다.")
-            })
-            .disposed(by: disposeBag)
+             .drive(onNext: { [weak self] in
+                 self?.presentMateAlert(description: "상대방이 메이트를 종료했습니다.")
+             })
+             .disposed(by: disposeBag)
 
-        output.showMateWithdrawn
-            .drive(onNext: {
-                self.showMateDisconnectedPopup(message:"상대방이 회원탈퇴하였습니다.")
-            })
-            .disposed(by: disposeBag)
+         output.showMateWithdrawn
+             .drive(onNext: { [weak self] in
+                 self?.presentMateAlert(description: "상대방이 회원탈퇴하였습니다.")
+             })
+             .disposed(by: disposeBag)
     }
     
-    private func showMateDisconnectedPopup(message: String) {
-        let alert = UIAlertController(
-            title: "메이트 연결 종료",
-            message: message,
-            preferredStyle: .alert
-        )
+    private func presentMateAlert(description: String) {
+        let popup = PartnerLeftAlertView()
+        popup.configure(description: description)
+        
+        popup.alpha = 0
 
-        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { [weak self] _ in
-            guard let self else { return }
+        // window에 직접 추가하여 어떤 화면에서도 보이도록(현재 활성화된 키 윈도우 가져오기)
+        if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+            window.addSubview(popup)
+            popup.snp.makeConstraints { $0.edges.equalToSuperview() }
+            
+            // fade-in 애니메이션 실행
+            UIView.animate(withDuration: 0.25) {
+                popup.alpha = 1
+            }
 
-            FirestoreService.shared.deleteMate(myUid: self.uid)
-                .subscribe(onSuccess: {
-                    print("내 메이트 정보 삭제 완료")
+            popup.confirmButton.rx.tap
+                .bind { [weak self, weak popup] in
+                    guard let self, let popup else { return }
                     
-                    // UI를 새로 갱신
-                    self.fetchMateStatusAndUpdateUI()
-                }, onFailure: { error in
-                    print("삭제 실패: \(error.localizedDescription)")
-                })
-                .disposed(by: self.disposeBag)
-        }))
-
-        present(alert, animated: true)
+                    // fade-out 애니메이션 실행
+                    UIView.animate(withDuration: 0.2, animations: {
+                        popup.alpha = 0
+                    }) { _ in
+                        popup.removeFromSuperview()
+                        self.cleanupMateAndRefresh()
+                    }
+                }
+                .disposed(by: disposeBag)
+        }
     }
-    
 
-    /// 운동 초대 알림창 띄우는 메서드
-    func presentAlertForMatch(matchCode: String) {
-        let alert = UIAlertController(
-            title: "운동 메이트 요청",
-            message: "운동 초대가 도착했습니다!",
-            preferredStyle: .alert
-        )
-        // 수락
-        alert.addAction(UIAlertAction(title: "수락", style: .default, handler: { [weak self] _ in
-            guard let self else { return }
-            // 수락한 결과를 뷰모델에 보냄
-            // matchStatus 값이 accepted 로 변경됨
-            self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: true)
-            
-            // 게임화면으로 이동
-            // 아직 테스트용으로 구현됨
-//            let gameVC = RunningCoopViewController(goalDistance: 444, myCharacter: "kaepy", mateCharacter: "kaepy")
-//            gameVC.hidesBottomBarWhenPushed = true
-//            self.navigationController?.pushViewController(gameVC, animated: true)
-            
-            let gameVC = LoadingViewController(uid: self.uid, matchCode: matchCode)
-            gameVC.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(gameVC, animated: true)
-        }))
-        // 거절
-        alert.addAction(UIAlertAction(title: "거절", style: .destructive, handler: { [weak self] _ in
-            guard let self else { return }
-            // 거절한 결과를 뷰모델에 보냄
-            // matchStatus 값이 rejected 로 변경됨
-            self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
-        }))
-        present(alert, animated: true)
+    // Firestore 메이트 정보 삭제 → UI 갱신
+    private func cleanupMateAndRefresh() {
+        FirestoreService.shared.deleteMate(myUid: uid)
+            .subscribe(onSuccess: { [weak self] in
+                self?.fetchMateStatusAndUpdateUI()
+            }, onFailure: { error in
+                print("삭제 실패:", error.localizedDescription)
+            })
+            .disposed(by: disposeBag)
     }
 }
 

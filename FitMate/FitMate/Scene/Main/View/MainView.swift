@@ -54,7 +54,7 @@ class MainView: BaseView {
     
     let myAvatarImage: UIImageView = {
        let imageView = UIImageView()
-        imageView.image = UIImage(named: "KappyAlone")
+        imageView.image = UIImage(named: "kaepy")
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -73,7 +73,9 @@ class MainView: BaseView {
     
     let mateAvatarImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "mateKappy")
+        imageView.image = UIImage(named: "kaepy")
+        imageView.contentMode = .scaleAspectFit
+        imageView.transform = CGAffineTransform(scaleX: -1, y: 1)
         return imageView
     }()
     
@@ -184,12 +186,8 @@ class MainView: BaseView {
         // 내 아바타 상단 닉네임 라벨 위치 설정
         myNicknameStack.snp.remakeConstraints { make in
             make.centerX.equalTo(myAvatarImage)
-            make.bottom.equalTo(myAvatarImage.snp.top).inset(hasMate ? 0 : -11)
+            make.bottom.equalTo(myAvatarImage.snp.top).inset(hasMate ? -20 : -11)
         }
-        // 메이트가 있으면 좌우반전
-        myAvatarImage.transform = hasMate ? CGAffineTransform(
-            scaleX: -1, y: 1) : .identity
-        
         // 상대방 아바타 위치 및 크기 설정
         mateAvatarImage.snp.remakeConstraints { make in
             make.top.equalTo(topBar.snp.bottom).offset(25)

@@ -46,20 +46,30 @@ import SnapKit
 
 class SocialLoginButton: UIButton {
     
-    let iconImageView: UIImageView = {
-        let iconImage = UIImageView()
-        iconImage.contentMode = .scaleAspectFit
-        return iconImage
+    private let iconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }()
     
-    let loginTitle: UILabel = {
-        let title = UILabel()
-        title.font = UIFont(name: "Pretendard-Medium", size: 20)
-        return title
+    private let loginTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
+        label.textColor = .background900
+        return label
+    }()
+    
+    private lazy var loginStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [iconImageView, loginTitleLabel])
+        stack.axis = .horizontal
+        stack.spacing = 12
+        stack.alignment = .center
+        return stack
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -72,21 +82,17 @@ class SocialLoginButton: UIButton {
         clipsToBounds = true
         
         iconImageView.image = UIImage(named: type.iconName)
-        loginTitle.text = type.title
-        loginTitle.textColor = type.textColor
-        
-        addSubview(iconImageView)
-        addSubview(loginTitle)
-        
         iconImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(73.5) // 공통 간격
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(24)
+            make.size.equalTo(24)
         }
-        
-        loginTitle.snp.makeConstraints { make in
-            make.leading.equalTo(iconImageView.snp.trailing).offset(8)
-            make.centerY.equalToSuperview()
+        loginTitleLabel.text = type.title
+        loginTitleLabel.textColor = type.textColor
+    }
+    
+    private func setupLayout() {
+        addSubview(loginStack)
+        loginStack.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
 }

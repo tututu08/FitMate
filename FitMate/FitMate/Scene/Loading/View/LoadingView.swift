@@ -23,6 +23,15 @@ class LoadingView: UIView {
         return ment
     }()
     
+    let cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("취소", for: .normal)
+        button.titleLabel?.font = UIFont(name: "DungGeunMo", size: 17)
+        button.setTitleColor(.primary100, for: .normal)
+        button.backgroundColor = .clear
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpUI()
@@ -37,6 +46,7 @@ class LoadingView: UIView {
         backgroundColor = .background800
         addSubview(animation)
         addSubview(loadingMent)
+        addSubview(cancelButton) // 취소 버튼 추가
         
         animation.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(305)
@@ -48,8 +58,14 @@ class LoadingView: UIView {
             make.top.equalTo(animation.snp.bottom).offset(12)
             make.centerX.equalToSuperview()
         }
+        
+        cancelButton.snp.makeConstraints { make in
+               make.top.equalTo(loadingMent.snp.bottom).offset(28)
+               make.centerX.equalToSuperview()
+               make.width.equalTo(84)
+               make.height.equalTo(40)
+        }
     }
-    
     
     func setLottie() {
         animation.contentMode = .scaleAspectFit

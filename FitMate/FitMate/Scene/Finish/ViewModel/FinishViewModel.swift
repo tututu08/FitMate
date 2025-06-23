@@ -125,8 +125,10 @@ extension FinishViewModel {
                   let players = data["players"] as? [String: Any],
                   let myData = players[uid] as? [String: Any],
                   let mateData = players[mateUid] as? [String: Any],
-                  let myProgress = myData["progress"] as? Int,
-                  let mateProgress = mateData["progress"] as? Int else {
+//                  let myProgress = myData["progress"] as? Int,
+//                  let mateProgress = mateData["progress"] as? Int else {
+                    let myProgress = myData["progress"] as? Double,
+                    let mateProgress = mateData["progress"] as? Double else {
                 return .error(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "필드 누락 또는 변환 실패"]))
             }
 

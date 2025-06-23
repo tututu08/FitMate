@@ -45,7 +45,8 @@ final class RunningCoopViewController: BaseViewController {
             myCharacter: myCharacter,
             mateCharacter: mateCharacter,
             matchCode: matchCode,
-            myUid: myUid
+            myUid: myUid,
+            mateUid: mateUid
         )
         
         super.init(nibName: nil, bundle: nil)
@@ -79,6 +80,9 @@ final class RunningCoopViewController: BaseViewController {
 
         // 위치 추적 시작
         startRelay.accept(())
+        
+        runningCoopViewModel.bindDistanceFromFirestore()
+        
         rootView.stopButton.rx.tap
             .bind { [weak self] in
                 self?.rootView.showQuitAlert(
@@ -88,8 +92,10 @@ final class RunningCoopViewController: BaseViewController {
                     },
                     onQuit: { [weak self] in
                         // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        self?.runningCoopViewModel.finish(success: false)
+                        //self?.runningCoopViewModel.finish(success: false)
                         // 혹은 didFinishRelay 트리거 등
+                        
+                        self?.quitRelay.accept(())
                     }
                 )
             }
@@ -131,6 +137,12 @@ final class RunningCoopViewController: BaseViewController {
                 self?.navigateToFinish(success: success)
             })
             .disposed(by: disposeBag)
+        
+        output.mateQuitEvent
+            .emit(onNext: { [weak self] in
+                self?.receiveMateQuit()
+            })
+            .disposed(by: disposeBag)
     }
 
     private func navigateToFinish(success: Bool) {
@@ -154,11 +166,16 @@ final class RunningCoopViewController: BaseViewController {
         present(vc, animated: true)
     }
     func receiveMateQuit()    {
+        runningCoopViewModel.stopLocationUpdates() // 기록은 즉시 멈춰야 하므로 위치 추적은 즉시 정지
+        
         rootView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                self?.navigationController?.popToRootViewController(animated: true)
+                //self?.navigationController?.popToRootViewController(animated: true)
+                
+                self?.runningCoopViewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
+                self?.navigateToFinish(success: true)
             }
         )
     }
