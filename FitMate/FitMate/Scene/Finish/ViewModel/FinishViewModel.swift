@@ -46,7 +46,7 @@ final class FinishViewModel: ViewModelType {
 //        let hideCoin = Observable.just(!success)
         let myDistance: Double // 실제 달성 거리 (ex. 2.4Km)
         let result = Observable.just(resultMessage)
-        let resultImage = Observable.just(success ? "win" : "lose")
+        let resultImage = Observable.just(success ? "win" : "Lose")
         let characterImage = Observable.just(success ? character : "\(character)Lose")
 
         return Output(
