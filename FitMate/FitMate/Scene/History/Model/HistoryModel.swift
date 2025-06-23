@@ -7,7 +7,7 @@ enum ExerciseType: String, CaseIterable {
     case run = "달리기"
     case bicycle = "자전거"
     case plank = "플랭크"
-    case jumprope = "줄넘기"
+    case jumpRope = "줄넘기"
 }
 
 enum ExerciseResult: String {
@@ -24,4 +24,15 @@ struct ExerciseRecord {
     let detail1: String
     let detail2: String
     let detail3: String
+}
+extension ExerciseRecord {
+    var dateForSorting: Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd HH:mm"
+        return formatter.date(from: self.date)
+    }
+
+    var dateOnly: String {
+        return String(self.date.prefix(10))  // "yyyy.MM.dd"로 호출되게 바꿈
+    }
 }

@@ -10,8 +10,9 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
     private let disposeBag = DisposeBag()
 
     private let selectedCategorySubject = PublishSubject<ExerciseType>()
-
     private let uid: String
+
+    private let filteredTypes: [ExerciseType] = ExerciseType.allCases.filter { $0 != .plank }
 
     init(uid: String) {
         self.uid = uid
@@ -37,16 +38,16 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
         rootView.recordCollectionView.dataSource = self
         rootView.categoryCollectionView.delegate = self
 
-        //viewModel.loadMockData()
         viewModel.loadRemoteData(uid: uid)
         bindViewModel()
 
         let initialIndexPath = IndexPath(item: 0, section: 0)
         rootView.categoryCollectionView.selectItem(at: initialIndexPath, animated: false, scrollPosition: [])
+        selectedCategorySubject.onNext(filteredTypes[0])
     }
 
     private func bindViewModel() {
-        Observable.just(ExerciseType.allCases.filter { $0 != .plank }) //플랭크 필터링
+        Observable.just(filteredTypes)
             .bind(to: rootView.categoryCollectionView.rx.items(
                 cellIdentifier: CategoryCell.identifier,
                 cellType: CategoryCell.self)
@@ -58,7 +59,10 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
             .disposed(by: disposeBag)
 
         rootView.categoryCollectionView.rx.itemSelected
-            .map { ExerciseType.allCases[$0.item] }
+            .map { [weak self] indexPath -> ExerciseType in
+                guard let self = self else { return .all }
+                return self.filteredTypes[indexPath.item]
+            }
             .bind(to: selectedCategorySubject)
             .disposed(by: disposeBag)
 
@@ -67,7 +71,7 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
 
         output.filteredRecords
             .drive(onNext: { [weak self] records in
-                print(" ViewController: reload 호출됨, \(records.count)건")
+                print("ViewController: reload 호출됨, \(records.count)건")
                 self?.rootView.recordCollectionView.reloadData()
                 self?.rootView.contentLabel.isHidden = !records.isEmpty
             })
@@ -79,8 +83,8 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
             let width = collectionView.frame.width - 32
             return CGSize(width: width, height: 120)
         } else {
-            //let width: CGFloat = floor(collectionView.frame.width / CGFloat(ExerciseType.allCases.count))
-            return CGSize(width: 78.4 , height: 40)
+            let width: CGFloat = floor(collectionView.frame.width / CGFloat(filteredTypes.count))
+            return CGSize(width: width, height: 40)
         }
     }
 }
@@ -99,7 +103,7 @@ extension HistoryViewController: UICollectionViewDataSource {
             cell.configure(with: record)
             return cell
 
-        case .jumprope:
+        case .jumpRope:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: JumpRopeRecordCell.identifier, for: indexPath) as! JumpRopeRecordCell
             cell.configure(with: record)
             return cell
@@ -108,17 +112,12 @@ extension HistoryViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BicycleRecordCell.identifier, for: indexPath) as! BicycleRecordCell
             cell.configure(with: record)
             return cell
-            
+
         case .run:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RunRecordCell.identifier, for: indexPath) as! RunRecordCell
             cell.configure(with: record)
             return cell
-        
-        case .plank: //플랭크 핉러링으로 인한 주석처리
-//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlankRecordCell.identifier, for: indexPath) as! PlankRecordCell
-//            cell.configure(with: record)
-//            return cell
-            fallthrough
+
         default:
             fatalError("종목 없음")
         }
