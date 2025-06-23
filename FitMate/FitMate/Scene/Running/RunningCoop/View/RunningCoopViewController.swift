@@ -45,7 +45,8 @@ final class RunningCoopViewController: BaseViewController {
             myCharacter: myCharacter,
             mateCharacter: mateCharacter,
             matchCode: matchCode,
-            myUid: myUid
+            myUid: myUid,
+            mateUid: mateUid
         )
         
         super.init(nibName: nil, bundle: nil)
@@ -79,6 +80,9 @@ final class RunningCoopViewController: BaseViewController {
 
         // 위치 추적 시작
         startRelay.accept(())
+        
+        runningCoopViewModel.bindDistanceFromFirestore()
+        
         rootView.stopButton.rx.tap
             .bind { [weak self] in
                 self?.rootView.showQuitAlert(

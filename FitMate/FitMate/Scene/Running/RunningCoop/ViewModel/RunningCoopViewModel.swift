@@ -22,23 +22,28 @@ final class RunningCoopViewModel: ViewModelType {
     private let myDistanceTextRelay = BehaviorRelay<String>(value: "0.0 m")
     private let mateDistanceTextRelay = BehaviorRelay<String>(value: "0.0 m")
     
+    let myDistanceDisplayRelay = BehaviorRelay<Double>(value: 0)   // Firestore에서 받은 km
+    let mateDistanceDisplayRelay = BehaviorRelay<Double>(value: 0) // Firestore에서 받은 km
+    
     let goalDistance: Int
     let myCharacter: String
     let mateCharacter: String
     let matchCode: String
     let myUid: String
+    let mateUid: String
     
     var myDistance: Int { Int(myDistanceRelay.value) }
     var mateDistance: Int { Int(mateDistanceRelay.value) }
     
     let mateQuitRelay = PublishRelay<Void>()
     
-    init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
+    init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String, mateUid: String) {
         self.goalDistance = goalDistance
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
         self.matchCode = matchCode
         self.myUid = myUid
+        self.mateUid = mateUid
     }
     
     struct Input {
@@ -74,30 +79,31 @@ final class RunningCoopViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.mateDistance
-            .subscribe(onNext: { [weak self] distance in
-                self?.mateDistanceRelay.accept(Double(distance))
-                self?.mateDistanceTextRelay.accept("\(String(format: "%.1f", distance)) m") //ㅏㅏㅏ
+            .subscribe(onNext: { [weak self] km in
+                let meter = km * 1000.0                          // 🔸 내부 계산용 (progress 등)
+                self?.mateDistanceRelay.accept(meter)
+                
+                // 🔹 텍스트 표시용: 그대로 km를 사용 (String만 포맷)
+                let formatted = String(format: "%.2f km", km)
+                self?.mateDistanceTextRelay.accept(formatted)
             })
             .disposed(by: disposeBag)
         
-        // 내 점프 수를 문자열로 변환(Driver로 변환)
-        let myText = myDistanceRelay
-            .map { "\($0) m" }
-            .asDriver(onErrorJustReturn: "0.0 m")
-        
-        // 메이트 점프 수를 문자열로 변환(Driver로 변환)
-        let mateText = mateDistanceRelay
-            .map { "\($0) m" }
-            .asDriver(onErrorJustReturn: "0.0 m")
+        // ✅ Firestore에서 받아온 거리로 표시 (KM 단위 그대로)
+        let myText = myDistanceDisplayRelay
+            .map { [weak self] km in self?.formatDistance(km) ?? "\(km) km" }
+            .asDriver(onErrorJustReturn: "0.0 km")
+
+        let mateText = mateDistanceDisplayRelay
+            .map { [weak self] km in self?.formatDistance(km) ?? "\(km) km" }
+            .asDriver(onErrorJustReturn: "0.0 km")
         
         let progress = Observable
-            .combineLatest(myDistanceRelay, mateDistanceRelay)
+            .combineLatest(myDistanceDisplayRelay, mateDistanceDisplayRelay)
             .map { [weak self] my, mate -> CGFloat in
-                guard let self, self.goalDistance > 0 else { return 0 }
-                let goalDistanceMeter = goalDistance * 1000
-                //return CGFloat(min(1, Float(my + mate) / Float(self.goalDistance)))
-                let ratio = CGFloat((my + mate) / Double(goalDistanceMeter))
-                return min(1, max(0, ratio))
+                guard let self else { return 0 }
+                let ratio = (my + mate) / Double(self.goalDistance)
+                return CGFloat(min(1.0, ratio))
             }
             .asDriver(onErrorJustReturn: 0)
         
@@ -107,10 +113,12 @@ final class RunningCoopViewModel: ViewModelType {
             .skip(1)
             .flatMapLatest { [weak self] distance -> Completable in
                 guard let self = self else { return .empty() }
+                let kmDistance = (distance / 1000.0 * 100).rounded() / 100
                 return FirestoreService.shared.updateMyProgressToFirestore(
                     matchCode: self.matchCode,
                     uid: self.myUid,
-                    progress: distance
+                    //progress: distance
+                    progress: kmDistance
                 )
             }
             .subscribe()
@@ -157,6 +165,7 @@ final class RunningCoopViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
     }
+    
     private func confirmQuit(isMine: Bool) {
         locationManager.stopUpdatingLocation()
         // finish(success: false)
@@ -176,15 +185,37 @@ final class RunningCoopViewModel: ViewModelType {
     }
     func finish(success: Bool) {
         locationManager.stopUpdatingLocation()
-        //didFinishRelay.accept(success)
         didFinishRelay.accept((success,  Double(myDistance)))
     }
     
     func updateMateDistance(_ meter: Int) {
         mateDistanceRelay.accept(Double(meter))
-        if Int(myDistanceRelay.value + mateDistanceRelay.value) >= goalDistance {
+        
+        let total = myDistanceRelay.value + mateDistanceRelay.value
+        if Int(total) >= goalDistance * 1000 {
             finish(success: true)
         }
+    }
+    
+    func bindDistanceFromFirestore() {
+        Observable
+            .combineLatest(
+                FirestoreService.shared.observeMyProgress(matchCode: matchCode, myUid: myUid),
+                FirestoreService.shared.observeMateProgress(matchCode: matchCode, mateUid: mateUid)
+            )
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] myKm, mateKm in
+                guard let self else { return }
+                
+                self.myDistanceDisplayRelay.accept(myKm)
+                self.mateDistanceDisplayRelay.accept(mateKm)
+                
+                let total = myKm + mateKm
+                if total >= Double(self.goalDistance) {
+                    self.finish(success: true)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     // 상대방 종료 감지
@@ -201,6 +232,14 @@ final class RunningCoopViewModel: ViewModelType {
     
     func stopLocationUpdates() {
         locationManager.stopUpdatingLocation()
+    }
+    
+    private func formatDistance(_ km: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return (formatter.string(from: NSNumber(value: km)) ?? "\(km)") + " km"
     }
     
     deinit {
