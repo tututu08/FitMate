@@ -29,7 +29,7 @@ final class MypageView: UIView {
 
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "KappyAlone")
+        imageView.image = UIImage(named: "kaepy")
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = UIColor(named: "Secondary50")
         imageView.layer.cornerRadius = 4
