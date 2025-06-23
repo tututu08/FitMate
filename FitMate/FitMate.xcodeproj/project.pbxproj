@@ -7,10 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0D42889D2DFEF8FD006EB25C /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0D42889C2DFEF8FD006EB25C /* KakaoSDK */; };
-		0D42889F2DFEF8FD006EB25C /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0D42889E2DFEF8FD006EB25C /* KakaoSDKAuth */; };
-		0D4288A12DFEF8FD006EB25C /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 0D4288A02DFEF8FD006EB25C /* KakaoSDKCommon */; };
-		0D4288A32DFEF8FD006EB25C /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = 0D4288A22DFEF8FD006EB25C /* KakaoSDKUser */; };
+		ED068B0A2E00539700986B5D /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ED068B092E00539700986B5D /* FirebaseMessaging */; };
 		ED11842E2DFECC3500ECC6DD /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = ED11842D2DFECC3500ECC6DD /* Lottie */; };
 		ED6AD6B62DF1AA9A004E23D4 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B52DF1AA9A004E23D4 /* FirebaseAnalytics */; };
 		ED6AD6B82DF1AA9A004E23D4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ED6AD6B72DF1AA9A004E23D4 /* FirebaseAuth */; };
@@ -66,7 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D42889F2DFEF8FD006EB25C /* KakaoSDKAuth in Frameworks */,
+				ED068B0A2E00539700986B5D /* FirebaseMessaging in Frameworks */,
 				F6DABEA72DF08E2500FBEBC7 /* RxSwift in Frameworks */,
 				ED6AD6B82DF1AA9A004E23D4 /* FirebaseAuth in Frameworks */,
 				F6DAC1F02DF17CF800FBEBC7 /* SnapKit in Frameworks */,
@@ -142,10 +139,7 @@
 				EDC669B32DF9A27600E5BE4C /* RxCoreLocation */,
 				EDDA5CCA2DFB189E005D0F91 /* GoogleSignIn */,
 				ED11842D2DFECC3500ECC6DD /* Lottie */,
-				0D42889C2DFEF8FD006EB25C /* KakaoSDK */,
-				0D42889E2DFEF8FD006EB25C /* KakaoSDKAuth */,
-				0D4288A02DFEF8FD006EB25C /* KakaoSDKCommon */,
-				0D4288A22DFEF8FD006EB25C /* KakaoSDKUser */,
+				ED068B092E00539700986B5D /* FirebaseMessaging */,
 			);
 			productName = FitMate;
 			productReference = F6F3B9CE2DEF095800FA2815 /* FitMate.app */;
@@ -493,25 +487,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0D42889C2DFEF8FD006EB25C /* KakaoSDK */ = {
+		ED068B092E00539700986B5D /* FirebaseMessaging */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0D42889B2DFEF8FD006EB25C /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-			productName = KakaoSDK;
-		};
-		0D42889E2DFEF8FD006EB25C /* KakaoSDKAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0D42889B2DFEF8FD006EB25C /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-			productName = KakaoSDKAuth;
-		};
-		0D4288A02DFEF8FD006EB25C /* KakaoSDKCommon */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0D42889B2DFEF8FD006EB25C /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-			productName = KakaoSDKCommon;
-		};
-		0D4288A22DFEF8FD006EB25C /* KakaoSDKUser */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0D42889B2DFEF8FD006EB25C /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
-			productName = KakaoSDKUser;
+			package = ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		ED11842D2DFECC3500ECC6DD /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
