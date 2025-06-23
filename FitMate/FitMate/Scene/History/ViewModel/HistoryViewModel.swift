@@ -1,6 +1,7 @@
 
 import RxSwift
 import RxCocoa
+import Foundation
 
 final class HistoryViewModel {
 
@@ -14,11 +15,13 @@ final class HistoryViewModel {
 
     private let selectedCategoryRelay = BehaviorRelay<ExerciseType>(value: .all)
     private let recordsRelay = BehaviorRelay<[ExerciseRecord]>(value: [])
-
     private let currentFilteredRecordsRelay = BehaviorRelay<[ExerciseRecord]>(value: [])
+
     var currentFilteredRecords: [ExerciseRecord] {
         return currentFilteredRecordsRelay.value
     }
+
+    private let disposeBag = DisposeBag()
 
     func transform(input: Input) -> Output {
         input.selectedCategory
@@ -28,11 +31,11 @@ final class HistoryViewModel {
         let filtered = Observable
             .combineLatest(selectedCategoryRelay, recordsRelay)
             .map { selected, records in
-                if selected == .all {
-                    return records
-                } else {
-                    return records.filter { $0.type == selected }
+                let sortedRecords = records.sorted {
+                    ($0.dateForSorting ?? Date.distantPast) > ($1.dateForSorting ?? Date.distantPast)
                 }
+                let filtered = (selected == .all) ? sortedRecords : sortedRecords.filter { $0.type == selected }
+                return filtered
             }
             .do(onNext: { [weak self] filtered in
                 self?.currentFilteredRecordsRelay.accept(filtered)
@@ -41,7 +44,7 @@ final class HistoryViewModel {
 
         return Output(filteredRecords: filtered)
     }
-    
+
     func loadRemoteData(uid: String) {
         FirestoreService.shared.fetchExerciseRecords(uid: uid)
             .subscribe(onSuccess: { [weak self] records in
@@ -55,6 +58,4 @@ final class HistoryViewModel {
             })
             .disposed(by: disposeBag)
     }
-
-    private let disposeBag = DisposeBag()
 }

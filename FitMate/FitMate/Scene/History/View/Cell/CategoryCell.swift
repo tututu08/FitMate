@@ -19,7 +19,7 @@ final class CategoryCell: UICollectionViewCell {
                 : .clear
             titleLabel.textColor = isSelected
                 ? .white
-                : UIColor(named: "Background50")
+                : UIColor(named: "Primary100")
             titleLabel.font = isSelected
                 ? .boldSystemFont(ofSize: 14)
                 : .systemFont(ofSize: 14)

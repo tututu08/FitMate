@@ -100,6 +100,7 @@ class FinishViewController: BaseViewController {
                     mode: viewModel.mode,
                     isWinner: viewModel.success,
                     goal: viewModel.goal,
+                    myDistance: viewModel.myDistance,
                     exerciseType: viewModel.sport
                 )
                 .subscribe(onCompleted: {
