@@ -41,17 +41,6 @@ final class HistoryViewModel {
 
         return Output(filteredRecords: filtered)
     }
-
-//    func loadMockData() {
-//        let dummy: [ExerciseRecord] = [
-//            .init(type: .walk, date: "0000.00.00", result: .versusLose, detail1: "0", detail2: "0", detail3: "0"),
-//            .init(type: .jumprope, date: "0000.00.00", result: .versusWin, detail1: "0", detail2: "0", detail3: "0"),
-//            .init(type: .bicycle, date: "0000.00.00", result: .versusLose, detail1: "0", detail2: "0", detail3: "0"),
-//            .init(type: .run, date: "0000.00.00", result: .versusWin, detail1: "0", detail2: "0", detail3: "0"),
-//            .init(type: .plank, date: "0000.00.00", result: .teamSuccess, detail1: "0", detail2: "0", detail3: "")
-//        ]
-//        recordsRelay.accept(dummy)
-//    }
     
     func loadRemoteData(uid: String) {
         FirestoreService.shared.fetchExerciseRecords(uid: uid)
