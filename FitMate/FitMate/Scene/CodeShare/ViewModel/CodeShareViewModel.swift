@@ -154,22 +154,27 @@ final class CodeShareViewModel: ViewModelType {
                 let opponentNickname = data["nickname"] as? String ?? "상대방"
 
                 // 내 문서 업데이트
-                let updateMyDoc = self.firestoreService.updateDocument(collectionName: "users", documentName: self.uid, fields: [
+                let todayString = FirestoreService.dateFormatter.string(from: Date())
+
+                let updateMyDoc = self.firestoreService.updateDocument(
+                    collectionName: "users", documentName: self.uid, fields: [
                     "inviteStatus": "accepted",
                     "mate": [
                         "uid": fromUid,
-                        "nickname": opponentNickname
+                        "nickname": opponentNickname,
+                        "startDate": todayString   // D-Day(연결일) 저장
                     ],
                     "hasMate": true,
                     "updatedAt": FieldValue.serverTimestamp()
                 ])
 
-                // 상대방 문서 업데이트
-                let updateOtherDoc = self.firestoreService.updateDocument(collectionName: "users", documentName: fromUid, fields: [
+                let updateOtherDoc = self.firestoreService.updateDocument(
+                    collectionName: "users", documentName: fromUid, fields: [
                     "inviteStatus": "accepted",
                     "mate": [
                         "uid": self.uid,
-                        "nickname": self.nickname
+                        "nickname": self.nickname,
+                        "startDate": todayString   // 상대 문서에도 저장
                     ],
                     "hasMate": true,
                     "updatedAt": FieldValue.serverTimestamp()

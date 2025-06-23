@@ -840,3 +840,13 @@ extension FirestoreService {
         }
     }
 }
+// 디데이 위한 데이트포매터
+extension FirestoreService {
+    
+    static let dateFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd"
+        df.timeZone = TimeZone(identifier: "Asia/Seoul") // 한국시간으로
+        return df
+    }()
+}
