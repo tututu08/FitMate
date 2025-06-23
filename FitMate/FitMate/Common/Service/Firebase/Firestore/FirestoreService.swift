@@ -531,6 +531,7 @@ extension FirestoreService {
         mode: FinishViewModel.Mode,
         isWinner: Bool,
         goal: Int,
+        myDistance: Double,
         exerciseType: String
     ) -> Completable {
         let batch = db.batch()
@@ -557,7 +558,7 @@ extension FirestoreService {
             userData["loseCount"] = FieldValue.increment(Int64(!isWinner ? 1 : 0))
         }
         
-        userData.merge(makeExerciseStatField(exerciseType: exerciseType, goal: goal)) { _, new in new }
+        userData.merge(makeExerciseStatField(exerciseType: exerciseType, myDistance: myDistance)) { _, new in new }
         
         batch.updateData(userData, forDocument: userRef)
         
@@ -574,13 +575,13 @@ extension FirestoreService {
     }
     
     // 운동 타입별 누적 필드 반환
-    private func makeExerciseStatField(exerciseType: String, goal: Int) -> [String: Any] {
+    private func makeExerciseStatField(exerciseType: String, myDistance: Double) -> [String: Any] {
         switch exerciseType {
-        case "달리기": return ["totalStats.runningKm": FieldValue.increment(Double(goal))]
-        case "걷기": return ["totalStats.walkingKm": FieldValue.increment(Double(goal))]
-        case "자전거": return ["totalStats.cyclingKm": FieldValue.increment(Double(goal))]
-        case "줄넘기": return ["totalStats.jumpRopeCount": FieldValue.increment(Int64(goal))]
-        case "플랭크": return ["totalStats.plankRounds": FieldValue.increment(Int64(goal))]
+        case "달리기": return ["totalStats.runningKm": FieldValue.increment(myDistance / 1000.0)]
+        case "걷기": return ["totalStats.walkingKm": FieldValue.increment(myDistance / 1000.0)]
+        case "자전거": return ["totalStats.cyclingKm": FieldValue.increment(myDistance / 1000.0)]
+        case "줄넘기": return ["totalStats.jumpRopeCount": FieldValue.increment(Int64(myDistance))]
+        case "플랭크": return ["totalStats.plankRounds": FieldValue.increment(Int64(myDistance))]
         default: return [:]
         }
     }
@@ -689,9 +690,9 @@ extension FirestoreService {
                 print("📦 totalStats 데이터: \(stats)")
                 
                 let records: [WorkoutRecord] = [
-                    WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Int ?? 0)", unit: "Km"),
-                    WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Int ?? 0)", unit: "Km"),
-                    WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Int ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Double ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Double ?? 0)", unit: "Km"),
+                    WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Double ?? 0)", unit: "Km"),
                     WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
                     WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
                 ]

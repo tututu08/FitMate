@@ -25,14 +25,16 @@ final class FinishViewModel: ViewModelType {
     let sport: String
     let goal: Int
     private let goalUnit: String
+    let myDistance: Double
     private let character: String
     let success: Bool
 
-    init(mode: Mode, sport: String, goal: Int, goalUnit: String, character: String, success: Bool) {
+    init(mode: Mode, sport: String, goal: Int, goalUnit: String, myDistance: Double = 0.0, character: String, success: Bool) {
         self.mode = mode
         self.sport = sport
         self.goal = goal
         self.goalUnit = goalUnit
+        self.myDistance = myDistance      // 실제 달성 거리 (ex. 2.4)
         self.character = character
         self.success = success
     }
@@ -42,6 +44,7 @@ final class FinishViewModel: ViewModelType {
         let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
 //        let reward = Observable.just("\(rewardCoin)")
 //        let hideCoin = Observable.just(!success)
+        let myDistance: Double // 실제 달성 거리 (ex. 2.4Km)
         let result = Observable.just(resultMessage)
         let resultImage = Observable.just(success ? "win" : "lose")
         let characterImage = Observable.just(success ? character : "\(character)Lose")

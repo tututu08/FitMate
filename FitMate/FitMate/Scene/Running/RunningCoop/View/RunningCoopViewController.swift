@@ -134,7 +134,7 @@ final class RunningCoopViewController: BaseViewController {
         
         output.didFinish
             .emit(onNext: { [weak self] (success, myDistance) in
-                self?.navigateToFinish(success: success)
+                self?.navigateToFinish(success: success, myDistance: myDistance)
             })
             .disposed(by: disposeBag)
         
@@ -145,12 +145,13 @@ final class RunningCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
 
-    private func navigateToFinish(success: Bool) {
+    private func navigateToFinish(success: Bool, myDistance: Double) {
         let finishVM = FinishViewModel(
             mode: .cooperation,
             sport: exerciseType,
             goal: goalDistance,
             goalUnit: "Km",
+            myDistance: myDistance,
             character: myCharacter,
             success: success
         )
@@ -174,8 +175,8 @@ final class RunningCoopViewController: BaseViewController {
                 // 피니쉬화면으로 이동 등
                 //self?.navigationController?.popToRootViewController(animated: true)
                 
-                self?.runningCoopViewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
-                self?.navigateToFinish(success: true)
+                self?.runningCoopViewModel.finish(success: false) // ✅ 위치 정지 및 기록 저장
+                self?.navigateToFinish(success: false, myDistance: self?.runningCoopViewModel.myDistanceDisplayRelay.value ?? 0.0)
             }
         )
     }
