@@ -53,3 +53,12 @@ extension LoginViewController: ASAuthorizationControllerPresentationContextProvi
         return self.view.window!
     }
 }
+extension UIViewController {
+    func popToTabBar() {
+        if let nav = self.navigationController {
+            nav.popToRootViewController(animated: true)
+        } else {
+            self.dismiss(animated: true)
+        }
+    }
+}
