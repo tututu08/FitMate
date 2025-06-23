@@ -117,41 +117,59 @@ class MainViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.showMateDisconnected
-            .drive(onNext: {
-                self.showMateDisconnectedPopup(message:"상대방이 메이트를 종료했습니다.")
-            })
-            .disposed(by: disposeBag)
+             .drive(onNext: { [weak self] in
+                 self?.presentMateAlert(description: "상대방이 메이트를 종료했습니다.")
+             })
+             .disposed(by: disposeBag)
 
-        output.showMateWithdrawn
-            .drive(onNext: {
-                self.showMateDisconnectedPopup(message:"상대방이 회원탈퇴하였습니다.")
-            })
-            .disposed(by: disposeBag)
+         output.showMateWithdrawn
+             .drive(onNext: { [weak self] in
+                 self?.presentMateAlert(description: "상대방이 회원탈퇴하였습니다.")
+             })
+             .disposed(by: disposeBag)
     }
     
-    private func showMateDisconnectedPopup(message: String) {
-        let alert = UIAlertController(
-            title: "메이트 연결 종료",
-            message: message,
-            preferredStyle: .alert
-        )
+    private func presentMateAlert(description: String) {
+        let popup = PartnerLeftAlertView()
+        popup.configure(description: description)
+        
+        popup.alpha = 0
 
-        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: { [weak self] _ in
-            guard let self else { return }
+        // window에 직접 추가하여 어떤 화면에서도 보이도록(현재 활성화된 키 윈도우 가져오기)
+        if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+            window.addSubview(popup)
+            popup.snp.makeConstraints { $0.edges.equalToSuperview() }
+            
+            // fade-in 애니메이션 실행
+            UIView.animate(withDuration: 0.25) {
+                popup.alpha = 1
+            }
 
-            FirestoreService.shared.deleteMate(myUid: self.uid)
-                .subscribe(onSuccess: {
-                    print("내 메이트 정보 삭제 완료")
+            popup.confirmButton.rx.tap
+                .bind { [weak self, weak popup] in
+                    guard let self, let popup else { return }
                     
-                    // UI를 새로 갱신
-                    self.fetchMateStatusAndUpdateUI()
-                }, onFailure: { error in
-                    print("삭제 실패: \(error.localizedDescription)")
-                })
-                .disposed(by: self.disposeBag)
-        }))
+                    // fade-out 애니메이션 실행
+                    UIView.animate(withDuration: 0.2, animations: {
+                        popup.alpha = 0
+                    }) { _ in
+                        popup.removeFromSuperview()
+                        self.cleanupMateAndRefresh()
+                    }
+                }
+                .disposed(by: disposeBag)
+        }
+    }
 
-        present(alert, animated: true)
+    // Firestore 메이트 정보 삭제 → UI 갱신
+    private func cleanupMateAndRefresh() {
+        FirestoreService.shared.deleteMate(myUid: uid)
+            .subscribe(onSuccess: { [weak self] in
+                self?.fetchMateStatusAndUpdateUI()
+            }, onFailure: { error in
+                print("삭제 실패:", error.localizedDescription)
+            })
+            .disposed(by: disposeBag)
     }
 }
 

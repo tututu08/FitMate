@@ -83,99 +83,108 @@ final class LoginViewModel {
         
         let kakaoLoginFlow = input.kakaoLoginTrigger
             .flatMapLatest {
-                // 카카오 로그인 먼저 수행 (앱 or 웹)
+                // 카카오 로그인 시작
                 Observable<KakaoUser>.create { observer in
-                    // 공통적으로 사용할 사용자 정보 요청 함수 정의
                     let handleUserApiMe: () -> Void = {
                         UserApi.shared.me { user, error in
                             if let error = error {
-                                observer.onError(error)
+                                observer.onError(error) // 에러 발생 시 스트림 종료
                             } else if let user = user {
-                                observer.onNext(user)
-                                observer.onCompleted()
+                                observer.onNext(user) // 유저 정보를 next로 전달
+                                observer.onCompleted() // 이후 스트림 종료
                             } else {
-                                // 예외적으로 user도 error도 없을 경우 에러 처리
-                                observer.onError(NSError(
+                                observer.onError(NSError( // user와 error 모두 nil인 이상 상황 처리
                                     domain: "kakao",
-                                    code: -1, // 임의로 NSError 정의
+                                    code: -1,
                                     userInfo: [NSLocalizedDescriptionKey: "유저 정보 없음"]
                                 ))
                             }
                         }
                     }
                     
-                    // 카카오톡 앱이 설치되어 있으면 앱으로 로그인 시도
+                    // 카카오톡 앱이 설치된 경우
                     if UserApi.isKakaoTalkLoginAvailable() {
                         UserApi.shared.loginWithKakaoTalk { _, error in
                             if let error = error {
-                                print("카카오톡 앱 로그인 실패: \(error)")
+                                print("카카오톡 앱 로그인 실패: \(error.localizedDescription)")
                                 observer.onError(error)
                             } else {
-                                // 로그인 성공하면 사용자 정보 요청
                                 handleUserApiMe()
                             }
                         }
                     } else {
-                        // 앱이 없으면 웹 브라우저 로그인 시도
+                        // 웹 브라우저 로그인 시도
                         UserApi.shared.loginWithKakaoAccount { _, error in
                             if let error = error {
+                                print("카카오 웹 로그인 실패: \(error.localizedDescription)")
                                 observer.onError(error)
-                                print("카카오톡 웹 로그인 실패: \(error)")
                             } else {
                                 handleUserApiMe()
                             }
                         }
                     }
                     
-                    return Disposables.create()
+                    return Disposables.create() // Observable 리소스 해제
+                }
+                // 성공적으로 KakaoUser를 받아온 경우 Result.success로 감쌈
+                .map { Result.success($0) }
+                // 에러가 발생해도 스트림이 죽지 않게 Result.failure로 감싸 반환
+                .catch { error in
+                    Observable.just(Result.failure(error))
                 }
             }
-            .flatMapLatest { kakaoUser in
-                // 받아온 카카오 유저 정보를 이용해서 Firebase 로그인 시도
-                AuthService.shared
-                    .signInWithKakao(kakaoUser: kakaoUser)
-                    .map { Result.success($0) }
-                    .catch { .just(.failure($0)) }
-                    .asObservable()
-            }
-
-        // MARK: - 수정 필요
-            .flatMapLatest { result -> Observable<LoginNavigation> in
-                // 로그인 결과에 따라 Firestore 조회 및 화면 분기
+        
+            .flatMapLatest { result -> Observable<Result<FirebaseAuth.User, Error>> in
+                // KakaoUser → Firebase 로그인 시도
                 switch result {
-                case .success(let user): // 성공 시, 로그인 사용자 정보를 가져옴
-                    let uid = user.uid // uid 정보 저장
-                    // Firestore 조회를 Observable로 감쌈
+                case .success(let kakaoUser):
+                    return AuthService.shared
+                        .signInWithKakao(kakaoUser: kakaoUser) // Firebase 로그인 시도
+                        .map { Result.success($0) } // 성공 시 Result.success
+                        .catch { .just(.failure($0)) } // 실패 시 Result.failure
+                        .asObservable()
+                case .failure(let error):
+                    return .just(.failure(error))
+                }
+            }
+            .flatMapLatest { result -> Observable<LoginNavigation> in
+                // Firebase 유저 정보로 Firestore 조회 및 화면 분기
+                switch result {
+                case .success(let user):
+                    let uid = user.uid
                     return FirestoreService.shared
-                        .fetchDocument(collectionName: "users", documentName: uid) // 사용자 문서 검색
+                        .fetchDocument(collectionName: "users", documentName: uid)
                         .flatMap { data -> Single<LoginNavigation> in
-                            // 닉네임이 있고
+                            // 닉네임 존재 여부 판단
                             if let nickname = data["nickname"] as? String,
                                !nickname.isEmpty {
-                                // 메이트가 있으면
                                 if let mate = data["hasMate"] as? Bool, mate == true {
-                                    // 메인 뷰로 이동
                                     return .just(.goToMainViewController(uid: uid))
                                 } else {
-                                    // 메이트가 없으면 메이트 등록 화면으로 이동
                                     return .just(.goToInputMateCode(uid: uid))
                                 }
                             } else {
-                                // 닉네임이 없으면 닉네임 입력 화면으로 이동
                                 return .just(.goToInputNickName(uid: uid))
                             }
                         }
-                        .catch { _ in // 사용자 문서가 존재하지 않다면
-                            return FirestoreService.shared
-                                .createUserDocument(uid: uid) // 사용자 uid 로 문서를 생성
-                                .map { .goToInputNickName(uid: uid) } // .just(.goToInputNickName(uid: uid)로 반환
+                        .catch {_ in
+                            FirestoreService.shared
+                                .createUserDocument(uid: uid)
+                                .map { .goToInputNickName(uid: uid) }
                         }
                         .asObservable()
                     
-                case .failure(let error): // 로그인 정보를 가져오지 못하면
-                    return .just(.error(error.localizedDescription)) // 에러 메시지 출력
+                case .failure(let error):
+                    // 유저 취소 등은 KakaoLoginError에 따라 분기 가능
+                    if let kakaoError = error as? KakaoLoginError,
+                       case .userCancelled = kakaoError {
+                        return .empty()
+                    } else {
+                        return .just(.error(error.localizedDescription))
+                    }
                 }
             }
+        
         let appleLoginFlow = input.appleLoginTrigger
             .flatMapLatest {
                 AuthService.shared.signInWithApple(presentingVC: presentingVC)
@@ -207,6 +216,7 @@ final class LoginViewModel {
                         }
                         .asObservable()
                 case .failure(let error):
+                    // 나머지 에러는 사용자에게 메시지 전달
                     return .just(.error(error.localizedDescription))
                 }
             }

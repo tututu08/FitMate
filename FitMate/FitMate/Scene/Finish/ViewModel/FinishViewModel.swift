@@ -162,7 +162,7 @@ extension FinishViewModel {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd"
+        formatter.dateFormat = "yyyy.MM.dd HH:mm"
         return formatter.string(from: date)
     }
 }

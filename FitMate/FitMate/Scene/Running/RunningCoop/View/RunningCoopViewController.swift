@@ -143,6 +143,12 @@ final class RunningCoopViewController: BaseViewController {
                 self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
+        
+        output.mateQuitEvent
+            .emit(onNext: { [weak self] in
+                self?.receiveMateQuit()
+            })
+            .disposed(by: disposeBag)
     }
 
     private func navigateToFinish(success: Bool, myDistance: Double) {

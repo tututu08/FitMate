@@ -4,6 +4,16 @@ import SnapKit
 
 final class HistoryView: UIView {
 
+    let topBar = UIView()
+
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "운동 기록"
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        return label
+    }()
+
     let categoryUnderlineView = UIView()
 
     let categoryCollectionView: UICollectionView = {
@@ -27,16 +37,8 @@ final class HistoryView: UIView {
         return collectionView
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "운동 기록"
-        label.font = UIFont.boldSystemFont(ofSize: 20)
-        label.textColor = .white
-        return label
-    }()
-    
     let contentLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.text = "기록이 없습니다"
         label.font = UIFont(name: "DungGeunMo", size: 20)
         label.textColor = .background500
@@ -52,7 +54,7 @@ final class HistoryView: UIView {
         recordCollectionView.register(JumpRopeRecordCell.self, forCellWithReuseIdentifier: JumpRopeRecordCell.identifier)
         recordCollectionView.register(BicycleRecordCell.self, forCellWithReuseIdentifier: BicycleRecordCell.identifier)
         recordCollectionView.register(RunRecordCell.self, forCellWithReuseIdentifier: RunRecordCell.identifier)
-        //recordCollectionView.register(PlankRecordCell.self, forCellWithReuseIdentifier: PlankRecordCell.identifier)
+        recordCollectionView.register(PlankRecordCell.self, forCellWithReuseIdentifier: PlankRecordCell.identifier)
 
         setupLayout()
     }
@@ -62,19 +64,27 @@ final class HistoryView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(titleLabel)
+        addSubview(topBar)
+        topBar.addSubview(titleLabel)
+
         addSubview(categoryCollectionView)
         addSubview(categoryUnderlineView)
         addSubview(recordCollectionView)
         addSubview(contentLabel)
-        
+
+        topBar.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(56)
+        }
+
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(-10)
             $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
         }
 
         categoryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(16)
+            $0.top.equalTo(topBar.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(40)
         }
@@ -90,10 +100,10 @@ final class HistoryView: UIView {
             $0.top.equalTo(categoryUnderlineView.snp.bottom).offset(8)
             $0.leading.trailing.bottom.equalToSuperview()
         }
-        
-        contentLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.top.equalTo(categoryUnderlineView.snp.bottom).offset(180)
+
+        contentLabel.snp.makeConstraints {
+            $0.top.equalTo(categoryUnderlineView.snp.bottom).offset(180)
+            $0.centerX.equalToSuperview()
         }
     }
 }
