@@ -329,25 +329,51 @@ class FirestoreService {
         }
     }
     
-    // 메이트 거리 실시간 리스닝 추가
-    func observeMateProgress(matchCode: String, mateUid: String) -> Observable<Double> {
-        return Observable.create { observer in
-            let listener = Firestore.firestore()
-                .collection("matches").document(matchCode)
-                .addSnapshotListener { snapshot, error in
-                    if let data = snapshot?.data(),
-                       let players = data["players"] as? [String: Any],
-                       let mate = players[mateUid] as? [String: Any],
-                       let progress = mate["progress"] as? Double {
-                        observer.onNext(progress)
-                    }
-                }
-            
-            return Disposables.create {
-                listener.remove()
-            }
-        }
-    }
+    // 내 거리 실시간 리스너
+       func observeMyProgress(matchCode: String, myUid: String) -> Observable<Double> {
+           return Observable.create { observer in
+               let listener = self.db.collection("matches")
+                   .document(matchCode)
+                   .addSnapshotListener { snapshot, error in
+                       guard let data = snapshot?.data(),
+                             let players = data["players"] as? [String: Any],
+                             let me = players[myUid] as? [String: Any],
+                             let progress = me["progress"] as? Double else {
+                           observer.onNext(0.0) // ❗️문서가 없거나 초기값일 수 있음
+                           return
+                       }
+
+                       observer.onNext(progress)
+                   }
+
+               return Disposables.create {
+                   listener.remove()
+               }
+           }
+       }
+
+       // 메이트 거리 실시간 리스너
+       func observeMateProgress(matchCode: String, mateUid: String) -> Observable<Double> {
+           return Observable.create { observer in
+               let listener = self.db.collection("matches")
+                   .document(matchCode)
+                   .addSnapshotListener { snapshot, error in
+                       guard let data = snapshot?.data(),
+                             let players = data["players"] as? [String: Any],
+                             let mate = players[mateUid] as? [String: Any],
+                             let progress = mate["progress"] as? Double else {
+                           observer.onNext(0.0)
+                           return
+                       }
+
+                       observer.onNext(progress)
+                   }
+
+               return Disposables.create {
+                   listener.remove()
+               }
+           }
+       }
     
     // MARK: - Delete
     func deleteDocument(collectionName: String, documentName: String) -> Single<Void> {
