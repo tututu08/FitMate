@@ -47,7 +47,7 @@ class FirestoreService {
     
     /// user 생성 메소드
     /// 사용자의 정보를 저장하는 문서를 생성합니다.
-
+    
     func createUserDocument(uid: String) -> Single<Void> {
         return Single.create { single in
             func tryGenerateAndSave() {
@@ -69,7 +69,7 @@ class FirestoreService {
                                 "cyclingKm": 0, // 자전거
                                 "plankRounds": 0, // 플랭크
                                 "jumpRopeCount": 0 // 줄넘기
-                            ],
+                                          ],
                             "winCount": 0,
                             "loseCount": 0,
                             "createAt": FieldValue.serverTimestamp(), // 만든 시간
@@ -198,29 +198,47 @@ class FirestoreService {
             })
      */
     
+//    func findMateUid(uid: String) -> Single<String> {
+//        return Single.create { single in
+//            let docRef = self.db.collection("users").document(uid)
+//            docRef.getDocument { document, error in
+//                if let error = error {
+//                    single(.failure(error))
+//                } else if let data = document?.data(),
+//                          let mate = data["mate"] as? [String: Any],
+//                          let mateUid = mate["uid"] as? String {
+//                    print("Mate uid: \(mateUid)")
+//                    single(.success(mateUid))
+//                } else {
+//                    // NSError : 직접 에러를 만들때 사용
+//                    // domain : 에러의 범주/이름, 모통 모듈 이름이나 기능을 넣음
+//                    // code :  에러를 구분하기 위한 숫자 코드, 보통 -1 이 일반적인 실패 의미
+//                    // userInfo : 에러에 대한 추가 정보 (딕셔너리), NSLocalizedDescriptionKey 가 중요
+//                    // NSLocalizedDescriptionKey : .localizedDescription으로 출력될 때 사용되는 메시지를 담음.
+//                    let noDataError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "문서가 존재하지 않거나 데이터가 없습니다."])
+//                    single(.failure(noDataError))
+//                }
+//            }
+//            return Disposables.create()
+//        }
+//    }
+    /// - 사용자의 메이트 UID 찾는 메서드
+    /// - mateUid 를 반환
     func findMateUid(uid: String) -> Single<String> {
-        return Single.create { single in
-            let docRef = self.db.collection("users").document(uid)
-            docRef.getDocument { document, error in
-                if let error = error {
-                    single(.failure(error))
-                } else if let data = document?.data(),
-                          let mate = data["mate"] as? [String: Any],
-                          let mateUid = mate["uid"] as? String {
-                    print("Mate uid: \(mateUid)")
-                    single(.success(mateUid))
+        return fetchDocument(collectionName: "users", documentName: uid)
+            .map { document in
+                if let mate = document["mate"] as? [String: Any],
+                   let mateUid = mate["uid"] as? String {
+                    return mateUid
                 } else {
-                    // NSError : 직접 에러를 만들때 사용
-                    // domain : 에러의 범주/이름, 모통 모듈 이름이나 기능을 넣음
-                    // code :  에러를 구분하기 위한 숫자 코드, 보통 -1 이 일반적인 실패 의미
-                    // userInfo : 에러에 대한 추가 정보 (딕셔너리), NSLocalizedDescriptionKey 가 중요
-                    // NSLocalizedDescriptionKey : .localizedDescription으로 출력될 때 사용되는 메시지를 담음.
-                    let noDataError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "문서가 존재하지 않거나 데이터가 없습니다."])
-                    single(.failure(noDataError))
+                    return "" // 메이트 없음
                 }
             }
-            return Disposables.create()
-        }
+            .catch { error in
+                // 문서가 아예 없으면 → 메이트 없음으로 간주
+                print("findMateUid: 문서 없음, UID=\(uid) → 빈 문자열 반환")
+                return .just("")
+            }
     }
     
     /// 닉네임 중복 여부 검사
@@ -324,7 +342,7 @@ class FirestoreService {
                         observer.onNext(progress)
                     }
                 }
-
+            
             return Disposables.create {
                 listener.remove()
             }
@@ -333,18 +351,18 @@ class FirestoreService {
     
     // MARK: - Delete
     func deleteDocument(collectionName: String, documentName: String) -> Single<Void> {
-            return Single.create { single in
-                let ref = self.db.collection(collectionName).document(documentName)
-                ref.delete { error in
-                    if let error = error {
-                        single(.failure(error))
-                    } else {
-                        single(.success(()))
-                    }
+        return Single.create { single in
+            let ref = self.db.collection(collectionName).document(documentName)
+            ref.delete { error in
+                if let error = error {
+                    single(.failure(error))
+                } else {
+                    single(.success(()))
                 }
-                return Disposables.create()
             }
+            return Disposables.create()
         }
+    }
     
     /* deleteDocumentRx 사용 예시
      // 사용자 정보 삭제
@@ -480,73 +498,73 @@ extension FirestoreService {
 
 extension FirestoreService {
     // 게임 종료 결과 업데이트
-        func updateMatchResult(
-            matchCode: String,
-            myUid: String,
-            mateUid: String,
-            mode: FinishViewModel.Mode,
-            isWinner: Bool,
-            goal: Int,
-            exerciseType: String
-        ) -> Completable {
-            let batch = db.batch()
-
-            // 1. matches/{matchCode} 문서 업데이트
-            let matchRef = db.collection("matches").document(matchCode)
-            var matchData: [String: Any] = [
-                "matchStatus": "finished",
-                "finishedAt": FieldValue.serverTimestamp(),
-                "players.\(myUid).status": "finished",
-                "players.\(mateUid).status": "finished"
-            ]
-            if mode == .battle {
-                matchData["players.\(myUid).isWinner"] = isWinner
-            }
-            batch.updateData(matchData, forDocument: matchRef)
-
-            // 2. users/{myUid} 문서 업데이트
-            let userRef = db.collection("users").document(myUid)
-            var userData: [String: Any] = [:]
-
-            if mode == .battle {
-                userData["winCount"] = FieldValue.increment(Int64(isWinner ? 1 : 0))
-                userData["loseCount"] = FieldValue.increment(Int64(!isWinner ? 1 : 0))
-            }
-
-            userData.merge(makeExerciseStatField(exerciseType: exerciseType, goal: goal)) { _, new in new }
-
-            batch.updateData(userData, forDocument: userRef)
-
-            return Completable.create { completable in
-                batch.commit { error in
-                    if let error = error {
-                        completable(.error(error))
-                    } else {
-                        completable(.completed)
-                    }
+    func updateMatchResult(
+        matchCode: String,
+        myUid: String,
+        mateUid: String,
+        mode: FinishViewModel.Mode,
+        isWinner: Bool,
+        goal: Int,
+        exerciseType: String
+    ) -> Completable {
+        let batch = db.batch()
+        
+        // 1. matches/{matchCode} 문서 업데이트
+        let matchRef = db.collection("matches").document(matchCode)
+        var matchData: [String: Any] = [
+            "matchStatus": "finished",
+            "finishedAt": FieldValue.serverTimestamp(),
+            "players.\(myUid).status": "finished",
+            "players.\(mateUid).status": "finished"
+        ]
+        if mode == .battle {
+            matchData["players.\(myUid).isWinner"] = isWinner
+        }
+        batch.updateData(matchData, forDocument: matchRef)
+        
+        // 2. users/{myUid} 문서 업데이트
+        let userRef = db.collection("users").document(myUid)
+        var userData: [String: Any] = [:]
+        
+        if mode == .battle {
+            userData["winCount"] = FieldValue.increment(Int64(isWinner ? 1 : 0))
+            userData["loseCount"] = FieldValue.increment(Int64(!isWinner ? 1 : 0))
+        }
+        
+        userData.merge(makeExerciseStatField(exerciseType: exerciseType, goal: goal)) { _, new in new }
+        
+        batch.updateData(userData, forDocument: userRef)
+        
+        return Completable.create { completable in
+            batch.commit { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
                 }
-                return Disposables.create()
             }
+            return Disposables.create()
         }
-
-        // 운동 타입별 누적 필드 반환
-        private func makeExerciseStatField(exerciseType: String, goal: Int) -> [String: Any] {
-            switch exerciseType {
-            case "달리기": return ["totalStats.runningKm": FieldValue.increment(Double(goal))]
-            case "걷기": return ["totalStats.walkingKm": FieldValue.increment(Double(goal))]
-            case "자전거": return ["totalStats.cyclingKm": FieldValue.increment(Double(goal))]
-            case "줄넘기": return ["totalStats.jumpRopeCount": FieldValue.increment(Int64(goal))]
-            case "플랭크": return ["totalStats.plankRounds": FieldValue.increment(Int64(goal))]
-            default: return [:]
-            }
+    }
+    
+    // 운동 타입별 누적 필드 반환
+    private func makeExerciseStatField(exerciseType: String, goal: Int) -> [String: Any] {
+        switch exerciseType {
+        case "달리기": return ["totalStats.runningKm": FieldValue.increment(Double(goal))]
+        case "걷기": return ["totalStats.walkingKm": FieldValue.increment(Double(goal))]
+        case "자전거": return ["totalStats.cyclingKm": FieldValue.increment(Double(goal))]
+        case "줄넘기": return ["totalStats.jumpRopeCount": FieldValue.increment(Int64(goal))]
+        case "플랭크": return ["totalStats.plankRounds": FieldValue.increment(Int64(goal))]
+        default: return [:]
         }
+    }
 }
 
 extension FirestoreService {
     func saveExerciseRecord(uid: String, record: ExerciseRecord) -> Completable {
         let db = Firestore.firestore()
         let ref = db.collection("users").document(uid).collection("records").document() // autoId 생성
-
+        
         let data: [String: Any] = [
             "type": record.type.rawValue,
             "date": record.date,
@@ -555,7 +573,7 @@ extension FirestoreService {
             "detail2": record.detail2,
             "detail3": record.detail3
         ]
-
+        
         return Completable.create { completable in
             ref.setData(data) { error in
                 if let error = error {
@@ -569,22 +587,23 @@ extension FirestoreService {
     }
 }
 
+// 기록 저장 관련 메서드
 extension FirestoreService {
     func fetchExerciseRecords(uid: String) -> Single<[ExerciseRecord]> {
         let ref = db.collection("users").document(uid).collection("records")
-
+        
         return Single.create { single in
             ref.getDocuments { snapshot, error in
                 if let error = error {
                     single(.failure(error))
                     return
                 }
-
+                
                 guard let documents = snapshot?.documents else {
                     single(.success([]))
                     return
                 }
-
+                
                 let records: [ExerciseRecord] = documents.compactMap { doc in
                     let data = doc.data()
                     guard let typeString = data["type"] as? String,
@@ -596,16 +615,16 @@ extension FirestoreService {
                           let detail2 = data["detail2"] as? String,
                           let detail3 = data["detail3"] as? String
                     else {
-                        print("❌ 잘못된 type 값: \(data["type"] ?? "")")
+                        print("잘못된 type 값: \(data["type"] ?? "")")
                         return nil
                     }
                     
                     guard let resultString = data["result"] as? String,
                           let result = ExerciseResult(rawValue: resultString) else {
-                        print("❌ 잘못된 result 값: \(data["result"] ?? "")")
+                        print("잘못된 result 값: \(data["result"] ?? "")")
                         return nil
                     }
-
+                    
                     return ExerciseRecord(
                         type: type,
                         date: date,
@@ -615,10 +634,10 @@ extension FirestoreService {
                         detail3: detail3
                     )
                 }
-
+                
                 single(.success(records))
             }
-
+            
             return Disposables.create()
         }
     }
@@ -642,7 +661,7 @@ extension FirestoreService {
                     return
                 }
                 print("📦 totalStats 데이터: \(stats)")
-
+                
                 let records: [WorkoutRecord] = [
                     WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Int ?? 0)", unit: "Km"),
                     WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Int ?? 0)", unit: "Km"),
@@ -652,6 +671,170 @@ extension FirestoreService {
                 ]
                 print("✅ WorkoutRecord 생성 완료: \(records)")
                 single(.success(records))
+            }
+            return Disposables.create()
+        }
+    }
+}
+
+/// 메이트 해지 사유 저장
+enum DisconnectReason {
+    case byMate // 메이트 끊기
+    case byWithdrawal // 회원탈퇴
+}
+
+// 메이트 끊기
+// 회원 탈퇴 관련 메서드
+extension FirestoreService {
+    /// 메이트를 끊을 때 호출
+    func disconnectMate(forUid myUid: String, mateUid: String, reason: DisconnectReason = .byMate) -> Single<Void> {
+        let myRef = db.collection("users").document(myUid)
+        let mateRef = db.collection("users").document(mateUid)
+        
+//        return Single.create { single in
+//            let batch = self.db.batch()
+            
+//            // A 문서 업데이트
+//            batch.updateData([
+//                "mate": FieldValue.delete(),
+//                "hasMate": false,
+//                "inviteStatus": "waiting",
+//                "updatedAt": FieldValue.serverTimestamp()
+//            ], forDocument: myRef)
+            
+//            // B 문서에 알림용 상태 전달
+//            batch.updateData([
+//                "inviteStatus": "disconnectedByMate",
+//                "updatedAt": FieldValue.serverTimestamp()
+//            ], forDocument: mateRef)
+            
+            
+            
+//            batch.commit { error in
+//                if let error = error {
+//                    single(.failure(error))
+//                } else {
+//                    single(.success(()))
+//                }
+//            }
+//            
+//            return Disposables.create()
+//        }
+        // 사용자 문서 업데이트
+        let myUpdate: [String: Any] = [
+            "mate": FieldValue.delete(),
+            "hasMate": false,
+            "inviteStatus": FieldValue.delete()
+        ]
+        
+        // 메이트 문서 업데이트
+        let mateUpdate: [String: Any] = [
+            "mate": FieldValue.delete(),
+            "hasMate": false,
+            "inviteStatus": reason == .byMate ? "disconnectedByMate" : "disconnectedByWithdrawal"
+        ]
+        
+        return Single.create { single in
+            let batch = self.db.batch()
+            batch.updateData(myUpdate, forDocument: myRef)
+            batch.updateData(mateUpdate, forDocument: mateRef)
+            batch.commit { error in
+                if let error = error {
+                    single(.failure(error))
+                } else {
+                    single(.success(()))
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    /// 메이트가 끊겼다는 알림 확인 시 자신의 데이터 정리
+    func deleteMate(myUid: String) -> Single<Void> {
+        let ref = db.collection("users").document(myUid)
+        return Single.create { single in
+            ref.updateData([
+                "mate": FieldValue.delete(),
+                "hasMate": false,
+                "inviteStatus": "waiting",
+                "updatedAt": FieldValue.serverTimestamp()
+            ]) { error in
+                if let error = error {
+                    single(.failure(error))
+                } else {
+                    single(.success(()))
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}
+
+// 메이트 게임 종료 감지
+extension FirestoreService {
+    // 메이트 종료 감지
+    func listenMateQuitStatus(matchCode: String, myUid: String) -> Observable<Bool> {
+        return Observable.create { observer in
+            let ref = self.db.collection("matches").document(matchCode)
+
+            let listener = ref.addSnapshotListener { snapshot, error in
+                if let error = error {
+                    print("❌ 리스너 에러 발생: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let snapshot = snapshot else {
+                    print("❌ 스냅샷이 nil입니다")
+                    return
+                }
+
+                guard snapshot.exists else {
+                    print("❌ 문서가 존재하지 않습니다: matches/\(matchCode)")
+                    return
+                }
+
+                guard let data = snapshot.data() else {
+                    print("❌ snapshot.data()가 nil입니다")
+                    return
+                }
+
+                print("📄 문서 데이터: \(data)")
+
+                if let quitStatus = data["quitStatus"] as? [String: Bool] {
+                    print("📡 quitStatus 감지됨: \(quitStatus)")
+                    for (uid, didQuit) in quitStatus {
+                        if uid != myUid && didQuit == true {
+                            print("⚠️ 상대방 종료 감지됨: \(uid)")
+                            observer.onNext(true)
+                            break
+                        }
+                    }
+                } else {
+                    print("❌ quitStatus 필드가 없거나 형식이 [String: Bool] 아님")
+                }
+            }
+
+            return Disposables.create {
+                listener.remove()
+            }
+        }
+    }
+    
+    // 내 종료 업데이트
+    func updateMyQuitStatus(matchCode: String, uid: String) -> Completable {
+        let ref = db.collection("matches").document(matchCode)
+        return Completable.create { completable in
+            ref.setData([
+                "quitStatus": [
+                    uid: true
+                ]
+            ], merge: true) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    print("✅ quitStatus 저장 성공 [Map 구조]")
+                    completable(.completed)
+                }
             }
             return Disposables.create()
         }

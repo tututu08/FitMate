@@ -18,13 +18,17 @@ class RunningBattleViewController: BaseViewController {
     private let mateQuitRelay = PublishRelay<Void>()
     private let mateDistanceRelay = PublishRelay<Double>()
     
+    private let exerciseType: String
+    private let goalDistance: Int
     private let matchCode: String
     private let mateUid: String
     private let myUid: String
     private let myCharacter: String
     private let mateCharacter: String
     
-    init(goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
+    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
+        self.exerciseType = exerciseType
+        self.goalDistance = goalDistance
         self.matchCode = matchCode
         self.myUid = myUid
         self.mateUid = mateUid
@@ -49,7 +53,7 @@ class RunningBattleViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        rootView.updateGoal("\(viewModel.goalDistance)Km")
+        rootView.updateGoal("\(exerciseType) \(viewModel.goalDistance)Km")
         rootView.updateMyCharacter(myCharacter)
         rootView.updateMateCharacter(mateCharacter)
         
@@ -69,7 +73,8 @@ class RunningBattleViewController: BaseViewController {
                     },
                     onQuit: { [weak self] in
                         // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        self?.viewModel.finish(success: false)
+                        //self?.viewModel.finish(success: false)
+                        self?.quitRelay.accept(())
                         // 혹은 didFinishRelay 트리거 등
                     }
                 )
@@ -114,16 +119,28 @@ class RunningBattleViewController: BaseViewController {
         
         output.didFinish
             .emit(onNext: { [weak self] (success, myDistance) in
-                self?.navigateToFinish(success: success, distance: myDistance)
+                self?.navigateToFinish(success: success)
+            })
+            .disposed(by: disposeBag)
+        
+//        mateQuitRelay
+//            .bind(onNext: { [weak self] in
+//                self?.receiveMateQuit()
+//            })
+//            .disposed(by: disposeBag)
+        
+        output.mateQuitEvent
+            .emit(onNext: { [weak self] in
+                self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
     }
     
-    private func navigateToFinish(success: Bool, distance: Double) {
+    private func navigateToFinish(success: Bool) {
         let finishVM = FinishViewModel(
             mode: .battle,
-            sport: "달리기",
-            goal: Int(distance),
+            sport: exerciseType,
+            goal: goalDistance,
             goalUnit: "Km",
             character: myCharacter,
             success: success
@@ -139,11 +156,17 @@ class RunningBattleViewController: BaseViewController {
     }
     
     func receiveMateQuit()    {
+        
+        viewModel.stopLocationUpdates()  // 기록은 즉시 멈춰야 하므로 위치 추적은 즉시 정지
+        
         rootView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                self?.navigationController?.popToRootViewController(animated: true)
+                //self?.navigationController?.popToRootViewController(animated: true)
+                
+                self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
+                self?.navigateToFinish(success: true)
             }
         )
     }

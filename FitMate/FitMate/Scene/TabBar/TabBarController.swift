@@ -5,12 +5,18 @@
 //  Created by 김은서 on 6/6/25.
 //
 import UIKit
+import RxSwift
+import RxCocoa
 
 class TabBarController: UITabBarController {
     
     // 로그인 유저의 uid
     private let uid: String
+    private let disposeBag = DisposeBag()
     
+    // 운동 초대 수락 시 Firestore 상태 변경을 위한 ViewModel
+    private let matchAcceptViewModel = MatchAcceptViewModel()
+        
     lazy var mainVC = MainViewController(uid: self.uid)
     
     // 초기화 함수
@@ -32,6 +38,9 @@ class TabBarController: UITabBarController {
         
         // 운동 매칭 글로벌 리스너 서비스 시작
         MatchEventService.shared.startListening(for: uid)
+        
+        // 전역 초대 알림 감지 및 처리 로직 실행
+        observeMatchInvites()
     }
     
     deinit {
@@ -75,6 +84,46 @@ class TabBarController: UITabBarController {
         tabBar.tintColor = .secondary400
         tabBar.unselectedItemTintColor = .background400
         tabBar.isTranslucent = false
+    }
+    
+    // matchEventRelay를 전역에서 구독하여 초대 수신 시 alert 띄우기
+    private func observeMatchInvites() {
+        MatchEventService.shared.matchEventRelay
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] matchCode in
+                self?.presentMatchAlert(matchCode: matchCode)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 초대 alert 띄우고 수락/거절 처리
+    private func presentMatchAlert(matchCode: String) {
+        let alert = UIAlertController(
+            title: "운동 메이트 요청",
+            message: "운동 초대가 도착했습니다!",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "수락", style: .default, handler: { [weak self] _ in
+            guard let self else { return }
+            self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: true)
+            
+            let gameVC = LoadingViewController(uid: self.uid, matchCode: matchCode)
+            gameVC.hidesBottomBarWhenPushed = true
+            
+            if let nav = self.selectedViewController as? UINavigationController {
+                nav.pushViewController(gameVC, animated: true)
+            } else {
+                print("❌ selectedViewController is not UINavigationController")
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "거절", style: .destructive, handler: { [weak self] _ in
+            guard let self else { return }
+            self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
+        }))
+        
+        UIApplication.topViewController()?.present(alert, animated: true)
     }
     
     class CustomTabBar: UITabBar {
