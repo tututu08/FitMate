@@ -211,8 +211,14 @@ final class SettingViewController: UIViewController {
             .subscribe(
                 onNext: { [weak self] in
                     print("메이트 연결 끊기 완료")
-                    self?.mateEndPopupView?.removeFromSuperview()
-                    self?.settingView.isHidden = false
+                    guard let self else { return }
+                    guard let presentingVC = self.presentingViewController else { return }
+                    self.dismiss(animated: true) {
+                        let tabBarVC = TabBarController(uid: self.uid)
+                        tabBarVC.modalPresentationStyle = .fullScreen
+                        presentingVC.present(tabBarVC, animated: true)
+                    }
+                    
                 },
                 onError: { error in
                     print("끊기 실패: \(error.localizedDescription)")
