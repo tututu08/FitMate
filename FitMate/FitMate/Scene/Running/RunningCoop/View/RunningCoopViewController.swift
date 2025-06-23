@@ -21,6 +21,7 @@ final class RunningCoopViewController: BaseViewController {
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     private let goalselecionViewModel = GoalSelectionViewModel()
     
+    private let exerciseType: String
     private let matchCode: String
     private let mateUid: String
     private let myUid: String
@@ -29,7 +30,8 @@ final class RunningCoopViewController: BaseViewController {
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
 
-    init(goalDistance: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+        self.exerciseType = exerciseType
         self.matchCode = matchCode
         self.myUid = myUid
         self.mateUid = mateUid
@@ -62,8 +64,8 @@ final class RunningCoopViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let goalTitle = goalselecionViewModel.selectedGoalTitleRelay.value
-        rootView.updateGoal("\(goalTitle) \(runningCoopViewModel.goalDistance)Km")
+        //let goalTitle = goalselecionViewModel.selectedGoalTitleRelay.value
+        rootView.updateGoal("\(exerciseType) \(runningCoopViewModel.goalDistance)Km")
         rootView.updateMyCharacter(runningCoopViewModel.myCharacter)
         rootView.updateMateCharacter(runningCoopViewModel.mateCharacter)
         
