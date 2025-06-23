@@ -106,16 +106,25 @@ class TabBarController: UITabBarController {
         
         alert.addAction(UIAlertAction(title: "수락", style: .default, handler: { [weak self] _ in
             guard let self else { return }
-            self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: true)
-            
-            let gameVC = LoadingViewController(uid: self.uid, matchCode: matchCode)
-            gameVC.hidesBottomBarWhenPushed = true
-            
-            if let nav = self.selectedViewController as? UINavigationController {
-                nav.pushViewController(gameVC, animated: true)
-            } else {
-                print("❌ selectedViewController is not UINavigationController")
-            }
+            // matchStatus 최신값 확인!
+            FirestoreService.shared.fetchDocument(collectionName: "matches", documentName: matchCode)
+                .observe(on: MainScheduler.instance)
+                .subscribe(onSuccess: { data in
+                    if let matchStatus = data["matchStatus"] as? String, matchStatus == "canceled" {
+                        // 이미 취소된 운동!
+                        let cancelAlert = UIAlertController(title: "매칭 취소", message: "이미 취소된 운동입니다.", preferredStyle: .alert)
+                        cancelAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                            self.popToTabBar() // 또는 popToRootViewController
+                        }))
+                        UIApplication.topViewController()?.present(cancelAlert, animated: true)
+                        return
+                    }
+                    let gameVC = LoadingViewController(uid: self.uid, matchCode: matchCode)
+                    gameVC.hidesBottomBarWhenPushed = true
+                    if let nav = self.selectedViewController as? UINavigationController {
+                        nav.pushViewController(gameVC, animated: true)
+                    }
+                }).disposed(by: self.disposeBag)
         }))
         
         alert.addAction(UIAlertAction(title: "거절", style: .destructive, handler: { [weak self] _ in
