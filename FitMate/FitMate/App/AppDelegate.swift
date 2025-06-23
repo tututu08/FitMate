@@ -10,6 +10,9 @@ import FirebaseCore // Firebase
 import GoogleSignIn // FirebaseAuth google 로그인
 import KakaoSDKAuth
 import KakaoSDKCommon
+import FirebaseMessaging
+import UserNotifications
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
