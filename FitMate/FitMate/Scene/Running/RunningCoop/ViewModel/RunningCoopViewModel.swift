@@ -30,6 +30,9 @@ final class RunningCoopViewModel: ViewModelType {
     
     var myDistance: Int { Int(myDistanceRelay.value) }
     var mateDistance: Int { Int(mateDistanceRelay.value) }
+    
+    let mateQuitRelay = PublishRelay<Void>()
+    
     init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
         self.goalDistance = goalDistance
         self.myCharacter = myCharacter
@@ -50,6 +53,7 @@ final class RunningCoopViewModel: ViewModelType {
         let mateDistanceText: Driver<String>
         let progress: Driver<CGFloat>
         //let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
+        let mateQuitEvent: Signal<Void>
         let didFinish: Signal<(Bool, Double)>
     }
     
@@ -57,6 +61,7 @@ final class RunningCoopViewModel: ViewModelType {
         input.startTracking
             .subscribe(onNext: { [weak self] in
                 self?.startLocationUpdates()
+                self?.bindMateQuitListener()
             })
             .disposed(by: disposeBag)
         
@@ -119,6 +124,7 @@ final class RunningCoopViewModel: ViewModelType {
             mateDistanceText: mateText,
             progress: progress,
             //didFinish: didFinish
+            mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ()),
             didFinish: didFinishRelay.asSignal(onErrorJustReturn: (false, 0.0))
         )
     }
@@ -153,8 +159,20 @@ final class RunningCoopViewModel: ViewModelType {
     }
     private func confirmQuit(isMine: Bool) {
         locationManager.stopUpdatingLocation()
-        finish(success: false)
+        // finish(success: false)
         // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+        
+        // 그만하기 버튼 탭 시, QuitStatus 업데이트
+        if isMine {
+            FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUid)
+                .subscribe(onCompleted: {
+                    print("✅ quitStatus 저장 성공")
+                }, onError: { error in
+                    print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
+                })
+                .disposed(by: disposeBag)
+        }
+        finish(success: false)
     }
     func finish(success: Bool) {
         locationManager.stopUpdatingLocation()
@@ -167,6 +185,22 @@ final class RunningCoopViewModel: ViewModelType {
         if Int(myDistanceRelay.value + mateDistanceRelay.value) >= goalDistance {
             finish(success: true)
         }
+    }
+    
+    // 상대방 종료 감지
+    private func bindMateQuitListener() {
+        FirestoreService.shared.listenMateQuitStatus(matchCode: matchCode, myUid: myUid)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] didQuit in
+                print("👀 상대방 종료 감지됨: \(didQuit)")
+                guard didQuit else { return }
+                self?.mateQuitRelay.accept(())
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func stopLocationUpdates() {
+        locationManager.stopUpdatingLocation()
     }
     
     deinit {
