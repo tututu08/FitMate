@@ -769,3 +769,74 @@ extension FirestoreService {
         }
     }
 }
+
+// 메이트 게임 종료 감지
+extension FirestoreService {
+    // 메이트 종료 감지
+    func listenMateQuitStatus(matchCode: String, myUid: String) -> Observable<Bool> {
+        return Observable.create { observer in
+            let ref = self.db.collection("matches").document(matchCode)
+
+            let listener = ref.addSnapshotListener { snapshot, error in
+                if let error = error {
+                    print("❌ 리스너 에러 발생: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let snapshot = snapshot else {
+                    print("❌ 스냅샷이 nil입니다")
+                    return
+                }
+
+                guard snapshot.exists else {
+                    print("❌ 문서가 존재하지 않습니다: matches/\(matchCode)")
+                    return
+                }
+
+                guard let data = snapshot.data() else {
+                    print("❌ snapshot.data()가 nil입니다")
+                    return
+                }
+
+                print("📄 문서 데이터: \(data)")
+
+                if let quitStatus = data["quitStatus"] as? [String: Bool] {
+                    print("📡 quitStatus 감지됨: \(quitStatus)")
+                    for (uid, didQuit) in quitStatus {
+                        if uid != myUid && didQuit == true {
+                            print("⚠️ 상대방 종료 감지됨: \(uid)")
+                            observer.onNext(true)
+                            break
+                        }
+                    }
+                } else {
+                    print("❌ quitStatus 필드가 없거나 형식이 [String: Bool] 아님")
+                }
+            }
+
+            return Disposables.create {
+                listener.remove()
+            }
+        }
+    }
+    
+    // 내 종료 업데이트
+    func updateMyQuitStatus(matchCode: String, uid: String) -> Completable {
+        let ref = db.collection("matches").document(matchCode)
+        return Completable.create { completable in
+            ref.setData([
+                "quitStatus": [
+                    uid: true
+                ]
+            ], merge: true) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    print("✅ quitStatus 저장 성공 [Map 구조]")
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}

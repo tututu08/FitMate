@@ -28,6 +28,8 @@ final class RunningBattleViewModel: ViewModelType {
     let matchCode: String
     let myUid: String
     
+    let mateQuitRelay = PublishRelay<Void>()
+    
     init(goalDistance: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUid: String) {
         self.goalDistance = goalDistance
         self.myCharacter = myCharacter
@@ -49,17 +51,23 @@ final class RunningBattleViewModel: ViewModelType {
         let myProgress: Driver<CGFloat>
         let mateProgress: Driver<CGFloat>
         let didFinish: Signal<(Bool, Double)>        // 종료 알림(성공/실패)
+        let mateQuitEvent: Signal<Void>
     }
     
     func transform(input: Input) -> Output {
         input.startTracking
             .subscribe(onNext: { [weak self] in
                 self?.startLocationUpdates()
+                
+                // 메이트 종료 감지
+                self?.bindMateQuitListener()
             })
             .disposed(by: disposeBag)
         
         input.quit
-            .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
+            .subscribe(onNext: { [weak self] in
+                self?.confirmQuit(isMine: true)
+            })
             .disposed(by: disposeBag)
         
         input.mateQuit
@@ -130,7 +138,8 @@ final class RunningBattleViewModel: ViewModelType {
             mateDistanceText: mateDistanceText,
             myProgress: myProgress,
             mateProgress: mateProgress,
-            didFinish: didFinishRelay.asSignal(onErrorJustReturn: (false, 0.0))
+            didFinish: didFinishRelay.asSignal(onErrorJustReturn: (false, 0.0)),
+            mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ())
         )
     }
     
@@ -166,13 +175,41 @@ final class RunningBattleViewModel: ViewModelType {
     
     private func confirmQuit(isMine: Bool) {
         locationManager.stopUpdatingLocation()
-        finish(success: false)
+        //finish(success: false)
         // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+        
+        // 그만하기 버튼 탭 시, QuitStatus 업데이트
+        if isMine {
+            FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUid)
+                .subscribe(onCompleted: {
+                    print("✅ quitStatus 저장 성공")
+                }, onError: { error in
+                    print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
+                })
+                .disposed(by: disposeBag)
+        }
+        finish(success: false)
     }
     
     func finish(success: Bool) {
         locationManager.stopUpdatingLocation()
         didFinishRelay.accept((success,  Double(myDistance)))
+    }
+    
+    // 상대방 종료 감지
+    private func bindMateQuitListener() {
+        FirestoreService.shared.listenMateQuitStatus(matchCode: matchCode, myUid: myUid)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] didQuit in
+                print("👀 상대방 종료 감지됨: \(didQuit)")
+                guard didQuit else { return }
+                self?.mateQuitRelay.accept(())
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func stopLocationUpdates() {
+        locationManager.stopUpdatingLocation()
     }
     
     deinit {

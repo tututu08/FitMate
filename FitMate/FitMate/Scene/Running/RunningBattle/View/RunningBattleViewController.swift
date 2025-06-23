@@ -73,7 +73,8 @@ class RunningBattleViewController: BaseViewController {
                     },
                     onQuit: { [weak self] in
                         // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        self?.viewModel.finish(success: false)
+                        //self?.viewModel.finish(success: false)
+                        self?.quitRelay.accept(())
                         // 혹은 didFinishRelay 트리거 등
                     }
                 )
@@ -121,6 +122,18 @@ class RunningBattleViewController: BaseViewController {
                 self?.navigateToFinish(success: success)
             })
             .disposed(by: disposeBag)
+        
+//        mateQuitRelay
+//            .bind(onNext: { [weak self] in
+//                self?.receiveMateQuit()
+//            })
+//            .disposed(by: disposeBag)
+        
+        output.mateQuitEvent
+            .emit(onNext: { [weak self] in
+                self?.receiveMateQuit()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func navigateToFinish(success: Bool) {
@@ -143,11 +156,17 @@ class RunningBattleViewController: BaseViewController {
     }
     
     func receiveMateQuit()    {
+        
+        viewModel.stopLocationUpdates()  // 기록은 즉시 멈춰야 하므로 위치 추적은 즉시 정지
+        
         rootView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                self?.navigationController?.popToRootViewController(animated: true)
+                //self?.navigationController?.popToRootViewController(animated: true)
+                
+                self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
+                self?.navigateToFinish(success: true)
             }
         )
     }
