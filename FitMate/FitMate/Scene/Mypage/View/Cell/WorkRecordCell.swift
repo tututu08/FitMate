@@ -97,9 +97,26 @@ final class WorkRecordCell: UICollectionViewCell {
     }
 
     func configure(with record: WorkoutRecord) {
+//        typeLabel.text = record.type
+//        totalLabel.text = record.totalDistance
+//        unitLabel.text = record.unit
+        
         typeLabel.text = record.type
-        totalLabel.text = record.totalDistance
         unitLabel.text = record.unit
+        
+        // 💡 문자열을 Double로 변환하여 포맷 처리
+        if let value = Double(record.totalDistance) {
+            // 너무 작은 음수 방지: -0.00 대신 0.00
+            let cleanedValue = abs(value) < 0.01 ? 0.0 : value
+            
+            if record.unit == "Km" {
+                totalLabel.text = String(format: "%.2f", cleanedValue)
+            } else {
+                totalLabel.text = "\(Int(cleanedValue))"
+            }
+        } else {
+            totalLabel.text = "0"
+        }
 
         switch record.type {
         case "걷기":

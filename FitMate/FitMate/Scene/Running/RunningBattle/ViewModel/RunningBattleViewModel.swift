@@ -12,7 +12,7 @@ final class RunningBattleViewModel: ViewModelType {
     private var previousLocation: CLLocation?
     private let didFinishRelay = PublishRelay<(Bool, Double)>()
     // 내 누적 거리 (m)
-    private let myDistanceRelay = BehaviorRelay<Double>(value: 0)
+    let myDistanceRelay = BehaviorRelay<Double>(value: 0)
     // 메이트 누적 거리 (m)
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     
