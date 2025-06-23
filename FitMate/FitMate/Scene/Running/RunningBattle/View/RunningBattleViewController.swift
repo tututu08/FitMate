@@ -19,6 +19,7 @@ class RunningBattleViewController: BaseViewController {
     private let mateDistanceRelay = PublishRelay<Double>()
     
     private let exerciseType: String
+    private let goalDistance: Int
     private let matchCode: String
     private let mateUid: String
     private let myUid: String
@@ -27,6 +28,7 @@ class RunningBattleViewController: BaseViewController {
     
     init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
         self.exerciseType = exerciseType
+        self.goalDistance = goalDistance
         self.matchCode = matchCode
         self.myUid = myUid
         self.mateUid = mateUid
@@ -116,16 +118,16 @@ class RunningBattleViewController: BaseViewController {
         
         output.didFinish
             .emit(onNext: { [weak self] (success, myDistance) in
-                self?.navigateToFinish(success: success, distance: myDistance)
+                self?.navigateToFinish(success: success)
             })
             .disposed(by: disposeBag)
     }
     
-    private func navigateToFinish(success: Bool, distance: Double) {
+    private func navigateToFinish(success: Bool) {
         let finishVM = FinishViewModel(
             mode: .battle,
-            sport: "달리기",
-            goal: Int(distance),
+            sport: exerciseType,
+            goal: goalDistance,
             goalUnit: "Km",
             character: myCharacter,
             success: success
