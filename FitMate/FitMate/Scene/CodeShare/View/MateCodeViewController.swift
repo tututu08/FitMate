@@ -48,7 +48,6 @@ final class MateCodeViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        bindViewModel()
         setupActions()
     }
     
@@ -108,26 +107,23 @@ final class MateCodeViewController: BaseViewController {
     
     // MARK: - Alert
     /// ViewModel이 방출한 AlertType 에 따라 알림창 구성 및 출력
-    private func presentAlert(for alert: AlertType) {
-        let alertController: UIAlertController
-        
+    private func presentAlert(for alert: CustomAlertType) {
+        let customType: CustomAlertType
+
         switch alert {
         case .inviteSent(let nickname):
-            alertController = UIAlertController(
-                title: "초대 전송 완료",
-                message: "\(nickname)님에게 메이트 요청을 보냈습니다.",
-                preferredStyle: .alert
-            )
+            customType = .inviteSent(nickname: nickname)
         case .requestFailed(let message):
-            alertController = UIAlertController(
-                title: "초대 요청 실패",
-                message: message,
-                preferredStyle: .alert
-            )
+            customType = .requestFailed(message: message)
+        case .mateRequest(let nickname):
+            customType = .mateRequest(nickname: nickname)
+        case .rejectRequest(message: let message):
+            customType = .rejectRequest(message: message)
         }
-        
-        alertController.addAction(UIAlertAction(title: "확인", style: .default))
-        self.present(alertController, animated: true)
+
+        let alertVC = CustomAlertViewController(alertType: customType)
+        self.present(alertVC, animated: true)
     }
+
     
 }
