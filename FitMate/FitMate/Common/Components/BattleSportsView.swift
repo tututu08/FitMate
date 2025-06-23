@@ -14,7 +14,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "대결 모드"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 22)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
     
@@ -37,7 +37,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "나"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 25)
+        label.font = .boldSystemFont(ofSize: 24)
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
@@ -54,7 +54,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "메이트"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 25)
+        label.font = .boldSystemFont(ofSize: 24)
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
@@ -102,7 +102,8 @@ class BattleSportsView: BaseView {
     private let myProgressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.primary500.cgColor
+        view.layer.borderColor = UIColor.primary200.cgColor
+        view.layer.cornerRadius = 5
         return view
     }()
     
@@ -116,6 +117,7 @@ class BattleSportsView: BaseView {
         let view = UIView()
         view.layer.borderWidth = 2
         view.layer.borderColor = UIColor.lightGray.cgColor
+        view.layer.cornerRadius = 5
         return view
     }()
     
@@ -160,14 +162,14 @@ class BattleSportsView: BaseView {
     let stopButton: UIButton = {
         let button = UIButton()
         button.setTitle("그만하기", for: .normal)
-        button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 20)
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         button.setTitleColor(.white, for: .normal)
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         return button
     }()
     
     override func configureUI() {
-        self.backgroundColor = .black
+        self.backgroundColor = .background800
         goalImage.addSubview(goalLabel)
         myProgressBackgroundView.addSubview(myProgressForegroundView)
         mateProgressBackgroundView.addSubview(mateProgressForegroundView)

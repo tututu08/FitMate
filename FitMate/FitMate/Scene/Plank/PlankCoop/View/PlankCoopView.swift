@@ -173,7 +173,7 @@ class PlankCoopView: BaseView {
     
     // UI 구성 요소 추가
     override func configureUI() {
-        self.backgroundColor = .black
+        self.backgroundColor = .background800
         goalImage.addSubview(goalLabel) // 목표 라벨을 이미지 위에 올림(중앙 표시)
         progressBackgroundView.addSubview(progressForegroundView) // 진행률 바 layering
         coopImage.addSubview(stateLabel)
