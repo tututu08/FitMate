@@ -64,6 +64,7 @@ class SocialLoginButton: UIButton {
         stack.axis = .horizontal
         stack.spacing = 12
         stack.alignment = .center
+        stack.isUserInteractionEnabled = false
         return stack
     }()
     

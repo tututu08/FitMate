@@ -62,10 +62,15 @@ class MainViewController: BaseViewController {
                    let mate = data["mate"] as? [String: Any],
                    let mateNickname = mate["nickname"] as? String {
                     self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
+                    if let startDateString = mate["startDate"] as? String,
+                           let dDay = calculateDDay(from: startDateString) {
+                            self.mainView.dDaysLabel.text = "\(dDay)일째"
+                        }
                     UIView.animate(withDuration: 0.2) {
                         self.mainView.alpha = 1
                     }
                 } else {
+                    self.mainView.dDaysLabel.text = "0일째..."
                     self.mainView.changeAvatarLayout(hasMate: false, myNickname: myNickname, mateNickname: "")
                     UIView.animate(withDuration: 0.2) {
                         self.mainView.alpha = 1
@@ -170,6 +175,15 @@ class MainViewController: BaseViewController {
                 print("삭제 실패:", error.localizedDescription)
             })
             .disposed(by: disposeBag)
+    }
+    func calculateDDay(from startDateString: String) -> Int? {
+        let formatter = FirestoreService.dateFormatter
+        guard let startDate = formatter.date(from: startDateString) else { return nil }
+        let calendar = Calendar(identifier: .gregorian)
+        let today = calendar.startOfDay(for: Date())
+        let start = calendar.startOfDay(for: startDate)
+        let components = calendar.dateComponents([.day], from: start, to: today)
+        return (components.day ?? 0) + 1 // 연결일도 포함해서 +1
     }
 }
 
