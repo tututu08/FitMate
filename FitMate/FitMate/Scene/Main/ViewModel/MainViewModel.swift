@@ -17,9 +17,6 @@ class MainViewModel {
     private let hasNoMateRelay = PublishRelay<Void>() // 메이트가 없을 때
     private let moveToExerciseRelay = PublishRelay<Void>() // 메이트가 있을 때
     private let moveToMatePageRelay =  PublishRelay<String>()
-    
-    // 운동 초대 이벤트: MatchEventService에서 공유되는 relay 사용
-    private let matchEventRelay = MatchEventService.shared.matchEventRelay
    
     let showMateDisconnectedAlert = PublishRelay<Void>() // 메이트 끊김
     let showMateWithdrawnAlert = PublishRelay<Void>() // 메이트 회원 탈퇴
@@ -68,7 +65,6 @@ class MainViewModel {
     struct Output {
         let hasNoMate: Driver<Void> // 메이트 없을 때 alert 띄움
         let moveToExercise: Driver<Void> // 메이트 있을 때 운동 선택 화면 이동
-        let showMatchEvent: Driver<String> // 운동 초대 이벤트 수신
         let moveToMatePage: Driver<String>// 메이트 uid 전달
         let showMateDisconnected: Driver<Void>      // 끊긴 경우
         let showMateWithdrawn: Driver<Void>         // 탈퇴한 경우
@@ -117,14 +113,12 @@ class MainViewModel {
         // Output: Driver로 변환하여 뷰에 전달
         let hasNoMate = hasNoMateRelay.asDriver(onErrorDriveWith: .empty())
         let moveToExercise = moveToExerciseRelay.asDriver(onErrorDriveWith: .empty())
-        let showMatchEvent = matchEventRelay.asDriver(onErrorDriveWith: .empty())
         let moveToMatePage = moveToMatePageRelay.asDriver(onErrorDriveWith: .empty())
         let showMateDisconnected = showMateDisconnectedAlert.asDriver(onErrorDriveWith: .empty())
         let showMateWithdrawn = showMateWithdrawnAlert.asDriver(onErrorDriveWith: .empty())
         return Output(
             hasNoMate: hasNoMate,
             moveToExercise: moveToExercise,
-            showMatchEvent: showMatchEvent,
             moveToMatePage: moveToMatePage,
             showMateDisconnected: showMateDisconnected,
             showMateWithdrawn: showMateWithdrawn
