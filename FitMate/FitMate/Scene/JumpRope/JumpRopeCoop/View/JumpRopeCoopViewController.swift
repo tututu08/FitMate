@@ -63,8 +63,10 @@ class JumpRopeCoopViewController: BaseViewController {
                     },
                     onQuit: { [weak self] in
                         // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        self?.viewModel.finish(success: false)
+                        //self?.viewModel.finish(success: false)
                         // 혹은 didFinishRelay 트리거 등
+                        
+                        self?.quitRelay.accept(())
                     }
                 )
             }
@@ -102,34 +104,45 @@ class JumpRopeCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.didFinish
-                    .emit(onNext: { [weak self] success in
-                        self?.navigateToFinish(success: success)
-                    })
-                    .disposed(by: disposeBag)
-            }
-
-            private func navigateToFinish(success: Bool) {
-                let finishVM = FinishViewModel(
-                    mode: .cooperation,
-                    sport: "줄넘기",
-                    goal: viewModel.goalCount,
-                    goalUnit: "개",
-                    character: myCharacter,
-                    success: success
-                )
-                let vc = FinishViewController(uid: myUid,
-                                              mateUid: mateUid,
-                                              matchCode: matchCode,
-                                              viewModel: finishVM)
-                vc.modalPresentationStyle = .fullScreen
-                present(vc, animated: true)
+            .emit(onNext: { [weak self] success in
+                self?.navigateToFinish(success: success)
+            })
+            .disposed(by: disposeBag)
+        
+        output.mateQuitEvent
+            .emit(onNext: { [weak self] in
+                self?.receiveMateQuit()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    
+    private func navigateToFinish(success: Bool) {
+        let finishVM = FinishViewModel(
+            mode: .cooperation,
+            sport: "줄넘기",
+            goal: viewModel.goalCount,
+            goalUnit: "개",
+            character: myCharacter,
+            success: success
+        )
+        let vc = FinishViewController(uid: myUid,
+                                      mateUid: mateUid,
+                                      matchCode: matchCode,
+                                      viewModel: finishVM)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
     }
     func receiveMateQuit()    {
+        viewModel.stopLocationUpdates()
         sportsView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                self?.navigationController?.popToRootViewController(animated: true)
+                //self?.navigationController?.popToRootViewController(animated: true)
+                
+                self?.viewModel.finish(success: false) // ✅ 위치 정지 및 기록 저장
+                self?.navigateToFinish(success: false)
             }
         )
     }

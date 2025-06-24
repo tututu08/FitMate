@@ -21,6 +21,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
         let mateCountText: Driver<String>     // 메이트 점프 수(문자열)
         let progress: Driver<CGFloat>         // 전체 진행률(비율)
         let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
+        let mateQuitEvent: Signal<Void>
         
     }
     
@@ -31,7 +32,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
     private let myCountRelay = BehaviorRelay<Int>(value: 0)
     private let mateCountRelay = BehaviorRelay<Int>(value: 0)
     private let didFinishRelay = PublishRelay<Bool>()
-    
+    let mateQuitRelay = PublishRelay<Void>()
     
     // 목표 카운트(외부에서 입력, 예: 100)
     let goalCount: Int
@@ -66,6 +67,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
         input.start
             .subscribe(onNext: { [weak self] in
                 self?.startAccelerometer()
+                self?.bindMateQuitListener()
             })
             .disposed(by: disposeBag)
         
@@ -112,7 +114,8 @@ final class JumpRopeCoopViewModel: ViewModelType {
             myCountText: myText,
             mateCountText: mateText,
             progress: progress,
-            didFinish: didFinish
+            didFinish: didFinish,
+            mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ()),
             
         )
     }
@@ -144,8 +147,20 @@ final class JumpRopeCoopViewModel: ViewModelType {
     }
     private func confirmQuit(isMine: Bool) {
         motionManager.stopAccelerometerUpdates()
-        finish(success: false)
+        //finish(success: false)
         // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+        
+        // 그만하기 버튼 탭 시, QuitStatus 업데이트
+        if isMine {
+            FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUID)
+                .subscribe(onCompleted: {
+                    print("✅ quitStatus 저장 성공")
+                }, onError: { error in
+                    print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
+                })
+                .disposed(by: disposeBag)
+        }
+        finish(success: false)
     }
     
     func finish(success: Bool) {
@@ -171,6 +186,24 @@ final class JumpRopeCoopViewModel: ViewModelType {
     //                }
     //        }
     // 뷰모델 소멸시 센서 종료
+    
+    // 상대방 종료 감지
+    private func bindMateQuitListener() {
+        FirestoreService.shared.listenMateQuitStatus(matchCode: matchCode, myUid: myUID)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] didQuit in
+                print("👀 상대방 종료 감지됨: \(didQuit)")
+                guard didQuit else { return }
+                self?.mateQuitRelay.accept(())
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func stopLocationUpdates() {
+        motionManager.stopAccelerometerUpdates()
+    }
+    
+    
     deinit {
         motionManager.stopAccelerometerUpdates()
     }
