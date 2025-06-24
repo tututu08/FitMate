@@ -25,14 +25,16 @@ final class FinishViewModel: ViewModelType {
     let sport: String
     let goal: Int
     private let goalUnit: String
+    let myDistance: Double
     private let character: String
     let success: Bool
 
-    init(mode: Mode, sport: String, goal: Int, goalUnit: String, character: String, success: Bool) {
+    init(mode: Mode, sport: String, goal: Int, goalUnit: String, myDistance: Double = 0.0, character: String, success: Bool) {
         self.mode = mode
         self.sport = sport
         self.goal = goal
         self.goalUnit = goalUnit
+        self.myDistance = myDistance      // 실제 달성 거리 (ex. 2.4)
         self.character = character
         self.success = success
     }
@@ -42,8 +44,9 @@ final class FinishViewModel: ViewModelType {
         let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
 //        let reward = Observable.just("\(rewardCoin)")
 //        let hideCoin = Observable.just(!success)
+        let myDistance: Double // 실제 달성 거리 (ex. 2.4Km)
         let result = Observable.just(resultMessage)
-        let resultImage = Observable.just(success ? "win" : "lose")
+        let resultImage = Observable.just(success ? "win" : "Lose")
         let characterImage = Observable.just(success ? character : "\(character)Lose")
 
         return Output(
@@ -125,8 +128,10 @@ extension FinishViewModel {
                   let players = data["players"] as? [String: Any],
                   let myData = players[uid] as? [String: Any],
                   let mateData = players[mateUid] as? [String: Any],
-                  let myProgress = myData["progress"] as? Int,
-                  let mateProgress = mateData["progress"] as? Int else {
+//                  let myProgress = myData["progress"] as? Int,
+//                  let mateProgress = mateData["progress"] as? Int else {
+                    let myProgress = myData["progress"] as? Double,
+                    let mateProgress = mateData["progress"] as? Double else {
                 return .error(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "필드 누락 또는 변환 실패"]))
             }
 
@@ -157,7 +162,7 @@ extension FinishViewModel {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd"
+        formatter.dateFormat = "yyyy.MM.dd HH:mm"
         return formatter.string(from: date)
     }
 }

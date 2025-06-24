@@ -119,7 +119,7 @@ class RunningBattleViewController: BaseViewController {
         
         output.didFinish
             .emit(onNext: { [weak self] (success, myDistance) in
-                self?.navigateToFinish(success: success)
+                self?.navigateToFinish(success: success, myDistance: myDistance)
             })
             .disposed(by: disposeBag)
         
@@ -136,12 +136,13 @@ class RunningBattleViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    private func navigateToFinish(success: Bool) {
+    private func navigateToFinish(success: Bool, myDistance: Double) {
         let finishVM = FinishViewModel(
             mode: .battle,
             sport: exerciseType,
             goal: goalDistance,
             goalUnit: "Km",
+            myDistance: myDistance,      // 실제 달성 거리 (ex. 2.4)
             character: myCharacter,
             success: success
         )
@@ -166,7 +167,7 @@ class RunningBattleViewController: BaseViewController {
                 //self?.navigationController?.popToRootViewController(animated: true)
                 
                 self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
-                self?.navigateToFinish(success: true)
+                self?.navigateToFinish(success: true, myDistance: self?.viewModel.myDistanceRelay.value ?? 0.0)
             }
         )
     }

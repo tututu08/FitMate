@@ -1,3 +1,4 @@
+
 import UIKit
 import SnapKit
 
@@ -29,7 +30,7 @@ final class MypageView: UIView {
 
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "KappyAlone")
+        imageView.image = UIImage(named: "kaepy")
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = UIColor(named: "Secondary50")
         imageView.layer.cornerRadius = 4
@@ -85,7 +86,7 @@ final class MypageView: UIView {
 
     let levelTitle: UILabel = {
         let label = UILabel()
-        label.text = "운동 레벨"
+        label.text = "누적 기록"
         label.textColor = .white
         label.font = .systemFont(ofSize: 20, weight: .semibold)
         return label
@@ -110,7 +111,6 @@ final class MypageView: UIView {
         return label
     }()
 
-    // ✅ 백버튼 제어 가능한 이니셜라이저
     convenience init(showSettingButton: Bool = true, titleText: String = "", showBackButton: Bool = true) {
         self.init(frame: .zero)
         settingButton.isHidden = !showSettingButton

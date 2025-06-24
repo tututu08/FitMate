@@ -6,7 +6,7 @@ final class WalkRecordCell: UICollectionViewCell {
     static let identifier = "WalkRecordCell"
     
     private var detailLabels: [UILabel] = []
-
+    
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "walk")
@@ -15,7 +15,7 @@ final class WalkRecordCell: UICollectionViewCell {
         imageView.clipsToBounds = true
         return imageView
     }()
-
+    
     private let typeLabel: UILabel = {
         let label = UILabel()
         label.text = "걷기"
@@ -23,7 +23,7 @@ final class WalkRecordCell: UICollectionViewCell {
         label.textColor = .black
         return label
     }()
-
+    
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "0000.00.00"
@@ -31,7 +31,7 @@ final class WalkRecordCell: UICollectionViewCell {
         label.textColor = .gray
         return label
     }()
-
+    
     private let resultLabel: UILabel = {
         let label = UILabel()
         label.text = "대결-패배"
@@ -45,43 +45,43 @@ final class WalkRecordCell: UICollectionViewCell {
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         return label
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setupLayout() {
         backgroundColor = .white
         layer.cornerRadius = 8
         clipsToBounds = true
-
+        
         contentView.addSubview(characterImageView)
         characterImageView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(16)
             $0.leading.equalToSuperview().offset(16)
             $0.size.equalTo(88)
         }
-
+        
         resultLabel.snp.makeConstraints {
             $0.height.equalTo(25)
             $0.width.greaterThanOrEqualTo(60)
         }
-
+        
         let titleStack = UIStackView(arrangedSubviews: [typeLabel, dateLabel])
         titleStack.axis = .horizontal
         titleStack.alignment = .center
         titleStack.spacing = 18
-
+        
         let headerStack = UIStackView(arrangedSubviews: [titleStack, resultLabel])
         headerStack.axis = .horizontal
         headerStack.distribution = .equalSpacing
         headerStack.alignment = .center
-
+        
         let detailStack = UIStackView(arrangedSubviews: [
             makeDetailLabel(value: "0", unit: "목표(km)"),
             makeDetailLabel(value: "0", unit: "나(km)"),
@@ -90,11 +90,11 @@ final class WalkRecordCell: UICollectionViewCell {
         detailStack.axis = .horizontal
         detailStack.distribution = .equalSpacing
         detailStack.alignment = .center
-
+        
         let textStack = UIStackView(arrangedSubviews: [headerStack, detailStack])
         textStack.axis = .vertical
         textStack.spacing = 8
-
+        
         contentView.addSubview(textStack)
         textStack.snp.makeConstraints {
             $0.top.equalToSuperview().offset(14)
@@ -103,7 +103,7 @@ final class WalkRecordCell: UICollectionViewCell {
             $0.bottom.lessThanOrEqualToSuperview().inset(14)
         }
     }
-
+    
     private func makeDetailLabel(value: String, unit: String) -> UIStackView {
         let valueLabel = UILabel()
         valueLabel.text = value
@@ -111,8 +111,8 @@ final class WalkRecordCell: UICollectionViewCell {
         valueLabel.textColor = .black
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
-
-        detailLabels.append(valueLabel) // ✅ 배열에 저장해두기
+        
+        detailLabels.append(valueLabel)
         
         let unitLabel = UILabel()
         unitLabel.text = unit
@@ -120,7 +120,7 @@ final class WalkRecordCell: UICollectionViewCell {
         unitLabel.textColor = .gray
         unitLabel.textAlignment = .left
         unitLabel.snp.makeConstraints { $0.height.equalTo(21) }
-
+        
         let stack = UIStackView(arrangedSubviews: [valueLabel, unitLabel])
         stack.axis = .vertical
         stack.spacing = 4
@@ -128,14 +128,19 @@ final class WalkRecordCell: UICollectionViewCell {
         stack.snp.makeConstraints { $0.size.equalTo(CGSize(width: 70, height: 56)) }
         return stack
     }
-
-//    func configure(with record: ExerciseRecord) {
-//        dateLabel.text = record.date
-//        resultLabel.text = record.result.rawValue
-//    }
+    
     func configure(with record: ExerciseRecord) {
-        dateLabel.text = record.date
+        dateLabel.text = record.dateOnly
         resultLabel.text = record.result.rawValue
+        
+        switch record.result {
+        case .teamSuccess, .teamFail:
+            resultLabel.backgroundColor = UIColor(named: "Primary500")
+            resultLabel.textColor = .white
+        case .versusWin, .versusLose:
+            resultLabel.backgroundColor = UIColor(named: "Secondary400")
+            resultLabel.textColor = .black
+        }
         
         let details = [record.detail1, record.detail2, record.detail3]
         for (index, label) in detailLabels.enumerated() {

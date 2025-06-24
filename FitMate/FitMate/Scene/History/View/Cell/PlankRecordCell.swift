@@ -5,6 +5,8 @@ import SnapKit
 final class PlankRecordCell: UICollectionViewCell {
     static let identifier = "PlankRecordCell"
 
+    private var detailLabels: [UILabel] = []
+    
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "plank")
@@ -109,6 +111,8 @@ final class PlankRecordCell: UICollectionViewCell {
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
 
+        detailLabels.append(valueLabel)
+        
         let unitLabel = UILabel()
         unitLabel.text = unit
         unitLabel.font = .systemFont(ofSize: 13)
@@ -125,7 +129,22 @@ final class PlankRecordCell: UICollectionViewCell {
     }
 
     func configure(with record: ExerciseRecord) {
-        dateLabel.text = record.date
+        dateLabel.text = record.dateOnly
         resultLabel.text = record.result.rawValue
+        
+        switch record.result {
+        case .teamSuccess, .teamFail:
+            resultLabel.backgroundColor = UIColor(named: "Primary500")
+            resultLabel.textColor = .white
+        case .versusWin, .versusLose:
+            resultLabel.backgroundColor = UIColor(named: "Secondary400")
+            resultLabel.textColor = .black
+        }
+        
+        let details = [record.detail1, record.detail2, record.detail3]
+        for (index, label) in detailLabels.enumerated() {
+            guard index < details.count else { break }
+            label.text = details[index]
+        }
     }
 }

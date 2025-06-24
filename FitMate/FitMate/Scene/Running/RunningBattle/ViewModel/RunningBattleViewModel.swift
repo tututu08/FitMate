@@ -12,7 +12,7 @@ final class RunningBattleViewModel: ViewModelType {
     private var previousLocation: CLLocation?
     private let didFinishRelay = PublishRelay<(Bool, Double)>()
     // 내 누적 거리 (m)
-    private let myDistanceRelay = BehaviorRelay<Double>(value: 0)
+    let myDistanceRelay = BehaviorRelay<Double>(value: 0)
     // 메이트 누적 거리 (m)
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     
@@ -79,20 +79,34 @@ final class RunningBattleViewModel: ViewModelType {
             .subscribe(onNext: { [weak self] distance in
                 guard let self else { return }
                 self.mateDistanceRelay.accept(Double(distance))
-                let transKm = self.goalDistance * 1000
-                if Int(self.mateDistanceRelay.value) >= transKm {
-                    self.finish(success: false)
+//                let transKm = self.goalDistance * 1000
+//                if Int(self.mateDistanceRelay.value) >= transKm {
+//                    self.finish(success: false)
+//                }
+                if distance >= Double(self.goalDistance) {
+                    self.finish(success: false) // ✅ 메이트가 목표 도달 시, 나는 패배 처리
                 }
             })
             .disposed(by: disposeBag)
         
-        let mateDistanceText = mateDistanceRelay
-            .map { "\($0) m" }
-            .asDriver(onErrorJustReturn: "0.0 m")
+//        let mateDistanceText = mateDistanceRelay
+//            .map { "\($0) m" }
+//            .asDriver(onErrorJustReturn: "0.0 m")
+//        
+//        let myDistanceText = myDistanceRelay
+//            .map { "\($0) m" }
+//            .asDriver(onErrorJustReturn: "0.0 m")
         
         let myDistanceText = myDistanceRelay
-            .map { "\($0) m" }
-            .asDriver(onErrorJustReturn: "0.0 m")
+            .map { [weak self] meter -> String in
+                let km = meter / 1000.0
+                return self?.formatDistance(km) ?? "\(km) km"
+            }
+            .asDriver(onErrorJustReturn: "0.0 km")
+
+        let mateDistanceText = mateDistanceRelay
+            .map { "\($0) km" } // ✅ 이미 km 단위니까 그대로 표시
+            .asDriver(onErrorJustReturn: "0.0 km")
         
         // Firestore에 값을 push
         myDistanceRelay
@@ -100,10 +114,13 @@ final class RunningBattleViewModel: ViewModelType {
             .skip(1)
             .flatMapLatest { [weak self] distance -> Completable in
                 guard let self = self else { return .empty() }
+                //let kmDistance = distance / 1000.0 // ✅ km 단위로 변환
+                let kmDistance = (distance / 1000.0 * 100).rounded() / 100
                 return FirestoreService.shared.updateMyProgressToFirestore(
                     matchCode: self.matchCode,
                     uid: self.myUid,
-                    progress: distance
+                    //progress: distance
+                    progress: kmDistance
                 )
             }
             .subscribe()
@@ -124,9 +141,11 @@ final class RunningBattleViewModel: ViewModelType {
             .map { [weak self] mate -> CGFloat in
                 guard let self else { return 0 }
                 //return CGFloat(min(1, (Float(mate) ?? 0) / Float(self.goalDistance)))
-                let goalDistanceMeter = goalDistance * 1000
-                let ratio = CGFloat((mate) / Double(goalDistanceMeter))
-                return min(1, max(0, ratio))
+                //let goalDistanceMeter = goalDistance * 1000
+                //let ratio = CGFloat((mate) / Double(goalDistanceMeter))
+                let ratio = mate / Double(goalDistance) // 단위 통일
+                //return min(1, max(0, ratio))
+                return CGFloat(min(1.0, max(0.0, ratio)))
             }
             .asDriver(onErrorJustReturn: 0)
         
@@ -193,7 +212,7 @@ final class RunningBattleViewModel: ViewModelType {
     
     func finish(success: Bool) {
         locationManager.stopUpdatingLocation()
-        didFinishRelay.accept((success,  Double(myDistance)))
+        didFinishRelay.accept((success, Double(myDistance)))
     }
     
     // 상대방 종료 감지
@@ -210,6 +229,14 @@ final class RunningBattleViewModel: ViewModelType {
     
     func stopLocationUpdates() {
         locationManager.stopUpdatingLocation()
+    }
+    
+    private func formatDistance(_ km: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return (formatter.string(from: NSNumber(value: km)) ?? "\(km)") + " km"
     }
     
     deinit {
