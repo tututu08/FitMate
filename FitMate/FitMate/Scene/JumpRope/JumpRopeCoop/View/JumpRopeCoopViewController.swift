@@ -123,6 +123,7 @@ class JumpRopeCoopViewController: BaseViewController {
             sport: "줄넘기",
             goal: viewModel.goalCount,
             goalUnit: "개",
+            myDistance: Double(viewModel.myCount),
             character: myCharacter,
             success: success
         )
