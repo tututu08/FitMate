@@ -233,7 +233,6 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 352FSM3VWQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FitMate/Resources/Info.plist;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱 사용 중 위치를 사용합니다";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -273,7 +272,6 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 352FSM3VWQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FitMate/Resources/Info.plist;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱 사용 중 위치를 사용합니다";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
