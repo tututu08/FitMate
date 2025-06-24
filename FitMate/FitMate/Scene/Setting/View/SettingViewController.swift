@@ -163,25 +163,6 @@ final class SettingViewController: UIViewController {
                 print("❌ [에러] 회원 탈퇴 전체 실패: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
-//        popup.confirmButton.rx.tap
-//            .bind {[weak self] in
-//                guard let self = self else { return }
-//                guard let presentingVC = self.presentingViewController else { return }
-//
-//                AuthService.shared.deleteAccount()
-//                    .subscribe(onSuccess: {
-//                        self.dismiss(animated: true) {
-//                            let loginVC = LoginViewController()
-//                            let nav = UINavigationController(rootViewController: loginVC)
-//                            nav.modalPresentationStyle = .fullScreen
-//                            presentingVC.present(nav, animated: true)
-//                        }
-//                    }, onFailure: { error in
-//                        print("회원 탈퇴 실패: \(error)")
-//                    })
-//                    .disposed(by: self.disposeBag)
-//            }
-//            .disposed(by: disposeBag)
     }
 
     private func showMateEndPopup() {
@@ -206,6 +187,13 @@ final class SettingViewController: UIViewController {
             }
             .flatMapLatest { [weak self] mateUid -> Observable<Void> in
                 guard let self = self else { return .empty() }
+                
+                // 메이트 UID가 없을 경우: 아무것도 하지 않고 화면만 초기화
+                if mateUid.isEmpty {
+                    print("메이트 UID 없음: 연결 끊기 생략")
+                    return Observable.just(())
+                }
+                
                 return FirestoreService.shared.disconnectMate(forUid: self.uid, mateUid: mateUid).asObservable()
             }
             .subscribe(
@@ -225,12 +213,6 @@ final class SettingViewController: UIViewController {
                 }
             )
             .disposed(by: disposeBag)
-//            .bind { [weak self] in
-//                print("메이트 종료") //메이트연결부분
-//                self?.mateEndPopupView?.removeFromSuperview()
-//                self?.settingView.isHidden = false
-//            }
-//            .disposed(by: disposeBag)
     }
 
     private func bindCloseButton() {
