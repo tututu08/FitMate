@@ -33,8 +33,8 @@ class JumpRopeBattleViewController: BaseViewController {
             myCharacter: myCharacter,
             mateCharacter: mateCharacter,
             matchCode: matchCode,
-            myUID: mateUid,
-            mateUID: myUid
+            myUID: myUid,
+            mateUID:mateUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -77,7 +77,7 @@ class JumpRopeBattleViewController: BaseViewController {
     override func bindViewModel() {
         let input = JumpRopeBattleViewModel.Input(
             start: startRelay.asObservable(),
-            mateCount: mateCountRelay.asObservable(),
+            //mateCount: mateCountRelay.asObservable(),
             quit: quitRelay.asObservable(),
             mateQuit: mateQuitRelay.asObservable()
         )
@@ -112,7 +112,7 @@ class JumpRopeBattleViewController: BaseViewController {
         // 메이트 진행률바(비율)x
         output.mateProgressView
             .drive(onNext: { [weak self] ratio in
-                self?.sportsView.myUpdateProgress(ratio: ratio)
+                self?.sportsView.mateUpdateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
         
