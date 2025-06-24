@@ -687,7 +687,7 @@ extension FirestoreService {
                     single(.success([])) // 없으면 빈 배열 반환
                     return
                 }
-                print("📦 totalStats 데이터: \(stats)")
+                //print("📦 totalStats 데이터: \(stats)")
                 
                 let records: [WorkoutRecord] = [
                     WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Double ?? 0)", unit: "Km"),
@@ -696,7 +696,7 @@ extension FirestoreService {
                     WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
                     WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
                 ]
-                print("✅ WorkoutRecord 생성 완료: \(records)")
+                //print("✅ WorkoutRecord 생성 완료: \(records)")
                 single(.success(records))
             }
             return Disposables.create()
