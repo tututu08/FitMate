@@ -39,7 +39,7 @@ class MateCodeView: BaseView {
         return image
     }()
     
-    let fillInMateCode = CustomTextField(placeholder: "파트너 코드를 입력해주세요")
+    let fillInMateCode = CustomTextField(placeholder: "메이트 코드를 입력해주세요")
     
     let completeButton: UIButton = {
         let button = UIButton()
