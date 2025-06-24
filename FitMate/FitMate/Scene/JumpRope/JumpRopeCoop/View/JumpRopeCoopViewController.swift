@@ -33,8 +33,8 @@ class JumpRopeCoopViewController: BaseViewController {
             myCharacter: myCharacter,
             mateCharacter: mateCharacter,
             matchCode: matchCode,
-            myUID: mateUid,
-            mateUID: myUid
+            myUID: myUid,
+            mateUID: mateUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -76,7 +76,7 @@ class JumpRopeCoopViewController: BaseViewController {
     override func bindViewModel() {
         let input = JumpRopeCoopViewModel.Input(
             start: startRelay.asObservable(),
-            mateCount: mateCountRelay.asObservable(),
+            //mateCount: mateCountRelay.asObservable(),
             quit: quitRelay.asObservable(),
             mateQuit: mateQuitRelay.asObservable()
         )
