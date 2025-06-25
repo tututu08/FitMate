@@ -20,7 +20,7 @@ final class SettingViewModel {
         let withdrawEvent: Signal<Void>
     }
 
-    private let pushEnabledRelay = BehaviorRelay<Bool>(value: false)
+    let pushEnabledRelay = BehaviorRelay<Bool>(value: false)
     private let soundEnabledRelay = BehaviorRelay<Bool>(value: false)
 
     private let disposeBag = DisposeBag()
