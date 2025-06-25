@@ -37,6 +37,7 @@ final class SettingViewController: UIViewController {
         
         view.addSubview(settingView)
         settingView.snp.makeConstraints { $0.edges.equalToSuperview() }
+<<<<<<< Updated upstream
         
         Firestore.firestore().collection("users").document(uid).getDocument { [weak self] snapshot, error in
             guard let self else { return }
@@ -45,6 +46,12 @@ final class SettingViewController: UIViewController {
             }
         }
 
+=======
+ 
+        settingView.noticeToggle.isOn = viewModel.initialPushEnabled
+        settingView.effectToggle.isOn = viewModel.initialSoundEnabled
+        
+>>>>>>> Stashed changes
         bindViewModel()
         bindCloseButton()
     }
