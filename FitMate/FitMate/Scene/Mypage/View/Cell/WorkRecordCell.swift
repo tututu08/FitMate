@@ -104,15 +104,20 @@ final class WorkRecordCell: UICollectionViewCell {
         typeLabel.text = record.type
         unitLabel.text = record.unit
         
+        let unit = record.unit.trimmingCharacters(in: .whitespacesAndNewlines)
+        let raw = record.totalDistance.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         // 💡 문자열을 Double로 변환하여 포맷 처리
-        if let value = Double(record.totalDistance) {
-            // 너무 작은 음수 방지: -0.00 대신 0.00
+        if let value = Double(raw) {
             let cleanedValue = abs(value) < 0.01 ? 0.0 : value
             
-            if record.unit == "Km" {
+            switch unit {
+            case "Km":
                 totalLabel.text = String(format: "%.2f", cleanedValue)
-            } else {
-                totalLabel.text = "\(Int(cleanedValue))"
+            case "회", "초":
+                totalLabel.text = String(format: "%.0f", cleanedValue)  // 🔥 핵심: 항상 정수로
+            default:
+                totalLabel.text = String(format: "%.0f", cleanedValue)
             }
         } else {
             totalLabel.text = "0"

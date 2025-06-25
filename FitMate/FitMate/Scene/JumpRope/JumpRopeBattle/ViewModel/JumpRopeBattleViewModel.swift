@@ -55,6 +55,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
     
     
     
+    
     // 생성자 목표 카운트 필수
     init(goalCount: Int, myCharacter: String, mateCharacter: String, matchCode: String, myUID: String, mateUID: String) {
         self.goalCount = goalCount

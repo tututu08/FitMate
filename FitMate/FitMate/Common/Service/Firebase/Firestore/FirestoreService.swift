@@ -689,13 +689,45 @@ extension FirestoreService {
                 }
                 //print("📦 totalStats 데이터: \(stats)")
                 
+//                let records: [WorkoutRecord] = [
+//                    WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Double ?? 0)", unit: "Km"),
+//                    WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Double ?? 0)", unit: "Km"),
+//                    WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Double ?? 0)", unit: "Km"),
+//                    WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
+//                    WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
+//                ]
                 let records: [WorkoutRecord] = [
                     WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Double ?? 0)", unit: "Km"),
                     WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Double ?? 0)", unit: "Km"),
                     WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Double ?? 0)", unit: "Km"),
-                    WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
-                    WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
+                    
+                    {
+                        let raw = stats["jumpRopeCount"]
+                        let count: Int
+                        if let intValue = raw as? Int {
+                            count = intValue
+                        } else if let doubleValue = raw as? Double {
+                            count = Int(doubleValue)
+                        } else {
+                            count = 0
+                        }
+                        return WorkoutRecord(type: "줄넘기", totalDistance: "\(count)", unit: "회")
+                    }(),
+
+                    {
+                        let raw = stats["plankRounds"]
+                        let count: Int
+                        if let intValue = raw as? Int {
+                            count = intValue
+                        } else if let doubleValue = raw as? Double {
+                            count = Int(doubleValue)
+                        } else {
+                            count = 0
+                        }
+                        return WorkoutRecord(type: "플랭크", totalDistance: "\(count)", unit: "회")
+                    }()
                 ]
+
                 //print("✅ WorkoutRecord 생성 완료: \(records)")
                 single(.success(records))
             }
