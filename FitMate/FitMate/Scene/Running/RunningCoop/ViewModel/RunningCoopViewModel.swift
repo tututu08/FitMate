@@ -161,12 +161,13 @@ final class RunningCoopViewModel: ViewModelType {
         
         locationManager.rx.didUpdateLocations
             .compactMap { $0.last }
-            .filter { $0.horizontalAccuracy < 20 }
+            .filter { $0.horizontalAccuracy >= 0 && $0.horizontalAccuracy < 20 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] loc in
                 guard let self = self else { return }
                 if let prev = self.previousLocation {
                     let delta = loc.distance(from: prev)
+                    guard delta >= 5 else { return } 
                     self.totalDistance += delta
                     let intMeter = Int(self.totalDistance.rounded())
                     self.myDistanceRelay.accept(Double(intMeter))
