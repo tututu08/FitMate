@@ -51,6 +51,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
     private let accelerationLimit = 1.85   // 점프 감지 민감도
     private let cooldown = 0.45            // 연속 감지 방지(0.45초 쿨타임)
     
+    let mateQuitRelay = PublishRelay<Void>() // 그만하기 감지용
     
     
     // 생성자 목표 카운트 필수
