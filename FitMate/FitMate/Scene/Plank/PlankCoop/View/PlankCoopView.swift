@@ -19,8 +19,8 @@ class PlankCoopView: BaseView {
     // 목표 아이콘(이미지로 보여주기)
     private let goalImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "goalImage") // 목표 아이콘
-        imageView.contentMode = .scaleAspectFit
+        imageView.image = UIImage(named: "goalbackground") // 목표 아이콘
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     

@@ -71,6 +71,24 @@ class SportsModeViewController: BaseViewController {
         label.textAlignment = .center
         return label
     }()
+    
+    private let middleContainer = UIView()
+
+    private lazy var infoStackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [
+            descriptionLabelTitle,
+            descriptionLabel,
+            effectLabelText,
+            effectLabel,
+            caloriesLabelText,
+            caloriesLabel
+        ])
+        stack.axis = .vertical
+        stack.spacing = 10
+        stack.alignment = .fill
+        return stack
+    }()
+    
     private let descriptionLabelTitle: UILabel = {
         let label = UILabel()
         label.text = "운동 설명"
@@ -193,16 +211,14 @@ class SportsModeViewController: BaseViewController {
         [
             backgroundView,
             titleLabel,
-            descriptionLabelTitle,
-            descriptionLabel,
-            effectLabelText,
-            effectLabel,
-            caloriesLabelText,
-            caloriesLabel,
+            middleContainer,
             cooperationModeButton,
             battleModeButton
         ].forEach { view.addSubview($0) } // 모든 요소 메인 뷰에 추가
         
+        middleContainer.addSubview(infoStackView)
+
+        let safeArea = view.safeAreaLayoutGuide
         // 오토레이아웃 설정
         backgroundView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(24)
@@ -219,38 +235,56 @@ class SportsModeViewController: BaseViewController {
             $0.top.equalTo(backgroundView.snp.bottom).offset(24)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-        descriptionLabelTitle.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(25)
+        middleContainer.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom)
+            $0.bottom.equalTo(cooperationModeButton.snp.top)
+            $0.leading.trailing.equalToSuperview()
+        }
+
+        // infoStackView: middleContainer의 정중앙!
+        infoStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-        descriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(descriptionLabelTitle.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        effectLabelText.snp.makeConstraints {
-            $0.top.equalTo(descriptionLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        effectLabel.snp.makeConstraints {
-            $0.top.equalTo(effectLabelText.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        caloriesLabelText.snp.makeConstraints {
-            $0.top.equalTo(effectLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        caloriesLabel.snp.makeConstraints {
-            $0.top.equalTo(caloriesLabelText.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
+//        descriptionLabelTitle.snp.makeConstraints {
+//            $0.top.equalTo(titleLabel.snp.bottom).offset(25)
+//            $0.leading.trailing.equalToSuperview().inset(20)
+//        }
+//        descriptionLabel.snp.makeConstraints {
+//            $0.top.equalTo(descriptionLabelTitle.snp.bottom).offset(10)
+//            $0.leading.trailing.equalToSuperview().inset(20)
+//        }
+//        infoStackView.snp.makeConstraints {
+//            $0.leading.trailing.equalToSuperview().inset(20)
+//            $0.centerY.equalToSuperview()
+//            $0.top.greaterThanOrEqualTo(titleLabel.snp.bottom).offset(18)
+//            $0.bottom.lessThanOrEqualTo(cooperationModeButton.snp.top).offset(-18)
+//        }
+//        effectLabelText.snp.makeConstraints {
+//            $0.top.equalTo(descriptionLabel.snp.bottom).offset(10)
+//            $0.leading.trailing.equalToSuperview().inset(20)
+//        }
+//        effectLabel.snp.makeConstraints {
+//            $0.top.equalTo(effectLabelText.snp.bottom).offset(10)
+//            $0.leading.trailing.equalToSuperview().inset(20)
+//        }
+//
+//        caloriesLabelText.snp.makeConstraints {
+//            $0.top.equalTo(effectLabel.snp.bottom).offset(10)
+//            $0.leading.trailing.equalToSuperview().inset(20)
+//        }
+//        caloriesLabel.snp.makeConstraints {
+//            $0.top.equalTo(caloriesLabelText.snp.bottom).offset(10)
+//            $0.leading.trailing.equalToSuperview().inset(20)
+//        }
         cooperationModeButton.snp.makeConstraints {
-            $0.top.equalTo(caloriesLabel.snp.bottom).offset(19)
+            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
             $0.leading.equalToSuperview().inset(20)
             $0.width.equalTo(157.5)
             $0.height.equalTo(60)
         }
         battleModeButton.snp.makeConstraints {
-            $0.top.equalTo(caloriesLabel.snp.bottom).offset(19)
+            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo(157.5)
             $0.height.equalTo(60)
