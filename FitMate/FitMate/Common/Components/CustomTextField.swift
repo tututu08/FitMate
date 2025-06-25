@@ -32,6 +32,7 @@ class CustomTextField: UITextField {
         self.contentVerticalAlignment = .center
         self.textColor = .white
         self.layer.cornerRadius = 4
+        self.clipsToBounds = true
         self.borderStyle = .line
         self.layer.borderColor = UIColor.systemPurple.cgColor // 컬러 변경 필요
         self.layer.borderWidth = 1.5
