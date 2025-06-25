@@ -214,7 +214,7 @@ final class MypageView: UIView {
         }
 
         recordCollectionView.snp.makeConstraints {
-            $0.top.equalTo(levelTitle.snp.bottom).offset(8)
+            $0.top.equalTo(levelTitle.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(700)
         }

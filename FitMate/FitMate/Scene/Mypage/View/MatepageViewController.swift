@@ -1,4 +1,3 @@
-
 import UIKit
 import RxSwift
 import RxCocoa
@@ -59,9 +58,9 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
         output.records
             .drive(rootView.recordCollectionView.rx.items(
                 cellIdentifier: WorkRecordCell.identifier,
-                cellType: WorkRecordCell.self)
-            ) { index, record, cell in
-                cell.configure(with: record)
+                cellType: WorkRecordCell.self
+            )) { index, record, cell in
+                cell.configure(with: record, index: index)
             }
             .disposed(by: disposeBag)
     }
