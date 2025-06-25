@@ -74,13 +74,13 @@ final class FinishViewModel: ViewModelType {
         switch (mode, success) {
         case (.battle, true):
             return """
-            짝짝짝
-            메이트보다 한발 앞섰어요!
+            !!
+            못하는게 뭡니까 도대체!
             """
         case (.battle, false):
             return """
             승부는 졌지만
-            당신의 노력은 최고였어요!
+            다아ㅡㅁ에!!!
             """
         case (.cooperation, true):
             return """

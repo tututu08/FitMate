@@ -21,8 +21,8 @@ final class FinishView: BaseView {
     // 목표/보상 영역 배경 이미지
     private let goalImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "goalImage") // 목표 아이콘
-        imageView.contentMode = .scaleAspectFit
+        imageView.image = UIImage(named: "goalbackground") // 목표 아이콘
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
@@ -31,7 +31,7 @@ final class FinishView: BaseView {
         let label = UILabel()
         label.text = "종목 목표치" // 예: "목표 100회"
         label.textColor = .black
-        label.font = UIFont(name: "Pretendard-Regular", size: 20)
+        label.font = .boldSystemFont(ofSize: 20)
         return label
     }()
     
@@ -44,11 +44,13 @@ final class FinishView: BaseView {
         label.numberOfLines = 0
         return label
     }()
-    
+
+    private let middleContainer = UIView()
+
     // 배경 이미지
     private let backgroundImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "plankBackground")
+        imageView.image = UIImage(named: "finishbackground")
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
@@ -113,21 +115,28 @@ final class FinishView: BaseView {
          goalImage,
          resultLabel,
          backgroundImage,
+         middleContainer,
 //         coinBackImage,
          rewardButton
         ].forEach{self.addSubview($0)}
+        
+        middleContainer.addSubview(backgroundImage)
     }
     
     override func setLayoutUI() {
+        let safeArea = self.safeAreaLayoutGuide
+        let contentWidthRatio: CGFloat = 0.88
+        let contentWidth = UIScreen.main.bounds.width * contentWidthRatio
+        
         modeLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(60)
+            $0.top.equalTo(safeArea.snp.top).offset(36)
             $0.centerX.equalToSuperview()
         }
         goalImage.snp.makeConstraints {
             $0.top.equalTo(modeLabel.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(350)
-            $0.height.equalTo(55)
+            $0.width.equalTo(contentWidth)
+            $0.height.equalTo(50)
         }
 //        rewardLabel.snp.makeConstraints {
 //            $0.center.equalToSuperview()
@@ -138,25 +147,37 @@ final class FinishView: BaseView {
         }
         
         resultLabel.snp.makeConstraints{
+            $0.top.equalTo(goalImage.snp.bottom).offset(20)
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(goalImage.snp.bottom).offset(28)
+            $0.width.equalTo(contentWidth)
+        }
+        
+        middleContainer.snp.makeConstraints {
+            $0.top.equalTo(resultLabel.snp.bottom).offset(0)
+            $0.bottom.equalTo(rewardButton.snp.top).offset(0)
+            $0.leading.trailing.equalToSuperview()
         }
         
         backgroundImage.snp.makeConstraints {
-            $0.bottom.equalToSuperview().inset(160)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(330)
-            $0.height.equalTo(350)
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(contentWidth)
+            $0.height.equalTo(contentWidth * 0.72)
         }
+        
         resultImage.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(backgroundImage.snp.top).offset(20)
-            $0.width.height.equalTo(90)
+            $0.top.equalTo(backgroundImage.snp.top).offset(-10)
+            $0.width.equalToSuperview().multipliedBy(0.4)
+            $0.height.equalToSuperview().multipliedBy(0.30)
+
         }
+        
         characterImage.snp.makeConstraints {
-            $0.top.equalTo(resultImage.snp.bottom).offset(30)
+            $0.top.equalTo(resultImage.snp.bottom).offset(40)
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(150)
+            $0.width.equalToSuperview().multipliedBy(0.4)
+            $0.height.equalToSuperview().multipliedBy(0.65)
         }
         
 //        coinBackImage.snp.makeConstraints {
@@ -180,10 +201,11 @@ final class FinishView: BaseView {
 //        }
         
         rewardButton.snp.makeConstraints {
-            $0.bottom.equalToSuperview().inset(60)
+            $0.top.greaterThanOrEqualTo(resultImage.snp.bottom).offset(16)
+            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
             $0.centerX.equalToSuperview()
+            $0.width.equalTo(contentWidth)
             $0.height.equalTo(60)
-            $0.width.equalTo(350)
         }
     }
     
