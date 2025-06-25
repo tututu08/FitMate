@@ -48,7 +48,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         let label = UILabel()
         label.font = UIFont(name: "pretendard-regular", size: 16)
         label.textAlignment = .left
-        label.text = "파트너와 함께 정해보세요"
+        label.text = "메이트와 함께 정해보세요"
         label.textColor = .lightGray
         label.numberOfLines = 0
         return label

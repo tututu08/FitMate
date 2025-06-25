@@ -69,7 +69,7 @@ final class SettingView: UIView {
         return view
     }()
 
-    let partnerButton = SettingView.makeButton(title: "파트너 종료")
+    let partnerButton = SettingView.makeButton(title: "메이트 끊기")
     let logoutButton = SettingView.makeButton(title: "로그아웃")
     let withdrawButton = SettingView.makeButton(title: "회원탈퇴")
 

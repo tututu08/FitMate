@@ -64,19 +64,19 @@ class LoginView: BaseView {
         kakaoLogin.snp.makeConstraints { make in
             make.top.equalTo(fitMateLogo.snp.bottom).offset(140)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(60)
+            make.height.equalTo(kakaoLogin.snp.width).multipliedBy(0.179)
         }
         
         googleLogin.snp.makeConstraints { make in
             make.top.equalTo(kakaoLogin.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(60)
+            make.height.equalTo(googleLogin.snp.width).multipliedBy(0.179)
         }
         
         appleLogin.snp.makeConstraints { make in
             make.top.equalTo(googleLogin.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview().inset(20)
-            make.height.equalTo(60)
+            make.height.equalTo(appleLogin.snp.width).multipliedBy(0.179)
         }
     }
 }
