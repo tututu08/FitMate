@@ -156,9 +156,9 @@ final class JumpRopeCoopViewModel: ViewModelType {
         if isMine {
             FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUID)
                 .subscribe(onCompleted: {
-                    print("✅ quitStatus 저장 성공")
+                    //print("✅ quitStatus 저장 성공")
                 }, onError: { error in
-                    print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
+                    //print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
                 })
                 .disposed(by: disposeBag)
         }
