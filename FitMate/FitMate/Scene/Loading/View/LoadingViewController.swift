@@ -181,7 +181,7 @@ class LoadingViewController: BaseViewController {
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드
     private func presentRejectedAlert() {
-        let alert = UIAlertController(title: "매칭 실패", message: "상대가 거절했습니다.", preferredStyle: .alert)
+        let alert = UIAlertController(title: "매칭 실패", message: "메이트가 거절했습니다.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
             self.navigationController?.popToRootViewController(animated: true)
         })
@@ -204,7 +204,7 @@ class LoadingViewController: BaseViewController {
                     observer.onNext(false)
                     observer.onCompleted()
                 }))
-                alert.addAction(UIAlertAction(title: "네", style: .destructive, handler: { _ in
+                alert.addAction(UIAlertAction(title: "취소", style: .destructive, handler: { _ in
                     observer.onNext(true)
                     observer.onCompleted()
                 }))

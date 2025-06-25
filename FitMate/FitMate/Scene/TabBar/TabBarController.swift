@@ -100,7 +100,7 @@ class TabBarController: UITabBarController {
     private func presentMatchAlert(matchCode: String) {
         let alert = UIAlertController(
             title: "운동 메이트 요청",
-            message: "운동 초대가 도착했습니다!",
+            message: "운동 초대가 도착했어요!",
             preferredStyle: .alert
         )
         

@@ -34,7 +34,7 @@ final class PartnerLeftAlertView: UIView {
 
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "상대방이 메이트를 종료했습니다."
+        label.text = "상대가 메이트를 끊었어요."
         label.font = .systemFont(ofSize: 14)
         label.textColor = UIColor(named: "Background600")
         label.textAlignment = .center

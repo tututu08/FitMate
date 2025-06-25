@@ -38,16 +38,7 @@ class LoadingView: UIView {
         button.backgroundColor = .clear
         return button
     }()
-    
-    let cancelButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("취소", for: .normal)
-        button.titleLabel?.font = UIFont(name: "DungGeunMo", size: 17)
-        button.setTitleColor(.primary100, for: .normal)
-        button.backgroundColor = .clear
-        return button
-    }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpUI()

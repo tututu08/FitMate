@@ -22,11 +22,11 @@ enum SystemAlertType {
         case .invalidCode:
             return "잘못된 코드입니다"
         case .codeSent:
-            return "메이트에게 요청을 보냈습니다"
+            return "메이트에게 요청을 보냈어요"
         case .overLimit:
             return "8자 이하로 입력해주세요"
         case .duplicateNickname:
-            return "중복된 닉네임 입니다."
+            return "앗! 중복된 닉네임 입니다."
         case .custom(let title, _):
             return title
         }

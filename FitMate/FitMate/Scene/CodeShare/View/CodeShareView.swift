@@ -31,7 +31,7 @@ class CodeShareView: BaseView {
     
     let guideMent: UILabel = {
         let guide = UILabel()
-        guide.text = "파트너 연결 후 시작해보세요"
+        guide.text = "메이트 연결 후 시작해보세요"
         guide.textColor = .background100
         guide.font = UIFont(name: "Pretendard-Regular", size: 16)
         return guide
