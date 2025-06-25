@@ -85,6 +85,7 @@ final class AuthService: NSObject {
                         if let error = error {
                             observer(.failure(error))
                         } else if let user = result?.user {
+                            UserDefaults.standard.set(true, forKey: "isLoggedIn")
                             observer(.success(user))
                         } else {
                             observer(.failure(NSError(domain: "FirebaseAuth", code: -3)))
@@ -119,12 +120,14 @@ final class AuthService: NSObject {
                     do {
                         // firebase에 새 사용자로 회원가입 시도
                         let user = try await Auth.auth().createUser(withEmail: email, password: password).user
+                        UserDefaults.standard.set(true, forKey: "isLoggedIn")
                         // 성공하면 결과 방출
                         single(.success(user))
                     } catch let error as NSError {
                         // 이미 존재하는 이메일이면 로그인 시도
                         if error.code == AuthErrorCode.emailAlreadyInUse.rawValue {
                             let user = try await Auth.auth().signIn(withEmail: email, password: password).user
+                            UserDefaults.standard.set(true, forKey: "isLoggedIn")
                             single(.success(user))
                         } else {
                             // 다른 에러면 그대로 실패 처리
@@ -267,6 +270,7 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
             if let error {
                 self?.appleObserver?(.failure(error))
             } else if let user = result?.user {
+                UserDefaults.standard.set(true, forKey: "isLoggedIn")
                 self?.appleObserver?(.success(user))
             } else {
                 self?.appleObserver?(.failure(NSError(domain: "FirebaseAuth", code: -2)))
