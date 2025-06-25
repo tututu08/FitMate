@@ -112,14 +112,14 @@ class NicknameViewController: BaseViewController {
         
         output.termsChecked
             .drive(onNext: { [weak self] isChecked in
-                let image = UIImage(named: isChecked ? "checkBox_checked" : "checkBox")
+                let image = UIImage(named: isChecked ? "checkBox_checked" : "blankBox")
                 self?.nicknameView.termsButton.setImage(image, for: .normal)
             })
             .disposed(by: disposeBag)
         
         output.privacyChecked
             .drive(onNext: { [weak self] isChecked in
-                let image = UIImage(named: isChecked ? "checkBox_checked" : "checkBox")
+                let image = UIImage(named: isChecked ? "checkBox_checked" : "blankBox")
                 self?.nicknameView.privacyButton.setImage(image, for: .normal)
             })
             .disposed(by: disposeBag)
