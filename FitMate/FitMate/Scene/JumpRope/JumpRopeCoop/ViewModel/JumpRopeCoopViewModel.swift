@@ -116,8 +116,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
             mateCountText: mateText,
             progress: progress,
             didFinish: didFinish,
-            mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ()),
-            
+            mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ())
         )
     }
     
