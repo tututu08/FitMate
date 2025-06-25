@@ -121,12 +121,6 @@ class JumpRopeBattleViewController: BaseViewController {
                 self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
-        
-        output.mateQuitEvent
-            .emit(onNext: { [weak self] in
-                self?.receiveMateQuit()
-            })
-            .disposed(by: disposeBag)
     }
     // 피니쉬화면으로 이동
     private func navigateToFinish(success: Bool) {
@@ -135,6 +129,7 @@ class JumpRopeBattleViewController: BaseViewController {
             sport: "줄넘기",
             goal: viewModel.goalCount,
             goalUnit: "개",
+            myDistance: Double(viewModel.myCount),
             character: myCharacter,
             success: success
         )
