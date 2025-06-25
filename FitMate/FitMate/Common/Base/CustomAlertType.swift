@@ -24,8 +24,8 @@ enum CustomAlertType {
 
     var message: String {
         switch self {
-        case .mateRequest:
-            return "상대방이 메이트 요청을 보냈습니다"
+        case .mateRequest(let nickname):
+            return "\(nickname)님이 메이트 요청을 보냈어요!"
         case .inviteSent(let nickname):
             return "\(nickname)님에게 메이트 요청을 보냈어요!"
         case .requestFailed(let message):
