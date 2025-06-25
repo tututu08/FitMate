@@ -24,6 +24,7 @@ final class RunningCoopViewModel: ViewModelType {
     
     let myDistanceDisplayRelay = BehaviorRelay<Double>(value: 0)   // Firestore에서 받은 km
     let mateDistanceDisplayRelay = BehaviorRelay<Double>(value: 0) // Firestore에서 받은 km
+    let locationAuthDeniedRelay = PublishRelay<Void>()
     
     let goalDistance: Int
     let myCharacter: String
@@ -51,6 +52,7 @@ final class RunningCoopViewModel: ViewModelType {
         let mateDistance: Observable<Double>       // 메이트 거리 실시간
         let quit: Observable<Void>
         let mateQuit: Observable<Void>
+        let locationAuthStatus: Observable<CLAuthorizationStatus>
     }
     
     struct Output {
@@ -60,9 +62,22 @@ final class RunningCoopViewModel: ViewModelType {
         //let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
         let mateQuitEvent: Signal<Void>
         let didFinish: Signal<(Bool, Double)>
+        let locationAuthDenied: Signal<Void>
     }
     
     func transform(input: Input) -> Output {
+        input.locationAuthStatus
+            .subscribe(onNext: { [weak self] status in
+                guard let self = self else { return }
+                switch status {
+                case .denied, .restricted:
+                    self.locationAuthDeniedRelay.accept(())
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+        
         input.startTracking
             .subscribe(onNext: { [weak self] in
                 self?.startLocationUpdates()
@@ -133,7 +148,8 @@ final class RunningCoopViewModel: ViewModelType {
             progress: progress,
             //didFinish: didFinish
             mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ()),
-            didFinish: didFinishRelay.asSignal(onErrorJustReturn: (false, 0.0))
+            didFinish: didFinishRelay.asSignal(onErrorJustReturn: (false, 0.0)),
+            locationAuthDenied: locationAuthDeniedRelay.asSignal(onErrorJustReturn: ())
         )
     }
     
