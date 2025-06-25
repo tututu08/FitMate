@@ -74,23 +74,23 @@ final class FinishViewModel: ViewModelType {
         switch (mode, success) {
         case (.battle, true):
             return """
-            짝짝짝
-            메이트보다 한발 앞섰어요!
+            VICTORY~!
+            너무 시시한걸요~??
             """
         case (.battle, false):
             return """
-            승부는 졌지만
-            당신의 노력은 최고였어요!
+            LOSE...
+            우씨 다음엔 안봐줄거야 !!
             """
         case (.cooperation, true):
             return """
-            메이트와의 도전,
-            완벽하게 성공!!
+            WoW~ 이걸 성공하다니..
+            열쩡열쩡열쩡 ! 
             """
         case (.cooperation, false):
             return """
-            이번엔 실패...
-            다음번엔 꼭 성공하자!
+            아쉽지만 실패...
+            다음번엔 꼭 성공하리...
             """
         }
     }

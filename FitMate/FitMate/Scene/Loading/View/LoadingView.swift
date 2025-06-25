@@ -25,13 +25,20 @@ class LoadingView: UIView {
     
     let cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("취소", for: .normal)
-        button.titleLabel?.font = UIFont(name: "DungGeunMo", size: 17)
-        button.setTitleColor(.primary100, for: .normal)
+        let title = "취소"
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont(name: "DungGeunMo", size: 15) ?? UIFont.systemFont(ofSize: 15),
+            .foregroundColor: UIColor.background200,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        
+        let attributedTitle = NSAttributedString(string: title, attributes: attributes)
+        button.setAttributedTitle(attributedTitle, for: .normal)
+        
         button.backgroundColor = .clear
         return button
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpUI()
@@ -60,7 +67,7 @@ class LoadingView: UIView {
         }
         
         cancelButton.snp.makeConstraints { make in
-               make.top.equalTo(loadingMent.snp.bottom).offset(28)
+               make.top.equalTo(loadingMent.snp.bottom).offset(32)
                make.centerX.equalToSuperview()
                make.width.equalTo(84)
                make.height.equalTo(40)

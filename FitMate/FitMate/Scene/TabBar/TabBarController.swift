@@ -100,9 +100,14 @@ class TabBarController: UITabBarController {
     private func presentMatchAlert(matchCode: String) {
         let alert = UIAlertController(
             title: "운동 메이트 요청",
-            message: "운동 초대가 도착했습니다!",
+            message: "운동 초대가 도착했어요!",
             preferredStyle: .alert
         )
+        
+        alert.addAction(UIAlertAction(title: "거절", style: .destructive, handler: { [weak self] _ in
+            guard let self else { return }
+            self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
+        }))
         
         alert.addAction(UIAlertAction(title: "수락", style: .default, handler: { [weak self] _ in
             guard let self else { return }
@@ -126,12 +131,6 @@ class TabBarController: UITabBarController {
                     }
                 }).disposed(by: self.disposeBag)
         }))
-        
-        alert.addAction(UIAlertAction(title: "거절", style: .destructive, handler: { [weak self] _ in
-            guard let self else { return }
-            self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
-        }))
-        
         UIApplication.topViewController()?.present(alert, animated: true)
     }
     
