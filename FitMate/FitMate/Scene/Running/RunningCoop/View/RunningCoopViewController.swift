@@ -10,6 +10,7 @@ import SnapKit
 import RxRelay
 import RxSwift
 import RxCocoa
+import CoreLocation
 
 final class RunningCoopViewController: BaseViewController {
     // 루트 뷰
@@ -20,6 +21,7 @@ final class RunningCoopViewController: BaseViewController {
     private let startRelay = PublishRelay<Void>()
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     private let goalselecionViewModel = GoalSelectionViewModel()
+    private let locationAuthStatusRelay = BehaviorRelay<CLAuthorizationStatus>(value: CLLocationManager.authorizationStatus())
     
     private let exerciseType: String
     private let goalDistance: Int
@@ -72,11 +74,18 @@ final class RunningCoopViewController: BaseViewController {
         rootView.updateMyCharacter(runningCoopViewModel.myCharacter)
         rootView.updateMateCharacter(runningCoopViewModel.mateCharacter)
         
+        // 앱 포그라운드 복귀 시 권한 상태 체크
+        NotificationCenter.default.rx.notification(UIApplication.didBecomeActiveNotification)
+            .map { _ in CLLocationManager.authorizationStatus() }
+            .bind(to: locationAuthStatusRelay)
+            .disposed(by: disposeBag)
+        
         // MARK: - Firestore로부터 메이트 거리 수신
         FirestoreService.shared
             .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
             .bind(to: mateDistanceRelay)
             .disposed(by: disposeBag)
+        
 
         // 위치 추적 시작
         startRelay.accept(())
@@ -109,7 +118,8 @@ final class RunningCoopViewController: BaseViewController {
             startTracking: startRelay.asObservable(),
             mateDistance: mateDistanceRelay.asObservable(),
             quit: quitRelay.asObservable(),
-            mateQuit: mateQuitRelay.asObservable()
+            mateQuit: mateQuitRelay.asObservable(),
+            locationAuthStatus: locationAuthStatusRelay.asObservable()
         )
 
         let output = runningCoopViewModel.transform(input: input)
@@ -149,6 +159,13 @@ final class RunningCoopViewController: BaseViewController {
                 self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
+        
+        // 위치 권한 거절 시 알림
+        output.locationAuthDenied
+            .emit(onNext: { [weak self] in
+                self?.showLocationDeniedAlert()
+            })
+            .disposed(by: disposeBag)
     }
 
     private func navigateToFinish(success: Bool, myDistance: Double) {
@@ -185,5 +202,23 @@ final class RunningCoopViewController: BaseViewController {
                 self?.navigateToFinish(success: false, myDistance: self?.runningCoopViewModel.myDistanceDisplayRelay.value ?? 0.0)
             }
         )
+    }
+    private func showLocationDeniedAlert() {
+        let alert = UIAlertController(
+            title: "위치 권한 필요",
+            message: "운동 기록을 위해 위치 권한이 필요합니다.\n설정에서 위치 권한을 허용해주세요.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default, handler: { _ in
+            if let appSettings = URL(string: UIApplication.openSettingsURLString),
+               UIApplication.shared.canOpenURL(appSettings) {
+                UIApplication.shared.open(appSettings)
+            }
+        }))
+
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+
+        present(alert, animated: true)
     }
 }

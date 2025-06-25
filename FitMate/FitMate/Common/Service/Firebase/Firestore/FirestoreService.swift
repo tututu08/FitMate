@@ -727,7 +727,7 @@ extension FirestoreService {
                         return WorkoutRecord(type: "플랭크", totalDistance: "\(count)", unit: "회")
                     }()
                 ]
-                
+
                 //print("✅ WorkoutRecord 생성 완료: \(records)")
                 single(.success(records))
             }

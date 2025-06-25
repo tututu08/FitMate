@@ -225,7 +225,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
                 }
             }
     }
-    
+
     // 상대방 종료 감지
     private func bindMateQuitListener() {
         FirestoreService.shared.listenMateQuitStatus(matchCode: matchCode, myUid: myUID)
