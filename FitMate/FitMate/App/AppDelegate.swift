@@ -33,14 +33,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         let db = Firestore.firestore()
-        db.collection("tokens").document(uid).setData([
+        let tokenData: [String: Any] = [
             "fcmToken": token,
             "updatedAt": Timestamp(date: Date())
-        ], merge: true) { error in
+        ]
+
+        // 1. tokens/{uid}에 저장
+        db.collection("tokens").document(uid).setData(tokenData, merge: true) { error in
             if let error = error {
-                print("FCM 토큰 저장 실패: \(error.localizedDescription)")
+                print("FCM 토큰 저장 실패 (tokens): \(error.localizedDescription)")
             } else {
                 print("FCM 토큰 저장 완료: tokens/\(uid)")
+            }
+        }
+
+        // 2. users/{uid}에도 저장
+        db.collection("users").document(uid).setData(tokenData, merge: true) { error in
+            if let error = error {
+                print("FCM 토큰 저장 실패 (users): \(error.localizedDescription)")
+            } else {
+                print("FCM 토큰 저장 완료: users/\(uid)")
             }
         }
     }
@@ -127,16 +139,30 @@ extension AppDelegate {
                                 withCompletionHandler completion: @escaping () -> Void) {
         
         let info = response.notification.request.content.userInfo
-        
+
         if
-          let type = info["type"] as? String, type == "invitation",
+          let type = info["type"] as? String,
+          type == "invitation",
           let matchCode = info["matchCode"] as? String {
+            
             NotificationCenter.default.post(
                 name: .init("DidReceiveInvitation"),
                 object: nil,
                 userInfo: ["matchCode": matchCode]
             )
+
+        } else if
+          let type = info["type"] as? String,
+          type == "friend_invitation",
+          let fromUid = info["fromUid"] as? String {
+
+            NotificationCenter.default.post(
+                name: .init("DidReceiveFriendInvitation"),
+                object: nil,
+                userInfo: ["fromUid": fromUid]
+            )
         }
+
         completion()
     }
 }
