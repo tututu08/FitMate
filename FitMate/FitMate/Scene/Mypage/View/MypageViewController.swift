@@ -52,7 +52,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
                 cellIdentifier: WorkRecordCell.identifier,
                 cellType: WorkRecordCell.self
             )) { index, record, cell in
-                cell.configure(with: record)
+                cell.configure(with: record, index: index)
             }
             .disposed(by: disposeBag)
     }

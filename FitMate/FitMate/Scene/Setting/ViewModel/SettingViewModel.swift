@@ -20,14 +20,8 @@ final class SettingViewModel {
         let withdrawEvent: Signal<Void>
     }
 
-<<<<<<< Updated upstream
-    let pushEnabledRelay = BehaviorRelay<Bool>(value: false)
-    private let soundEnabledRelay = BehaviorRelay<Bool>(value: false)
-=======
     private let pushEnabledRelay: BehaviorRelay<Bool>
     private let soundEnabledRelay: BehaviorRelay<Bool>
->>>>>>> Stashed changes
-
     private let disposeBag = DisposeBag()
 
     init() {
@@ -68,5 +62,13 @@ final class SettingViewModel {
 
     var initialSoundEnabled: Bool {
         return soundEnabledRelay.value
+    }
+
+    func updatePushEnabled(_ value: Bool) {
+        pushEnabledRelay.accept(value)
+    }
+
+    func updateSoundEnabled(_ value: Bool) {
+        soundEnabledRelay.accept(value)
     }
 }

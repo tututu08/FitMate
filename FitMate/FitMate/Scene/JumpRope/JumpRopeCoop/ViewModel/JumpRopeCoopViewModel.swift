@@ -117,10 +117,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
             progress: progress,
             didFinish: didFinish,
             mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ())
-<<<<<<< Updated upstream
-=======
-            
->>>>>>> Stashed changes
+
         )
     }
     
