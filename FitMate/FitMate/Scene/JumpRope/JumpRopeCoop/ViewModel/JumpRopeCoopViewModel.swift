@@ -10,7 +10,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
     // Input: 외부에서 받아올 신호 정의
     struct Input {
         let start: Observable<Void>           // 측정 시작 트리거
-        let mateCount: Observable<Int>        // 메이트의 점프 수(네트워크 등에서 들어올 수 있음)
+        //let mateCount: Observable<Int>        // 메이트의 점프 수(네트워크 등에서 들어올 수 있음)
         let quit: Observable<Void>
         let mateQuit: Observable<Void>
     }
@@ -21,6 +21,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
         let mateCountText: Driver<String>     // 메이트 점프 수(문자열)
         let progress: Driver<CGFloat>         // 전체 진행률(비율)
         let didFinish: Signal<Bool>         // 종료 알림(성공/실패)
+        let mateQuitEvent: Signal<Void>
         
     }
     
@@ -31,7 +32,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
     private let myCountRelay = BehaviorRelay<Int>(value: 0)
     private let mateCountRelay = BehaviorRelay<Int>(value: 0)
     private let didFinishRelay = PublishRelay<Bool>()
-    
+    private let mateQuitRelay = PublishRelay<Void>() // 그만하기 감지용
     
     // 목표 카운트(외부에서 입력, 예: 100)
     let goalCount: Int
@@ -66,19 +67,21 @@ final class JumpRopeCoopViewModel: ViewModelType {
         input.start
             .subscribe(onNext: { [weak self] in
                 self?.startAccelerometer()
+                self?.bindMateQuitListener()
+                self?.observeMateCount()
             })
             .disposed(by: disposeBag)
         
         // 메이트 점프 수가 들어오면 Relay에 바인딩
-        input.mateCount
-            .subscribe(onNext: { [weak self] count in
-                guard let self else { return }
-                self.mateCountRelay.accept(count)
-                if Double(self.myCountRelay.value) + Double(self.mateCountRelay.value) >= Double(self.goalCount) {
-                    self.finish(success: true)
-                }
-            })
-            .disposed(by: disposeBag)
+//        input.mateCount
+//            .subscribe(onNext: { [weak self] count in
+//                guard let self else { return }
+//                self.mateCountRelay.accept(count)
+//                if Double(self.myCountRelay.value) + Double(self.mateCountRelay.value) >= Double(self.goalCount) {
+//                    self.finish(success: true)
+//                }
+//            })
+//            .disposed(by: disposeBag)
         
         input.quit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
@@ -112,8 +115,8 @@ final class JumpRopeCoopViewModel: ViewModelType {
             myCountText: myText,
             mateCountText: mateText,
             progress: progress,
-            didFinish: didFinish
-            
+            didFinish: didFinish,
+            mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ())
         )
     }
     
@@ -132,6 +135,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
             if speed > self.accelerationLimit && self.canCount {
                 self.count += 1
                 self.myCountRelay.accept(self.count)    // 내 점프 수 갱신
+                updateMyCountToFirestore(self.count) // firestore에 저장
                 self.canCount = false                  // 쿨타임 시작
                 DispatchQueue.main.asyncAfter(deadline: .now() + self.cooldown) { [weak self] in
                     self?.canCount = true              // 쿨타임 끝나면 다시 감지 가능
@@ -144,8 +148,20 @@ final class JumpRopeCoopViewModel: ViewModelType {
     }
     private func confirmQuit(isMine: Bool) {
         motionManager.stopAccelerometerUpdates()
-        finish(success: false)
+        //finish(success: false)
         // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
+        
+        // 그만하기 버튼 탭 시, QuitStatus 업데이트
+        if isMine {
+            FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUID)
+                .subscribe(onCompleted: {
+                    //print("✅ quitStatus 저장 성공")
+                }, onError: { error in
+                    //print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
+                })
+                .disposed(by: disposeBag)
+        }
+        finish(success: false)
     }
     
     func finish(success: Bool) {
@@ -171,6 +187,61 @@ final class JumpRopeCoopViewModel: ViewModelType {
     //                }
     //        }
     // 뷰모델 소멸시 센서 종료
+    
+    // 내 점프수 Firestore에 저장 (실시간)
+    private func updateMyCountToFirestore(_ count: Int) {
+        db.collection("matches")
+            .document(matchCode)
+            .updateData([
+                "players.\(myUID).progress": count
+            ]) { error in
+                if let error = error {
+                    print("❌ 점프 수 저장 실패: \(error.localizedDescription)")
+                } else {
+                    print("✅ 점프 수 저장 완료: \(count)")
+                }
+            }
+    }
+    
+    // 메이트 점프 수를 Firestore에서 실시간 감지
+    private func observeMateCount() {
+        db.collection("matches")
+            .document(matchCode)
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self = self,
+                      let data = snapshot?.data(),
+                      let players = data["players"] as? [String: Any],
+                      let mate = players[self.mateUID] as? [String: Any],
+                      let progress = mate["progress"] as? Int else {
+                    return
+                }
+                
+                print("👀 메이트 점프 수 업데이트: \(progress)")
+                self.mateCountRelay.accept(progress)
+                
+                if progress >= self.goalCount {
+                    self.finish(success: false)
+                }
+            }
+    }
+
+    // 상대방 종료 감지
+    private func bindMateQuitListener() {
+        FirestoreService.shared.listenMateQuitStatus(matchCode: matchCode, myUid: myUID)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] didQuit in
+                print("👀 상대방 종료 감지됨: \(didQuit)")
+                guard didQuit else { return }
+                self?.mateQuitRelay.accept(())
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func stopLocationUpdates() {
+        motionManager.stopAccelerometerUpdates()
+    }
+    
+    
     deinit {
         motionManager.stopAccelerometerUpdates()
     }

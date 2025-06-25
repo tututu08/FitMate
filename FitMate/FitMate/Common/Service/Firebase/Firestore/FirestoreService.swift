@@ -687,16 +687,48 @@ extension FirestoreService {
                     single(.success([])) // 없으면 빈 배열 반환
                     return
                 }
-                print("📦 totalStats 데이터: \(stats)")
+                //print("📦 totalStats 데이터: \(stats)")
                 
+//                let records: [WorkoutRecord] = [
+//                    WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Double ?? 0)", unit: "Km"),
+//                    WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Double ?? 0)", unit: "Km"),
+//                    WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Double ?? 0)", unit: "Km"),
+//                    WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
+//                    WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
+//                ]
                 let records: [WorkoutRecord] = [
                     WorkoutRecord(type: "걷기", totalDistance: "\(stats["walkingKm"] as? Double ?? 0)", unit: "Km"),
                     WorkoutRecord(type: "달리기", totalDistance: "\(stats["runningKm"] as? Double ?? 0)", unit: "Km"),
                     WorkoutRecord(type: "자전거", totalDistance: "\(stats["cyclingKm"] as? Double ?? 0)", unit: "Km"),
-                    WorkoutRecord(type: "줄넘기", totalDistance: "\(stats["jumpRopeCount"] as? Int ?? 0)", unit: "회"),
-                    WorkoutRecord(type: "플랭크", totalDistance: "\(stats["plankRounds"] as? Int ?? 0)", unit: "회")
+                    
+                    {
+                        let raw = stats["jumpRopeCount"]
+                        let count: Int
+                        if let intValue = raw as? Int {
+                            count = intValue
+                        } else if let doubleValue = raw as? Double {
+                            count = Int(doubleValue)
+                        } else {
+                            count = 0
+                        }
+                        return WorkoutRecord(type: "줄넘기", totalDistance: "\(count)", unit: "회")
+                    }(),
+
+                    {
+                        let raw = stats["plankRounds"]
+                        let count: Int
+                        if let intValue = raw as? Int {
+                            count = intValue
+                        } else if let doubleValue = raw as? Double {
+                            count = Int(doubleValue)
+                        } else {
+                            count = 0
+                        }
+                        return WorkoutRecord(type: "플랭크", totalDistance: "\(count)", unit: "회")
+                    }()
                 ]
-                print("✅ WorkoutRecord 생성 완료: \(records)")
+
+                //print("✅ WorkoutRecord 생성 완료: \(records)")
                 single(.success(records))
             }
             return Disposables.create()
@@ -806,38 +838,38 @@ extension FirestoreService {
 
             let listener = ref.addSnapshotListener { snapshot, error in
                 if let error = error {
-                    print("❌ 리스너 에러 발생: \(error.localizedDescription)")
+                    //print("❌ 리스너 에러 발생: \(error.localizedDescription)")
                     return
                 }
 
                 guard let snapshot = snapshot else {
-                    print("❌ 스냅샷이 nil입니다")
+                    //print("❌ 스냅샷이 nil입니다")
                     return
                 }
 
                 guard snapshot.exists else {
-                    print("❌ 문서가 존재하지 않습니다: matches/\(matchCode)")
+                    //print("❌ 문서가 존재하지 않습니다: matches/\(matchCode)")
                     return
                 }
 
                 guard let data = snapshot.data() else {
-                    print("❌ snapshot.data()가 nil입니다")
+                    //print("❌ snapshot.data()가 nil입니다")
                     return
                 }
 
-                print("📄 문서 데이터: \(data)")
+                //print("📄 문서 데이터: \(data)")
 
                 if let quitStatus = data["quitStatus"] as? [String: Bool] {
                     print("📡 quitStatus 감지됨: \(quitStatus)")
                     for (uid, didQuit) in quitStatus {
                         if uid != myUid && didQuit == true {
-                            print("⚠️ 상대방 종료 감지됨: \(uid)")
+                            //print("⚠️ 상대방 종료 감지됨: \(uid)")
                             observer.onNext(true)
                             break
                         }
                     }
                 } else {
-                    print("❌ quitStatus 필드가 없거나 형식이 [String: Bool] 아님")
+                    //print("❌ quitStatus 필드가 없거나 형식이 [String: Bool] 아님")
                 }
             }
 
@@ -859,7 +891,7 @@ extension FirestoreService {
                 if let error = error {
                     completable(.error(error))
                 } else {
-                    print("✅ quitStatus 저장 성공 [Map 구조]")
+                    //print("✅ quitStatus 저장 성공 [Map 구조]")
                     completable(.completed)
                 }
             }

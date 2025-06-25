@@ -147,13 +147,33 @@ extension FinishViewModel {
                 }
             }()
 
+//            let record = ExerciseRecord(
+//                type: exerciseType,
+//                date: self.formatDate(timestamp.dateValue()),
+//                result: result,
+//                detail1: "\(goalValue)",
+//                detail2: "\(myProgress)",
+//                detail3: "\(mateProgress)"
+//            )
+            let detail2: String
+            let detail3: String
+
+            switch exerciseType {
+            case .jumpRope, .plank:
+                detail2 = "\(Int(myProgress))"
+                detail3 = "\(Int(mateProgress))"
+            default:
+                detail2 = String(format: "%.2f", myProgress)
+                detail3 = String(format: "%.2f", mateProgress)
+            }
+
             let record = ExerciseRecord(
                 type: exerciseType,
                 date: self.formatDate(timestamp.dateValue()),
                 result: result,
                 detail1: "\(goalValue)",
-                detail2: "\(myProgress)",
-                detail3: "\(mateProgress)"
+                detail2: detail2,
+                detail3: detail3
             )
 
             return FirestoreService.shared.saveExerciseRecord(uid: uid, record: record)

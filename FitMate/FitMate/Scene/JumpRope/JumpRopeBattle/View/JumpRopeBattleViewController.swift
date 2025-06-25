@@ -33,8 +33,8 @@ class JumpRopeBattleViewController: BaseViewController {
             myCharacter: myCharacter,
             mateCharacter: mateCharacter,
             matchCode: matchCode,
-            myUID: mateUid,
-            mateUID: myUid
+            myUID: myUid,
+            mateUID:mateUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -64,7 +64,8 @@ class JumpRopeBattleViewController: BaseViewController {
                     },
                     onQuit: { [weak self] in
                         // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        self?.viewModel.finish(success: false)
+                        //self?.viewModel.finish(success: false)
+                        self?.quitRelay.accept(())
                         // 혹은 didFinishRelay 트리거 등
                     }
                 )
@@ -76,7 +77,7 @@ class JumpRopeBattleViewController: BaseViewController {
     override func bindViewModel() {
         let input = JumpRopeBattleViewModel.Input(
             start: startRelay.asObservable(),
-            mateCount: mateCountRelay.asObservable(),
+            //mateCount: mateCountRelay.asObservable(),
             quit: quitRelay.asObservable(),
             mateQuit: mateQuitRelay.asObservable()
         )
@@ -111,7 +112,13 @@ class JumpRopeBattleViewController: BaseViewController {
         // 메이트 진행률바(비율)x
         output.mateProgressView
             .drive(onNext: { [weak self] ratio in
-                self?.sportsView.myUpdateProgress(ratio: ratio)
+                self?.sportsView.mateUpdateProgress(ratio: ratio)
+            })
+            .disposed(by: disposeBag)
+        
+        output.mateQuitEvent
+            .emit(onNext: { [weak self] in
+                self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
     }
@@ -122,6 +129,7 @@ class JumpRopeBattleViewController: BaseViewController {
             sport: "줄넘기",
             goal: viewModel.goalCount,
             goalUnit: "개",
+            myDistance: Double(viewModel.myCount),
             character: myCharacter,
             success: success
         )
@@ -130,11 +138,15 @@ class JumpRopeBattleViewController: BaseViewController {
         present(vc, animated: true)
     }
     func receiveMateQuit()    {
+        viewModel.stopLocationUpdates()
         sportsView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                self?.navigationController?.popToRootViewController(animated: true)
+                //self?.navigationController?.popToRootViewController(animated: true)
+                
+                self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
+                self?.navigateToFinish(success: true)
             }
         )
     }

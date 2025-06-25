@@ -49,6 +49,8 @@ class MainView: BaseView {
         dDay.text = "1일째"
         dDay.font = UIFont(name: "DungGeunMo", size: 40)
         dDay.textColor = .secondary500
+//        dDay.minimumScaleFactor = 0.1 // 외부 제약이 명시적일때 그 제약에 맞게
+        dDay.adjustsFontSizeToFitWidth = true
         return dDay
     }()
     
@@ -142,6 +144,7 @@ class MainView: BaseView {
         dDaysLabel.snp.makeConstraints { make in
             make.top.equalTo(explainLabel.snp.bottom)
             make.leading.equalToSuperview().inset(28)
+            make.width.equalTo(dDaysLabel.snp.height).multipliedBy(2.3)
         }
         
         myAvatarImage.snp.makeConstraints { make in
@@ -156,8 +159,8 @@ class MainView: BaseView {
         exerciseButton.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(32)
             make.centerX.equalToSuperview()
-            make.width.equalTo(335)
-            make.height.equalTo(60)
+            make.leading.trailing.equalToSuperview().inset(20)
+            make.height.equalTo(exerciseButton.snp.width).multipliedBy(0.17)
         }
 
     }
@@ -180,8 +183,7 @@ class MainView: BaseView {
             make.leading.equalToSuperview().inset(hasMate ? 44: 68)
             make.trailing.equalToSuperview().inset(hasMate ? 123 : 67)
             make.bottom.equalTo(exerciseButton.snp.top).offset(-40)
-//            make.width.equalTo(hasMate ? 208 : 240)
-            make.height.equalTo(hasMate ? 267 : 309)
+            make.height.equalTo(myAvatarImage.snp.width).multipliedBy(1.283)
         }
         // 내 아바타 상단 닉네임 라벨 위치 설정
         myNicknameStack.snp.remakeConstraints { make in
@@ -190,16 +192,17 @@ class MainView: BaseView {
         }
         // 상대방 아바타 위치 및 크기 설정
         mateAvatarImage.snp.remakeConstraints { make in
-            make.top.equalTo(topBar.snp.bottom).offset(25)
-            make.trailing.equalTo(safeAreaLayoutGuide).inset(40)
-            make.height.equalTo(142)
-            make.width.equalTo(112)
+            make.top.equalTo(topBar.snp.bottom).offset(30)
+            make.leading.equalToSuperview().inset(240)
+            make.trailing.equalToSuperview().inset(26)
+            make.height.equalTo(mateAvatarImage.snp.width).multipliedBy(0.9)
         }
         // 상대방 아바타 상단 닉네임 라벨 위치 설정
         mateNicknameStack.snp.remakeConstraints { make in
             make.centerX.equalTo(mateAvatarImage)
             make.bottom.equalTo(mateAvatarImage.snp.top).inset(-10)
         }
+        
 //        // 메이트 없을 때는 안보이게 처리
 //        mateAvatarImage.isHidden = !hasMate // = hasMate가 false면 안보이도록
 //        print("기대값false:\(hasMate)")
