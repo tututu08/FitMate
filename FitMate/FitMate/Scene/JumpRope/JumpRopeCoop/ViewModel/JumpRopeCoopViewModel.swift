@@ -221,7 +221,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
                 self.mateCountRelay.accept(progress)
                 
                 if progress >= self.goalCount {
-                    self.finish(success: false)
+                    self.finish(success: true)
                 }
             }
     }

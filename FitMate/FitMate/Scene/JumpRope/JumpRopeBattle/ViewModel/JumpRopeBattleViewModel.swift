@@ -67,23 +67,12 @@ final class JumpRopeBattleViewModel: ViewModelType {
         input.start
             .subscribe(onNext: { [weak self] in
                 self?.startAccelerometer()
-                //                                self?.observeMateCount()
+                // self?.observeMateCount()
                 // 메이트 종료 감지
                 self?.bindMateQuitListener()
                 self?.observeMateCount() // ✅ 메이트 점프 수 감지 시작
             })
             .disposed(by: disposeBag)
-        
-        // 메이트 점프 수가 들어오면 Relay에 바인딩
-//        input.mateCount
-//            .subscribe(onNext: { [weak self] count in
-//                guard let self else { return }
-//                self.mateCountRelay.accept(count)
-//                if self.mateCountRelay.value >= self.goalCount {
-//                    self.finish(success: false)
-//                }
-//            })
-//            .disposed(by: disposeBag)
         
         input.quit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
@@ -92,6 +81,15 @@ final class JumpRopeBattleViewModel: ViewModelType {
         input.mateQuit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
             .disposed(by: disposeBag)
+        
+//        input.mateCount
+//            .subscribe(onNext: { [weak self] count in
+//                guard let self else {return}
+//                self.mateCountRelay.accept(Int(count))
+//                if Int(count) >= self.goalCount {
+//                    self.finish(success: false)
+//                }
+//            }).disposed(by: disposeBag)
         
         // 내 점프 수를 문자열로 변환(Driver로 변환)
         let myText = myCountRelay
@@ -102,21 +100,6 @@ final class JumpRopeBattleViewModel: ViewModelType {
         let mateText = mateCountRelay
             .map { "\($0)개" }
             .asDriver(onErrorJustReturn: "0")
-        
-        // 내 점프 수와 메이트 점프 수를 더해서, 목표 대비 진행률 계산
-//        let myProgress = myCountRelay
-//            .map { [weak self] my -> CGFloat in
-//                guard let self else { return 0 }
-//                return CGFloat(min(1, Float(my) / Float(self.goalCount)))
-//            }
-//            .asDriver(onErrorJustReturn: 0)
-//        
-//        let mateProgress = mateCountRelay
-//            .map { [weak self] mate -> CGFloat in
-//                guard let self else { return 0 }
-//                return CGFloat(min(1, Float(mate) / Float(self.goalCount)))
-//            }
-//            .asDriver(onErrorJustReturn: 0)
         
         let myProgress = myCountRelay
             .map { CGFloat(min(1.0, Float($0) / Float(self.goalCount))) }
@@ -166,6 +149,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
             }
         }
     }
+    
     private func confirmQuit(isMine: Bool) {
         motionManager.stopAccelerometerUpdates()
         //finish(success: false)
@@ -189,6 +173,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
         motionManager.stopAccelerometerUpdates()
         didFinishRelay.accept(success)
     }
+    
     // 내 점프수 Firestore에 저장 (실시간)
     private func updateMyCountToFirestore(_ count: Int) {
         db.collection("matches")
@@ -203,17 +188,8 @@ final class JumpRopeBattleViewModel: ViewModelType {
                 }
             }
     }
-    //
+
     // 메이트 점프 수를 Firestore에서 실시간 감지
-//    private func observeMateCount() {
-//        db.collection("matches")
-//            .document(matchCode)
-//            .addSnapshotListener { [weak self] snapshot, error in
-//                guard let self, let data = snapshot?.data(),
-//                      let mateCount = data[self.mateUID] as? Int else { return }
-//                self.mateCountRelay.accept(mateCount)
-//            }
-//    }
     private func observeMateCount() {
         db.collection("matches")
             .document(matchCode)

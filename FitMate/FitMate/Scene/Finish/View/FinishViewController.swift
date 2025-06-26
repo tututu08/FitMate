@@ -88,11 +88,7 @@ class FinishViewController: BaseViewController {
         finishView.rewardButton.rx.tap
             .bind { [weak self] in
                 guard let self else { return }
-                
 
-                print("self.matchCode: \(self.matchCode)\nmyUid: \(self.uid)\nmateUid: \(self.mateUid)\nmode: \(viewModel.mode)\nisWinner: \(viewModel.success)\ngoal: \(viewModel.goal)\nexerciseType: \(viewModel.sport)")
-                
-                // 업데이트 실행
                 FirestoreService.shared.updateMatchResult(
                     matchCode: self.matchCode,
                     myUid: self.uid,
@@ -103,8 +99,15 @@ class FinishViewController: BaseViewController {
                     myDistance: viewModel.myDistance,
                     exerciseType: viewModel.sport
                 )
+                .andThen(
+                    self.viewModel.saveRecord(
+                        uid: self.uid,
+                        mateUid: self.mateUid,
+                        matchCode: self.matchCode
+                    )
+                )
                 .subscribe(onCompleted: {
-                    print("파이어스토어 업데이트 완료")
+                    print("✅ 유저 기록 저장 완료")
 
                     let tabBarVC = TabBarController(uid: self.uid)
                     tabBarVC.modalPresentationStyle = .fullScreen
@@ -115,19 +118,10 @@ class FinishViewController: BaseViewController {
                         window.makeKeyAndVisible()
                     }
                 }, onError: { error in
-                    print("업데이트 실패: \(error)")
+                    print("❌ 유저 기록 저장 실패: \(error.localizedDescription)")
                 })
                 .disposed(by: self.disposeBag)
             }
-            .disposed(by: disposeBag)
-        
-        viewModel
-            .saveRecord(uid: self.uid, mateUid: mateUid, matchCode: matchCode)
-            .subscribe(onCompleted: {
-                print("✅ 유저 기록 저장 완료")
-            }, onError: { error in
-                print("❌ 유저 기록 저장 실패: \(error.localizedDescription)")
-            })
             .disposed(by: disposeBag)
     }
 }
