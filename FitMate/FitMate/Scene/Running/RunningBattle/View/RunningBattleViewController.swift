@@ -64,7 +64,19 @@ class RunningBattleViewController: BaseViewController {
             .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
             .bind(to: mateDistanceRelay)
             .disposed(by: disposeBag)
-
+        
+        FirestoreService.shared.listenToMatchStatus(matchCode: matchCode)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] data in
+                guard let self = self else { return }
+                guard let matchStatus = data["matchStatus"] as? String else { return }
+                
+                if matchStatus == "cancelLocation" {
+                    self.showMateLocationRejectedAlert()
+                }
+            })
+            .disposed(by: disposeBag)
+        
         startTrriger.accept(())
 
         rootView.stopButton.rx.tap
@@ -79,6 +91,7 @@ class RunningBattleViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
     }
+    
 
     override func bindViewModel() {
         super.bindViewModel()
@@ -167,6 +180,22 @@ class RunningBattleViewController: BaseViewController {
             }
         )
     }
+    func showMateLocationRejectedAlert() {
+            rootView.showQuitAlert(
+                type: .cancelLocation,
+                onHome: { [weak self] in
+                    guard let self = self else { return }
+                    let tabBarVC = TabBarController(uid: self.myUid)
+                    tabBarVC.modalPresentationStyle = .fullScreen
+                    if let window = UIApplication.shared.connectedScenes
+                        .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                        .first {
+                        window.rootViewController = tabBarVC
+                        window.makeKeyAndVisible()
+                    }
+                }
+            )
+        }
 
     private func showLocationDeniedAlert() {
         let alert = UIAlertController(
