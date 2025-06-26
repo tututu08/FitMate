@@ -61,7 +61,7 @@ class HasNoMateViewController: UIViewController {
     func setAlert() {
         let alert = CustomAlertView.AlertBuilder()
             .setTitle("메이트가 등록되지 않았습니다")
-            .setMessage("서비스 이용을 위해 \n메이트를 먼저 등록해주세요.")
+            .setMessage("서비스 이용을 위해 메이트를 먼저\n 등록해주세요.")
             .setResumeButton(laterButton)
             .setStopButton(addMateButton)
             .buildAlert()
