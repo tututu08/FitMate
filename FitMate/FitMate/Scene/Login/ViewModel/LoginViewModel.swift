@@ -12,6 +12,7 @@ import UIKit
 import KakaoSDKUser
 import KakaoSDKAuth
 import CryptoKit
+import FirebaseMessaging
 
 final class LoginViewModel {
     
@@ -72,6 +73,11 @@ final class LoginViewModel {
                         .catch { _ in // 사용자 문서가 존재하지 않다면
                             return FirestoreService.shared
                                 .createUserDocument(uid: uid) // 사용자 uid 로 문서를 생성
+                                .do(onSuccess: { _ in
+                                    if let token = Messaging.messaging().fcmToken {
+                                        AppDelegate.saveFCMToken(token)
+                                    }
+                                })
                                 .map { .goToInputNickName(uid: uid) } // .just(.goToInputNickName(uid: uid)로 반환
                         }
                         .asObservable()
@@ -97,7 +103,7 @@ final class LoginViewModel {
                                     domain: "kakao",
                                     code: -1,
                                     userInfo: [NSLocalizedDescriptionKey: "유저 정보 없음"]
-                                ))
+                                                        ))
                             }
                         }
                     }
@@ -170,6 +176,11 @@ final class LoginViewModel {
                         .catch {_ in
                             FirestoreService.shared
                                 .createUserDocument(uid: uid)
+                                .do(onSuccess: { _ in
+                                    if let token = Messaging.messaging().fcmToken {
+                                        AppDelegate.saveFCMToken(token)
+                                    }
+                                })
                                 .map { .goToInputNickName(uid: uid) }
                         }
                         .asObservable()
@@ -212,6 +223,11 @@ final class LoginViewModel {
                         .catch { _ in
                             FirestoreService.shared
                                 .createUserDocument(uid: uid)
+                                .do(onSuccess: { _ in
+                                    if let token = Messaging.messaging().fcmToken {
+                                        AppDelegate.saveFCMToken(token)
+                                    }
+                                })
                                 .map { .goToInputNickName(uid: uid) }
                         }
                         .asObservable()
