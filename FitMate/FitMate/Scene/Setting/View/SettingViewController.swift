@@ -197,6 +197,105 @@ final class SettingViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
+
+    // 회원 탈퇴 전체 처리 로직 (구글 재인증 포함)
+    private func performWithdrawProcess() -> Observable<Void> {
+        // 0. 로그인한 사용자 확인
+        guard let user = Auth.auth().currentUser,
+              let providerID = user.providerData.first?.providerID else {
+            return Observable.error(NSError(domain: "WithdrawError", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인 정보 없음"]))
+        }
+        
+        // 1. 로그인 방식에 따라 재인증 선택
+        let reauthObservable: Observable<Void>
+        
+        switch providerID {
+        case "google.com":
+            // 구글 재인증 로직
+            reauthObservable = AuthService.shared.reauthenticateGoogleUser()
+                .asObservable()
+                .do(
+                    onNext: {
+                        print("🟢 [1] 구글 재인증 성공")
+                    },
+                    onError: { error in
+                        print("🔴 [1] 구글 재인증 실패: \(error.localizedDescription)")
+                    }
+                )
+                .asObservable()
+            
+        case "apple.com":
+            // 애플 로그인 사용자의 경우 재인증 로직
+            reauthObservable = AuthService.shared.reauthenticateAppleUser()
+                .asObservable()
+                .do(
+                    onNext: {
+                        print("🟢 [1] 애플 재인증 성공")
+                    },
+                    onError: { error in
+                        print("🔴 [1] 애플 재인증 실패: \(error.localizedDescription)")
+                    }
+                )
+                .asObservable()
+            
+        case "password":
+            // 카카오 로그인 (이메일/비밀번호 방식으로 저장) 사용자의 경우
+            reauthObservable = AuthService.shared.fetchKakaoUser()
+                .flatMap { kakaoUser in
+                    AuthService.shared.reauthenticateKakaoUser(kakaoUser: kakaoUser)
+                }
+                .asObservable()
+                .do(onNext: {
+                    print("🟢 [1] 카카오 재인증 성공")
+                }, onError: { error in
+                    print("🔴 [1] 카카오 재인증 실패: \(error.localizedDescription)")
+                })
+            
+        default:
+            // 지원되지 않는 로그인 방식인 경우 에러 처리
+            return Observable.error(NSError(domain: "WithdrawError", code: -2, userInfo: [NSLocalizedDescriptionKey: "지원하지 않는 로그인 방식입니다: \(providerID)"]))
+        }
+
+        // 2. 메이트 연결 끊기
+        let disconnectObservable = FirestoreService.shared.findMateUid(uid: self.uid)
+            .flatMap { mateUid -> Single<Void> in
+                if mateUid.isEmpty {
+                    // 메이트가 없으면 생략
+                    print("🟡 [2] 메이트 없음 - 연결 끊기 생략")
+                    return .just(())
+                } else {
+                    print("🟢 [2] 메이트 있음 - 연결 끊기 시도")
+                    return FirestoreService.shared.disconnectMate(forUid: self.uid, mateUid: mateUid, reason: .byWithdrawal)
+                }
+            }
+            .do(onSuccess: {
+                print("🟢 [2-2] 연결 끊기 완료")
+            })
+            .asObservable()
+        
+        // 3. Firebase 계정 삭제
+        let deleteAccountObservable = AuthService.shared.deleteAccount()
+            .do(onSuccess: {
+                print("🟢 [3] Firebase 계정 삭제 성공")
+            })
+            .asObservable()
+        
+        // 4. Firestore 유저 문서 삭제
+        let deleteUserDocObservable = FirestoreService.shared.deleteDocument(
+            collectionName: "users",
+            documentName: self.uid
+        )
+            .do(onSuccess: {
+                print("🟢 [4] Firestore 문서 삭제 성공")
+            })
+            .asObservable()
+        
+        // 순차 실행: 재인증 → 연결 끊기 → 계정 삭제 → 문서 삭제
+        return reauthObservable
+            .flatMap { disconnectObservable }
+            .flatMap { deleteAccountObservable }
+            .flatMap { deleteUserDocObservable }
+    }
     
     private func showMateEndPopup() {
         settingView.isHidden = true
@@ -221,7 +320,25 @@ final class SettingViewController: UIViewController {
             .flatMapLatest { [weak self] mateUid -> Observable<Void> in
                 guard let self else { return .empty() }
                 if mateUid.isEmpty {
-                    return .just(())
+                    
+                    // 팝업 제거
+                    self.mateEndPopupView?.removeFromSuperview()
+                    //self.settingView.isHidden = false // 다시 보이도록
+                    
+                    let alert = PartnerLeftAlertView()
+                    alert.configure(title: "메이트 끊기 실패", description: "현재 연결된 메이트가 없습니다.")
+                    alert.frame = self.view.bounds
+                    self.view.addSubview(alert)
+                    
+                    // 확인 버튼 누르면 알림 제거
+                    alert.confirmButton.rx.tap
+                        .bind { [weak alert] in
+                            alert?.removeFromSuperview()
+                            self.settingView.isHidden = false
+                        }
+                        .disposed(by: disposeBag)
+                    
+                    return .empty() // ★ 더 이상 진행하지 않음
                 }
                 return FirestoreService.shared.disconnectMate(forUid: self.uid, mateUid: mateUid).asObservable()
             }
