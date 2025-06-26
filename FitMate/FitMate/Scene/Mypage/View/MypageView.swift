@@ -28,12 +28,20 @@ final class MypageView: UIView {
         return label
     }()
 
-    let profileImageView: UIImageView = {
+    private let profileImageContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(named: "Secondary50")
+        view.layer.cornerRadius = 4
+        view.clipsToBounds = true
+        return view
+    }()
+
+    private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "kaepy")
         imageView.contentMode = .scaleAspectFit
-        imageView.backgroundColor = UIColor(named: "Secondary50")
-        imageView.layer.cornerRadius = 4
+        imageView.transform = CGAffineTransform(scaleX: -1, y: 1)
+        imageView.clipsToBounds = true
         return imageView
     }()
 
@@ -130,14 +138,15 @@ final class MypageView: UIView {
 
     private func setupLayout() {
         addSubview(topBar)
-        addSubview(profileImageView)
+        addSubview(profileImageContainer)
+        profileImageContainer.addSubview(profileImageView)
         addSubview(nicknameLabel)
         addSubview(underline)
         contentView.addSubview(contentLabel)
 
         topBar.addSubview(titleLabel)
         topBar.addSubview(settingButton)
-        topBar.addSubview(backButton) 
+        topBar.addSubview(backButton)
 
         addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -169,19 +178,23 @@ final class MypageView: UIView {
             $0.width.height.equalTo(24)
         }
 
-        profileImageView.snp.makeConstraints {
+        profileImageContainer.snp.makeConstraints {
             $0.top.equalTo(topBar.snp.bottom).offset(16)
             $0.leading.equalToSuperview().offset(20)
             $0.width.height.equalTo(64)
         }
 
+        profileImageView.snp.makeConstraints {
+            $0.edges.equalToSuperview().inset(6)
+        }
+
         nicknameLabel.snp.makeConstraints {
-            $0.centerY.equalTo(profileImageView.snp.centerY)
-            $0.leading.equalTo(profileImageView.snp.trailing).offset(16)
+            $0.centerY.equalTo(profileImageContainer.snp.centerY)
+            $0.leading.equalTo(profileImageContainer.snp.trailing).offset(16)
         }
 
         underline.snp.makeConstraints {
-            $0.top.equalTo(profileImageView.snp.bottom).offset(16)
+            $0.top.equalTo(profileImageContainer.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(1)
         }
