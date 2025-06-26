@@ -217,7 +217,20 @@ final class RunningCoopViewController: BaseViewController {
             }
         }))
 
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: { [weak self] _ in
+            guard let self = self else { return }
+            FirestoreService.shared
+                .updateMatchStatus(matchCode: self.matchCode, status: "cancelLocation")
+                .subscribe(
+                    onCompleted: {
+                        print("matchStatus: cancelLocation 저장 완료")
+                    },
+                    onError: { error in
+                        print("matchStatus 업데이트 실패: \(error.localizedDescription)")
+                    }
+                )
+                .disposed(by: self.disposeBag)
+        }))
 
         present(alert, animated: true)
     }

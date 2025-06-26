@@ -909,3 +909,21 @@ extension FirestoreService {
         return df
     }()
 }
+
+// matches의 matchStatus 상태 변경
+// 로케이션 권한 요청 거절 후 취소 눌렀을 때 사용
+extension FirestoreService {
+    func updateMatchStatus(matchCode: String, status: String) -> Completable {
+        let docRef = db.collection("matches").document(matchCode)
+        return Completable.create { completable in
+            docRef.updateData(["matchStatus": status]) { error in
+                if let error = error {
+                    completable(.error(error))
+                } else {
+                    completable(.completed)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+}
