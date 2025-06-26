@@ -117,7 +117,7 @@ final class CustomAlertViewController: UIViewController {
                 presentingVC.present(nav, animated: true)
             }
 
-        case .inviteSent, .requestFailed, .rejectRequest:
+        case .inviteSent, .requestFailed, .rejectRequest, .youHaveNoMate:
             // 확인만 누르면 dismiss
             dismiss(animated: true)
         }

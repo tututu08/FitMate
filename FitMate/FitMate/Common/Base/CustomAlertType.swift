@@ -12,6 +12,7 @@ enum CustomAlertType {
     case inviteSent(nickname: String)
     case requestFailed(message: String)
     case rejectRequest(message: String)
+    case youHaveNoMate(message: String)
 
     var title: String {
         switch self {
@@ -19,6 +20,7 @@ enum CustomAlertType {
         case .inviteSent: return "초대 전송 완료"
         case .requestFailed: return "초대 요청 실패"
         case .rejectRequest: return "메이트 요청이 거절됨"
+        case .youHaveNoMate: return "메이트 끊기 실패"
         }
     }
 
@@ -31,6 +33,8 @@ enum CustomAlertType {
         case .requestFailed(let message):
             return message
         case .rejectRequest(let message):
+            return message
+        case .youHaveNoMate(let message):
             return message
         }
     }

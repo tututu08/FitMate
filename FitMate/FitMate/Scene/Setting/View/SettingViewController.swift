@@ -118,6 +118,7 @@ final class SettingViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    // 회원 탈퇴
     private func showWithdrawPopup() {
         settingView.isHidden = true
         
@@ -198,6 +199,7 @@ final class SettingViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    // 메이트 끊기
     private func showMateEndPopup() {
         settingView.isHidden = true
         
@@ -221,7 +223,35 @@ final class SettingViewController: UIViewController {
             .flatMapLatest { [weak self] mateUid -> Observable<Void> in
                 guard let self else { return .empty() }
                 if mateUid.isEmpty {
-                    return .just(())
+                    
+                    // ✅ 1. 팝업 제거
+                    self.mateEndPopupView?.removeFromSuperview()
+                    //self.settingView.isHidden = false // 다시 보이도록
+                    
+                    let alert = PartnerLeftAlertView()
+                    alert.configure(title: "메이트가 없어요", description: "현재 연결된 메이트가 없습니다.")
+                    alert.frame = self.view.bounds
+                    self.view.addSubview(alert)
+                    
+                    // 3. 확인 버튼 누르면 알림 제거
+                    alert.confirmButton.rx.tap
+                        .bind { [weak alert] in
+                            alert?.removeFromSuperview()
+                            self.settingView.isHidden = false
+                        }
+                        .disposed(by: disposeBag)
+                    
+                    // ✅ 2. 알림은 조금 뒤에 띄우기 (팝업 제거가 UI적으로 확실히 끝난 뒤)
+//                    //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                        let alert = CustomAlertViewController(alertType: .youHaveNoMate(message: "현재 메이트가 없습니다."))
+//                        alert.onConfirm = { //[weak self] in
+//                            // 확인 누르면 아무 처리 없이 설정 화면 유지
+//                            //self?.settingView.isHidden = false
+//                        }
+//                        self.present(alert, animated: true)
+//                    //}
+                    
+                    return .empty() // ★ 더 이상 진행하지 않음
                 }
                 return FirestoreService.shared.disconnectMate(forUid: self.uid, mateUid: mateUid).asObservable()
             }
