@@ -12,8 +12,8 @@ final class MateEndPopupView: UIView {
 
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "Background50")
-        view.layer.cornerRadius = 12
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 8
         return view
     }()
 
@@ -30,7 +30,7 @@ final class MateEndPopupView: UIView {
         let label = UILabel()
         label.text = "메이트 종료 시 현재 연결된 상대와의\n운동 진행이 중단됩니다."
         label.font = .systemFont(ofSize: 14)
-        label.textColor = UIColor(named: "Background600")
+        label.textColor = UIColor(named: "Background400")
         label.textAlignment = .center
         label.numberOfLines = 2
         return label
@@ -39,9 +39,9 @@ final class MateEndPopupView: UIView {
     let cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("취소", for: .normal)
-        button.setTitleColor(UIColor(named: "Background900"), for: .normal)
-        button.backgroundColor = UIColor(named: "Background100")
-        button.layer.cornerRadius = 8
+        button.setTitleColor(UIColor(named: "Background500"), for: .normal)
+        button.backgroundColor = UIColor(named: "Background50")
+        button.layer.cornerRadius = 4
         return button
     }()
 
@@ -49,8 +49,8 @@ final class MateEndPopupView: UIView {
         let button = UIButton()
         button.setTitle("종료", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(named: "Primary400")
-        button.layer.cornerRadius = 8
+        button.backgroundColor = UIColor(named: "Primary500")
+        button.layer.cornerRadius = 4
         return button
     }()
 
