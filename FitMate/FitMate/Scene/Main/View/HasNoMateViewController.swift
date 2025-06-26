@@ -69,7 +69,8 @@ class HasNoMateViewController: UIViewController {
         view.addSubview(alert)
         alert.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(23)
+            //make.leading.trailing.equalToSuperview().inset(23)
+            make.width.equalTo(326)
         }
         
         laterButton.addTarget(self, action: #selector(laterAction), for: .touchUpInside)

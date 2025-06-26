@@ -95,7 +95,8 @@ final class CustomAlertViewController: UIViewController {
         view.addSubview(alertView)
         alertView.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.leading.trailing.equalToSuperview().inset(23)
+            //$0.leading.trailing.equalToSuperview().inset(23)
+            $0.width.equalTo(326)
         }
     }
 

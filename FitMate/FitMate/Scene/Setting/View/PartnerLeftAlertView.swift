@@ -73,8 +73,8 @@ final class PartnerLeftAlertView: UIView {
 
         containerView.snp.makeConstraints {
             $0.center.equalToSuperview()
-            //$0.width.equalTo(326)
-            $0.horizontalEdges.equalToSuperview().inset(24)
+            $0.width.equalTo(326)
+            //$0.horizontalEdges.equalToSuperview().inset(24)
             //$0.height.equalTo(210)
         }
 
