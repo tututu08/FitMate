@@ -40,7 +40,7 @@ final class RunningBattleView: BaseView {
         alert.onResume = { [weak self] in onResume?(); self?.hideQuitAlert() }
         alert.onQuit = { [weak self] in onQuit?(); self?.hideQuitAlert() }
         alert.onBack = { [weak self] in onBack?(); self?.hideQuitAlert() }
-        alert.onHome = { [weak self] in onBack?(); self?.hideQuitAlert() }
+        alert.onHome = { [weak self] in onHome?(); self?.hideQuitAlert() }
         self.addSubview(alert)
         alert.snp.makeConstraints {
                 $0.edges.equalToSuperview()

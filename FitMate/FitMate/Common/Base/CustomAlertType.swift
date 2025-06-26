@@ -41,9 +41,9 @@ enum CustomAlertType {
         case .sportsMateRequest(let message):
             return "운동 초대가 도착했어요!"
         case .alreadyCancel(let message):
-            return "운동이 취소되었습니다"
+            return "이미 취소된 운동입니다"
         case .matchingFail(let message):
-            return "메이트가 거절했습니다."
+            return "메이트가 거절했습니다"
         }
     }
 
