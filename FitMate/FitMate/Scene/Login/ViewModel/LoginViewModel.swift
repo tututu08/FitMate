@@ -54,6 +54,9 @@ final class LoginViewModel {
                     return FirestoreService.shared
                         .fetchDocument(collectionName: "users", documentName: uid) // 사용자 문서 검색
                         .flatMap { data -> Single<LoginNavigation> in
+                            if let token = Messaging.messaging().fcmToken {
+                                AppDelegate.saveFCMToken(token)
+                            }
                             // 닉네임이 있고
                             if let nickname = data["nickname"] as? String,
                                !nickname.isEmpty {
@@ -161,6 +164,9 @@ final class LoginViewModel {
                     return FirestoreService.shared
                         .fetchDocument(collectionName: "users", documentName: uid)
                         .flatMap { data -> Single<LoginNavigation> in
+                            if let token = Messaging.messaging().fcmToken {
+                                AppDelegate.saveFCMToken(token)
+                            }
                             // 닉네임 존재 여부 판단
                             if let nickname = data["nickname"] as? String,
                                !nickname.isEmpty {
@@ -210,6 +216,9 @@ final class LoginViewModel {
                     return FirestoreService.shared
                         .fetchDocument(collectionName: "users", documentName: uid)
                         .flatMap { data -> Single<LoginNavigation> in
+                            if let token = Messaging.messaging().fcmToken {
+                                AppDelegate.saveFCMToken(token)
+                            }
                             if let nickname = data["nickname"] as? String, !nickname.isEmpty {
                                 if let mate = data["hasMate"] as? Bool, mate == true {
                                     return .just(.goToMainViewController(uid: uid))
