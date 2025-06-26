@@ -13,7 +13,7 @@ import RxCocoa
 final class MateCodeViewController: BaseViewController {
     
     // MARK: - UI & ViewModel 구성
-        
+    
     /// 커스텀 뷰: 코드 입력 필드, 버튼, 타이틀 등 UI를 포함
     private let mateCodeView = MateCodeView()
     
@@ -68,15 +68,15 @@ final class MateCodeViewController: BaseViewController {
         
         // ViewModel이 방출하는 알림(Alert) 및 화면 이동(Navigation) 처리
         output.result
-                    .drive(onNext: { [weak self] alert, navigation in
-                        if let alert = alert {
-                            self?.presentAlert(for: alert)
-                        }
-                        if let navigation = navigation {
-                            self?.handleNavigation(navigation)
-                        }
-                    })
-                    .disposed(by: disposeBag)
+            .drive(onNext: { [weak self] alert, navigation in
+                if let alert = alert {
+                    self?.presentAlert(for: alert)
+                }
+                if let navigation = navigation {
+                    self?.handleNavigation(navigation)
+                }
+            })
+            .disposed(by: disposeBag)
         
         // 버튼 활성화 여부에 따라 버튼 색상 및 상태 변경
         output.buttonActivated
@@ -112,22 +112,18 @@ final class MateCodeViewController: BaseViewController {
     // MARK: - Alert
     /// ViewModel이 방출한 AlertType 에 따라 알림창 구성 및 출력
     private func presentAlert(for alert: CustomAlertType) {
-        let customType: CustomAlertType
-
+        //        let customType: CustomAlertType
         switch alert {
-        case .inviteSent(let nickname):
-            customType = .inviteSent(nickname: nickname)
-        case .requestFailed(let message):
-            customType = .requestFailed(message: message)
-        case .mateRequest(let nickname):
-            customType = .mateRequest(nickname: nickname)
-        case .rejectRequest(message: let message):
-            customType = .rejectRequest(message: message)
+        case .inviteSent,
+             .requestFailed,
+             .mateRequest,
+             .rejectRequest:
+            
+            let alertVC = CustomAlertViewController(alertType: alert)
+            self.present(alertVC, animated: true)
+            
+        default:
+            print("해당 페이지에 포함되지 않는 알림입니다.")
         }
-
-        let alertVC = CustomAlertViewController(alertType: customType)
-        self.present(alertVC, animated: true)
     }
-
-    
 }

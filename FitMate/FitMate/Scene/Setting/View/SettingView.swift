@@ -1,4 +1,5 @@
 import UIKit
+
 import SnapKit
 
 final class SettingView: UIView {
@@ -11,7 +12,7 @@ final class SettingView: UIView {
 
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "Background50")
+        view.backgroundColor = .white
         view.layer.cornerRadius = 8
         return view
     }()
@@ -19,7 +20,7 @@ final class SettingView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "설정"
-        label.font = .boldSystemFont(ofSize: 18)
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         label.textColor = UIColor(named: "Background900")
         label.textAlignment = .center
         return label
@@ -32,24 +33,13 @@ final class SettingView: UIView {
         return button
     }()
 
-    let noticeToggle: UISwitch = {
-        let toggle = UISwitch()
-        toggle.onTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
-        toggle.thumbTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
-        return toggle
-    }()
-
-    let effectToggle: UISwitch = {
-        let toggle = UISwitch()
-        toggle.onTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
-        toggle.thumbTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
-        return toggle
-    }()
+    let noticeToggle = CustomSwitchView()
+    let effectToggle = CustomSwitchView()
 
     private let noticeLabel: UILabel = {
         let label = UILabel()
         label.text = "푸시알림"
-        label.font = .systemFont(ofSize: 14)
+        label.font = UIFont(name: "Pretendard-Regular", size: 16)
         label.textColor = UIColor(named: "Background900")
         return label
     }()
@@ -57,14 +47,14 @@ final class SettingView: UIView {
     private let effectLabel: UILabel = {
         let label = UILabel()
         label.text = "효과음"
-        label.font = .systemFont(ofSize: 14)
+        label.font = UIFont(name: "Pretendard-Regular", size: 16)
         label.textColor = UIColor(named: "Background900")
         return label
     }()
 
     private let separator: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "Primary400")
+        view.backgroundColor = UIColor(named: "Primary300")
         return view
     }()
 
@@ -118,7 +108,7 @@ final class SettingView: UIView {
 
         let toggleStack = UIStackView(arrangedSubviews: [noticeStack, effectStack])
         toggleStack.axis = .horizontal
-        toggleStack.spacing = 24
+        toggleStack.spacing = 20
         toggleStack.alignment = .center
         toggleStack.distribution = .equalSpacing
 
@@ -142,7 +132,7 @@ final class SettingView: UIView {
 
         toggleStack.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(32)
-            $0.leading.trailing.equalToSuperview().inset(40)
+            $0.leading.trailing.equalToSuperview().inset(45)
             $0.height.equalTo(32)
         }
 
@@ -162,9 +152,10 @@ final class SettingView: UIView {
     private static func makeButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
-        button.setTitleColor(UIColor(named: "Background600"), for: .normal)
-        button.backgroundColor = UIColor(named: "Background100")
-        button.layer.cornerRadius = 6
+        button.setTitleColor(UIColor(named: "Background500"), for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 16)
+        button.backgroundColor = UIColor(named: "Background50")
+        button.layer.cornerRadius = 4
         return button
     }
 }

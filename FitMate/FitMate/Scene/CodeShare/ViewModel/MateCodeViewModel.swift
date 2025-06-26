@@ -75,6 +75,7 @@ class MateCodeViewModel {
                             return .just((.requestFailed(message: "올바르지 않은 사용자 정보입니다"), nil))
                         }
                         
+                        // TODO: - 확인 버튼이 안눌림 화면 멈춤
                         // 자신의 초대코드를 입력한 경우 → 에러 처리
                         if inviterUid == self.uid {
                             return .just((.requestFailed(message: "자신의 초대 코드는 입력할 수 없습니다."), nil))

@@ -123,7 +123,7 @@ class MainViewController: BaseViewController {
         
         output.showMateDisconnected
              .drive(onNext: { [weak self] in
-                 self?.presentMateAlert(description: "상대가 메이트를 끊었어요")
+                 self?.presentMateAlert(description: "기록은 보관되어 있으니 언제든 확인할 수 있습니다.\n새로운 메이트를 추가해 운동을 이어가보세요.")
              })
              .disposed(by: disposeBag)
 
