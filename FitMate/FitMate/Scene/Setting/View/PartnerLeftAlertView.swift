@@ -18,15 +18,16 @@ final class PartnerLeftAlertView: UIView {
 
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "Background50")
-        view.layer.cornerRadius = 12
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 8
         return view
     }()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "메이트 연결 종료"
-        label.font = .systemFont(ofSize: 24, weight: .semibold)
+        label.text = "상대방이 메이트를\n 종료하였습니다."
+        label.numberOfLines = 0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         label.textColor = UIColor(named: "Background900")
         label.textAlignment = .center
         return label
@@ -34,9 +35,9 @@ final class PartnerLeftAlertView: UIView {
 
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "상대가 메이트를 끊었어요."
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = UIColor(named: "Background600")
+        label.text = "기록은 보관되어 있으니 언제든 확인할 수 있습니다.\n새로운 메이트를 추가해 운동을 이어가보세요."
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.textColor = UIColor(named: "Background400")
         label.textAlignment = .center
         label.numberOfLines = 2
         return label
@@ -47,7 +48,7 @@ final class PartnerLeftAlertView: UIView {
         button.setTitle("확인", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .primary500
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 4
         return button
     }()
 
@@ -72,12 +73,13 @@ final class PartnerLeftAlertView: UIView {
 
         containerView.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.width.equalTo(326)
-            $0.height.equalTo(210)
+            //$0.width.equalTo(326)
+            $0.horizontalEdges.equalToSuperview().inset(24)
+            //$0.height.equalTo(210)
         }
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(30)
+            $0.top.equalToSuperview().offset(32)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
 
@@ -89,7 +91,8 @@ final class PartnerLeftAlertView: UIView {
         confirmButton.snp.makeConstraints {
             $0.top.equalTo(descriptionLabel.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(44)
+            $0.height.equalTo(48)
+            $0.bottom.equalToSuperview().inset(20)
         }
     }
 
