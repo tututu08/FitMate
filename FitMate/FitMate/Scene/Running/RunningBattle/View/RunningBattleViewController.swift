@@ -41,7 +41,9 @@ class RunningBattleViewController: BaseViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) { fatalError("not implemented") }
+    required init?(coder: NSCoder) {
+        fatalError("not implemented")
+    }
 
     override func loadView() {
         self.view = rootView
@@ -53,6 +55,9 @@ class RunningBattleViewController: BaseViewController {
         rootView.updateGoal("\(exerciseType) \(viewModel.goalDistance)Km")
         rootView.updateMyCharacter(myCharacter)
         rootView.updateMateCharacter(mateCharacter)
+
+        // 화면 진입 시 권한 상태 확인
+        locationAuthStatusRelay.accept(CLLocationManager.authorizationStatus())
 
         // 앱 포그라운드 복귀 시 권한 상태 체크
         NotificationCenter.default.rx.notification(UIApplication.didBecomeActiveNotification)
@@ -129,7 +134,6 @@ class RunningBattleViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
 
-        // 위치 권한 거절 시 알림
         output.locationAuthDenied
             .emit(onNext: { [weak self] in
                 self?.showLocationDeniedAlert()
@@ -199,6 +203,4 @@ class RunningBattleViewController: BaseViewController {
 
         present(alert, animated: true)
     }
-
-
 }
