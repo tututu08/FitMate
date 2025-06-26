@@ -44,7 +44,7 @@ class CustomAlertView: UIView {
          buttonStack].forEach({addSubview($0)})
         alertTitle.text = title
         alertTitle.font = UIFont(name: "Pretendard-SemiBold", size: 24)
-        alertTitle.textColor = .background500
+        alertTitle.textColor = .background900
         alertTitle.textAlignment = .center
         alertTitle.numberOfLines = 0
         

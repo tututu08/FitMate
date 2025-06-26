@@ -115,7 +115,7 @@ class LoadingViewController: BaseViewController {
                     MatchEventService.shared.stopMatchListening()
                     self.goToGameScreen()
                 } else if status == "rejected" {
-                    self.presentRejectedAlert()
+                    self.presentRejectedAlert(message: "")
                 }
             })
             .disposed(by: disposeBag)
@@ -180,13 +180,15 @@ class LoadingViewController: BaseViewController {
     }
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드
-    private func presentRejectedAlert() {
-        let alert = UIAlertController(title: "매칭 실패", message: "메이트가 거절했습니다.", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
-            self.navigationController?.popToRootViewController(animated: true)
-        })
-        present(alert, animated: true)
-    }
+    private func presentRejectedAlert(message: String) {
+        let alert = CustomAlertViewController(alertType: .matchingFail(message: message))
+        alert.onConfirm = { [weak self] in
+            self?.popToTabBar()
+        }
+        UIApplication.topViewController()?.present(alert, animated: true)
+        return
+            
+        }
     
     func presentCancelingAlert() -> Observable<Bool> {
             return Observable.create { [weak self] observer in
