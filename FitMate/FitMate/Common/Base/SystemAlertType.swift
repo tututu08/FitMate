@@ -13,6 +13,7 @@ enum SystemAlertType {
     case codeSent
     case overLimit
     case duplicateNickname
+    case dontUseSpacing
     case custom(title: String, Message: String? = nil)
     
     var title: String {
@@ -27,6 +28,8 @@ enum SystemAlertType {
             return "8자 이하로 입력해주세요"
         case .duplicateNickname:
             return "앗! 중복된 닉네임 입니다."
+        case .dontUseSpacing:
+            return "닉네임에 공백은 사용할 수 없어요"
         case .custom(let title, _):
             return title
         }
@@ -34,7 +37,7 @@ enum SystemAlertType {
     
     var message: String? {
         switch self {
-        case .copied, .invalidCode, .codeSent, .overLimit, .duplicateNickname:
+        case .copied, .invalidCode, .codeSent, .overLimit, .duplicateNickname, .dontUseSpacing:
             return nil
         case .custom(_, let message):
             return message
@@ -43,7 +46,7 @@ enum SystemAlertType {
     
     var actions: [UIAlertAction] {
         switch self {
-        case .copied, .invalidCode, .codeSent, .overLimit, .duplicateNickname, .custom:
+        case .copied, .invalidCode, .codeSent, .overLimit, .duplicateNickname, .dontUseSpacing, .custom:
             return [
                 UIAlertAction(title: "확인", style: .default, handler: nil)
             ]

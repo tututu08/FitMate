@@ -20,9 +20,9 @@ class NicknameViewModel {
     let termsWebView = PublishRelay<Void>()
     let privacyWebView = PublishRelay<Void>()
     private let isValidNicknameRelay = BehaviorRelay<Bool>(value: false)
-    private let currentNicknameRelay = BehaviorRelay<String>(value: "")
+    private let currentNicknameRelay = BehaviorRelay<String>(value: "") // 닉네임 저장 목적에 맞는 값
     private let validMessageRelay = BehaviorRelay<String>(value: "")
-    let textRelay = BehaviorRelay<String>(value: "")
+    let textRelay = BehaviorRelay<String>(value: "") // 검증 대상이 되는 새로운 입력 값
     var disposeBag = DisposeBag()
     
     init(uid: String) {
@@ -83,12 +83,21 @@ class NicknameViewModel {
             })
             .disposed(by: disposeBag)
         
-        // 닉네임 중복이면 알림 띄움
+        /// 기존 input.ninameText에서 textRelay로 별도 보관하는 방식으로 변경
+        /// ViewModel 내부에서 입력 값을 직접 보관하고 가공 가능
+        /// textRelay는 뷰컨이나 텍스트필드에서 바인딩된 실시간 입력 값을 저장
+        /// 실시간 닉네임 유효성 검사에 사용됨
+        /// 그리고 검증을 통과한 닉네임이 currentNicknameRelay에 저장
         textRelay
             .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
             .distinctUntilChanged()
             .flatMapLatest { text -> Observable<(Bool, String)> in
-                print("DEBUG 닉네임 길이:", text, text.count)
+                let blank = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                if blank.isEmpty {
+                    return .just((false, "닉네임을 입력해주세요"))
+                } else if blank.contains(where: { $0.isWhitespace }) {
+                    return .just((false, "닉네임에 공백은 사용할 수 없어요"))
+                }
                 if text.count < 2 {
                     return .just((false, "닉네임은 2글자 이상이어야 해요."))
                 } else if text.count > 8 {
