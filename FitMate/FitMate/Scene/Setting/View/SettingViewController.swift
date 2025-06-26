@@ -229,7 +229,7 @@ final class SettingViewController: UIViewController {
                     //self.settingView.isHidden = false // 다시 보이도록
                     
                     let alert = PartnerLeftAlertView()
-                    alert.configure(title: "메이트가 없어요", description: "현재 연결된 메이트가 없습니다.")
+                    alert.configure(title: "메이트 끊기 실패", description: "현재 연결된 메이트가 없습니다.")
                     alert.frame = self.view.bounds
                     self.view.addSubview(alert)
                     
