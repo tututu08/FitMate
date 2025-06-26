@@ -1,4 +1,3 @@
-
 import UIKit
 import SnapKit
 
@@ -109,12 +108,12 @@ final class SettingView: UIView {
 
         let noticeStack = UIStackView(arrangedSubviews: [noticeLabel, noticeToggle])
         noticeStack.axis = .horizontal
-        noticeStack.spacing = 4
+        noticeStack.spacing = 6
         noticeStack.alignment = .center
 
         let effectStack = UIStackView(arrangedSubviews: [effectLabel, effectToggle])
         effectStack.axis = .horizontal
-        effectStack.spacing = 4
+        effectStack.spacing = 6
         effectStack.alignment = .center
 
         let toggleStack = UIStackView(arrangedSubviews: [noticeStack, effectStack])
@@ -143,12 +142,12 @@ final class SettingView: UIView {
 
         toggleStack.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(32)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.height.equalTo(24)
+            $0.leading.trailing.equalToSuperview().inset(40)
+            $0.height.equalTo(32)
         }
 
         separator.snp.makeConstraints {
-            $0.top.equalTo(toggleStack.snp.bottom).offset(16)
+            $0.top.equalTo(toggleStack.snp.bottom).offset(14)
             $0.leading.trailing.equalToSuperview().inset(16)
             $0.height.equalTo(1)
         }
