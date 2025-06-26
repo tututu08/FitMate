@@ -34,15 +34,15 @@ final class SettingView: UIView {
 
     let noticeToggle: UISwitch = {
         let toggle = UISwitch()
-        toggle.onTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
-        toggle.thumbTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
+        toggle.onTintColor = UIColor(named: "Primary100")?.withAlphaComponent(1.0)
+        toggle.thumbTintColor = UIColor(named: "Primary500")?.withAlphaComponent(1.0)
         return toggle
     }()
 
     let effectToggle: UISwitch = {
         let toggle = UISwitch()
-        toggle.onTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
-        toggle.thumbTintColor = UIColor(named: "Primary400")?.withAlphaComponent(0.4)
+        toggle.onTintColor = UIColor(named: "Primary100")?.withAlphaComponent(1.0)
+        toggle.thumbTintColor = UIColor(named: "Primary500")?.withAlphaComponent(1.0)
         return toggle
     }()
 
