@@ -37,7 +37,7 @@ class NicknameViewModel {
         let privacyToggleTap: Observable<Void> // 개인정보약관 / 체크박스
         let termsLabelTap: Observable<Void> // 서비스 약관 / 타이틀
         let privacyLabelTap: Observable<Void> // 개인정보약관 / 타이틀
-//        let nicknameText: Observable<String> // 닉네임 입력 텍스트
+        //        let nicknameText: Observable<String> // 닉네임 입력 텍스트
         let registerTap: Observable<Void> // 버튼 탭 이벤트 추가
     }
     
@@ -51,6 +51,15 @@ class NicknameViewModel {
         let privacyWebView: Driver<Void>
         let nicknameSaved: Driver<Void> // 저장 완료 이벤트
         let validMessage: Driver<String>
+    }
+    
+    private func validNickname(_ nickname: String) -> Bool {
+        let pattern = "^[A-Za-z가-힣0-9]{1,8}$"
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+        // 문자열 시작 위치-location: 0 부터
+        // 전체 문자열의 길이-length: nickname.utf16.count 만큼 검사
+        let range = NSRange(location: 0, length: nickname.utf16.count)
+        return regex.firstMatch(in: nickname, options: [], range: range) != nil
     }
     
     func transform(input: Input) -> Output {
@@ -93,10 +102,14 @@ class NicknameViewModel {
             .distinctUntilChanged()
             .flatMapLatest { text -> Observable<(Bool, String)> in
                 let blank = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                
                 if blank.isEmpty {
                     return .just((false, "닉네임을 입력해주세요"))
                 } else if text.contains(where: { $0.isWhitespace }) {
                     return .just((false, "닉네임에 공백은 사용할 수 없어요"))
+                }
+                if !self.validNickname(text) {
+                    return .just((false, "닉네임은 영문, 숫자, 한글만 사용할 수 있어요"))
                 }
                 if text.count < 2 {
                     return .just((false, "닉네임은 2글자 이상이어야 해요."))
@@ -117,13 +130,13 @@ class NicknameViewModel {
             }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] isValid, message in
-                    self?.isValidNicknameRelay.accept(isValid)
-                    self?.validMessageRelay.accept(message)
-                    if isValid {
-                        self?.currentNicknameRelay.accept(self?.textRelay.value ?? "")
-                    }
-                })
-                .disposed(by: disposeBag)
+                self?.isValidNicknameRelay.accept(isValid)
+                self?.validMessageRelay.accept(message)
+                if isValid {
+                    self?.currentNicknameRelay.accept(self?.textRelay.value ?? "")
+                }
+            })
+            .disposed(by: disposeBag)
         
         input.registerTap
         // 버튼이 눌렸을 때 최신 상태의 4가지 => 닉네임 유효성, 닉네임 값, 약관 체크, 개인정보 체크
