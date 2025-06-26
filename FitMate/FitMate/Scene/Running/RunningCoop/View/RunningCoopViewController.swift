@@ -43,7 +43,7 @@ final class RunningCoopViewController: BaseViewController {
 
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -51,12 +51,12 @@ final class RunningCoopViewController: BaseViewController {
     override func loadView() {
         self.view = rootView
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -78,7 +78,19 @@ final class RunningCoopViewController: BaseViewController {
             .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
             .bind(to: mateDistanceRelay)
             .disposed(by: disposeBag)
-
+        
+        FirestoreService.shared.listenToMatchStatus(matchCode: matchCode)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] data in
+                guard let self = self else { return }
+                guard let matchStatus = data["matchStatus"] as? String else { return }
+                
+                if matchStatus == "cancelLocation" {
+                    self.showMateLocationRejectedAlert()
+                }
+            })
+            .disposed(by: disposeBag)
+        // 위치 추적 시작
         startRelay.accept(())
         runningCoopViewModel.bindDistanceFromFirestore()
 
@@ -92,10 +104,10 @@ final class RunningCoopViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
     }
-
+    
     override func bindViewModel() {
         super.bindViewModel()
-
+        
         let input = RunningCoopViewModel.Input(
             startTracking: startRelay.asObservable(),
             mateDistance: mateDistanceRelay.asObservable(),
@@ -103,21 +115,21 @@ final class RunningCoopViewController: BaseViewController {
             mateQuit: mateQuitRelay.asObservable(),
             locationAuthStatus: locationAuthStatusRelay.asObservable()
         )
-
+        
         let output = runningCoopViewModel.transform(input: input)
-
+        
         output.myDistanceText
             .drive(onNext: { [weak self] text in
                 self?.rootView.updateMyRecord(text)
             })
             .disposed(by: disposeBag)
-
+        
         output.mateDistanceText
             .drive(onNext: { [weak self] text in
                 self?.rootView.updateMateRecord(text)
             })
             .disposed(by: disposeBag)
-
+        
         output.progress
             .drive(onNext: { [weak self] ratio in
                 self?.rootView.updateProgress(ratio: ratio)
@@ -142,7 +154,7 @@ final class RunningCoopViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
-
+    
     private func navigateToFinish(success: Bool, myDistance: Double) {
         let finishVM = FinishViewModel(
             mode: .cooperation,
@@ -175,28 +187,61 @@ final class RunningCoopViewController: BaseViewController {
             }
         )
     }
-
+    
+    func showMateLocationRejectedAlert() {
+        rootView.showQuitAlert(
+            type: .cancelLocation,
+            onHome: { [weak self] in
+                guard let self = self else { return }
+                // 여기서 matchStatus를 "finished" 등으로 변경
+                FirestoreService.shared
+                    .updateMatchStatus(matchCode: self.matchCode, status: "finished")
+                    .subscribe(onCompleted: {
+                        // 탭바 진입
+                        let tabBarVC = TabBarController(uid: self.myUid)
+                        tabBarVC.modalPresentationStyle = .fullScreen
+                        if let window = UIApplication.shared.connectedScenes
+                            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                            .first {
+                            window.rootViewController = tabBarVC
+                            window.makeKeyAndVisible()
+                        }
+                    }, onError: { error in
+                        print("matchStatus 업데이트 실패: \(error.localizedDescription)")
+                    })
+                    .disposed(by: self.disposeBag)
+            }
+        )
+    }
     private func showLocationDeniedAlert() {
         let alert = UIAlertController(
             title: "위치 권한 필요",
             message: "운동 기록을 위해 위치 권한이 필요합니다.\n설정에서 위치 권한을 허용해주세요.",
             preferredStyle: .alert
         )
-
+        
         alert.addAction(UIAlertAction(title: "설정으로 이동", style: .default, handler: { _ in
             if let appSettings = URL(string: UIApplication.openSettingsURLString),
                UIApplication.shared.canOpenURL(appSettings) {
                 UIApplication.shared.open(appSettings)
             }
         }))
-
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: { [weak self] _ in
+        
+        alert.addAction(UIAlertAction(title: "메인화면으로 이동", style: .cancel, handler: { [weak self] _ in
             guard let self = self else { return }
             FirestoreService.shared
                 .updateMatchStatus(matchCode: self.matchCode, status: "cancelLocation")
                 .subscribe(
                     onCompleted: {
                         print("matchStatus: cancelLocation 저장 완료")
+                        let tabBarVC = TabBarController(uid: self.myUid)
+                        tabBarVC.modalPresentationStyle = .fullScreen
+                        if let window = UIApplication.shared.connectedScenes
+                            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                            .first {
+                            window.rootViewController = tabBarVC
+                            window.makeKeyAndVisible()
+                        }
                     },
                     onError: { error in
                         print("matchStatus 업데이트 실패: \(error.localizedDescription)")
@@ -204,7 +249,7 @@ final class RunningCoopViewController: BaseViewController {
                 )
                 .disposed(by: self.disposeBag)
         }))
-
+        
         present(alert, animated: true)
     }
 }

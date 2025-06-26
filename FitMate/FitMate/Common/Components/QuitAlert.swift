@@ -9,12 +9,17 @@ final class QuitAlert: UIView {
     enum AlertType {
         case myQuitConfirm    // 내가 그만하기 눌렀을 때: 일시정지/그만하기
         case mateQuit        // 상대가 그만하기 눌러서 나도 종료: 돌아가기만
+        case cancelLocation
+//        case cancelLocationByMe
+//        case cancelLocationByMate
+        
     }
     
     // 콜백(이어할때, 그만둘때,mateQuit되어서 돌아가기)
     var onResume: (() -> Void)?
     var onQuit: (() -> Void)?
     var onBack: (() -> Void)? // mateQuit에서 돌아가기
+    var onHome: (() -> Void)? // 위치 거절해서 홈으로 돌아가기
     
     private let disposeBag = DisposeBag()
     private let container = UIView()
@@ -40,6 +45,20 @@ final class QuitAlert: UIView {
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    func setMessage(_ text: String) {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6  // 원하는 줄간격으로 조절 (예: 6)
+        paragraphStyle.alignment = .center //
+        let attributedString = NSAttributedString(string: text, attributes: [
+            .font: UIFont(name: "Pretendard-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14),
+            .foregroundColor: UIColor.background400,
+            .paragraphStyle: paragraphStyle
+        ])
+        messageLabel.textAlignment = .center
+        messageLabel.numberOfLines = 0
+        messageLabel.attributedText = attributedString
+       }
+    
     private func setupUI() {
         addSubview(dimmedView)
         dimmedView.snp.makeConstraints { $0.edges.equalToSuperview() }
@@ -55,20 +74,19 @@ final class QuitAlert: UIView {
         
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
-        
-        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
+//        iconImageView.isHidden = true
+        titleLabel.font = UIFont(name: "Pretendard-Regular", size: 25)
         titleLabel.textColor = .background900
         titleLabel.textAlignment = .center
-        
-        messageLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
-        messageLabel.textColor = .background400
-        messageLabel.textAlignment = .center
-        messageLabel.numberOfLines = 0
+//        messageLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
+//        messageLabel.textColor = .gray
+//        messageLabel.textAlignment = .center
+//        messageLabel.numberOfLines = 0
         
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.gray, for: .normal)
         resumeButton.backgroundColor = .background50
-        resumeButton.layer.cornerRadius = 4
+        resumeButton.layer.cornerRadius = 5
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
         stopButton.setTitle("그만하기", for: .normal)
@@ -77,7 +95,7 @@ final class QuitAlert: UIView {
         stopButton.layer.cornerRadius = 4
         stopButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
-        backButton.setTitle("결과보기", for: .normal)
+        backButton.setTitle("돌아가기", for: .normal)
         backButton.setTitleColor(.white, for: .normal)
         backButton.backgroundColor = .primary300
         backButton.layer.cornerRadius = 5
@@ -105,6 +123,7 @@ final class QuitAlert: UIView {
         
         container.addSubview(mainStack)
         container.addSubview(buttonStack)
+        container.addSubview(backButton)
         
         mainStack.snp.makeConstraints {
 //            $0.edges.equalToSuperview()
@@ -129,6 +148,9 @@ final class QuitAlert: UIView {
         backButton.snp.makeConstraints {
             $0.height.equalTo(48)
             $0.width.equalTo(270)
+//            $0.bottom.equalToSuperview().inset(20)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(container.snp.bottom).inset(20) //
         }
     }
     
@@ -137,11 +159,11 @@ final class QuitAlert: UIView {
         switch type {
         case .myQuitConfirm:
             titleLabel.text = "정말 그만하시겠어요?"
-            messageLabel.text = """
-            기록은 안전하게 저장됩니다.
-            단, 이 선택은 메이트의 운동도 함께 중단시킵니다.
-            메이트도 준비가 되었는지 확인해 주세요.
-            """
+            setMessage("""
+            ⚠️ 당신의 메이트도 함께 중단됩니다.
+            기록은 안전하게 저장되지만
+            당신의 열쩡을 믿어볼게요.
+            """)
             buttonStack.isHidden = false
             backButton.isHidden = true
             // Rx 버튼 핸들링
@@ -152,17 +174,44 @@ final class QuitAlert: UIView {
                 .bind { [weak self] in self?.onQuit?() }
                 .disposed(by: disposeBag)
         case .mateQuit:
-            titleLabel.text = "메이트가 운동을 종료했어요"
-            messageLabel.text = """
-            메이트가 운동을 그만두었습니다.
-            지금까지의 기록은 안전하게
-            저장했으니 안심하세요!
-            """
+            titleLabel.text = "나약한 메이트"
+            setMessage("""
+            당신의 메이트, 꽤나 나약하네요?🤔
+            기록은 걱정마요~ 센스있는 제가 
+            안전하게 저장해두었답니다!
+            """)
+//            iconImageView.isHidden = false
             buttonStack.isHidden = true
             backButton.isHidden = false
             backButton.rx.tap
                 .bind { [weak self] in self?.onBack?() }
                 .disposed(by: disposeBag)
+        case .cancelLocation:
+            titleLabel.text = "메이트의 행방불명"
+            setMessage("""
+            이런.. 메이트의 위치를 알 수 없어요🧖🏻
+            메이트가 위치 권한 설정 동의 후
+            우리 다시 운동해봐요~!
+            """)
+//            iconImageView.isHidden = false
+            buttonStack.isHidden = true
+            backButton.isHidden = false
+            backButton.rx.tap
+                .bind { [weak self] in self?.onHome?() }
+                .disposed(by: disposeBag)
+//        case .cancelLocationByMe:
+//            titleLabel.text = "위치 권한이 필요합니다"
+//            setMessage("""
+//            위치 권한이 거부되어서 운동이 종료됩니다ㅠㅠ
+//            [설정]에서 위치 권한을 허용하신 뒤 
+//            다시 시도해 주세요!
+//            """)
+//            iconImageView.isHidden = false
+//            buttonStack.isHidden = true
+//            backButton.isHidden = false
+//            backButton.rx.tap
+//                .bind { [weak self] in self?.onHome?() }
+//                .disposed(by: disposeBag)
         }
     }
 }

@@ -69,7 +69,19 @@ class RunningBattleViewController: BaseViewController {
             .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
             .bind(to: mateDistanceRelay)
             .disposed(by: disposeBag)
-
+        
+        FirestoreService.shared.listenToMatchStatus(matchCode: matchCode)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] data in
+                guard let self = self else { return }
+                guard let matchStatus = data["matchStatus"] as? String else { return }
+                
+                if matchStatus == "cancelLocation" {
+                    self.showMateLocationRejectedAlert()
+                }
+            })
+            .disposed(by: disposeBag)
+        
         startTrriger.accept(())
 
         rootView.stopButton.rx.tap
@@ -84,6 +96,7 @@ class RunningBattleViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
     }
+    
 
     override func bindViewModel() {
         super.bindViewModel()
@@ -171,6 +184,32 @@ class RunningBattleViewController: BaseViewController {
             }
         )
     }
+    
+    func showMateLocationRejectedAlert() {
+        rootView.showQuitAlert(
+            type: .cancelLocation,
+            onHome: { [weak self] in
+                guard let self = self else { return }
+                // 여기서 matchStatus를 "finished" 등으로 변경
+                FirestoreService.shared
+                    .updateMatchStatus(matchCode: self.matchCode, status: "finished")
+                    .subscribe(onCompleted: {
+                        // 탭바 진입
+                        let tabBarVC = TabBarController(uid: self.myUid)
+                        tabBarVC.modalPresentationStyle = .fullScreen
+                        if let window = UIApplication.shared.connectedScenes
+                            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                            .first {
+                            window.rootViewController = tabBarVC
+                            window.makeKeyAndVisible()
+                        }
+                    }, onError: { error in
+                        print("matchStatus 업데이트 실패: \(error.localizedDescription)")
+                    })
+                    .disposed(by: self.disposeBag)
+            }
+        )
+    }
 
     private func showLocationDeniedAlert() {
         let alert = UIAlertController(
@@ -186,13 +225,21 @@ class RunningBattleViewController: BaseViewController {
             }
         }))
 
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "메인화면으로 이동", style: .cancel, handler: { [weak self] _ in
             guard let self = self else { return }
             FirestoreService.shared
                 .updateMatchStatus(matchCode: self.matchCode, status: "cancelLocation")
                 .subscribe(
                     onCompleted: {
                         print("matchStatus: cancelLocation 저장 완료")
+                        let tabBarVC = TabBarController(uid: self.myUid)
+                        tabBarVC.modalPresentationStyle = .fullScreen
+                        if let window = UIApplication.shared.connectedScenes
+                            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+                            .first {
+                            window.rootViewController = tabBarVC
+                            window.makeKeyAndVisible()
+                        }
                     },
                     onError: { error in
                         print("matchStatus 업데이트 실패: \(error.localizedDescription)")
