@@ -9,12 +9,14 @@ final class QuitAlert: UIView {
     enum AlertType {
         case myQuitConfirm    // 내가 그만하기 눌렀을 때: 일시정지/그만하기
         case mateQuit        // 상대가 그만하기 눌러서 나도 종료: 돌아가기만
+        case cancelLocation
     }
     
     // 콜백(이어할때, 그만둘때,mateQuit되어서 돌아가기)
     var onResume: (() -> Void)?
     var onQuit: (() -> Void)?
     var onBack: (() -> Void)? // mateQuit에서 돌아가기
+    var onHome: (() -> Void)? // 위치 거절해서 홈으로 돌아가기
     
     private let disposeBag = DisposeBag()
     private let container = UIView()
@@ -40,6 +42,18 @@ final class QuitAlert: UIView {
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
+    func setMessage(_ text: String) {
+           let paragraphStyle = NSMutableParagraphStyle()
+           paragraphStyle.lineSpacing = 6  // 원하는 줄간격으로 조절 (예: 6)
+
+           let attributedString = NSAttributedString(string: text, attributes: [
+               .font: UIFont(name: "Pretendard-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14),
+               .foregroundColor: UIColor.gray,
+               .paragraphStyle: paragraphStyle
+           ])
+           messageLabel.attributedText = attributedString
+       }
+    
     private func setupUI() {
         addSubview(dimmedView)
         dimmedView.snp.makeConstraints { $0.edges.equalToSuperview() }
@@ -54,17 +68,19 @@ final class QuitAlert: UIView {
         
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
+        iconImageView.isHidden = true
         titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 25)
         titleLabel.textColor = .background900
+
         titleLabel.textAlignment = .center
-        messageLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
-        messageLabel.textColor = .gray
-        messageLabel.textAlignment = .center
-        messageLabel.numberOfLines = 0
+//        messageLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
+//        messageLabel.textColor = .gray
+//        messageLabel.textAlignment = .center
+//        messageLabel.numberOfLines = 0
         
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.gray, for: .normal)
-        resumeButton.backgroundColor = .background100
+        resumeButton.backgroundColor = UIColor.systemGray4
         resumeButton.layer.cornerRadius = 5
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
@@ -121,11 +137,11 @@ final class QuitAlert: UIView {
         switch type {
         case .myQuitConfirm:
             titleLabel.text = "정말 그만하시겠어요?"
-            messageLabel.text = """
+            setMessage("""
             기록은 안전하게 저장됩니다.
             단, 이 선택은 메이트의 운동도 함께 중단시킵니다.
             메이트도 준비가 되었는지 확인해 주세요.
-            """
+            """)
             buttonStack.isHidden = false
             backButton.isHidden = true
             // Rx 버튼 핸들링
@@ -137,15 +153,29 @@ final class QuitAlert: UIView {
                 .disposed(by: disposeBag)
         case .mateQuit:
             titleLabel.text = "메이트가 운동을 종료했어요"
-            messageLabel.text = """
+            setMessage("""
             메이트가 운동을 그만두었습니다.
             지금까지의 기록은 안전하게
             저장했으니 안심하세요!
-            """
+            """)
+            iconImageView.isHidden = false
             buttonStack.isHidden = true
             backButton.isHidden = false
             backButton.rx.tap
                 .bind { [weak self] in self?.onBack?() }
+                .disposed(by: disposeBag)
+        case .cancelLocation:
+            titleLabel.text = "메이트가 위치동의를 거부했어요"
+            setMessage("""
+            메이트의 위치를 알 수 없어요...
+            위치 권한 설정 동의 후
+            다시 운동하러 가요!
+            """)
+            iconImageView.isHidden = false
+            buttonStack.isHidden = true
+            backButton.isHidden = false
+            backButton.rx.tap
+                .bind { [weak self] in self?.onHome?() }
                 .disposed(by: disposeBag)
         }
     }
