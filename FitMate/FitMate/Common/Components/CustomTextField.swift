@@ -88,6 +88,7 @@ extension CustomTextField: UITextFieldDelegate {
         if string.contains(" ") {
             // 필요 시 사용자에게 알림 전달
             overLimitRelay.accept(.dontUseSpacing)
+            textRelay.accept(updatedText) 
             return false
         }
         /// 제한 범위 이내면 입력 허용

@@ -95,7 +95,7 @@ class NicknameViewModel {
                 let blank = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 if blank.isEmpty {
                     return .just((false, "닉네임을 입력해주세요"))
-                } else if blank.contains(where: { $0.isWhitespace }) {
+                } else if text.contains(where: { $0.isWhitespace }) {
                     return .just((false, "닉네임에 공백은 사용할 수 없어요"))
                 }
                 if text.count < 2 {
