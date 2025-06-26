@@ -45,33 +45,35 @@ final class QuitAlert: UIView {
         dimmedView.snp.makeConstraints { $0.edges.equalToSuperview() }
         addSubview(container)
         container.backgroundColor = .white
-        container.layer.cornerRadius = 5
+        container.layer.cornerRadius = 8
         container.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.width.equalTo(320)
+//            $0.width.equalTo(320)
+            $0.width.equalTo(326)
             $0.height.equalTo(350)
         }
         
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
-        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 25)
+        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         titleLabel.textColor = .background900
         titleLabel.textAlignment = .center
-        messageLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
-        messageLabel.textColor = .gray
+        
+        messageLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
+        messageLabel.textColor = .background400
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 0
         
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.gray, for: .normal)
-        resumeButton.backgroundColor = .background100
-        resumeButton.layer.cornerRadius = 5
+        resumeButton.backgroundColor = .background50
+        resumeButton.layer.cornerRadius = 4
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
         stopButton.setTitle("그만하기", for: .normal)
         stopButton.setTitleColor(.white, for: .normal)
-        stopButton.backgroundColor = .primary300
-        stopButton.layer.cornerRadius = 5
+        stopButton.backgroundColor = .primary500
+        stopButton.layer.cornerRadius = 4
         stopButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
         backButton.setTitle("결과보기", for: .normal)
