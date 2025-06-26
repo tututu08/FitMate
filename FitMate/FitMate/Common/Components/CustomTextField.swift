@@ -81,6 +81,7 @@ extension CustomTextField: UITextFieldDelegate {
             
             // MARK: 오류 정보 바로 전달
             overLimitRelay.accept(.overLimit)
+            textRelay.accept(updatedText)
             return false
         }
         

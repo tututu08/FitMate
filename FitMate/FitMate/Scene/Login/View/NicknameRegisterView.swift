@@ -86,6 +86,15 @@ class NicknameView: BaseView {
         return stack
     }()
     
+    let validationMessageLabel: UILabel = {
+       let label = UILabel()
+        label.text = ""
+        label.font = UIFont(name: "Pretendard-Regular", size: 12)
+        label.textColor = .background400
+        label.isHidden = true
+        return label
+    }()
+    
     let registerButton: UIButton = {
         let register = UIButton()
         register.setTitle("등록완료", for: .normal)
@@ -112,7 +121,7 @@ class NicknameView: BaseView {
     override func configureUI() {
         backgroundColor = .black
         [nicknameViewTitle, nicknameHeader, nicknameField,
-         termsStack, privacyStack, registerButton].forEach { addSubview($0) }
+         termsStack, privacyStack, validationMessageLabel,registerButton].forEach { addSubview($0) }
     }
     
     override func setLayoutUI() {
@@ -132,8 +141,13 @@ class NicknameView: BaseView {
             make.height.equalTo(60)
         }
         
+        validationMessageLabel.snp.makeConstraints { make in
+            make.top.equalTo(nicknameField.snp.bottom).offset(10)
+            make.leading.equalToSuperview().inset(20)
+        }
+        
         termsStack.snp.makeConstraints { make in
-            make.top.equalTo(nicknameField.snp.bottom).offset(20)
+            make.top.equalTo(validationMessageLabel.snp.bottom).offset(10)
             make.leading.equalToSuperview().inset(20)
         }
         
