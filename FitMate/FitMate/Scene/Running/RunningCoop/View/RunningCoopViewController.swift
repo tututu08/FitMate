@@ -1,10 +1,3 @@
-//
-//  RunningViewController.swift
-//  FitMate
-//
-//  Created by 강성훈 on 6/5/25.
-//
-
 import UIKit
 import SnapKit
 import RxRelay
@@ -13,16 +6,13 @@ import RxCocoa
 import CoreLocation
 
 final class RunningCoopViewController: BaseViewController {
-    // 루트 뷰
     private let rootView = RunningCoopView()
-    // 뷰모델 선언
     private let runningCoopViewModel: RunningCoopViewModel
-    // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
     private let startRelay = PublishRelay<Void>()
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     private let goalselecionViewModel = GoalSelectionViewModel()
     private let locationAuthStatusRelay = BehaviorRelay<CLAuthorizationStatus>(value: CLLocationManager.authorizationStatus())
-    
+
     private let exerciseType: String
     private let goalDistance: Int
     private let matchCode: String
@@ -32,8 +22,8 @@ final class RunningCoopViewController: BaseViewController {
     private let mateCharacter: String
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
-
-    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+    
+    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
         self.exerciseType = exerciseType
         self.goalDistance = goalDistance
         self.matchCode = matchCode
@@ -41,7 +31,7 @@ final class RunningCoopViewController: BaseViewController {
         self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
-        
+
         self.runningCoopViewModel = RunningCoopViewModel(
             goalDistance: goalDistance,
             myCharacter: myCharacter,
@@ -50,14 +40,14 @@ final class RunningCoopViewController: BaseViewController {
             myUid: myUid,
             mateUid: mateUid
         )
-        
+
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func loadView() {
         self.view = rootView
     }
@@ -69,43 +59,35 @@ final class RunningCoopViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //let goalTitle = goalselecionViewModel.selectedGoalTitleRelay.value
+
         rootView.updateGoal("\(exerciseType) \(runningCoopViewModel.goalDistance)Km")
         rootView.updateMyCharacter(runningCoopViewModel.myCharacter)
         rootView.updateMateCharacter(runningCoopViewModel.mateCharacter)
-        
+
+        // 화면 진입 시 권한 상태 체크
+        locationAuthStatusRelay.accept(CLLocationManager.authorizationStatus())
+
         // 앱 포그라운드 복귀 시 권한 상태 체크
         NotificationCenter.default.rx.notification(UIApplication.didBecomeActiveNotification)
             .map { _ in CLLocationManager.authorizationStatus() }
             .bind(to: locationAuthStatusRelay)
             .disposed(by: disposeBag)
-        
-        // MARK: - Firestore로부터 메이트 거리 수신
+
+        // Firestore로부터 메이트 거리 수신
         FirestoreService.shared
             .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
             .bind(to: mateDistanceRelay)
             .disposed(by: disposeBag)
-        
 
-        // 위치 추적 시작
         startRelay.accept(())
-        
         runningCoopViewModel.bindDistanceFromFirestore()
-        
+
         rootView.stopButton.rx.tap
             .bind { [weak self] in
                 self?.rootView.showQuitAlert(
-                    type: .myQuitConfirm, // 내가 종료 시도
-                    onResume: {
-                        // 그냥 닫고 아무 동작 없음 (계속 운동)
-                    },
-                    onQuit: { [weak self] in
-                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        //self?.runningCoopViewModel.finish(success: false)
-                        // 혹은 didFinishRelay 트리거 등
-                        
-                        self?.quitRelay.accept(())
-                    }
+                    type: .myQuitConfirm,
+                    onResume: {},
+                    onQuit: { [weak self] in self?.quitRelay.accept(()) }
                 )
             }
             .disposed(by: disposeBag)
@@ -141,26 +123,19 @@ final class RunningCoopViewController: BaseViewController {
                 self?.rootView.updateProgress(ratio: ratio)
             })
             .disposed(by: disposeBag)
-        
+
         output.didFinish
             .emit(onNext: { [weak self] (success, myDistance) in
                 self?.navigateToFinish(success: success, myDistance: myDistance)
             })
             .disposed(by: disposeBag)
-        
+
         output.mateQuitEvent
             .emit(onNext: { [weak self] in
                 self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
-        
-        output.mateQuitEvent
-            .emit(onNext: { [weak self] in
-                self?.receiveMateQuit()
-            })
-            .disposed(by: disposeBag)
-        
-        // 위치 권한 거절 시 알림
+
         output.locationAuthDenied
             .emit(onNext: { [weak self] in
                 self?.showLocationDeniedAlert()
@@ -178,31 +153,29 @@ final class RunningCoopViewController: BaseViewController {
             character: myCharacter,
             success: success
         )
+
         let vc = FinishViewController(
             uid: myUid,
-                                      
             mateUid: mateUid,
-                                      
             matchCode: matchCode,
-                                      
-            viewModel: finishVM)
+            viewModel: finishVM
+        )
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
-    func receiveMateQuit()    {
-        runningCoopViewModel.stopLocationUpdates() // 기록은 즉시 멈춰야 하므로 위치 추적은 즉시 정지
-        
+
+    func receiveMateQuit() {
+        runningCoopViewModel.stopLocationUpdates()
+
         rootView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
-                // 피니쉬화면으로 이동 등
-                //self?.navigationController?.popToRootViewController(animated: true)
-                
-                self?.runningCoopViewModel.finish(success: false) // ✅ 위치 정지 및 기록 저장
+                self?.runningCoopViewModel.finish(success: false)
                 self?.navigateToFinish(success: false, myDistance: self?.runningCoopViewModel.myDistanceDisplayRelay.value ?? 0.0)
             }
         )
     }
+
     private func showLocationDeniedAlert() {
         let alert = UIAlertController(
             title: "위치 권한 필요",
@@ -217,7 +190,20 @@ final class RunningCoopViewController: BaseViewController {
             }
         }))
 
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: { [weak self] _ in
+            guard let self = self else { return }
+            FirestoreService.shared
+                .updateMatchStatus(matchCode: self.matchCode, status: "cancelLocation")
+                .subscribe(
+                    onCompleted: {
+                        print("matchStatus: cancelLocation 저장 완료")
+                    },
+                    onError: { error in
+                        print("matchStatus 업데이트 실패: \(error.localizedDescription)")
+                    }
+                )
+                .disposed(by: self.disposeBag)
+        }))
 
         present(alert, animated: true)
     }

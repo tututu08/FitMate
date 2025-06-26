@@ -12,15 +12,15 @@ final class WithdrawPopupView: UIView {
 
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "Background50")
-        view.layer.cornerRadius = 12
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 8
         return view
     }()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "정말 탈퇴하시겠어요?"
-        label.font = .systemFont(ofSize: 24, weight: .semibold)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         label.textColor = UIColor(named: "Background900")
         label.textAlignment = .center
         return label
@@ -29,8 +29,8 @@ final class WithdrawPopupView: UIView {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "탈퇴 버튼 선택 시, 정보는\n삭제되며 복구되지 않습니다."
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = UIColor(named: "Background600")
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.textColor = UIColor(named: "Background400")
         label.textAlignment = .center
         label.numberOfLines = 2
         return label
@@ -40,8 +40,8 @@ final class WithdrawPopupView: UIView {
         let button = UIButton()
         button.setTitle("취소", for: .normal)
         button.setTitleColor(UIColor(named: "Background900"), for: .normal)
-        button.backgroundColor = UIColor(named: "Background100")
-        button.layer.cornerRadius = 8
+        button.backgroundColor = UIColor(named: "Background50")
+        button.layer.cornerRadius = 4
         return button
     }()
 
@@ -49,8 +49,8 @@ final class WithdrawPopupView: UIView {
         let button = UIButton()
         button.setTitle("탈퇴", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(named: "Primary400")
-        button.layer.cornerRadius = 8
+        button.backgroundColor = UIColor(named: "Primary500")
+        button.layer.cornerRadius = 4
         return button
     }()
 

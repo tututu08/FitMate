@@ -125,7 +125,7 @@ final class PauseAlert: UIView {
             resumeButton.isHidden = false
             resumeButton.setTitle("잠시만 기다려주세요", for: .normal)
             resumeButton.isEnabled = false
-            resumeButton.backgroundColor = UIColor.systemGray4
+            resumeButton.backgroundColor = .background100
             resumeButton.setTitleColor(.darkGray, for: .disabled)
             startCountdown(from: 10)
         }

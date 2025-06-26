@@ -20,8 +20,9 @@ class NicknameViewModel {
     let termsWebView = PublishRelay<Void>()
     let privacyWebView = PublishRelay<Void>()
     private let isValidNicknameRelay = BehaviorRelay<Bool>(value: false)
-    private let currentNicknameRelay = BehaviorRelay<String>(value: "")
-    
+    private let currentNicknameRelay = BehaviorRelay<String>(value: "") // 닉네임 저장 목적에 맞는 값
+    private let validMessageRelay = BehaviorRelay<String>(value: "")
+    let textRelay = BehaviorRelay<String>(value: "") // 검증 대상이 되는 새로운 입력 값
     var disposeBag = DisposeBag()
     
     init(uid: String) {
@@ -36,7 +37,7 @@ class NicknameViewModel {
         let privacyToggleTap: Observable<Void> // 개인정보약관 / 체크박스
         let termsLabelTap: Observable<Void> // 서비스 약관 / 타이틀
         let privacyLabelTap: Observable<Void> // 개인정보약관 / 타이틀
-        let nicknameText: Observable<String> // 닉네임 입력 텍스트
+        //        let nicknameText: Observable<String> // 닉네임 입력 텍스트
         let registerTap: Observable<Void> // 버튼 탭 이벤트 추가
     }
     
@@ -49,6 +50,16 @@ class NicknameViewModel {
         let termsWebView: Driver<Void>
         let privacyWebView: Driver<Void>
         let nicknameSaved: Driver<Void> // 저장 완료 이벤트
+        let validMessage: Driver<String>
+    }
+    
+    private func validNickname(_ nickname: String) -> Bool {
+        let pattern = "^[A-Za-z가-힣0-9]{1,8}$"
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+        // 문자열 시작 위치-location: 0 부터
+        // 전체 문자열의 길이-length: nickname.utf16.count 만큼 검사
+        let range = NSRange(location: 0, length: nickname.utf16.count)
+        return regex.firstMatch(in: nickname, options: [], range: range) != nil
     }
     
     func transform(input: Input) -> Output {
@@ -81,31 +92,48 @@ class NicknameViewModel {
             })
             .disposed(by: disposeBag)
         
-        // 닉네임 중복이면 알림 띄움
-        input.nicknameText
-        // 사용자가 타이핑을 멈춘 뒤 0.3초 동안 입력이 없을 때만 다음 로직을 실행
+        /// 기존 input.ninameText에서 textRelay로 별도 보관하는 방식으로 변경
+        /// ViewModel 내부에서 입력 값을 직접 보관하고 가공 가능
+        /// textRelay는 뷰컨이나 텍스트필드에서 바인딩된 실시간 입력 값을 저장
+        /// 실시간 닉네임 유효성 검사에 사용됨
+        /// 그리고 검증을 통과한 닉네임이 currentNicknameRelay에 저장
+        textRelay
             .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
-        // 동일한 닉네임이 연속해서 들어오면 무시
             .distinctUntilChanged()
-        // 닉네임이 바뀔 때마다 Firestore에 중복 체크 요청
-            .flatMapLatest { nickname in
-                //Firestore에 해당 닉네임이 이미 존재하는지 확인하는 메서드를 호출
-                FirestoreService.shared.nicknameCheck(nickname: nickname)
-                    .map { (nickname, $0) } // 튜플로 전달
-                    .asObservable()
-                // Firestore 에러가 발생해도 스트림을 끊지 않고 false를 대신 반환
-                    .catchAndReturn((nickname, false))
+            .flatMapLatest { text -> Observable<(Bool, String)> in
+                let blank = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if blank.isEmpty {
+                    return .just((false, "닉네임을 입력해주세요"))
+                } else if text.contains(where: { $0.isWhitespace }) {
+                    return .just((false, "닉네임에 공백은 사용할 수 없어요"))
+                }
+                if !self.validNickname(text) {
+                    return .just((false, "닉네임은 영문, 숫자, 한글만 사용할 수 있어요"))
+                }
+                if text.count < 2 {
+                    return .just((false, "닉네임은 2글자 이상이어야 해요."))
+                } else if text.count > 8 {
+                    return .just((false, "8글자 이하로 입력해주세요."))
+                } else {
+                    return FirestoreService.shared.nicknameCheck(nickname: text)
+                        .map { isExist in
+                            if isExist {
+                                return (false, "이미 존재하는 닉네임이에요.")
+                            } else {
+                                return (true, "사용 가능한 닉네임입니다.")
+                            }
+                        }
+                        .asObservable()
+                        .catchAndReturn((false, "닉네임 중복 검사 실패"))
+                }
             }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] nickname, isDuplicate in
-                print("[중복검사] 닉네임: \(nickname), 중복여부: \(isDuplicate)")
-                guard let self = self else { return }
-                if isDuplicate {
-                    self.textLimitRelay.accept(.duplicateNickname)
-                    self.isValidNicknameRelay.accept(false)
-                } else {
-                    self.isValidNicknameRelay.accept(true)
-                    self.currentNicknameRelay.accept(nickname)
+            .subscribe(onNext: { [weak self] isValid, message in
+                self?.isValidNicknameRelay.accept(isValid)
+                self?.validMessageRelay.accept(message)
+                if isValid {
+                    self?.currentNicknameRelay.accept(self?.textRelay.value ?? "")
                 }
             })
             .disposed(by: disposeBag)
@@ -166,7 +194,8 @@ class NicknameViewModel {
             privacyChecked: privacyChecked.asDriver(),
             termsWebView: termsWebView.asDriver(onErrorDriveWith: .empty()),
             privacyWebView: privacyWebView.asDriver(onErrorDriveWith: .empty()),
-            nicknameSaved: nicknameSaved.asDriver(onErrorDriveWith: .empty())
+            nicknameSaved: nicknameSaved.asDriver(onErrorDriveWith: .empty()),
+            validMessage: validMessageRelay.asDriver()
         )
     }
 }

@@ -10,7 +10,12 @@ import KakaoSDKAuth
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
-    
+    var orientationLock = UIInterfaceOrientationMask.portrait // 가로모드 막기
+
+    // 가로모드 막기
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        return self.orientationLock
+    }
     
     // MARK: - FCM 토큰 수신
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {

@@ -31,7 +31,11 @@ class NicknameViewController: BaseViewController {
     
     override func loadView() {
         self.view = nicknameView
-        nicknameView.nicknameField.stringLimit = 8 // 입력 텍스트 제한
+        nicknameView.nicknameField.stringLimit = 9 // 입력 텍스트 제한
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
     override func bindViewModel() {
@@ -63,6 +67,9 @@ class NicknameViewController: BaseViewController {
             .bind(to: privacyLabelTapped)
             .disposed(by: disposeBag)
         
+        nicknameView.nicknameField.textRelay
+            .bind(to: viewModel.textRelay)
+            .disposed(by: disposeBag)
         
         let input = NicknameViewModel.Input(
             enteredCode: nicknameView.nicknameField.rx.text.orEmpty.asDriver(),
@@ -72,7 +79,7 @@ class NicknameViewController: BaseViewController {
             termsLabelTap: termsLabelTapped.asObservable(),
             privacyLabelTap: privacyLabelTapped.asObservable(),
             // 텍스트 필드 입력
-            nicknameText: nicknameView.nicknameField.textRelay.asObservable(),
+//            nicknameText: nicknameView.nicknameField.textRelay.asObservable(),
             // 등록완료 버튼 탭
             registerTap: nicknameView.registerButton.rx.tap.asObservable()
         )
@@ -143,6 +150,28 @@ class NicknameViewController: BaseViewController {
                 self?.present(vc, animated: true)
             })
             .disposed(by: disposeBag)
+        
+        output.validMessage
+            .drive(nicknameView.validationMessageLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.validMessage
+            .map { $0.isEmpty }
+            .drive(nicknameView.validationMessageLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        output.validMessage
+            .drive(onNext: { [weak self] message in
+                guard let self = self else { return }
+                let label = self.nicknameView.validationMessageLabel
+                label.text = message
+                label.isHidden = message.isEmpty
+
+                // 사용 가능할 때만 색상 변경
+                label.textColor = (message == "사용 가능한 닉네임입니다.") ? .primary300 : .background400
+            })
+            .disposed(by: disposeBag)
+
     }
 }
 
