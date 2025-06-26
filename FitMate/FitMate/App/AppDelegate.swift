@@ -19,16 +19,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // 로그인 되어 있을 경우에만 저장
         if Auth.auth().currentUser != nil {
-            saveFCMToken(token)
+            AppDelegate.saveFCMToken(token)
         } else {
             print("사용자 인증 안됨 - 로그인 후 저장 필요")
         }
     }
 
     // MARK: - FCM 토큰 Firestore 저장
-    private func saveFCMToken(_ token: String) {
+    static func saveFCMToken(_ token: String) {
         guard let uid = Auth.auth().currentUser?.uid else {
-            print("토큰 저장 실패: 로그인되지 않음")
+            print("🛑 토큰 저장 실패: 로그인 안됨")
             return
         }
 
@@ -38,24 +38,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             "updatedAt": Timestamp(date: Date())
         ]
 
-        // 1. tokens/{uid}에 저장
-        db.collection("tokens").document(uid).setData(tokenData, merge: true) { error in
+        // (1) tokens/{uid} → merge 방식으로 항상 저장
+        db.collection("tokens").document(uid)
+          .setData(tokenData, merge: true) { error in
             if let error = error {
-                print("FCM 토큰 저장 실패 (tokens): \(error.localizedDescription)")
+                print("❌ tokens 저장 실패:", error.localizedDescription)
             } else {
-                print("FCM 토큰 저장 완료: tokens/\(uid)")
+                print("✅ tokens 저장 완료")
             }
         }
 
-        // 2. users/{uid}에도 저장
-        db.collection("users").document(uid).setData(tokenData, merge: true) { error in
-            if let error = error {
-                print("FCM 토큰 저장 실패 (users): \(error.localizedDescription)")
-            } else {
-                print("FCM 토큰 저장 완료: users/\(uid)")
+        // (2) users/{uid} → 기존 문서가 있는 경우에만 merge update
+        let userDoc = db.collection("users").document(uid)
+        userDoc.getDocument { snapshot, error in
+            if let err = error {
+                print("⚠️ users 문서 확인 실패:", err.localizedDescription)
+                return
+            }
+            guard let snap = snapshot, snap.exists else {
+                print("❌ users 문서 없음. fcmToken 덮어쓰기 안 함")
+                return
+            }
+
+            userDoc.setData(tokenData, merge: true) { error in
+                if let error = error {
+                    print("❌ users 덮어쓰기 실패:", error.localizedDescription)
+                } else {
+                    print("✅ users 덮어쓰기 성공")
+                }
             }
         }
     }
+
 
     // MARK: - 앱 실행 시 초기 설정
     func application(_ application: UIApplication,

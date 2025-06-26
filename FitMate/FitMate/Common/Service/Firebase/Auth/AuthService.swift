@@ -13,6 +13,7 @@ import KakaoSDKUser
 import KakaoSDKAuth
 import AuthenticationServices
 import CryptoKit
+import FirebaseFirestore
 
 enum KakaoLoginError: LocalizedError {
   case userCancelled
@@ -196,18 +197,53 @@ final class AuthService: NSObject {
         return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
     
-    func logout()-> Single<Void> {
+    func logout() -> Single<Void> {
         return Single.create { single in
             let firebaseAuth = Auth.auth()
-            do {
-                try firebaseAuth.signOut()
-                single(.success(()))
-            } catch {
-                single(.failure(error))
+            
+            guard let uid = firebaseAuth.currentUser?.uid else {
+                single(.failure(NSError(
+                    domain: "LogoutError",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "사용자 정보 없음"]
+                )))
+                return Disposables.create()
             }
+
+            let db = Firestore.firestore()
+            let tokensRef = db.collection("tokens").document(uid)
+            let usersRef = db.collection("users").document(uid)
+
+            // (1) tokens 문서 삭제
+            tokensRef.delete { tokenError in
+                if let tokenError = tokenError {
+                    print("❌ tokens 문서 삭제 실패: \(tokenError.localizedDescription)")
+                } else {
+                    print("✅ tokens 문서 삭제 완료")
+                }
+
+                // (2) users 문서에서 fcmToken 필드만 삭제
+                usersRef.updateData(["fcmToken": FieldValue.delete()]) { userError in
+                    if let userError = userError {
+                        print("⚠️ users 문서 fcmToken 필드 삭제 실패: \(userError.localizedDescription)")
+                    } else {
+                        print("✅ users 문서 fcmToken 필드 삭제 완료")
+                    }
+
+                    // (3) Firebase 로그아웃 수행
+                    do {
+                        try firebaseAuth.signOut()
+                        single(.success(()))
+                    } catch {
+                        single(.failure(error))
+                    }
+                }
+            }
+
             return Disposables.create()
         }
     }
+
     
     func deleteAccount() -> Single<Void> {
         return Single.create { single in
