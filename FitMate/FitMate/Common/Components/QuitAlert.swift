@@ -50,11 +50,12 @@ final class QuitAlert: UIView {
             $0.center.equalToSuperview()
 //            $0.width.equalTo(320)
             $0.width.equalTo(326)
-            $0.height.equalTo(350)
+            //$0.height.equalTo(350)
         }
         
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
+        
         titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         titleLabel.textColor = .background900
         titleLabel.textAlignment = .center
@@ -86,6 +87,7 @@ final class QuitAlert: UIView {
         buttonStack.axis = .horizontal
         buttonStack.spacing = 20
         buttonStack.alignment = .center
+        buttonStack.distribution = .fillEqually
         buttonStack.addArrangedSubview(resumeButton)
         buttonStack.addArrangedSubview(stopButton)
         buttonStack.isHidden = true
@@ -94,7 +96,7 @@ final class QuitAlert: UIView {
             iconImageView,
             titleLabel,
             messageLabel,
-            buttonStack,
+            //buttonStack,
             backButton
         ])
         mainStack.axis = .vertical
@@ -102,15 +104,27 @@ final class QuitAlert: UIView {
         mainStack.alignment = .center
         
         container.addSubview(mainStack)
-        mainStack.snp.makeConstraints { $0.edges.equalToSuperview().inset(24) }
+        container.addSubview(buttonStack)
+        
+        mainStack.snp.makeConstraints {
+//            $0.edges.equalToSuperview()
+            $0.top.equalToSuperview().offset(32)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        buttonStack.snp.makeConstraints { make in
+            make.top.equalTo(mainStack.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().inset(20)
+        }
         
         resumeButton.snp.makeConstraints {
             $0.height.equalTo(48)
-            $0.width.equalTo(124)
+            //$0.width.equalTo(124)
         }
         stopButton.snp.makeConstraints {
             $0.height.equalTo(48)
-            $0.width.equalTo(124)
+            //$0.width.equalTo(124)
         }
         backButton.snp.makeConstraints {
             $0.height.equalTo(48)
