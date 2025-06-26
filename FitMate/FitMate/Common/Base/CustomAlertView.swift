@@ -21,7 +21,7 @@ class CustomAlertView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .white
-        self.layer.cornerRadius = 4
+        self.layer.cornerRadius = 8
     }
     
     required init?(coder: NSCoder) {
@@ -97,7 +97,7 @@ class CustomAlertView: UIView {
         } else {
             alertTitle.snp.makeConstraints { make in
                 make.top.equalToSuperview().inset(32)
-                make.leading.trailing.equalToSuperview().inset(60.5)
+                make.leading.trailing.equalToSuperview().inset(20)
             }
         }
         

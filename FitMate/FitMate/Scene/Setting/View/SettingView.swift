@@ -20,7 +20,7 @@ final class SettingView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "설정"
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         label.textColor = UIColor(named: "Background900")
         label.textAlignment = .center
         return label
@@ -39,7 +39,7 @@ final class SettingView: UIView {
     private let noticeLabel: UILabel = {
         let label = UILabel()
         label.text = "푸시알림"
-        label.font = .systemFont(ofSize: 16)
+        label.font = UIFont(name: "Pretendard-Regular", size: 16)
         label.textColor = UIColor(named: "Background900")
         return label
     }()
@@ -47,7 +47,7 @@ final class SettingView: UIView {
     private let effectLabel: UILabel = {
         let label = UILabel()
         label.text = "효과음"
-        label.font = .systemFont(ofSize: 16)
+        label.font = UIFont(name: "Pretendard-Regular", size: 16)
         label.textColor = UIColor(named: "Background900")
         return label
     }()
@@ -153,6 +153,7 @@ final class SettingView: UIView {
         let button = UIButton()
         button.setTitle(title, for: .normal)
         button.setTitleColor(UIColor(named: "Background500"), for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 16)
         button.backgroundColor = UIColor(named: "Background50")
         button.layer.cornerRadius = 4
         return button
