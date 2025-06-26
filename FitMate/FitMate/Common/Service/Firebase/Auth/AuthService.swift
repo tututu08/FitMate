@@ -272,10 +272,142 @@ final class AuthService: NSObject {
             return Disposables.create()
         }
     }
+    
+    /// 구글 사용자 재인증 로직
+    func reauthenticateGoogleUser() -> Single<Void> {
+        return Single.create { single in
+            guard let user = Auth.auth().currentUser else {
+                single(.failure(NSError(
+                    domain: "FirebaseAuth",
+                    code: -1,
+                    userInfo: [NSLocalizedDescriptionKey: "유저 없음"]
+                )))
+                return Disposables.create()
+            }
+            
+            guard let googleUser = GIDSignIn.sharedInstance.currentUser else {
+                single(.failure(NSError(
+                    domain: "GoogleAuth",
+                    code: -2,
+                    userInfo: [NSLocalizedDescriptionKey: "Google 사용자 정보 없음"]
+                )))
+                return Disposables.create()
+            }
+
+            let idToken = googleUser.idToken?.tokenString
+            let accessToken = googleUser.accessToken.tokenString
+
+            guard let idToken, !idToken.isEmpty else {
+                single(.failure(NSError(
+                    domain: "GoogleAuth",
+                    code: -3,
+                    userInfo: [NSLocalizedDescriptionKey: "idToken 없음"]
+                )))
+                return Disposables.create()
+            }
+
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+
+            user.reauthenticate(with: credential) { _, error in
+                if let error = error {
+                    single(.failure(error))
+                } else {
+                    single(.success(()))
+                }
+            }
+
+            return Disposables.create()
+        }
+    }
+    
+    func reauthenticateKakaoUser(kakaoUser: KakaoUser) -> Single<Void> {
+        return Single.create { single in
+            guard let user = Auth.auth().currentUser else {
+                single(.failure(NSError(domain: "FirebaseAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인된 유저 없음"])))
+                return Disposables.create()
+            }
+
+            guard let email = kakaoUser.kakaoAccount?.email,
+                  let id = kakaoUser.id else {
+                single(.failure(NSError(domain: "KakaoAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "카카오 유저 정보 없음"])))
+                return Disposables.create()
+            }
+
+            let password = String(id)
+            let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+
+            user.reauthenticate(with: credential) { _, error in
+                if let error = error {
+                    single(.failure(error))
+                } else {
+                    single(.success(()))
+                }
+            }
+
+            return Disposables.create()
+        }
+    }
+}
+
+// 카카오 계정 정보 가져오기
+extension AuthService {
+    func fetchKakaoUser() -> Single<KakaoUser> {
+        return Single.create { single in
+            UserApi.shared.me { user, error in
+                if let error = error {
+                    single(.failure(error))
+                } else if let user = user {
+                    single(.success(user))
+                } else {
+                    single(.failure(NSError(domain: "KakaoAuth", code: -999, userInfo: [NSLocalizedDescriptionKey: "카카오 사용자 정보 없음"])))
+                }
+            }
+            return Disposables.create()
+        }
+    }
 }
 
 // MARK: - Apple Delegate & Presentation
 extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    // MARK: - Apple 재인증 시작
+    func reauthenticateAppleUser() -> Single<Void> {
+        return Single.create { [weak self] single in
+            guard let self = self else {
+                single(.failure(NSError(domain: "AppleAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "self nil"])))
+                return Disposables.create()
+            }
+            
+            guard let user = Auth.auth().currentUser else {
+                single(.failure(NSError(domain: "AppleAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "로그인 유저 없음"])))
+                return Disposables.create()
+            }
+            
+            let nonce = self.randomNonceString()
+            self.currentNonce = nonce
+            
+            let request = ASAuthorizationAppleIDProvider().createRequest()
+            request.requestedScopes = []
+            request.nonce = self.sha256(nonce)
+            
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = self
+            controller.presentationContextProvider = self
+            
+            // ✅ 결과를 여기에 저장해두었다가 delegate에서 사용
+            self.appleObserver = { result in
+                switch result {
+                case .success(let user):
+                    single(.success(())) // ✅ 재인증 성공
+                case .failure(let error):
+                    single(.failure(error)) // ❌ 재인증 실패
+                }
+                self.appleObserver = nil
+            }
+            
+            controller.performRequests()
+            return Disposables.create { self.appleObserver = nil }
+        }
+    }
     
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         // 최상위 window 반환
