@@ -16,10 +16,10 @@ final class CustomAlertViewController: UIViewController {
     /// Alert이 확인 버튼을 누를 때 호출해주는 방식이기 때문에 외부 클로저 필요
     var onConfirm: (() -> Void)?
     var onCancel: (() -> Void)?
-
+    
     private let alertType: CustomAlertType
     private let cancelButton: UIButton = {
-       let cancel = UIButton()
+        let cancel = UIButton()
         cancel.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         cancel.setTitleColor(.background500, for: .normal)
         cancel.backgroundColor = .background50
@@ -28,7 +28,7 @@ final class CustomAlertViewController: UIViewController {
         return cancel
     }()
     private let confirmButton: UIButton = {
-       let confirm = UIButton()
+        let confirm = UIButton()
         confirm.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         confirm.setTitleColor(.white, for: .normal)
         confirm.backgroundColor = .primary500
@@ -36,38 +36,38 @@ final class CustomAlertViewController: UIViewController {
         confirm.addTarget(self, action: #selector(didTapConfirm), for: .touchUpInside)
         return confirm
     }()
-
+    
     init(alertType: CustomAlertType) {
         self.alertType = alertType
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .overFullScreen
         modalTransitionStyle = .crossDissolve
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBackground()
         setupButtons()
         setupAlertView()
     }
-
+    
     private func setupBackground() {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
     }
-
+    
     private func setupButtons() {
         cancelButton.snp.makeConstraints {
             $0.height.equalTo(48)
         }
-
+        
         confirmButton.snp.makeConstraints {
             $0.height.equalTo(48)
         }
-
+        
         switch alertType.buttonStyle {
         case .single(let confirmText):
             confirmButton.setTitle(confirmText, for: .normal)
@@ -76,12 +76,12 @@ final class CustomAlertViewController: UIViewController {
             confirmButton.setTitle(confirmText, for: .normal)
         }
     }
-
+    
     private func setupAlertView() {
         let builder = CustomAlertView.AlertBuilder()
             .setTitle(alertType.title)
             .setMessage(alertType.message)
-
+        
         switch alertType.buttonStyle {
         case .single: // 버튼 한개만 필요할때
             builder.setStopButton(confirmButton)
@@ -90,7 +90,7 @@ final class CustomAlertViewController: UIViewController {
                 .setResumeButton(cancelButton)
                 .setStopButton(confirmButton)
         }
-
+        
         let alertView = builder.buildAlert()
         view.addSubview(alertView)
         alertView.snp.makeConstraints {
@@ -99,13 +99,13 @@ final class CustomAlertViewController: UIViewController {
             $0.width.equalTo(326)
         }
     }
-
+    
     @objc private func didTapCancel() {
         dismiss(animated: true) { [weak self] in
             self?.onCancel?()
         }
     }
-
+    
     @objc private func didTapConfirm() {
         switch alertType {
         case .mateRequest(let uid):
@@ -117,10 +117,13 @@ final class CustomAlertViewController: UIViewController {
                 nav.modalPresentationStyle = .fullScreen
                 presentingVC.present(nav, animated: true)
             }
-
-        case .inviteSent, .requestFailed, .rejectRequest, .youHaveNoMate:
+            
+        case .inviteSent, .requestFailed, .rejectRequest, .sportsMateRequest, .alreadyCancel, .matchingFail:
             // 확인만 누르면 dismiss
-            dismiss(animated: true)
+            dismiss(animated: true) { [weak self] in
+                self?.onConfirm?()
+            }
+            
         }
     }
 }

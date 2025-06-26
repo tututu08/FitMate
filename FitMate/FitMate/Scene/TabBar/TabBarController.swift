@@ -16,7 +16,7 @@ class TabBarController: UITabBarController {
     
     // 운동 초대 수락 시 Firestore 상태 변경을 위한 ViewModel
     private let matchAcceptViewModel = MatchAcceptViewModel()
-        
+    
     lazy var mainVC = MainViewController(uid: self.uid)
     
     // 초기화 함수
@@ -91,49 +91,49 @@ class TabBarController: UITabBarController {
         MatchEventService.shared.matchEventRelay
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] matchCode in
-                self?.presentMatchAlert(matchCode: matchCode)
+                self?.presentMatchAlert(matchCode: matchCode, message: "")
             })
             .disposed(by: disposeBag)
     }
     
     // 초대 alert 띄우고 수락/거절 처리
-    private func presentMatchAlert(matchCode: String) {
-        let alert = UIAlertController(
-            title: "운동 메이트 요청",
-            message: "운동 초대가 도착했어요!",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "거절", style: .destructive, handler: { [weak self] _ in
+    private func presentMatchAlert(matchCode: String, message: String) {
+        let alert = CustomAlertViewController(alertType: .sportsMateRequest(message: message))
+
+        alert.onCancel = { [weak self] in
             guard let self else { return }
             self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
-        }))
-        
-        alert.addAction(UIAlertAction(title: "수락", style: .default, handler: { [weak self] _ in
+        }
+
+        alert.onConfirm = { [weak self] in
             guard let self else { return }
-            // matchStatus 최신값 확인!
             FirestoreService.shared.fetchDocument(collectionName: "matches", documentName: matchCode)
                 .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { data in
                     if let matchStatus = data["matchStatus"] as? String, matchStatus == "canceled" {
-                        // 이미 취소된 운동!
-                        let cancelAlert = UIAlertController(title: "매칭 취소", message: "이미 취소된 운동입니다.", preferredStyle: .alert)
-                        cancelAlert.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-                            self.popToTabBar() // 또는 popToRootViewController
-                        }))
+                        print("매칭 상태-> 취소됨")
+                        let cancelAlert = CustomAlertViewController(
+                            alertType: .alreadyCancel(message: "이미 취소된 운동입니다.")
+                        )
+                        cancelAlert.onConfirm = { [weak self] in
+                            self?.popToTabBar()
+                        }
                         UIApplication.topViewController()?.present(cancelAlert, animated: true)
                         return
                     }
+
                     let gameVC = LoadingViewController(uid: self.uid, matchCode: matchCode)
                     gameVC.hidesBottomBarWhenPushed = true
                     if let nav = self.selectedViewController as? UINavigationController {
                         nav.pushViewController(gameVC, animated: true)
                     }
-                }).disposed(by: self.disposeBag)
-        }))
+                })
+                .disposed(by: self.disposeBag)
+        }
+
         UIApplication.topViewController()?.present(alert, animated: true)
     }
-    
+
     class CustomTabBar: UITabBar {
         override func sizeThatFits(_ size: CGSize) -> CGSize {
             var sizeThatFits = super.sizeThatFits(size)

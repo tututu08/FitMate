@@ -12,7 +12,9 @@ enum CustomAlertType {
     case inviteSent(nickname: String)
     case requestFailed(message: String)
     case rejectRequest(message: String)
-    case youHaveNoMate(message: String)
+    case sportsMateRequest(message: String)
+    case alreadyCancel(message: String)
+    case matchingFail(message: String)
 
     var title: String {
         switch self {
@@ -20,7 +22,9 @@ enum CustomAlertType {
         case .inviteSent: return "초대 전송 완료"
         case .requestFailed: return "초대 요청 실패"
         case .rejectRequest: return "메이트 요청이 거절됨"
-        case .youHaveNoMate: return "메이트 끊기 실패"
+        case .sportsMateRequest: return "운동 메이트 요청"
+        case .alreadyCancel: return "매칭이 취소되었습니다"
+        case .matchingFail: return "매칭 실패"
         }
     }
 
@@ -34,14 +38,18 @@ enum CustomAlertType {
             return message
         case .rejectRequest(let message):
             return message
-        case .youHaveNoMate(let message):
-            return message
+        case .sportsMateRequest(let message):
+            return "운동 초대가 도착했어요!"
+        case .alreadyCancel(let message):
+            return "운동이 취소되었습니다"
+        case .matchingFail(let message):
+            return "메이트가 거절했습니다."
         }
     }
 
     var buttonStyle: ButtonType {
         switch self {
-        case .mateRequest:
+        case .mateRequest, .sportsMateRequest:
             return .double("거절하기", "승인하기")
         default:
             return .single("확인")

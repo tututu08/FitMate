@@ -112,24 +112,18 @@ final class MateCodeViewController: BaseViewController {
     // MARK: - Alert
     /// ViewModel이 방출한 AlertType 에 따라 알림창 구성 및 출력
     private func presentAlert(for alert: CustomAlertType) {
-        let customType: CustomAlertType
-        
+        //        let customType: CustomAlertType
         switch alert {
-        case .inviteSent(let nickname):
-            customType = .inviteSent(nickname: nickname)
-        case .requestFailed(let message):
-            customType = .requestFailed(message: message)
-        case .mateRequest(let nickname):
-            customType = .mateRequest(nickname: nickname)
-        case .rejectRequest(message: let message):
-            customType = .rejectRequest(message: message)
-        case .youHaveNoMate(message: let message):
-            customType = .youHaveNoMate(message: message)
+        case .inviteSent,
+             .requestFailed,
+             .mateRequest,
+             .rejectRequest:
+            
+            let alertVC = CustomAlertViewController(alertType: alert)
+            self.present(alertVC, animated: true)
+            
+        default:
+            print("해당 페이지에 포함되지 않는 알림입니다.")
         }
-        
-        let alertVC = CustomAlertViewController(alertType: customType)
-        self.present(alertVC, animated: true)
     }
-    
-    
 }
