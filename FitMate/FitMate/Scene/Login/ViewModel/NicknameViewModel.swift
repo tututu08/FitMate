@@ -17,7 +17,8 @@ class NicknameViewModel {
     private let textLimitRelay = PublishRelay<SystemAlertType>() // 텍스트 길이 제한
     private let termsChecked = BehaviorRelay<Bool>(value: false) // 약관 체크
     private let privacyChecked = BehaviorRelay<Bool>(value: false) // 개인정보 체크
-    
+    let termsWebView = PublishRelay<Void>()
+    let privacyWebView = PublishRelay<Void>()
     private let isValidNicknameRelay = BehaviorRelay<Bool>(value: false)
     private let currentNicknameRelay = BehaviorRelay<String>(value: "")
     
@@ -31,9 +32,10 @@ class NicknameViewModel {
         let enteredCode: Driver<String> // 닉네임 입력
         //let textFieldLimit: Driver<Void> // 텍스트 제한 트리거
         let textFieldLimit: Driver<SystemAlertType> // 텍스트 제한 트리거
-        let termsTap: Observable<Void> // 약관
-        let privacyTap: Observable<Void> // 개인정보 체크
-        
+        let termsToggleTap: Observable<Void> // 서비스 약관 / 체크박스
+        let privacyToggleTap: Observable<Void> // 개인정보약관 / 체크박스
+        let termsLabelTap: Observable<Void> // 서비스 약관 / 타이틀
+        let privacyLabelTap: Observable<Void> // 개인정보약관 / 타이틀
         let nicknameText: Observable<String> // 닉네임 입력 텍스트
         let registerTap: Observable<Void> // 버튼 탭 이벤트 추가
     }
@@ -44,6 +46,8 @@ class NicknameViewModel {
         
         let termsChecked: Driver<Bool> // 약관
         let privacyChecked: Driver<Bool> // 개인정보 체크
+        let termsWebView: Driver<Void>
+        let privacyWebView: Driver<Void>
         let nicknameSaved: Driver<Void> // 저장 완료 이벤트
     }
     
@@ -53,7 +57,7 @@ class NicknameViewModel {
         let buttonActivated = Observable
             .combineLatest(
                 input.enteredCode.asObservable()
-                    // // 입력된 닉네임이 공백이 아닌지 판단
+                // // 입력된 닉네임이 공백이 아닌지 판단
                     .map { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty },
                 // 닉네임 중복 검사를 통과했는지
                 isValidNicknameRelay.asObservable(),
@@ -62,11 +66,11 @@ class NicknameViewModel {
                 // 개인정보 처리방침 체크박스가 체크되었는지
                 privacyChecked.asObservable()
             )
-            // 위 네 조건이 모두 true일 때만 버튼을 활성화/
+        // 위 네 조건이 모두 true일 때만 버튼을 활성화/
             .map { inputNotEmpty, isValidNickname, termsOK, privacyOK in
                 inputNotEmpty && isValidNickname && termsOK && privacyOK
             }
-            // 이전 값과 같으면 무시하고 변경된 경우에만 전달
+        // 이전 값과 같으면 무시하고 변경된 경우에만 전달
             .distinctUntilChanged()
             .asDriver(onErrorDriveWith: .empty())
         
@@ -116,11 +120,11 @@ class NicknameViewModel {
                     privacyChecked // 개인정보 체크 여부
                 )
             )
-            // 세 가지 조건이 모두 true인 경우에만 저장
+        // 세 가지 조건이 모두 true인 경우에만 저장
             .filter { isValidNickname, _, termsOK, privacyOK in
                 isValidNickname && termsOK && privacyOK
             }
-            // 조건이 통과되면 닉네임만 추출해서 Firestore에 저장 요청
+        // 조건이 통과되면 닉네임만 추출해서 Firestore에 저장 요청
             .flatMapLatest { _, nickname, _, _ in
                 FirestoreService.shared.updateDocument(
                     collectionName: "users", // users 컬렉션
@@ -132,19 +136,27 @@ class NicknameViewModel {
             }
             .bind(to: nicknameSaved)
             .disposed(by: disposeBag)
-
-        input.termsTap
+        
+        input.termsToggleTap
             .bind { [weak self] in
                 guard let self = self else { return }
                 self.termsChecked.accept(!self.termsChecked.value)
             }
             .disposed(by: disposeBag)
         
-        input.privacyTap
+        input.privacyToggleTap
             .bind { [weak self] in
                 guard let self = self else { return }
                 self.privacyChecked.accept(!self.privacyChecked.value)
             }
+            .disposed(by: disposeBag)
+        
+        input.termsLabelTap
+            .bind(to: termsWebView)
+            .disposed(by: disposeBag)
+        
+        input.privacyLabelTap
+            .bind(to: privacyWebView)
             .disposed(by: disposeBag)
         
         return Output(
@@ -152,6 +164,8 @@ class NicknameViewModel {
             showAlert: textLimitRelay.asDriver(onErrorDriveWith: .empty()),
             termsChecked: termsChecked.asDriver(),
             privacyChecked: privacyChecked.asDriver(),
+            termsWebView: termsWebView.asDriver(onErrorDriveWith: .empty()),
+            privacyWebView: privacyWebView.asDriver(onErrorDriveWith: .empty()),
             nicknameSaved: nicknameSaved.asDriver(onErrorDriveWith: .empty())
         )
     }

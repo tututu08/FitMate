@@ -14,6 +14,8 @@ class NicknameViewController: BaseViewController {
     private let nicknameView = NicknameView()
     private let viewModel: NicknameViewModel
     
+    private let termsLabelTapped = PublishRelay<Void>()
+    private let privacyLabelTapped = PublishRelay<Void>()
     private let uid: String // 로그인 사용자 uid
     
     init(uid: String) {
@@ -33,22 +35,42 @@ class NicknameViewController: BaseViewController {
     }
     
     override func bindViewModel() {
-//        nicknameView.registerButton.rx.tap
-//            .asDriver(onErrorDriveWith: .empty())
-//            .drive(onNext: { [weak self] _ in
-//                guard let self else { return }
-//                let codeShareView = CodeShareViewController(uid: self.uid)
-//                self.navigationController?.pushViewController(
-//                    codeShareView, animated: true)
-//            })
-//            .disposed(by: disposeBag)
+        //        nicknameView.registerButton.rx.tap
+        //            .asDriver(onErrorDriveWith: .empty())
+        //            .drive(onNext: { [weak self] _ in
+        //                guard let self else { return }
+        //                let codeShareView = CodeShareViewController(uid: self.uid)
+        //                self.navigationController?.pushViewController(
+        //                    codeShareView, animated: true)
+        //            })
+        //            .disposed(by: disposeBag)
+        
+        let termsGesture = UITapGestureRecognizer()
+        nicknameView.termsLabel.addGestureRecognizer(termsGesture)
+        nicknameView.termsLabel.isUserInteractionEnabled = true // 중요!
+        
+        termsGesture.rx.event
+            .map { _ in () }
+            .bind(to: termsLabelTapped)
+            .disposed(by: disposeBag)
+        
+        let privacyGesture = UITapGestureRecognizer()
+        nicknameView.privacyLabel.addGestureRecognizer(privacyGesture)
+        nicknameView.privacyLabel.isUserInteractionEnabled = true
+        
+        privacyGesture.rx.event
+            .map { _ in () }
+            .bind(to: privacyLabelTapped)
+            .disposed(by: disposeBag)
+        
         
         let input = NicknameViewModel.Input(
             enteredCode: nicknameView.nicknameField.rx.text.orEmpty.asDriver(),
             textFieldLimit: nicknameView.nicknameField.overLimitRelay.asDriver(onErrorDriveWith: .empty()),
-            termsTap: nicknameView.termsButton.rx.tap.asObservable(),
-            privacyTap: nicknameView.privacyButton.rx.tap.asObservable(),
-            
+            termsToggleTap: nicknameView.termsButton.rx.tap.asObservable(),
+            privacyToggleTap: nicknameView.privacyButton.rx.tap.asObservable(),
+            termsLabelTap: termsLabelTapped.asObservable(),
+            privacyLabelTap: privacyLabelTapped.asObservable(),
             // 텍스트 필드 입력
             nicknameText: nicknameView.nicknameField.textRelay.asObservable(),
             // 등록완료 버튼 탭
@@ -88,41 +110,39 @@ class NicknameViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
-        // 버튼 체크되면 이미지 변경
         output.termsChecked
-            .drive(onNext: { isChecked in
-                let image = UIImage(named: isChecked ? "checkBox_checked" : "checkBox")
-                self.nicknameView.termsButton.setImage(image, for: .normal)
+            .drive(onNext: { [weak self] isChecked in
+                let image = UIImage(named: isChecked ? "checkBox_checked" : "blankBox")
+                self?.nicknameView.termsButton.setImage(image, for: .normal)
             })
             .disposed(by: disposeBag)
         
-        // 버튼 체크되면 이미지 변경
         output.privacyChecked
-            .drive(onNext: { isChecked in
-                let image = UIImage(named: isChecked ? "checkBox_checked" : "checkBox")
-                self.nicknameView.privacyButton.setImage(image, for: .normal)
+            .drive(onNext: { [weak self] isChecked in
+                let image = UIImage(named: isChecked ? "checkBox_checked" : "blankBox")
+                self?.nicknameView.privacyButton.setImage(image, for: .normal)
             })
             .disposed(by: disposeBag)
         
-        input.termsTap
-            .bind { [weak self] in
+        output.termsWebView
+            .drive(onNext: { [weak self] in
                 let vc = WebViewController()
                 vc.urlString = "https://www.notion.so/2151c704065180778da1d2d1dfc4629d"
                 vc.urlTitle = "이용약관"
-                vc.modalPresentationStyle = .pageSheet // 또는 .automatic, .formSheet 등 취향대로
-                self?.present(vc, animated: true)
-            }
-            .disposed(by: disposeBag)
-
-        input.privacyTap
-            .bind { [weak self] in
-                let vc = WebViewController()
-                vc.urlString = "https://www.notion.so/2151c7040651805f89e8f53d7777c91a"
-                vc.urlTitle = "개인정보처리방침"
                 vc.modalPresentationStyle = .pageSheet
                 self?.present(vc, animated: true)
-            }
+            })
             .disposed(by: disposeBag)
-
+        
+        output.privacyWebView
+            .drive(onNext: { [weak self] in
+                let vc = WebViewController()
+                vc.urlString = "https://www.notion.so/2151c7040651805f89e8f53d7777c91a"
+                vc.urlTitle = "개인정보 수집 및 이용동의"
+                vc.modalPresentationStyle = .pageSheet
+                self?.present(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }
+

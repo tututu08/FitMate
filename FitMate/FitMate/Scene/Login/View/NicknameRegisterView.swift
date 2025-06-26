@@ -35,13 +35,43 @@ class NicknameView: BaseView {
         return button
     }()
     
-    lazy var termsStack: UIStackView = {
+//    let termsLabel: UIButton = {
+//        let terms = UIButton()
+//        terms.setTitle("이용약관(필수)", for: .normal)
+//        terms.titleLabel?.font = UIFont(name: "Pretendard-Medium", size: 14)
+//        terms.titleLabel?.textColor = .background400
+//        return terms
+//    }()
+//    
+//    let privacyLabel: UIButton = {
+//        let privacy = UIButton()
+//        privacy.setTitle("개인정보 수집 및 이용동의(필수)", for: .normal)
+//        privacy.titleLabel?.font = UIFont(name: "Pretendard-Medium", size: 14)
+//        privacy.titleLabel?.textColor = .background400
+//        return privacy
+//    }()
+    
+    let termsLabel: UILabel = {
         let label = UILabel()
         label.text = "이용약관(필수)"
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
         label.textColor = .background400
-        
-        let stack = UIStackView(arrangedSubviews: [termsButton, label])
+        label.isUserInteractionEnabled = true
+        return label
+    }()
+    
+    let privacyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "개인정보 수집 및 이용동의(필수)"
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.textColor = .background400
+        label.isUserInteractionEnabled = true
+        return label
+    }()
+
+    
+    lazy var termsStack: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [termsButton, termsLabel])
         stack.axis = .horizontal
         stack.spacing = 8
         stack.alignment = .center
@@ -49,12 +79,7 @@ class NicknameView: BaseView {
     }()
     
     lazy var privacyStack: UIStackView = {
-        let label = UILabel()
-        label.text = "개인정보 수집 및 이용동의(필수)"
-        label.font = UIFont(name: "Pretendard-Medium", size: 14)
-        label.textColor = .background400
-        
-        let stack = UIStackView(arrangedSubviews: [privacyButton, label])
+        let stack = UIStackView(arrangedSubviews: [privacyButton, privacyLabel])
         stack.axis = .horizontal
         stack.spacing = 8
         stack.alignment = .center
@@ -77,6 +102,7 @@ class NicknameView: BaseView {
     
         configureUI()
         setLayoutUI()
+        
     }
 
     required init?(coder: NSCoder) {
