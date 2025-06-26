@@ -99,7 +99,7 @@ final class SettingView: UIView {
         containerView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)
-            $0.height.equalTo(345)
+            $0.height.equalTo(355)
         }
 
         [titleLabel, closeButton, separator].forEach {
