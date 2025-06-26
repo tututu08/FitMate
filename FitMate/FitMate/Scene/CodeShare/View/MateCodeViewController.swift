@@ -51,6 +51,10 @@ final class MateCodeViewController: BaseViewController {
         setupActions()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
     // MARK: - ViewModel 바인딩
     override func bindViewModel() {
         // ViewModel로 전달할 사용자 입력
