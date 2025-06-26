@@ -54,7 +54,8 @@ final class QuitAlert: UIView {
         
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
-        titleLabel.font = .boldSystemFont(ofSize: 25)
+        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 25)
+        titleLabel.textColor = .background900
         titleLabel.textAlignment = .center
         messageLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
         messageLabel.textColor = .gray
@@ -63,7 +64,7 @@ final class QuitAlert: UIView {
         
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.gray, for: .normal)
-        resumeButton.backgroundColor = UIColor.systemGray4
+        resumeButton.backgroundColor = .background100
         resumeButton.layer.cornerRadius = 5
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
