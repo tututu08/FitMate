@@ -47,7 +47,7 @@ final class WorkRecordCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "단위"
         label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textColor = UIColor(named: "background600")
+        label.textColor = UIColor(red: 87/255, green: 87/255, blue: 87/255, alpha: 1)
         return label
     }()
     
