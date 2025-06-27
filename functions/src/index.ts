@@ -87,13 +87,14 @@ export const notifyInvitedUser = onDocumentUpdated(
     }
 
     const inviterUid = after?.fromUid as string|undefined;
-    const nickname = after?.nickname ?? "메이트";
+    const inviterDoc = await db.doc(`users/${inviterUid}`).get();
+    const inviterNickname = inviterDoc.get("nickname") ?? "메이트";
 
     const message = {
       token: fcmToken,
       notification: {
         title: "메이트 초대 도착!",
-        body: `${nickname}님이 메이트 초대를 보냈어요. 지금 확인해보세요.`,
+        body: `${inviterNickname}님이 메이트 초대를 보냈어요. 지금 확인해보세요.`,
       },
       data: {
         type: "friend_invitation",
