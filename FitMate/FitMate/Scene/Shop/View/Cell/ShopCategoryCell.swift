@@ -14,7 +14,7 @@ class ShopCategoryCell: UICollectionViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = UIFont(name: "Pretendard-Regular", size: 16)
         label.textColor = UIColor(named: "Background50")
         label.textAlignment = .center
         return label
@@ -38,10 +38,10 @@ class ShopCategoryCell: UICollectionViewCell {
         fatalError()
     }
 
-    func configure(with category: SettingCategory, isSelected: Bool) {
+    func configure(with category: RankCategory, isSelected: Bool) {
         titleLabel.text = category.rawValue
-        contentView.backgroundColor = isSelected ? .systemPurple : .clear
-        titleLabel.textColor = isSelected ? .white : .lightGray
+        contentView.backgroundColor = isSelected ? .primary500 : .clear
+        titleLabel.textColor = isSelected ? .white : .primary100
     }
     
 }

@@ -19,7 +19,7 @@ final class AvatarCell: UICollectionViewCell {
     
     private let unlockLabel: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "unlock")
+        image.image = UIImage(named: "unlockpause")
         image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
         return image
@@ -81,11 +81,11 @@ final class AvatarCell: UICollectionViewCell {
         avatarImage.image = UIImage(named: model.imageName)
         
         /// 현재 아바타 모델에 맞는 비율로 제약을 새로 설정
-        avatarImage.snp.remakeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(64)
-            make.height.equalTo(avatarImage.snp.width).multipliedBy(model.finalRatio)
-        }
+//        avatarImage.snp.remakeConstraints { make in
+//            make.center.equalToSuperview()
+//            make.width.equalTo(64)
+//            make.height.equalTo(avatarImage.snp.width).multipliedBy(model.finalRatio)
+//        }
 
         /// 아바타 해금 안됐으면
         /// 필터랑 자물쇠 표시

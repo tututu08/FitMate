@@ -15,21 +15,21 @@ class ShopView: BaseView {
         let label = UILabel()
         label.text = "상점"
         label.textColor = .white
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
     
     let coinLabel: UILabel = {
         let coin = UILabel()
         coin.text = "100"
-        coin.font = .systemFont(ofSize: 20)
-        coin.textColor = .systemGreen
+        coin.font = UIFont(name: "DungGeunMo", size: 26)
+        coin.textColor = .secondary400
         return coin
     }()
     
     let coinIcon: UIImageView = {
         let coinImg = UIImageView()
-        coinImg.image = UIImage(named: "Coin")
+        coinImg.image = UIImage(named: "coin")
         coinImg.contentMode = .scaleAspectFit
         coinImg.clipsToBounds = true
         return coinImg
@@ -49,7 +49,7 @@ class ShopView: BaseView {
     
     let categoryUnderlineView = UIView()
     
-    let mainAvatar: UIImageView = {
+    let selectedAvatarImg: UIImageView = {
        let avatar = UIImageView()
         avatar.contentMode = .scaleAspectFit
         avatar.image = UIImage(named: "bbari")
@@ -69,7 +69,8 @@ class ShopView: BaseView {
         categoryCollectionView.register(ShopCategoryCell.self, forCellWithReuseIdentifier: ShopCategoryCell.id)
         
         avatartCollection.register(AvatarCell.self, forCellWithReuseIdentifier: AvatarCell.id)
-        setUpUI()
+        configureUI()
+        setLayoutUI()
     }
     
     @MainActor required init?(coder: NSCoder) {
@@ -104,20 +105,32 @@ class ShopView: BaseView {
         return UICollectionViewCompositionalLayout(section: section)
     }
     
-    
-    func setUpUI() {
+    override func configureUI() {
+        backgroundColor = .background800
         addSubview(topBar)
         topBar.addSubview(titleLabel)
         
+        addSubview(coinIcon)
+        addSubview(coinLabel)
         addSubview(categoryCollectionView)
         addSubview(categoryUnderlineView)
         addSubview(avatartCollection)
-        addSubview(mainAvatar)
+        addSubview(selectedAvatarImg)
+        categoryUnderlineView.backgroundColor = .primary500
+        
+    }
+    
+    override func setLayoutUI() {
         
         topBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(56)
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
         
         coinIcon.snp.makeConstraints { make in
@@ -127,25 +140,33 @@ class ShopView: BaseView {
         }
         
         coinLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(topBar)
+            make.top.equalTo(topBar.snp.bottom).offset(11)
             make.leading.equalTo(coinIcon.snp.trailing).offset(8)
         }
         
-        mainAvatar.snp.makeConstraints { make in
+        selectedAvatarImg.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(coinLabel.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(112)
-            make.height.equalTo(mainAvatar.snp.width).multipliedBy(1.2)
+            make.height.equalTo(selectedAvatarImg.snp.width).multipliedBy(1.2)
         }
         
-        categoryUnderlineView.backgroundColor = .systemPurple
-        categoryUnderlineView.snp.makeConstraints {
-            $0.top.equalTo(categoryCollectionView.snp.bottom)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(1)
+        categoryCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(selectedAvatarImg.snp.bottom).offset(48)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(40)
         }
         
+        categoryUnderlineView.snp.makeConstraints { make in
+            make.top.equalTo(categoryCollectionView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        
+        avatartCollection.snp.makeConstraints { make in
+            make.top.equalTo(categoryUnderlineView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
     }
-    
-    
 }

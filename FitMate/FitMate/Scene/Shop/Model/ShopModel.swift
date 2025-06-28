@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SettingCategory: String, CaseIterable {
+enum RankCategory: String, CaseIterable {
     case all = "전체"
     case bronze = "브론즈"
     case silver = "실버"
@@ -58,7 +58,7 @@ enum AvatarType: String, CaseIterable {
         }
     }
     
-    var category: SettingCategory {
+    var category: RankCategory {
         switch self {
         case .kappy, .jellyfish: return .bronze
         case .rhinoceros, .crab, .crocodile: return .silver

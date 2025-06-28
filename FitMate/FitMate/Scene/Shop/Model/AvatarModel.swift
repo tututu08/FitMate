@@ -18,11 +18,11 @@ struct AvatarModel {
     }
     
     var avatarName: String {
-        return type.avatarName
+        return type.avatarName // ← enum AvatarType에 정의
     }
     
     // UI 랜더링을 위해 파베 이미지 접근용 네이밍
     var imageName: String {
-        return type.imageName
+        return type.imageName // ← rawValue (Storage 파일명)
     }
 }
