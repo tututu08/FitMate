@@ -61,6 +61,7 @@ class FirestoreService {
                         let newRef = self.db.collection("users").document(uid)
                         let data: [String: Any] = [
                             "uid": uid,
+                            "coin": 0, // 코인 // 2025년 06월 29일 추가
                             "inviteCode": inviteCode,
                             "hasMate" : false, // 메이트 매칭 여부
                             "totalStats": [ // 총 기록
