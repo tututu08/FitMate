@@ -40,6 +40,8 @@ class MainViewController: BaseViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
         fetchMateStatusAndUpdateUI()
+        // 사용자 코인 정보를 가져와 화면에 출력
+        fetchMyCoin(uid: uid)
     }
     
     // 네비게이션 영역 다시 보여줌
@@ -48,6 +50,26 @@ class MainViewController: BaseViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
+    
+    /// 사용자 코인 정보 가져오기
+    private func fetchMyCoin(uid: String) {
+        // DB 에서 사용자 uid 로 coin 정보 가져오기
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
+            .subscribe(
+                onSuccess: { [weak self] data in
+                    guard let self else { return }
+                    guard let coin = data["coin"] as? Int else {
+                        print("Error : 코인 데이터 가져오기 실패\n")
+                        return
+                    }
+                    // print("코인 : \(coin)") // 디버깅용
+                    
+                    // 코인 라벨에 사용자 코인 출력하기
+                    self.mainView.coinLabel.text = "\(coin)"
+                }
+            ).disposed(by: disposeBag)
+    }
+    
     private func fetchMateStatusAndUpdateUI() {
         mainView.alpha = 0
         
