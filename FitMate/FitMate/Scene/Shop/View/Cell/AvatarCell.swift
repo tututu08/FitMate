@@ -7,30 +7,25 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class AvatarCell: UICollectionViewCell {
     
-    static let id = "MarketCell"
+    static let id = "AvatarCell"
     
     private let avatarImage: UIImageView = {
-       let image = UIImageView()
-        return image
-    }()
-    
-    private let unlockLabel: UIImageView = {
         let image = UIImageView()
-        image.image = UIImage(named: "unlockpause")
         image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
         return image
     }()
     
-    private let backgroundImg: UILabel = {
-        let label = UILabel()
-        label.backgroundColor = .darkGray
-        label.layer.cornerRadius = 8
-        label.layer.masksToBounds = true
-        return label
+    private let unlockLabel: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "lock")
+        image.contentMode = .scaleAspectFit
+        image.clipsToBounds = true
+        return image
     }()
     
     private let blackFilter: UILabel = {
@@ -40,6 +35,19 @@ final class AvatarCell: UICollectionViewCell {
         filter.layer.masksToBounds = true
         return filter
     }()
+    
+    override var isSelected: Bool {
+        didSet {
+            contentView.layer.borderWidth = isSelected
+            ? 3
+            : 0
+            contentView.layer.borderColor = isSelected
+            ? UIColor(named: "Secondary500")?.cgColor
+            : UIColor.clear.cgColor
+            contentView.layer.cornerRadius = 8
+            contentView.layer.masksToBounds = true
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -51,54 +59,35 @@ final class AvatarCell: UICollectionViewCell {
     }
     
     func setUpUI() {
-        contentView.addSubview(backgroundImg)
-        [avatarImage, blackFilter, unlockLabel].forEach({backgroundImg.addSubview($0)})
+        [avatarImage, blackFilter, unlockLabel].forEach({ contentView.addSubview($0) })
+        contentView.backgroundColor = .background800
+        contentView.clipsToBounds = true // 셀 외곽 넘침 방지
         
-        backgroundImg.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        avatarImage.snp.makeConstraints { make in
+        avatarImage.snp.remakeConstraints { make in
             make.center.equalToSuperview()
-            make.width.equalTo(60)
-            /// 셀이 처음 만들어질 때만 한 번만 설정되는 제약
-            /// 이때는 아직 어떤 아바타가 들어올지 모르니까 기본 배치만 잡는 정도
-            make.height.equalTo(avatarImage.snp.width).multipliedBy(1.0)
-        }
-        
-        blackFilter.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        unlockLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(24)
-            make.top.bottom.equalToSuperview().inset(22)
+            make.width.equalToSuperview().multipliedBy(0.8)
+            make.height.equalToSuperview().multipliedBy(0.8)
+            
+            blackFilter.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            
+            unlockLabel.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.leading.trailing.equalToSuperview().inset(24)
+                make.height.equalTo(unlockLabel.snp.width).multipliedBy(0.9)
+            }
         }
     }
     
     func configure(with model: AvatarModel) {
-        avatarImage.image = UIImage(named: model.imageName)
         
-        /// 현재 아바타 모델에 맞는 비율로 제약을 새로 설정
-//        avatarImage.snp.remakeConstraints { make in
-//            make.center.equalToSuperview()
-//            make.width.equalTo(64)
-//            make.height.equalTo(avatarImage.snp.width).multipliedBy(model.finalRatio)
-//        }
-
-        /// 아바타 해금 안됐으면
-        /// 필터랑 자물쇠 표시
+        if let url = URL(string: model.imageUrl) {
+            avatarImage.kf.setImage(with: url)
+        }
+        
         let isLocked = !model.isUnlocked
         blackFilter.isHidden = !isLocked
         unlockLabel.isHidden = !isLocked
     }
-    
-    override var isSelected: Bool {
-        didSet {
-            contentView.layer.borderWidth = isSelected ? 3 : 0
-            contentView.layer.borderColor = isSelected ? UIColor.green.cgColor : UIColor.clear.cgColor
-        }
-    }
-
 }

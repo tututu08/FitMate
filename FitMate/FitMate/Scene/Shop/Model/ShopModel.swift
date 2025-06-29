@@ -18,53 +18,53 @@ enum RankCategory: String, CaseIterable {
 
 /// 아바타 고유값과 메타데이터를 담고 있는 타입(enum)
 enum AvatarType: String, CaseIterable {
-    case koala
-    case dog
-    case jellyfish
-    case kappy
+    case arako
+    case baba
+    case bbari
+    case kaepy
     
-    case rhinoceros
-    case bear
-    case frog
+    case bburi
+    case gomjeossi
+    case kimgaegul
     
-    case elephant
-    case bee
-    case dinosaur
+    case kkiriko
+    case kkuluber
+    case morano
     
-    case ladybug
-    case crocodile
-    case cat
-    case crab
+    case mumu
+    case roko
+    case tori
+    case yeongdeogi
     
     var avatarName: String {
         switch self {
-        case .koala: return "아라코"
-        case .dog: return "바바"
-        case .jellyfish: return "빠리"
-        case .kappy: return "캐피"
+        case .arako: return "아라코"
+        case .baba: return "바바"
+        case .bbari: return "빠리"
+        case .kaepy: return "캐피"
             
-        case .rhinoceros: return "뿌리"
-        case .bear: return "곰저씨"
-        case .frog: return "김개굴"
+        case .bburi: return "뿌리"
+        case .gomjeossi: return "곰저씨"
+        case .kimgaegul: return "김개굴"
             
-        case .elephant: return "끼리코"
-        case .bee: return "꾸루버"
-        case .dinosaur: return "머라노"
+        case .kkiriko: return "끼리코"
+        case .kkuluber: return "꾸루버"
+        case .morano: return "머라노"
             
-        case .ladybug: return "무무"
-        case .crocodile: return "로코"
-        case .cat: return "토리"
-        case .crab: return "영더기"
+        case .mumu: return "무무"
+        case .roko: return "로코"
+        case .tori: return "토리"
+        case .yeongdeogi: return "영더기"
         }
     }
     
     var category: RankCategory {
         switch self {
-        case .kappy, .jellyfish: return .bronze
-        case .rhinoceros, .crab, .crocodile: return .silver
-        case .bear, .ladybug, .frog: return .gold
-        case .koala, .elephant, .dog: return .premium
-        case .cat, .bee, .dinosaur: return .diamond
+        case .kaepy, .bbari: return .bronze
+        case .bburi, .yeongdeogi, .roko: return .silver
+        case .gomjeossi, .mumu, .kimgaegul: return .gold
+        case .arako, .kkiriko, .baba: return .premium
+        case .tori, .kkuluber, .morano: return .diamond
         }
     }
     
@@ -74,10 +74,10 @@ enum AvatarType: String, CaseIterable {
     
     var defaultRatio: CGFloat {
         switch self {
-        case .jellyfish: return 1.2
-        case .rhinoceros: return 1.1
-        case .elephant: return 0.9
-        case .crab: return 0.85
+        case .bbari: return 1.2
+        case .bburi: return 1.1
+        case .kkiriko: return 0.9
+        case .yeongdeogi: return 0.85
         default: return 1.0
         }
     }

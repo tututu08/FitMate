@@ -12,6 +12,7 @@ struct AvatarModel {
     let isUnlocked: Bool // 해금 여부
     let conCost: Int? // 해금 필요 코인 -> 해금 안되었을 때 중요
     let ratioOverride: CGFloat? // 서버에서 직접 비율 내려줄 수도
+    let imageUrl: String
     
     var finalRatio: CGFloat {
         return ratioOverride ?? type.defaultRatio

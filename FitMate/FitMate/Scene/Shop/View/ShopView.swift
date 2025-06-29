@@ -52,7 +52,8 @@ class ShopView: BaseView {
     let selectedAvatarImg: UIImageView = {
        let avatar = UIImageView()
         avatar.contentMode = .scaleAspectFit
-        avatar.image = UIImage(named: "bbari")
+        avatar.image = nil
+        avatar.transform = .identity
         avatar.setContentHuggingPriority(.required, for: .vertical)
         avatar.setContentHuggingPriority(.required, for: .horizontal)
         return avatar
@@ -91,8 +92,8 @@ class ShopView: BaseView {
         )
         
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .fractionalHeight(1/3)
+            widthDimension: .fractionalWidth(0.33),
+            heightDimension: .estimated(100)
         )
         
         let group = NSCollectionLayoutGroup.horizontal(
@@ -107,6 +108,7 @@ class ShopView: BaseView {
     
     override func configureUI() {
         backgroundColor = .background800
+        avatartCollection.backgroundColor = .clear
         addSubview(topBar)
         topBar.addSubview(titleLabel)
         
