@@ -35,11 +35,16 @@ class MainViewController: BaseViewController {
         navigationItem.backButtonTitle = ""
     }
     
-    // 네비게이션 영역 숨김
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        // 네비게이션 영역 숨김
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        // 메이트 여부를 판단해서 UI를 변경함
         fetchMateStatusAndUpdateUI()
+        
         // 사용자 코인 정보를 가져와 화면에 출력
         fetchMyCoin(uid: uid)
     }
@@ -49,7 +54,6 @@ class MainViewController: BaseViewController {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
-
     
     /// 사용자 코인 정보 가져오기
     private func fetchMyCoin(uid: String) {
@@ -76,18 +80,18 @@ class MainViewController: BaseViewController {
         FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
             .subscribe(onSuccess: { [weak self] data in
                 guard let self else { return }
-
+                
                 let hasMate = data["hasMate"] as? Bool ?? false
                 let myNickname = data["nickname"] as? String ?? "나"
-
+                
                 if hasMate,
                    let mate = data["mate"] as? [String: Any],
                    let mateNickname = mate["nickname"] as? String {
                     self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
                     if let startDateString = mate["startDate"] as? String,
-                           let dDay = calculateDDay(from: startDateString) {
-                            self.mainView.dDaysLabel.text = "\(dDay)일째"
-                        }
+                       let dDay = calculateDDay(from: startDateString) {
+                        self.mainView.dDaysLabel.text = "\(dDay)일째"
+                    }
                     UIView.animate(withDuration: 0.2) {
                         self.mainView.alpha = 1
                     }
@@ -110,10 +114,10 @@ class MainViewController: BaseViewController {
             exerciseTap: mainView.exerciseButton.rx.tap.asObservable(),
             mateAvatarTap: mainView.mateAvatarImage.rx.tap
         )
-
+        
         ///  transform 통해 output 정의
         let output = viewModel.transform(input: input)
-
+        
         /// 메이트가 없을 때 → 커스텀 얼럿 띄우기
         output.hasNoMate
             .drive(onNext: { [weak self] in
@@ -123,7 +127,7 @@ class MainViewController: BaseViewController {
                 self.present(alertVC, animated: false)
             })
             .disposed(by: disposeBag)
-
+        
         /// 메이트가 있을 때 → 운동 선택 화면 이동
         output.moveToExercise
             .drive(onNext: { [weak self] in
@@ -144,16 +148,16 @@ class MainViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.showMateDisconnected
-             .drive(onNext: { [weak self] in
-                 self?.presentMateAlert(description: "기록은 보관되어 있으니 언제든 확인할 수 있습니다.\n새로운 메이트를 추가해 운동을 이어가보세요.")
-             })
-             .disposed(by: disposeBag)
-
-         output.showMateWithdrawn
-             .drive(onNext: { [weak self] in
-                 self?.presentMateAlert(description: "메이트가 회원탈퇴 했어요")
-             })
-             .disposed(by: disposeBag)
+            .drive(onNext: { [weak self] in
+                self?.presentMateAlert(description: "기록은 보관되어 있으니 언제든 확인할 수 있습니다.\n새로운 메이트를 추가해 운동을 이어가보세요.")
+            })
+            .disposed(by: disposeBag)
+        
+        output.showMateWithdrawn
+            .drive(onNext: { [weak self] in
+                self?.presentMateAlert(description: "메이트가 회원탈퇴 했어요")
+            })
+            .disposed(by: disposeBag)
     }
     
     private func presentMateAlert(description: String) {
@@ -161,7 +165,7 @@ class MainViewController: BaseViewController {
         popup.configure(description: description)
         
         popup.alpha = 0
-
+        
         // window에 직접 추가하여 어떤 화면에서도 보이도록(현재 활성화된 키 윈도우 가져오기)
         if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
             window.addSubview(popup)
@@ -171,7 +175,7 @@ class MainViewController: BaseViewController {
             UIView.animate(withDuration: 0.25) {
                 popup.alpha = 1
             }
-
+            
             popup.confirmButton.rx.tap
                 .bind { [weak self, weak popup] in
                     guard let self, let popup else { return }
@@ -187,7 +191,7 @@ class MainViewController: BaseViewController {
                 .disposed(by: disposeBag)
         }
     }
-
+    
     // Firestore 메이트 정보 삭제 → UI 갱신
     private func cleanupMateAndRefresh() {
         FirestoreService.shared.deleteMate(myUid: uid)
@@ -198,6 +202,7 @@ class MainViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
+    
     func calculateDDay(from startDateString: String) -> Int? {
         let formatter = FirestoreService.dateFormatter
         guard let startDate = formatter.date(from: startDateString) else { return nil }
