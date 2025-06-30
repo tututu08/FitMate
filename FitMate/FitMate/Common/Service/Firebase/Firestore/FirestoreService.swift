@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseStorage
 import RxSwift
 
 class FirestoreService {
@@ -400,6 +401,7 @@ class FirestoreService {
          )
          .disposed(by: disposeBag)
      */
+    
 }
 
 extension FirestoreService {

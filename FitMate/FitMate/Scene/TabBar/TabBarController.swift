@@ -67,15 +67,23 @@ class TabBarController: UITabBarController {
             selectedImage: UIImage(named: "mainTapped")
         )
         
-        let myPageVC = MypageViewController(uid: self.uid)
-        let nav3 = UINavigationController(rootViewController: myPageVC)
+        let shopVC = ShopViewController()
+        let nav3 = UINavigationController(rootViewController: shopVC)
         nav3.tabBarItem = UITabBarItem(
+            title: "상점",
+            image: UIImage(named: "shop"),
+            selectedImage: UIImage(named: "shopTapped")
+        )
+        
+        let myPageVC = MypageViewController(uid: self.uid)
+        let nav4 = UINavigationController(rootViewController: myPageVC)
+        nav4.tabBarItem = UITabBarItem(
             title: "마이페이지",
             image: UIImage(named: "mypage"),
             selectedImage: UIImage(named: "mypageTapped")
         )
         
-        viewControllers = [nav1, nav2, nav3]
+        viewControllers = [nav1, nav2, nav3, nav4]
     }
     
     private func setUp() {
