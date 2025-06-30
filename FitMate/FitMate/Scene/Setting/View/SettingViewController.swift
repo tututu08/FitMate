@@ -92,6 +92,8 @@ final class SettingViewController: UIViewController {
     }
 
     private func handleSoundSwitchChange(isOn: Bool) {
+        SoundManage.shared.isSoundEnabled = isOn
+        
         FirestoreService.shared.updateDocument(
             collectionName: "users",
             documentName: uid,

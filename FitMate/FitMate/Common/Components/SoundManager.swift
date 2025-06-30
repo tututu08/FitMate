@@ -10,11 +10,10 @@ import AVFoundation
 class SoundManage {
     static let shared = SoundManage()
     private var audioPlayer: AVAudioPlayer?
+    
     var isSoundEnabled: Bool = true
     
-    private init() {
-        isSoundEnabled = UserDefaults.standard.object(forKey: "soundEnabled") as? Bool ?? true
-    }
+    private init() {}
     
     func coinSound() {
         guard isSoundEnabled else { return }
