@@ -43,6 +43,7 @@ final class SettingViewModel {
         input.soundToggleTapped
             .do(onNext: { isOn in
                 UserDefaults.standard.set(isOn, forKey: "soundEnabled")
+                SoundManage.shared.isSoundEnabled = isOn
             })
             .bind(to: soundEnabledRelay)
             .disposed(by: disposeBag)

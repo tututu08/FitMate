@@ -1,35 +1,29 @@
+//
+//  CategoryCell.swift
+//  FitMate
+//
+//  Created by soophie on 6/27/25.
+//
 
 import UIKit
+import SnapKit
 
-final class CategoryCell: UICollectionViewCell {
-    static let identifier = "CategoryCell"
-
+class ShopCategoryCell: UICollectionViewCell {
+    
+    static let id = "CategoryCell"
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = UIFont(name: "Pretendard-Regular", size: 16)
         label.textColor = UIColor(named: "Background50")
         label.textAlignment = .center
         return label
     }()
-
-    override var isSelected: Bool {
-        didSet {
-            contentView.backgroundColor = isSelected
-                ? UIColor(named: "Primary500")
-                : .clear
-            titleLabel.textColor = isSelected
-                ? .white
-                : UIColor(named: "Primary100")
-            titleLabel.font = isSelected
-                ? .boldSystemFont(ofSize: 14)
-                : .systemFont(ofSize: 14)
-        }
-    }
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(titleLabel)
-        contentView.layer.cornerRadius = 4
+        contentView.layer.cornerRadius = 10
         contentView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.layer.masksToBounds = true
 
@@ -44,7 +38,10 @@ final class CategoryCell: UICollectionViewCell {
         fatalError()
     }
 
-    func configure(with title: String) {
-        titleLabel.text = title
+    func configure(with category: RankCategory, isSelected: Bool) {
+        titleLabel.text = category.rawValue
+        contentView.backgroundColor = isSelected ? .primary500 : .clear
+        titleLabel.textColor = isSelected ? .white : .primary100
     }
+    
 }

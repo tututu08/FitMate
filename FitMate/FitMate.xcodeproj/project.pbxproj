@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D04AAC42E0EA62C00B36F21 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 0D04AAC32E0EA62C00B36F21 /* FirebaseStorage */; };
+		0D4B5BD02E111BC100AC0456 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 0D4B5BCF2E111BC100AC0456 /* Kingfisher */; };
 		C658BBCF2E093CC700C88BDE /* KakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = C658BBCE2E093CC700C88BDE /* KakaoSDK */; };
 		C658BBD12E093CC700C88BDE /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C658BBD02E093CC700C88BDE /* KakaoSDKAuth */; };
 		C658BBD32E093CC700C88BDE /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = C658BBD22E093CC700C88BDE /* KakaoSDKCommon */; };
@@ -79,6 +81,8 @@
 				EDDA5CCB2DFB189E005D0F91 /* GoogleSignIn in Frameworks */,
 				ED11842E2DFECC3500ECC6DD /* Lottie in Frameworks */,
 				EDC669B42DF9A27600E5BE4C /* RxCoreLocation in Frameworks */,
+				0D4B5BD02E111BC100AC0456 /* Kingfisher in Frameworks */,
+				0D04AAC42E0EA62C00B36F21 /* FirebaseStorage in Frameworks */,
 				ED6AD6BC2DF1AA9A004E23D4 /* FirebaseFirestore in Frameworks */,
 				ED6AD6B62DF1AA9A004E23D4 /* FirebaseAnalytics in Frameworks */,
 				C658BBD32E093CC700C88BDE /* KakaoSDKCommon in Frameworks */,
@@ -149,6 +153,8 @@
 				C658BBD02E093CC700C88BDE /* KakaoSDKAuth */,
 				C658BBD22E093CC700C88BDE /* KakaoSDKCommon */,
 				C658BBD42E093CC700C88BDE /* KakaoSDKUser */,
+				0D04AAC32E0EA62C00B36F21 /* FirebaseStorage */,
+				0D4B5BCF2E111BC100AC0456 /* Kingfisher */,
 			);
 			productName = FitMate;
 			productReference = F6F3B9CE2DEF095800FA2815 /* FitMate.app */;
@@ -186,6 +192,7 @@
 				EDDA5CC92DFB189E005D0F91 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				ED11842C2DFECC3500ECC6DD /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				C658BBCD2E093CC700C88BDE /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				0D4B5BCE2E111BC100AC0456 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F6F3B9CF2DEF095800FA2815 /* Products */;
@@ -429,7 +436,7 @@
 				F6F3B9E52DEF095A00FA2815 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		F6F3B9E12DEF095A00FA2815 /* Build configuration list for PBXNativeTarget "FitMate" */ = {
 			isa = XCConfigurationList;
@@ -438,11 +445,19 @@
 				F6F3B9E32DEF095A00FA2815 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0D4B5BCE2E111BC100AC0456 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.3.3;
+			};
+		};
 		C658BBCD2E093CC700C88BDE /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kakao/kakao-ios-sdk.git";
@@ -502,6 +517,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0D04AAC32E0EA62C00B36F21 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED6AD6B42DF1AA9A004E23D4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		0D4B5BCF2E111BC100AC0456 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0D4B5BCE2E111BC100AC0456 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		C658BBCE2E093CC700C88BDE /* KakaoSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C658BBCD2E093CC700C88BDE /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
