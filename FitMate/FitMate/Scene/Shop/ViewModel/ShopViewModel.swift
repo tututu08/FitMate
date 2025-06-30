@@ -63,7 +63,7 @@ final class ShopViewModel {
     }
     
     func fetchAvatars() {
-        FirestoreService.shared.fetchAllAvatars()
+        FirebaseStorage.shared.fetchAllAvatars()
             .subscribe(onSuccess: { [weak self] avatars in
                 // 카테고리 순서대로 아바타 정렬하고 그 값을 allAvatarsRelay 담기
                 let sorted = self?.sortAvatars(avatars) ?? []

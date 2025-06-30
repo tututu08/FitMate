@@ -52,14 +52,13 @@ class ShopView: BaseView {
     let selectedAvatarImg: UIImageView = {
        let avatar = UIImageView()
         avatar.contentMode = .scaleAspectFit
-        avatar.image = nil
         avatar.transform = .identity
         avatar.setContentHuggingPriority(.required, for: .vertical)
         avatar.setContentHuggingPriority(.required, for: .horizontal)
         return avatar
     }()
     
-    lazy var avatartCollection = UICollectionView(
+    lazy var avatarCollection = UICollectionView(
         frame: .zero,
         collectionViewLayout: setCollection()
     )
@@ -69,7 +68,7 @@ class ShopView: BaseView {
         
         categoryCollectionView.register(ShopCategoryCell.self, forCellWithReuseIdentifier: ShopCategoryCell.id)
         
-        avatartCollection.register(AvatarCell.self, forCellWithReuseIdentifier: AvatarCell.id)
+        avatarCollection.register(AvatarCell.self, forCellWithReuseIdentifier: AvatarCell.id)
         configureUI()
         setLayoutUI()
     }
@@ -108,7 +107,7 @@ class ShopView: BaseView {
     
     override func configureUI() {
         backgroundColor = .background800
-        avatartCollection.backgroundColor = .clear
+        avatarCollection.backgroundColor = .clear
         addSubview(topBar)
         topBar.addSubview(titleLabel)
         
@@ -116,7 +115,7 @@ class ShopView: BaseView {
         addSubview(coinLabel)
         addSubview(categoryCollectionView)
         addSubview(categoryUnderlineView)
-        addSubview(avatartCollection)
+        addSubview(avatarCollection)
         addSubview(selectedAvatarImg)
         categoryUnderlineView.backgroundColor = .primary500
         
@@ -165,7 +164,7 @@ class ShopView: BaseView {
             make.height.equalTo(1)
         }
         
-        avatartCollection.snp.makeConstraints { make in
+        avatarCollection.snp.makeConstraints { make in
             make.top.equalTo(categoryUnderlineView.snp.bottom)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()

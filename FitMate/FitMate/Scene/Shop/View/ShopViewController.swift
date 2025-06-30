@@ -19,13 +19,9 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
         self.view = rootView
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.setNavigationBarHidden(true, animated: false)
         rootView.categoryCollectionView.delegate = self
 
         viewModel.fetchAvatars()
@@ -70,14 +66,14 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
     private func bindAvatarViewModel() {
         let input = ShopViewModel.Input(
             selectedCategory: selectedCategorySubject.asObservable(),
-            selectedAvatar: rootView.avatartCollection.rx.modelSelected(AvatarModel.self).asObservable()
+            selectedAvatar: rootView.avatarCollection.rx.modelSelected(AvatarModel.self).asObservable()
         )
         
         let output = viewModel.transform(input: input)
         
         /// 출력된 아바타 목록을 컬렉션 뷰에 바인딩
         output.selectedAvatar
-            .drive(rootView.avatartCollection.rx.items(
+            .drive(rootView.avatarCollection.rx.items(
                 cellIdentifier: AvatarCell.id,
                 cellType: AvatarCell.self
             )) { [weak self] index, model, cell in
@@ -92,7 +88,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                    self?.viewModel.selectedAvatarRelay.value == nil {
                     // 해당 인덱스의 셀을 선택된 상태로 만들어줌
                     let indexPath = IndexPath(item: index, section: 0)
-                    self?.rootView.avatartCollection.selectItem(
+                    self?.rootView.avatarCollection.selectItem(
                         at: indexPath,
                         animated: false,
                         scrollPosition: [])
@@ -110,7 +106,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
             .disposed(by: disposeBag)
 
         // 유저 선택 → 뷰모델 반영
-        rootView.avatartCollection.rx.modelSelected(AvatarModel.self)
+        rootView.avatarCollection.rx.modelSelected(AvatarModel.self)
             .bind(to: viewModel.selectedAvatarRelay)
             .disposed(by: disposeBag)
 
