@@ -18,7 +18,7 @@ final class CustomAlertViewController: UIViewController {
     var onCancel: (() -> Void)?
     
     private let alertType: CustomAlertType
-    private let cancelButton: UIButton = {
+    private lazy var cancelButton: UIButton = {
         let cancel = UIButton()
         cancel.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         cancel.setTitleColor(.background500, for: .normal)
@@ -27,7 +27,7 @@ final class CustomAlertViewController: UIViewController {
         cancel.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
         return cancel
     }()
-    private let confirmButton: UIButton = {
+    private lazy var confirmButton: UIButton = {
         let confirm = UIButton()
         confirm.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         confirm.setTitleColor(.white, for: .normal)
@@ -101,15 +101,21 @@ final class CustomAlertViewController: UIViewController {
     }
     
     @objc private func didTapCancel() {
+        //print("🔵 [취소 버튼 탭]")
+        
         dismiss(animated: true) { [weak self] in
+            //print("🔵 [Alert 닫힘 - 취소]")
             self?.onCancel?()
         }
     }
     
     @objc private func didTapConfirm() {
+        //print("🟢 [확인 버튼 탭] alertType: \(alertType)")
         switch alertType {
         case .mateRequest(let uid):
+            //print("🟢 [mateRequest alert] -> CodeShareViewController 이동")
             dismiss(animated: true) { [weak self] in
+                //print("🟢 [Alert 닫힘 - mateRequest]")
                 self?.onConfirm?()
                 guard let presentingVC = self?.presentingViewController else { return }
                 let codeShareVC = CodeShareViewController(uid: uid, hasMate: false)
@@ -120,7 +126,9 @@ final class CustomAlertViewController: UIViewController {
             
         case .inviteSent, .requestFailed, .rejectRequest, .sportsMateRequest, .alreadyCancel, .matchingFail:
             // 확인만 누르면 dismiss
+            //print("🟢 [일반 확인 alert] → dismiss 진행")
             dismiss(animated: true) { [weak self] in
+                //print("🟢 [Alert 닫힘 - 일반 확인]")
                 self?.onConfirm?()
             }
             

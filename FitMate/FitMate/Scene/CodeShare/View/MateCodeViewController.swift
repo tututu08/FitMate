@@ -112,6 +112,7 @@ final class MateCodeViewController: BaseViewController {
     // MARK: - Alert
     /// ViewModel이 방출한 AlertType 에 따라 알림창 구성 및 출력
     private func presentAlert(for alert: CustomAlertType) {
+        //print("🟡 [Alert 호출] 타입: \(alert)") // ✅ 로그 추가
         //        let customType: CustomAlertType
         switch alert {
         case .inviteSent,
@@ -120,6 +121,15 @@ final class MateCodeViewController: BaseViewController {
              .rejectRequest:
             
             let alertVC = CustomAlertViewController(alertType: alert)
+            
+            // 확인/취소 콜백 로그
+            alertVC.onConfirm = {
+                //print("🟢 [Alert 확인 버튼 콜백 실행됨]")
+            }
+            alertVC.onCancel = {
+                //print("🔵 [Alert 취소 버튼 콜백 실행됨]")
+            }
+            
             self.present(alertVC, animated: true)
             
         default:

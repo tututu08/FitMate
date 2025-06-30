@@ -40,14 +40,16 @@ final class SettingViewController: UIViewController {
         
         Firestore.firestore().collection("users").document(uid).getDocument { [weak self] snapshot, error in
             guard let self else { return }
-            if let data = snapshot?.data(),
-               let isPushOn = data["pushEnabled"] as? Bool,
-               let isSoundOn = data["soundEnabled"] as? Bool {
-                self.settingView.noticeToggle.setOn(isPushOn, animated: false)
-                self.settingView.effectToggle.setOn(isSoundOn, animated: false)
-                self.viewModel.updatePushEnabled(isPushOn)
-                self.viewModel.updateSoundEnabled(isSoundOn)
-            }
+            let data = snapshot?.data() ?? [:]
+                
+            let isPushOn = data["pushEnabled"] as? Bool ?? true
+            let isSoundOn = data["soundEnabled"] as? Bool ?? true
+                
+            self.settingView.noticeToggle.setOn(isPushOn, animated: false)
+            self.settingView.effectToggle.setOn(isSoundOn, animated: false)
+            self.viewModel.updatePushEnabled(isPushOn)
+            self.viewModel.updateSoundEnabled(isSoundOn)
+        
         }
         
         bindViewModel()
