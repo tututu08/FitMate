@@ -99,6 +99,7 @@ class TabBarController: UITabBarController {
         MatchEventService.shared.matchEventRelay
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] matchCode in
+                SoundManage.shared.playInviteSound()
                 self?.presentMatchAlert(matchCode: matchCode, message: "")
             })
             .disposed(by: disposeBag)
