@@ -135,13 +135,12 @@ extension FinishViewModel {
                 return .error(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "필드 누락 또는 변환 실패"]))
             }
 
-            let isWinner = data["isWinner"] as? Bool ?? false
+            let myIsWinner = myData["isWinner"] as? Bool ?? false
+
             let result: ExerciseResult = {
                 switch self.mode {
                 case .battle:
-                    return (isWinner && uid == data["inviterUid"] as? String) ||
-                           (!isWinner && uid == data["inviteeUid"] as? String)
-                        ? .versusWin : .versusLose
+                    return myIsWinner ? .versusWin : .versusLose
                 case .cooperation:
                     return self.success ? .teamSuccess : .teamFail
                 }
