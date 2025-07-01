@@ -284,42 +284,54 @@ final class AuthService: NSObject {
                 )))
                 return Disposables.create()
             }
-            
-            guard let googleUser = GIDSignIn.sharedInstance.currentUser else {
-                single(.failure(NSError(
-                    domain: "GoogleAuth",
-                    code: -2,
-                    userInfo: [NSLocalizedDescriptionKey: "Google 사용자 정보 없음"]
-                )))
-                return Disposables.create()
-            }
 
-            let idToken = googleUser.idToken?.tokenString
-            let accessToken = googleUser.accessToken.tokenString
-
-            guard let idToken, !idToken.isEmpty else {
-                single(.failure(NSError(
-                    domain: "GoogleAuth",
-                    code: -3,
-                    userInfo: [NSLocalizedDescriptionKey: "idToken 없음"]
-                )))
-                return Disposables.create()
-            }
-
-            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
-
-            user.reauthenticate(with: credential) { _, error in
-                if let error = error {
-                    single(.failure(error))
-                } else {
-                    single(.success(()))
+            // 세션 복원 먼저 시도
+            if GIDSignIn.sharedInstance.currentUser == nil {
+                GIDSignIn.sharedInstance.restorePreviousSignIn { restoredUser, error in
+                    if let restoredUser = restoredUser {
+                        print("🔁 구글 세션 복원 성공")
+                        self.performGoogleReauth(user: user, googleUser: restoredUser, single: single)
+                    } else {
+                        single(.failure(NSError(
+                            domain: "GoogleAuth",
+                            code: -99,
+                            userInfo: [NSLocalizedDescriptionKey: "Google 세션 복원 실패: \(error?.localizedDescription ?? "알 수 없음")"]
+                        )))
+                    }
                 }
+            } else {
+                // 세션 이미 살아있으면 바로 재인증 시도
+                let googleUser = GIDSignIn.sharedInstance.currentUser!
+                self.performGoogleReauth(user: user, googleUser: googleUser, single: single)
             }
 
             return Disposables.create()
         }
     }
     
+    private func performGoogleReauth(user: FirebaseAuth.User, googleUser: GIDGoogleUser, single: @escaping (SingleEvent<Void>) -> Void) {
+        guard let idToken = googleUser.idToken?.tokenString else {
+            single(.failure(NSError(
+                domain: "GoogleAuth",
+                code: -3,
+                userInfo: [NSLocalizedDescriptionKey: "idToken 없음"]
+            )))
+            return
+        }
+
+        let accessToken = googleUser.accessToken.tokenString
+        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+
+        user.reauthenticate(with: credential) { _, error in
+            if let error = error {
+                single(.failure(error))
+            } else {
+                single(.success(()))
+            }
+        }
+    }
+    
+    // MARK: 카카오 재인증
     func reauthenticateKakaoUser(kakaoUser: KakaoUser) -> Single<Void> {
         return Single.create { single in
             guard let user = Auth.auth().currentUser else {
