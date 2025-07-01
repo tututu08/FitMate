@@ -90,11 +90,28 @@ class NicknameViewController: BaseViewController {
         output.nicknameSaved
             .drive(onNext: { [weak self] in
                 guard let self else { return }
-                let codeShareView = CodeShareViewController(uid: self.uid, hasMate: false)
-                self.navigationController?.pushViewController(codeShareView, animated: true)
+                
+                // 1. TabBarController로 rootViewController 교체
+                guard let sceneDelegate = UIApplication.shared.connectedScenes
+                    .first?.delegate as? SceneDelegate,
+                      let window = sceneDelegate.window else { return }
+                
+                let tabBar = TabBarController(uid: self.uid)
+                window.rootViewController = tabBar
+                window.makeKeyAndVisible()
+                
+                // 2. 메인 뷰가 올라온 뒤 CodeShareVC 모달 띄우기
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if let nav = tabBar.selectedViewController as? UINavigationController {
+                        let codeShareVC = CodeShareViewController(uid: self.uid, hasMate: false)
+                        let modalNav = UINavigationController(rootViewController: codeShareVC)
+                        modalNav.modalPresentationStyle = .fullScreen
+                        modalNav.modalTransitionStyle = .coverVertical
+                        nav.present(modalNav, animated: true)
+                    }
+                }
             })
             .disposed(by: disposeBag)
-        
         
         // 버튼 활성화 여부
         output.buttonActivated
