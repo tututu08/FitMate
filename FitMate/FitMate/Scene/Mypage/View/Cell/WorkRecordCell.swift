@@ -122,12 +122,12 @@ final class WorkRecordCell: UICollectionViewCell {
             characterImage.image = UIImage(named: "walk")
         case "달리기":
             characterImage.image = UIImage(named: "run")
+        case "플랭크":
+            characterImage.image = UIImage(named: "plank")
         case "자전거":
             characterImage.image = UIImage(named: "bicycle")
         case "줄넘기":
             characterImage.image = UIImage(named: "jumpRope")
-        case "플랭크":
-            characterImage.image = UIImage(named: "plank")
         default:
             characterImage.image = nil
         }
@@ -140,9 +140,12 @@ final class WorkRecordCell: UICollectionViewCell {
             cardView.backgroundColor = UIColor(named: "Primary100")
             characterImageView.backgroundColor = UIColor(named: "Primary100")
         case 2:
+            cardView.backgroundColor = UIColor(named: "Primary200")
+            characterImageView.backgroundColor = UIColor(named: "Primary200")
+        case 3:
             cardView.backgroundColor = UIColor(named: "Secondary50")
             characterImageView.backgroundColor = UIColor(named: "Secondary50")
-        case 3:
+        case 4:
             cardView.backgroundColor = UIColor(named: "Secondary100")
             characterImageView.backgroundColor = UIColor(named: "Secondary100")
         default:
