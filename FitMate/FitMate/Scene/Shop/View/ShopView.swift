@@ -21,7 +21,7 @@ class ShopView: BaseView {
     
     let coinLabel: UILabel = {
         let coin = UILabel()
-        coin.text = "100"
+        coin.text = "0"
         coin.font = UIFont(name: "DungGeunMo", size: 26)
         coin.textColor = .secondary400
         return coin
@@ -33,6 +33,15 @@ class ShopView: BaseView {
         coinImg.contentMode = .scaleAspectFit
         coinImg.clipsToBounds = true
         return coinImg
+    }()
+    
+    let changeButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 4
+        button.setTitle("아바타 변경", for: .normal)
+        button.setTitleColor(.background800, for: .normal)
+        button.backgroundColor = .secondary500
+        return button
     }()
     
     lazy var categoryCollectionView: UICollectionView = {

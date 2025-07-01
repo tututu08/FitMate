@@ -11,10 +11,14 @@ import Foundation
 final class ShopViewModel {
     
     let selectedCategoryRelay = BehaviorRelay<RankCategory>(value: .all)
-    private let allAvatarsRelay = BehaviorRelay<[AvatarModel]>(value: [])
+    let allAvatarsRelay = BehaviorRelay<[AvatarModel]>(value: [])
     private let currentFilteredAvatarsRelay = BehaviorRelay<[AvatarModel]>(value: [])
     let selectedAvatarRelay = BehaviorRelay<AvatarModel?>(value: nil)
     var disposeBag = DisposeBag()
+    
+    var currentFilteredAvatars: Observable<[AvatarModel]> {
+            return currentFilteredAvatarsRelay.asObservable()
+        }
 
     
     struct Input {

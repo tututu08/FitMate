@@ -15,6 +15,7 @@ enum CustomAlertType {
     case sportsMateRequest(message: String)
     case alreadyCancel(message: String)
     case matchingFail(message: String)
+    case avatarPurchase(name: String, cost: Int)
 
     var title: String {
         switch self {
@@ -25,6 +26,7 @@ enum CustomAlertType {
         case .sportsMateRequest: return "운동 메이트 요청"
         case .alreadyCancel: return "매칭이 취소되었습니다"
         case .matchingFail: return "매칭 실패"
+        case .avatarPurchase: return "구매하기"
         }
     }
 
@@ -44,6 +46,8 @@ enum CustomAlertType {
             return "이미 취소된 운동입니다"
         case .matchingFail(let message):
             return "메이트가 거절했습니다"
+        case .avatarPurchase:
+            return ""
         }
     }
 
@@ -51,6 +55,8 @@ enum CustomAlertType {
         switch self {
         case .mateRequest, .sportsMateRequest:
             return .double("거절하기", "승인하기")
+        case .avatarPurchase:
+            return .double("취소하기", "구매하기")
         default:
             return .single("확인")
         }

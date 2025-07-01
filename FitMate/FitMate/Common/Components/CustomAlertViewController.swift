@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-final class CustomAlertViewController: UIViewController {
+class CustomAlertViewController: UIViewController {
     
     /// 외부 클로저
     /// alert 내부에서 외부 동작을 트리거하기 위함
@@ -16,9 +16,10 @@ final class CustomAlertViewController: UIViewController {
     /// Alert이 확인 버튼을 누를 때 호출해주는 방식이기 때문에 외부 클로저 필요
     var onConfirm: (() -> Void)?
     var onCancel: (() -> Void)?
+    var alertView: CustomAlertView?
     
     private let alertType: CustomAlertType
-    private lazy var cancelButton: UIButton = {
+    lazy var cancelButton: UIButton = {
         let cancel = UIButton()
         cancel.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         cancel.setTitleColor(.background500, for: .normal)
@@ -27,7 +28,7 @@ final class CustomAlertViewController: UIViewController {
         cancel.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
         return cancel
     }()
-    private lazy var confirmButton: UIButton = {
+    lazy var confirmButton: UIButton = {
         let confirm = UIButton()
         confirm.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         confirm.setTitleColor(.white, for: .normal)
@@ -92,7 +93,13 @@ final class CustomAlertViewController: UIViewController {
         }
         
         let alertView = builder.buildAlert()
+        
+        self.alertView = alertView
+        
         view.addSubview(alertView)
+        alertView.setContentHuggingPriority(.required, for: .vertical)
+        alertView.setContentCompressionResistancePriority(.required, for: .vertical)
+
         alertView.snp.makeConstraints {
             $0.center.equalToSuperview()
             //$0.leading.trailing.equalToSuperview().inset(23)
@@ -101,21 +108,17 @@ final class CustomAlertViewController: UIViewController {
     }
     
     @objc private func didTapCancel() {
-        //print("🔵 [취소 버튼 탭]")
         
         dismiss(animated: true) { [weak self] in
-            //print("🔵 [Alert 닫힘 - 취소]")
             self?.onCancel?()
         }
     }
     
     @objc private func didTapConfirm() {
-        //print("🟢 [확인 버튼 탭] alertType: \(alertType)")
         switch alertType {
         case .mateRequest(let uid):
-            //print("🟢 [mateRequest alert] -> CodeShareViewController 이동")
             dismiss(animated: true) { [weak self] in
-                //print("🟢 [Alert 닫힘 - mateRequest]")
+                
                 self?.onConfirm?()
                 guard let presentingVC = self?.presentingViewController else { return }
                 let codeShareVC = CodeShareViewController(uid: uid, hasMate: false)
@@ -126,10 +129,12 @@ final class CustomAlertViewController: UIViewController {
             
         case .inviteSent, .requestFailed, .rejectRequest, .sportsMateRequest, .alreadyCancel, .matchingFail:
             // 확인만 누르면 dismiss
-            //print("🟢 [일반 확인 alert] → dismiss 진행")
             dismiss(animated: true) { [weak self] in
-                //print("🟢 [Alert 닫힘 - 일반 확인]")
                 self?.onConfirm?()
+            }
+        case .avatarPurchase(let name, let cost):
+            dismiss(animated: true) { [weak self] in
+                self?.onConfirm?() //  여기서 구매 처리 로직 실행하도록 트리거
             }
             
         }

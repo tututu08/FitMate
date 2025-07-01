@@ -14,6 +14,9 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
     private let viewModel = ShopViewModel()
     private let selectedCategorySubject = PublishSubject<RankCategory>()
     private let filteredTypes: [RankCategory] = RankCategory.allCases
+    
+    // 중복 바인딩 방지를 위한 플래그
+    private var didBindAvatar = false
 
     override func loadView() {
         self.view = rootView
@@ -22,9 +25,9 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.setNavigationBarHidden(true, animated: false)
-        rootView.categoryCollectionView.delegate = self
 
         viewModel.fetchAvatars()
+        rootView.categoryCollectionView.delegate = nil
         bindCategoryViewModel()
 
         let initialIndexPath = IndexPath(item: 0, section: 0)
@@ -37,17 +40,25 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        bindAvatarViewModel()
+        /// viewDidAppear는 탭 전환할 때마다 호출되는데
+        /// bindAvatarViewModel() 안에 rx.item이 있어서 delegate proxy 자꾸 건드림
+        /// didBindAvatar를 통해 한 번만 바인딩되도록 보장
+        if !didBindAvatar {
+            bindAvatarViewModel()
+            didBindAvatar = true
+        }
     }
     
     // 카테고리 컬렉션뷰 바인딩
     private func bindCategoryViewModel() {
+        rootView.categoryCollectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
         Observable.just(filteredTypes)
             .bind(to: rootView.categoryCollectionView.rx.items(
                 cellIdentifier: ShopCategoryCell.id,
                 cellType: ShopCategoryCell.self)
             ) { [weak self] index, type, cell in
-                let currentSelected = try? self?.viewModel.selectedCategoryRelay.value
+                let currentSelected = self?.viewModel.selectedCategoryRelay.value
                 let isSelected = (type == currentSelected)
                 cell.configure(with: type, isSelected: isSelected)
             }
@@ -77,11 +88,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                 cellIdentifier: AvatarCell.id,
                 cellType: AvatarCell.self
             )) { [weak self] index, model, cell in
-                // 셀 타입을 AvatarCell로 안전하게 캐스팅한 후 configure 호출
-//                if let avatarCell = cell as? AvatarCell {
-//                    avatarCell.configure(with: model)
-//                }
-                cell.configure(with: model)
+              cell.configure(with: model)
 
                 /// 앱 진입 시 처음으로 보여줄 기본 선택 아바타를  캐피로 지정
                 if model.type == .kaepy,
@@ -125,6 +132,54 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                     self?.rootView.selectedAvatarImg.image = flippedImage
                 }
             }
+            .disposed(by: disposeBag)
+        
+        // 아바타 셀 선택 시 팝업 띄우기
+        rootView.avatarCollection.rx.itemSelected
+            .asObservable()
+            .withLatestFrom(viewModel.currentFilteredAvatars) { indexPath, avatars -> AvatarModel in
+                return avatars[indexPath.item]
+            }
+            .subscribe(onNext: { [weak self] (model: AvatarModel) in
+                guard let self = self else { return }
+                // 이름은 avatarName / 코인은 conCost (nil 체크 주의)
+                let popup = AvatarPopUpViewController(
+                    alertType: .avatarPurchase(
+                        name: model.avatarName,
+                        cost: model.conCost ?? 0 // nil 방지
+                    )
+                )
+                popup.configure(avatarImageName: model.imageName, coinCost: model.conCost ?? 0)
+
+                popup.onConfirm = {
+                    // 현재 선택된 아바타 상태 복사
+                    var selected = model
+                    selected.isUnlocked = true
+
+                    //  전체 아바타 배열 가져와서 해당 아바타 수정
+                    var updatedAvatars = self.viewModel.allAvatarsRelay.value
+                    if let index = updatedAvatars.firstIndex(where: { $0.type == selected.type }) {
+                        updatedAvatars[index] = selected
+                    }
+
+                    // 3. 갱신 → 뷰모델이 알아서 필터 업데이트함
+                    self.viewModel.allAvatarsRelay.accept(updatedAvatars)
+
+                    // 선택된 것으로 대표 이미지 변경
+                    if let image = UIImage(named: selected.imageName),
+                       let cgImage = image.cgImage {
+                        let fixedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                        let flippedImage = UIImage(cgImage: fixedImage.cgImage!, scale: fixedImage.scale, orientation: .upMirrored)
+                        self.rootView.selectedAvatarImg.image = flippedImage
+                    }
+                    // 현재 선택된 아바타 상태도 업데이트
+                    self.viewModel.selectedAvatarRelay.accept(selected)
+                }
+                popup.onCancel = {
+                    print("구매 취소")
+                }
+                self.present(popup, animated: true)
+            })
             .disposed(by: disposeBag)
     }
 
