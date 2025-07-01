@@ -16,7 +16,7 @@ class MainView: BaseView {
 
     let coinLabel: UILabel = {
         let coin = UILabel()
-        coin.text = "100"
+        coin.text = "0"
         coin.font = UIFont(name: "DungGeunMo", size: 26)
         coin.textColor = .secondary400
         return coin
