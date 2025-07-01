@@ -104,9 +104,9 @@ class LoginViewController: BaseViewController {
                     let vc = NicknameViewController(uid: uid)
                     self.navigationController?.pushViewController(vc, animated: true)
 
-                case .error(let msg):
+                case .error:
                     // 에러 발생 시 메시지 띄우기
-                    self.showErrorAlert(message: msg)
+                    print("로그인이 취소됨")
                 }
             }).disposed(by: disposeBag)
         
