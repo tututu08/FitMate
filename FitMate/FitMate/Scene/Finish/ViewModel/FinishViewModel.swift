@@ -14,8 +14,8 @@ final class FinishViewModel: ViewModelType {
     struct Output {
         let modeText: Driver<String>
         let goalText: Driver<String>
-//        let rewardText: Driver<String>
-//        let hideCoin: Driver<Bool>
+        let rewardText: Driver<String>
+        let hideCoin: Driver<Bool>
         let resultText: Driver<String>
         let resultImageName: Driver<String>
         let characterImageName: Driver<String>
@@ -42,8 +42,8 @@ final class FinishViewModel: ViewModelType {
     func transform(input: Input) -> Output {
         let modeText = Observable.just(mode == .battle ? "대결 모드" : "협력 모드")
         let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
-//        let reward = Observable.just("\(rewardCoin)")
-//        let hideCoin = Observable.just(!success)
+        let reward = Observable.just("\(rewardCoin)")
+        let hideCoin = Observable.just(!success)
         let myDistance: Double // 실제 달성 거리 (ex. 2.4Km)
         let result = Observable.just(resultMessage)
         let resultImage = Observable.just(success ? "win" : "Lose")
@@ -52,8 +52,8 @@ final class FinishViewModel: ViewModelType {
         return Output(
             modeText: modeText.asDriver(onErrorJustReturn: ""),
             goalText: goalText.asDriver(onErrorJustReturn: ""),
-//            rewardText: reward.asDriver(onErrorJustReturn: ""),
-//            hideCoin: hideCoin.asDriver(onErrorJustReturn: true),
+            rewardText: reward.asDriver(onErrorJustReturn: ""),
+            hideCoin: hideCoin.asDriver(onErrorJustReturn: true),
             resultText: result.asDriver(onErrorJustReturn: ""),
             resultImageName: resultImage.asDriver(onErrorJustReturn: ""),
             characterImageName: characterImage.asDriver(onErrorJustReturn: "")
@@ -61,13 +61,13 @@ final class FinishViewModel: ViewModelType {
     }
 
     // 간단한 보상 계산 로직
-//    private var rewardCoin: Int {
-//        guard success else { return 0 }
-//        switch mode {
-//        case .battle: return goal * 2
-//        case .cooperation: return goal
-//        }
-//    }
+    private var rewardCoin: Int {
+        guard success else { return 0 }
+        switch mode {
+        case .battle: return goal * 2
+        case .cooperation: return goal
+        }
+    }
 
     // 성공/실패에 따른 문구 반환
     private var resultMessage: String {
@@ -128,33 +128,22 @@ extension FinishViewModel {
                   let players = data["players"] as? [String: Any],
                   let myData = players[uid] as? [String: Any],
                   let mateData = players[mateUid] as? [String: Any],
-//                  let myProgress = myData["progress"] as? Int,
-//                  let mateProgress = mateData["progress"] as? Int else {
-                    let myProgress = myData["progress"] as? Double,
-                    let mateProgress = mateData["progress"] as? Double else {
+                  let myProgress = myData["progress"] as? Double,
+                  let mateProgress = mateData["progress"] as? Double else {
                 return .error(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "필드 누락 또는 변환 실패"]))
             }
 
-            let isWinner = data["isWinner"] as? Bool ?? false
+            let myIsWinner = myData["isWinner"] as? Bool ?? false
+
             let result: ExerciseResult = {
                 switch self.mode {
                 case .battle:
-                    return (isWinner && uid == data["inviterUid"] as? String) ||
-                           (!isWinner && uid == data["inviteeUid"] as? String)
-                        ? .versusWin : .versusLose
+                    return myIsWinner ? .versusWin : .versusLose
                 case .cooperation:
                     return self.success ? .teamSuccess : .teamFail
                 }
             }()
 
-//            let record = ExerciseRecord(
-//                type: exerciseType,
-//                date: self.formatDate(timestamp.dateValue()),
-//                result: result,
-//                detail1: "\(goalValue)",
-//                detail2: "\(myProgress)",
-//                detail3: "\(mateProgress)"
-//            )
             let detail2: String
             let detail3: String
 

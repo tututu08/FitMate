@@ -80,12 +80,8 @@ final class CodeShareViewController: BaseViewController {
         output.dismiss
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
-                
-                let mateVC = TabBarController(uid: self.uid)
-                mateVC.mainVC.mainView.changeAvatarLayout(
-                    hasMate: false, myNickname: "", mateNickname: "")
-                self.navigationController?.pushViewController(mateVC, animated: true)
-            })
+                self.dismiss(animated: true)
+                })
             .disposed(by: disposeBag)
         
         // 사용자 초대 코드 텍스트 바인딩

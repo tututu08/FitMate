@@ -266,13 +266,17 @@ final class SettingViewController: UIViewController {
     }
     
     private func navigateToLogin() {
-        guard let presentingVC = self.presentingViewController else { return }
-        self.dismiss(animated: true) {
-            let loginVC = LoginViewController()
-            let nav = UINavigationController(rootViewController: loginVC)
-            nav.modalPresentationStyle = .fullScreen
-            presentingVC.present(nav, animated: true)
-        }
+        guard let sceneDelegate = UIApplication.shared.connectedScenes
+            .first?.delegate as? SceneDelegate,
+              let window = sceneDelegate.window else { return }
+        
+        let loginVC = LoginViewController()
+        let nav = UINavigationController(rootViewController: loginVC)
+        nav.modalPresentationStyle = .fullScreen
+        
+        // 기존 화면 스택 완전 제거
+        window.rootViewController = nav
+        window.makeKeyAndVisible()
     }
     
     // 메이트 끊기
@@ -347,18 +351,32 @@ final class SettingViewController: UIViewController {
     }
 
     private func logoutFunc() {
-        guard let presentingVC = self.presentingViewController else { return }
-        AuthService.shared.logout()
-            .subscribe(onSuccess: { [weak self] in
-                self?.dismiss(animated: true) {
-                    let loginVC = LoginViewController()
-                    let nav = UINavigationController(rootViewController: loginVC)
-                    nav.modalPresentationStyle = .fullScreen
-                    presentingVC.present(nav, animated: true)
-                }
-            }, onFailure: { error in
+        settingView.isHidden = true
+
+        let popup = LogoutPopupView()
+        popup.frame = view.bounds
+        view.addSubview(popup)
+
+        // 취소 버튼 -> 팝업 제거
+        popup.cancelButton.rx.tap
+            .bind { [weak self] in
+                popup.removeFromSuperview()
+                self?.settingView.isHidden = false
+            }
+            .disposed(by: disposeBag)
+
+        // 로그아웃 -> 로그인화면 이동
+        popup.confirmButton.rx.tap
+            .flatMapLatest { [weak self] _ -> Observable<Void> in
+                guard let self else { return .empty() }
+                return AuthService.shared.logout().asObservable()
+            }
+            .subscribe(onNext: { [weak self] in
+                self?.navigateToLogin()
+            }, onError: { error in
                 print("로그아웃 실패: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
+
 }

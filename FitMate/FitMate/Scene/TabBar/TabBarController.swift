@@ -34,7 +34,6 @@ class TabBarController: UITabBarController {
         setValue(CustomTabBar(), forKey: "tabBar")
         configureTabBar()
         setUp()
-        selectedIndex = 1 // 시작화면을 메인뷰로 시작
         
         // 운동 매칭 글로벌 리스너 서비스 시작
         MatchEventService.shared.startListening(for: uid)
@@ -62,7 +61,7 @@ class TabBarController: UITabBarController {
         let mainVC = MainViewController(uid: self.uid)
         let nav2 = UINavigationController(rootViewController: mainVC)
         nav2.tabBarItem = UITabBarItem(
-            title: "메인",
+            title: "홈",
             image: UIImage(named: "main"),
             selectedImage: UIImage(named: "mainTapped")
         )
@@ -83,7 +82,7 @@ class TabBarController: UITabBarController {
             selectedImage: UIImage(named: "mypageTapped")
         )
         
-        viewControllers = [nav1, nav2, nav3, nav4]
+        viewControllers = [nav2, nav3, nav1, nav4]
     }
     
     private func setUp() {
@@ -92,6 +91,7 @@ class TabBarController: UITabBarController {
         tabBar.tintColor = .secondary400
         tabBar.unselectedItemTintColor = .background400
         tabBar.isTranslucent = false
+        view.backgroundColor = .background800
     }
     
     // matchEventRelay를 전역에서 구독하여 초대 수신 시 alert 띄우기
