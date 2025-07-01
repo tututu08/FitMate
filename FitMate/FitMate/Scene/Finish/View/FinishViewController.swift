@@ -73,6 +73,21 @@ class FinishViewController: BaseViewController {
             .bind { [weak self] in
                 guard let self else { return }
                 
+                print("viewModel.myDistance : \(viewModel.myDistance)\n")
+                
+                // 보상 결과
+                let reward = calculateReward(
+                    exerciseType: viewModel.sport,
+                    goalValue: viewModel.goal,
+                    mode: viewModel.mode,
+                    isWin: viewModel.success
+                )
+                
+                print("보상 : \(reward)\n")
+                
+                // 코인 가산
+                rewardCoins(coinAmount: reward)
+                
                 FirestoreService.shared.updateMatchResult(
                     matchCode: self.matchCode,
                     myUid: self.uid,
