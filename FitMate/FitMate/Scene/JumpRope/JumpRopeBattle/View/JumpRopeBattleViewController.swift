@@ -1,4 +1,5 @@
 import RxSwift
+import UIKit
 import Foundation
 import RxCocoa
 import FirebaseFirestore
@@ -51,6 +52,7 @@ class JumpRopeBattleViewController: BaseViewController {
     // viewDidLoad에서 goal값 불러오기, 뷰모델 생성, 시작 신호
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.shared.isIdleTimerDisabled = true
         sportsView.updateGoal("줄넘기 \(viewModel.goalCount)개")
         //(파이널베이스 내의 만약 캐릭터 이미지 바인딩 시 이곳에서)
         sportsView.updateMyCharacter(myCharacter)
@@ -80,7 +82,16 @@ class JumpRopeBattleViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+    override func viewWillDisappear(_ animated: Bool) {
+           super.viewWillDisappear(animated)
+           // 꺼짐 방지 해제
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
+       
+       // 혹시라도 강제 종료 시점이 있을 수 있으니
+    deinit {
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
     // ViewModel과 UI 바인딩
     override func bindViewModel() {
         let input = JumpRopeBattleViewModel.Input(
