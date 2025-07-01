@@ -17,7 +17,7 @@ class TabBarController: UITabBarController {
     // 운동 초대 수락 시 Firestore 상태 변경을 위한 ViewModel
     private let matchAcceptViewModel = MatchAcceptViewModel()
     
-    lazy var mainVC = MainViewController(uid: self.uid)
+    lazy var mainVC = MainViewController(uid: self.uid, mateUid: self.uid)
     
     // 초기화 함수
     init(uid: String) {
@@ -58,7 +58,7 @@ class TabBarController: UITabBarController {
             selectedImage: UIImage(named: "historyTapped")
         )
         
-        let mainVC = MainViewController(uid: self.uid)
+        let mainVC = MainViewController(uid: self.uid, mateUid: self.uid)
         let nav2 = UINavigationController(rootViewController: mainVC)
         nav2.tabBarItem = UITabBarItem(
             title: "홈",
@@ -66,7 +66,7 @@ class TabBarController: UITabBarController {
             selectedImage: UIImage(named: "mainTapped")
         )
         
-        let shopVC = ShopViewController()
+        let shopVC = ShopViewController(uid: self.uid, mateUid: self.uid)
         let nav3 = UINavigationController(rootViewController: shopVC)
         nav3.tabBarItem = UITabBarItem(
             title: "상점",

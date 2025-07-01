@@ -17,10 +17,12 @@ class MainViewController: BaseViewController {
     
     // 로그인 유저의 uid
     private let uid: String
+    private let mateUid: String?
     
     // 초기화 함수
-    init(uid: String) {
+    init(uid: String, mateUid: String?) {
         self.uid = uid // 의존성 주입
+        self.mateUid = mateUid
         self.viewModel = MainViewModel(uid: uid)
         super.init(nibName: nil, bundle: nil)
     }
@@ -40,6 +42,11 @@ class MainViewController: BaseViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
         fetchMateStatusAndUpdateUI()
+        updateMyAvatarImage()
+        
+        if let mateUid = mateUid {
+            updateMateAvatarImage(mateUid: mateUid)
+        }
     }
     
     // 네비게이션 영역 다시 보여줌
@@ -180,6 +187,37 @@ class MainViewController: BaseViewController {
         let components = calendar.dateComponents([.day], from: start, to: today)
         return (components.day ?? 0) + 1 // 연결일도 포함해서 +1
     }
+    
+    private func updateMyAvatarImage() {
+        FirestoreService.shared.loadSelectedAvatar(uid: uid)
+            .subscribe(onSuccess: { [weak self] avatarType in
+                guard let self,
+                      let avatarType,
+                      let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
+                      let image = UIImage(named: avatar.imageName),
+                      let cgImage = image.cgImage else { return }
+
+                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                self.mainView.myAvatarImage.image = fixed
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func updateMateAvatarImage(mateUid: String) {
+        FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
+            .subscribe(onSuccess: { [weak self] avatarType in
+                guard let self,
+                      let avatarType = avatarType, // ✅ nil 체크 필요!
+                      let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
+                      let image = UIImage(named: avatar.imageName),
+                      let cgImage = image.cgImage else { return }
+
+                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                self.mainView.mateAvatarImage.image = fixed
+            })
+            .disposed(by: disposeBag)
+    }
+
 }
 
 /// UIImageView에 rx.tap 기능 확장
