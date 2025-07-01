@@ -35,6 +35,7 @@
 		F6F3B9E02DEF095A00FA2815 /* Exceptions for "FitMate" folder in "FitMate" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Config.xcconfig,
 				Resources/Info.plist,
 				ThirdParty/RxSwift/USAGE.md,
 			);
@@ -168,7 +169,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					F6F3B9CD2DEF095800FA2815 = {
 						CreatedOnToolsVersion = 16.2;
