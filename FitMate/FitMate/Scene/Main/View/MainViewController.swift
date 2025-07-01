@@ -92,13 +92,16 @@ class MainViewController: BaseViewController {
         ///  transform 통해 output 정의
         let output = viewModel.transform(input: input)
 
-        /// 메이트가 없을 때 → 커스텀 얼럿 띄우기
+        /// 메이트가 없을 때 → 초대코드 화면으로 이동하기
         output.hasNoMate
             .drive(onNext: { [weak self] in
                 guard let self else { return }
-                let alertVC = HasNoMateViewController(uid: self.uid)
-                alertVC.modalPresentationStyle = .overFullScreen
-                self.present(alertVC, animated: false)
+                let codeShareVC = CodeShareViewController(uid: self.uid, hasMate: false)
+                let nav = UINavigationController(rootViewController: codeShareVC)
+                nav.modalPresentationStyle = .fullScreen
+                nav.modalTransitionStyle = .coverVertical
+                
+                self.present(nav, animated: true)
             })
             .disposed(by: disposeBag)
 
