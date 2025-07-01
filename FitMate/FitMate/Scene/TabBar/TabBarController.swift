@@ -91,6 +91,7 @@ class TabBarController: UITabBarController {
         tabBar.tintColor = .secondary400
         tabBar.unselectedItemTintColor = .background400
         tabBar.isTranslucent = false
+        view.backgroundColor = .background800
     }
     
     // matchEventRelay를 전역에서 구독하여 초대 수신 시 alert 띄우기

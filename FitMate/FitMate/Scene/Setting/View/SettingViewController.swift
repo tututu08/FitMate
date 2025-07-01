@@ -266,13 +266,17 @@ final class SettingViewController: UIViewController {
     }
     
     private func navigateToLogin() {
-        guard let presentingVC = self.presentingViewController else { return }
-        self.dismiss(animated: true) {
-            let loginVC = LoginViewController()
-            let nav = UINavigationController(rootViewController: loginVC)
-            nav.modalPresentationStyle = .fullScreen
-            presentingVC.present(nav, animated: true)
-        }
+        guard let sceneDelegate = UIApplication.shared.connectedScenes
+            .first?.delegate as? SceneDelegate,
+              let window = sceneDelegate.window else { return }
+        
+        let loginVC = LoginViewController()
+        let nav = UINavigationController(rootViewController: loginVC)
+        nav.modalPresentationStyle = .fullScreen
+        
+        // 기존 화면 스택 완전 제거
+        window.rootViewController = nav
+        window.makeKeyAndVisible()
     }
     
     // 메이트 끊기

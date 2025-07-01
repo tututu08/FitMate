@@ -203,9 +203,7 @@ class MainView: BaseView {
             make.bottom.equalTo(mateAvatarImage.snp.top).inset(-10)
         }
         
-//        // 메이트 없을 때는 안보이게 처리
-//        mateAvatarImage.isHidden = !hasMate // = hasMate가 false면 안보이도록
-//        print("기대값false:\(hasMate)")
-//        mateNicknameStack.isHidden = !hasMate
+        // 메이트가 없을 때, 운동하기 버튼 -> 메이트 추가하기로 버튼 타이틀 변경
+        hasMate ? exerciseButton.setTitle("운동 선택", for: .normal) : exerciseButton.setTitle("메이트 추가하기", for: .normal)
     }
 }

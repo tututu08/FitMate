@@ -95,9 +95,26 @@ class LoginViewController: BaseViewController {
                     })
                 case .goToInputMateCode(let uid):
                     print("메이트 코드 : \(uid)")
-                    // 닉네임만 있음, 메이트 없음 → 메이트코드 입력
-                    let vc = CodeShareViewController(uid: uid, hasMate: false)
-                    self.navigationController?.pushViewController(vc, animated: true)
+                    guard let sceneDelegate = UIApplication.shared.connectedScenes
+                        .first?.delegate as? SceneDelegate,
+                          let window = sceneDelegate.window else { return }
+                    
+                    let tabBar = TabBarController(uid: uid)
+                    window.rootViewController = tabBar
+                    window.makeKeyAndVisible()
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        // 현재 탭의 네비게이션 컨트롤러
+                        if let nav = tabBar.selectedViewController as? UINavigationController {
+                            let codeShareVC = CodeShareViewController(uid: uid, hasMate: false)
+                            let modalNav = UINavigationController(rootViewController: codeShareVC)
+                            modalNav.modalPresentationStyle = .fullScreen
+                            modalNav.modalTransitionStyle = .coverVertical
+                            
+                            nav.present(modalNav, animated: true)
+                        }
+                    }
+
                 case .goToInputNickName(let uid):
                     print("닉네임 입력 : \(uid)")
                     // 닉네임이 없음 → 닉네임 입력
