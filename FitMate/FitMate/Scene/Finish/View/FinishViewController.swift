@@ -108,6 +108,7 @@ class FinishViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
     }
+    
     /// 코인 보상 계산
     private func calculateReward(
         exerciseType: String,
@@ -189,5 +190,33 @@ class FinishViewController: BaseViewController {
         let reward = (exerciseFactor * 100 * modeFactor * durationBonus).rounded(.toNearestOrEven)
         print("함수 안 reward: \(reward)")
         return Int((reward / 10.0).rounded() * 10)
+    }
+    
+    /// 코인 보상 지급
+    private func rewardCoins(coinAmount: Int = 10) {
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
+            .subscribe(
+                onSuccess: { [weak self] data in
+                    guard let self else { return }
+                    
+                    print(" 문서 데이터: \(data)")
+                    
+                    let myCoin = data["coin"] as? Int
+                    
+                    FirestoreService.shared.updateDocument(collectionName: "users", documentName: self.uid, fields: ["coin": (myCoin ?? 0) + coinAmount])
+                        .subscribe(
+                            onSuccess: {
+                                print("업데이트 성공!")
+                            },
+                            onFailure: { error in
+                                print("실패: \(error.localizedDescription)")
+                            }
+                        )
+                        .disposed(by: self.disposeBag)
+                    
+                }, onFailure: { error in
+                    print(" 문서 가져오기 실패: \(error.localizedDescription)")
+                }
+            ).disposed(by: disposeBag)
     }
 }
