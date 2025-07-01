@@ -66,6 +66,10 @@ class MainViewController: BaseViewController {
                 if hasMate,
                    let mate = data["mate"] as? [String: Any],
                    let mateNickname = mate["nickname"] as? String {
+                    // 여기에 mateUid 있는지 확인하고 아바타 업데이트..
+                    if let mateUid = mate["uid"] as? String {
+                            self.updateMateAvatarImage(mateUid: mateUid)
+                        }
                     self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
                     if let startDateString = mate["startDate"] as? String,
                            let dDay = calculateDDay(from: startDateString) {
@@ -207,7 +211,7 @@ class MainViewController: BaseViewController {
         FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
             .subscribe(onSuccess: { [weak self] avatarType in
                 guard let self,
-                      let avatarType = avatarType, // ✅ nil 체크 필요!
+                      let avatarType,
                       let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
                       let image = UIImage(named: avatar.imageName),
                       let cgImage = image.cgImage else { return }
@@ -217,7 +221,6 @@ class MainViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
-
 }
 
 /// UIImageView에 rx.tap 기능 확장
