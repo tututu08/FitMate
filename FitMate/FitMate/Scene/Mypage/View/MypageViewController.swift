@@ -4,7 +4,7 @@ import RxCocoa
 
 final class MypageViewController: UIViewController, UICollectionViewDelegateFlowLayout {
 
-    private let rootView = MypageView(showSettingButton: true, titleText: "마이페이지", showBackButton: false)
+    let rootView = MypageView(showSettingButton: true, titleText: "마이페이지", showBackButton: false)
     private let viewModel: MypageViewModel
     private let disposeBag = DisposeBag()
     
@@ -27,6 +27,8 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        updateSelectedAvatarImage()
     }
     
     override func viewDidLoad() {
@@ -70,5 +72,21 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width - 32, height: 120)
+    }
+    
+    private func updateSelectedAvatarImage() {
+        AvatarManager.shared.selectedAvatarRelay
+            .compactMap { $0 } // AvatarModel
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] avatar in
+                guard let self else { return }
+                
+                if let image = UIImage(named: avatar.imageName),
+                   let cgImage = image.cgImage {
+                    let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                    self.rootView.profileImageView.image = fixed
+                }
+            }
+            .disposed(by: disposeBag)
     }
 }

@@ -36,7 +36,7 @@ final class MypageView: UIView {
         return view
     }()
 
-    private let profileImageView: UIImageView = {
+    let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "kaepy")
         imageView.contentMode = .scaleAspectFit

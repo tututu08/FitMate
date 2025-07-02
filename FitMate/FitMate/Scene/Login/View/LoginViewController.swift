@@ -72,7 +72,8 @@ class LoginViewController: BaseViewController {
                 switch nav {
                 case .goToMainViewController(let uid):
                     print("로그인 유져 UID : \(uid)")
-
+                    AvatarManager.shared.fetchInitialAvatar(uid: uid)
+                    
                     // SceneDelegate를 가져오기
                     // UIApplication.shared.connectedScenes는 현재 앱의 모든 Scene을 반환
                     // first?.delegate는 첫 번째 Scene의 delegate를 가져옴

@@ -402,7 +402,82 @@ class FirestoreService {
          .disposed(by: disposeBag)
      */
     
+    /// 사용자가 선택한 대표 아바타를 Firestore에 저장하는 메서드
+    /// uid ->  로그인된 사용자 UID
+    /// avatarImageName ->  저장할 아바타 타입의 rawValue
+    func saveSelectedAvatar(uid: String, type: AvatarType, mateUid: String?) {
+        let userRef = db.collection("users").document(uid)
+        
+        var data: [String: Any] = [
+            "avatarType": type.rawValue
+        ]
+        
+        userRef.setData(data, merge: true)
+        
+        // 메이트에게도 내 아바타 반영
+        if let mateUid = mateUid {
+            let mateRef = db.collection("users").document(mateUid)
+            mateRef.setData([
+                "mate.avatarType": type.rawValue
+            ], merge: true)
+        }
+    }
+    
+    /// Firestore에 저장된 사용자의 선택 아바타를 불러오는 메서드
+    /// uid: -> 사용자 UID
+    /// Returns ->  AvatarType? ->  저장된 값이 없으면 nil 반환
+    func loadSelectedAvatar(uid: String) -> Single<AvatarType?> {
+        return Single.create { single in
+            self.db.collection("users")
+                .document(uid)
+                .getDocument { snapshot, error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else if let data = snapshot?.data(),
+                              let raw = data["avatarType"] as? String,
+                              let avatarType = AvatarType(rawValue: raw) {
+                        single(.success(avatarType))
+                    } else {
+                        single(.success(nil))
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
+    /// 사용자가 구매하여 해금한 아바타를 Firestore에 저장
+    /// 중복된 값은 저장되지 않음  -> arrayUnion
+    /// Field -> "unlockedAvatars" → [String]
+    func saveUnlockedAvatar(uid: String, newType: AvatarType) {
+        let ref = db.collection("users").document(uid)
+        ref.updateData([
+            "unlockedAvatars": FieldValue.arrayUnion([newType.rawValue])
+        ])
+    }
+    
+    /// Firestore에서 유저가 해금한 아바타 목록을 불러오는 메서드
+    /// -  uid: 사용자 UID
+    /// - Returns ->  [AvatarType] -> 없으면 빈 배열
+    func loadUnlockedAvatarTypes(uid: String) -> Single<[AvatarType]> {
+        return Single.create { single in
+            self.db.collection("users")
+                .document(uid)
+                .getDocument { snapshot, error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else if let data = snapshot?.data(),
+                              let rawList = data["unlockedAvatars"] as? [String] {
+                        let types = rawList.compactMap { AvatarType(rawValue: $0) }
+                        single(.success(types))
+                    } else {
+                        single(.success([])) // 저장된 게 없을 경우
+                    }
+                }
+            return Disposables.create()
+        }
+    }
 }
+
 
 extension FirestoreService {
     // MARK: - 플랭크

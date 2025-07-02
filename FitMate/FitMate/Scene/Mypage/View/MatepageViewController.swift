@@ -46,6 +46,7 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
         )
 
         setupBackButtonAction()
+        updateMateAvatarImage()
     }
 
     private func bindViewModel() {
@@ -75,5 +76,20 @@ final class MatepageViewController: UIViewController, UICollectionViewDelegateFl
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width - 32, height: 120)
+    }
+    
+    private func updateMateAvatarImage() {
+        FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
+            .subscribe(onSuccess: { [weak self] avatarType in
+                guard let self,
+                      let avatarType,
+                      let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
+                      let image = UIImage(named: avatar.imageName),
+                      let cgImage = image.cgImage else { return }
+
+                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                self.rootView.profileImageView.image = fixed
+            })
+            .disposed(by: disposeBag)
     }
 }

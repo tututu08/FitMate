@@ -39,10 +39,19 @@ class ShopView: BaseView {
         let button = UIButton()
         button.layer.cornerRadius = 4
         button.setTitle("아바타 변경", for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-Medium", size: 14)
         button.setTitleColor(.background800, for: .normal)
         button.backgroundColor = .secondary500
+        button.contentEdgeInsets = UIEdgeInsets(
+            top: 6, left: 8, bottom: 6, right: 8)
         return button
     }()
+    
+    let avatarNameStack = NicknameStackView(
+        nickname: "", textColor: .white,
+        font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
+        arrowColor: .white
+    )
     
     lazy var categoryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -80,6 +89,11 @@ class ShopView: BaseView {
         avatarCollection.register(AvatarCell.self, forCellWithReuseIdentifier: AvatarCell.id)
         configureUI()
         setLayoutUI()
+        
+        if let arrowImageView = avatarNameStack.arrangedSubviews.first as? UIImageView {
+            arrowImageView.image = UIImage(named: "arrowUp")?.withRenderingMode(.alwaysTemplate)
+            arrowImageView.tintColor = .white
+        }
     }
     
     @MainActor required init?(coder: NSCoder) {
@@ -126,6 +140,8 @@ class ShopView: BaseView {
         addSubview(categoryUnderlineView)
         addSubview(avatarCollection)
         addSubview(selectedAvatarImg)
+        addSubview(changeButton)
+        addSubview(avatarNameStack)
         categoryUnderlineView.backgroundColor = .primary500
         
     }
@@ -154,11 +170,21 @@ class ShopView: BaseView {
             make.leading.equalTo(coinIcon.snp.trailing).offset(8)
         }
         
+        changeButton.snp.makeConstraints { make in
+            make.top.equalTo(topBar.snp.bottom).offset(11)
+            make.trailing.equalToSuperview().inset(20)
+        }
+        
         selectedAvatarImg.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(coinLabel.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(112)
             make.height.equalTo(selectedAvatarImg.snp.width).multipliedBy(1.2)
+        }
+        
+        avatarNameStack.snp.makeConstraints { make in
+            make.top.equalTo(selectedAvatarImg.snp.bottom).offset(8)
+            make.centerX.equalToSuperview()
         }
         
         categoryCollectionView.snp.makeConstraints { make in
