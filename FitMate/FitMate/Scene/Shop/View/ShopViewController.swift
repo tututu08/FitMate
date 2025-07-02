@@ -151,7 +151,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                 
                 // 해금된 아바타만 Firestore에 저장
                 if model.isUnlocked {
-                    FirestoreService.shared.saveSelectedAvatar(uid: self.uid, type: model.type, mateUid: self.mateUid)
+                    FirestoreService.shared.saveSelectedAvatar(uid: self.uid, type: model.type)
                 }
                 
                 self.rootView.avatarCollection.reloadData()
@@ -193,12 +193,17 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                     var selected = model
                     selected.isUnlocked = true
                     
+                    // 전체 아바타 리스트에서 해당 모델 갱신
                     var updated = self.viewModel.allAvatarsRelay.value
                     if let index = updated.firstIndex(where: { $0.type == selected.type }) {
                         updated[index] = selected
                     }
                     self.viewModel.allAvatarsRelay.accept(updated)
                     
+                    // Firestore에 해금 정보만 저장 (대표 아바타 저장 )
+                    FirestoreService.shared.saveUnlockedAvatar(uid: self.uid, newType: selected.type)
+                    
+                    // UI 미리보기만 업데이트 (선택 아바타는 그대로 유지)
                     if let image = UIImage(named: selected.imageName),
                        let cgImage = image.cgImage {
                         let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
@@ -206,15 +211,12 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                         self.rootView.selectedAvatarImg.image = flipped
                     }
                     
-                    self.viewModel.selectedAvatarRelay.accept(selected)
+                    self.rootView.avatarNameStack.updateNickname(selected.avatarName)
                     
-                    // Firestore에 해금 정보 + 대표 아바타 저장
-                    FirestoreService.shared.saveUnlockedAvatar(uid: self.uid, newType: selected.type)
-                    FirestoreService.shared.saveSelectedAvatar(
-                        uid: self.uid, type: selected.type, mateUid: self.mateUid)
-                    
+                    // 아바타 목록 새로고침 (잠금 해제 반영)
                     self.viewModel.fetchAvatars(uid: self.uid)
                 }
+
                 popup.onCancel = {
                     print("구매 취소")
                 }
@@ -236,12 +238,10 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
             .withLatestFrom(selectedAvatarInfo) // 현재 선택된 아바타 모델
             .subscribe(onNext: { [weak self] selected in
                 guard let self else { return }
-
-                /// : Firestore + 전역 상태 갱신
+                /// Firestore + 전역 상태 갱신
                 AvatarManager.shared.updateAvatar(
                     uid: self.uid,
-                    avatarType: selected.type,
-                    mateUid: self.mateUid
+                    avatarType: selected.type
                 )
                 /// 선택된 아바타 기준 체인지 버튼 보이게 안보이게
                 self.viewModel.currentAvatarTypeRelay.accept(selected.type)
