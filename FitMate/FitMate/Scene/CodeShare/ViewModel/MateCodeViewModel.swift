@@ -71,7 +71,8 @@ class MateCodeViewModel {
                     .flatMap { inviterData -> Single<(CustomAlertType?, Navigation?)> in
                         // 조회된 데이터에서 uid, nickname 추출
                         guard let inviterUid = inviterData["uid"] as? String,
-                              let inviterNickname = inviterData["nickname"] as? String else {
+                              let inviterNickname = inviterData["nickname"] as? String,
+                              let hasMate = inviterData["hasMate"] as? Bool else {
                             return .just((.requestFailed(message: "올바르지 않은 사용자 정보입니다"), nil))
                         }
                         
@@ -79,6 +80,10 @@ class MateCodeViewModel {
                         // 자신의 초대코드를 입력한 경우 → 에러 처리
                         if inviterUid == self.uid {
                             return .just((.requestFailed(message: "자신의 초대 코드는 입력할 수 없습니다."), nil))
+                        }
+                        
+                        if hasMate {
+                            return .just((.requestFailed(message: "이미 메이트와 연결된 사용자입니다."), nil))
                         }
 
                         // 해당 사용자의 문서에 초대 상태, 보낸 사람 UID 업데이트
