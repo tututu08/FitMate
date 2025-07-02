@@ -134,7 +134,7 @@ class LoadingViewController: BaseViewController {
                 }
                 return .just((inviterUid, inviteeUid, exerciseType, mode, goalValue))
             }
-            .flatMap { inviterUid, inviteeUid, exerciseType, mode, goalValue -> Single<(String, String, String, String, Int)> in
+            .flatMap { inviterUid, inviteeUid, exerciseType, mode, goalValue -> Single<(String, String, String, String, Int, String)> in
                 let mateUid = self.uid == inviterUid ? inviteeUid : inviterUid
 
                 // 내 아바타
@@ -146,37 +146,73 @@ class LoadingViewController: BaseViewController {
                 return FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
                     .map { mateAvatarType in
                         let mateAvatarRaw = mateAvatarType?.rawValue ?? "kaepy" // fallback
-                        return (exerciseType, mode, myAvatarRaw, mateAvatarRaw, goalValue)
+                        return (exerciseType, mode, myAvatarRaw, mateAvatarRaw, goalValue, mateUid)
                     }
             }
             .observe(on: MainScheduler.instance)
-            .subscribe(onSuccess: { exerciseType, mode, myCharacter, mateCharacter, goalValue in
-
+            .subscribe(onSuccess: { exerciseType, mode, myCharacter, mateCharacter, goalValue, mateUid in
                 let matchCode = self.matchCode
                 let myUid = self.uid
-                let mateUid = (myUid == exerciseType) ? mode : "" // 이미 따로 계산했으므로 패스 가능
 
                 let pushVC: UIViewController?
 
                 if mode == "battle" {
                     switch exerciseType {
                     case "걷기", "달리기", "자전거":
-                        pushVC = RunningBattleViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: matchCode, myUid: myUid, mateUid: mateUid, myCharacter: myCharacter, mateCharacter: mateCharacter)
+                        pushVC = RunningBattleViewController(
+                            exerciseType: exerciseType,
+                            goalDistance: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
                     case "줄넘기":
-                        pushVC = JumpRopeBattleViewController(goalCount: goalValue, matchCode: matchCode, myUid: myUid, mateUid: mateUid, myCharacter: myCharacter, mateCharacter: mateCharacter)
+                        pushVC = JumpRopeBattleViewController(
+                            goalCount: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
                     default: return
                     }
                 } else {
                     switch exerciseType {
                     case "걷기", "달리기", "자전거":
-                        pushVC = RunningCoopViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: matchCode, myUid: myUid, mateUid: mateUid, myCharacter: myCharacter, mateCharacter: mateCharacter)
+                        pushVC = RunningCoopViewController(
+                            exerciseType: exerciseType,
+                            goalDistance: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
                     case "플랭크":
-                        pushVC = PlankCoopViewController(goalMinutes: goalValue, matchCode: matchCode, myUID: myUid, mateUID: mateUid, myCharacter: myCharacter, mateCharacter: mateCharacter)
+                        pushVC = PlankCoopViewController(
+                            goalMinutes: goalValue,
+                            matchCode: matchCode,
+                            myUID: myUid,
+                            mateUID: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
                     case "줄넘기":
-                        pushVC = JumpRopeCoopViewController(goalCount: goalValue, matchCode: matchCode, myUid: myUid, mateUid: mateUid, myCharacter: myCharacter, mateCharacter: mateCharacter)
+                        pushVC = JumpRopeCoopViewController(
+                            goalCount: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
                     default: return
                     }
                 }
+
                 if let vc = pushVC {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
@@ -185,6 +221,7 @@ class LoadingViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
+
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드
     private func presentRejectedAlert(message: String) {
