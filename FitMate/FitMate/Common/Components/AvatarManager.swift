@@ -29,17 +29,30 @@ final class AvatarManager {
     func fetchInitialAvatar(uid: String) {
         FirestoreService.shared.loadSelectedAvatar(uid: uid)
             .subscribe(onSuccess: { [weak self] avatarType in
-                self?.selectedAvatarRelay.accept(avatarType)
+                guard let self else { return }
+
+                if avatarType != self.selectedAvatarRelay.value {
+                    self.selectedAvatarRelay.accept(avatarType)
+                }
+            }, onFailure: { error in
+                print("아바타 소환 실패: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
 
     /// 새로 선택한 아바타 저장과 반영
     func updateAvatar(uid: String, avatarType: AvatarType) {
-        FirestoreService.shared.saveSelectedAvatar(uid: uid, type: avatarType)
         selectedAvatarRelay.accept(avatarType)
+
+        FirestoreService.shared.saveSelectedAvatar(uid: uid, type: avatarType)
+            .subscribe(onSuccess: {
+                print("파이어스토어 저장 완료")
+            }, onFailure: { error in
+                print("파이어스토어 저장 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
-    
+
     /// 메이트 아바타 Firestore에서 fetch해서 반영
     func fetchMateAvatar(uid: String) {
         FirestoreService.shared.loadSelectedAvatar(uid: uid)
