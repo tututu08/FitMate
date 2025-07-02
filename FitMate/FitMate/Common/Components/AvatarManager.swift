@@ -67,4 +67,10 @@ final class AvatarManager {
             })
             .disposed(by: disposeBag)
     }
+    ///  탈퇴 후 재가입시 아바타 초기화
+    func reset() {
+        selectedAvatarRelay.accept(nil)
+        mateAvatarRelay.accept(nil)
+        previousMateAvatarType = nil
+    }
 }

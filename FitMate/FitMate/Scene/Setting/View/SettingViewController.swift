@@ -152,18 +152,6 @@ final class SettingViewController: UIViewController {
                 self?.settingView.isHidden = false
             }
             .disposed(by: disposeBag)
-        
-        popup.confirmButton.rx.tap
-            .flatMapLatest { [weak self] _ -> Observable<Void> in
-                guard let self else { return .empty() }
-                return self.performWithdrawProcess()
-            }
-            .subscribe(onNext: { [weak self] in
-                self?.navigateToLogin()
-            }, onError: { error in
-                print("회원 탈퇴 실패: \(error.localizedDescription)")
-            })
-            .disposed(by: disposeBag)
     }
 
     // 회원 탈퇴 전체 처리 로직 (구글 재인증 포함)
@@ -380,3 +368,4 @@ final class SettingViewController: UIViewController {
     }
 
 }
+ 
