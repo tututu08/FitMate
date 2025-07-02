@@ -25,6 +25,21 @@ class FinishViewController: BaseViewController {
         self.view = finishView
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let reward = calculateReward(
+            exerciseType: viewModel.sport,
+            goalValue: viewModel.goal,
+            mode: viewModel.mode,
+            isWin: viewModel.success
+        )
+        
+        //print("보상 : \(reward)\n")
+        
+        finishView.updateReward(text: "\(reward)", hideCoin: viewModel.success)
+    }
+    
     override func bindViewModel() {
         let output = viewModel.transform(input: .init())
         
