@@ -17,7 +17,15 @@ class SoundManage {
     
     func coinSound() {
         guard isSoundEnabled else { return }
-        AudioServicesPlaySystemSound(SystemSoundID(1057))
+        guard let url = Bundle.main.url(forResource: "coin", withExtension: "wav") else { return }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch {
+            print("효과음 재생 실패: \(error)")
+        }
     }
     
     func playInviteSound() {
