@@ -161,13 +161,15 @@ class RunningBattleViewController: BaseViewController {
     }
     
     private func navigateToFinish(success: Bool, myDistance: Double) {
+        let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
+        
         let finishVM = FinishViewModel(
             mode: .battle,
             sport: exerciseType,
             goal: goalDistance,
             goalUnit: "Km",
             myDistance: myDistance,
-            character: myCharacter,
+            avatarType: avatarType,
             success: success
         )
         let vc = FinishViewController(
@@ -191,6 +193,7 @@ class RunningBattleViewController: BaseViewController {
                     print("승자 정보 불러오기 실패")
                     return
                 }
+                let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
                 
                 let finishVM = FinishViewModel(
                     mode: .battle,
@@ -198,7 +201,7 @@ class RunningBattleViewController: BaseViewController {
                     goal: goalDistance,
                     goalUnit: "Km",
                     myDistance: self.viewModel.myDistanceRelay.value,
-                    character: self.myCharacter,
+                    avatarType: avatarType,
                     success: isWinner  // Firestore에서 가져온 최종 결과
                 )
                 

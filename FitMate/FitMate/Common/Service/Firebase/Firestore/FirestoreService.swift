@@ -405,22 +405,12 @@ class FirestoreService {
     /// 사용자가 선택한 대표 아바타를 Firestore에 저장하는 메서드
     /// uid ->  로그인된 사용자 UID
     /// avatarImageName ->  저장할 아바타 타입의 rawValue
-    func saveSelectedAvatar(uid: String, type: AvatarType, mateUid: String?) {
+    func saveSelectedAvatar(uid: String, type: AvatarType) {
         let userRef = db.collection("users").document(uid)
-        
-        var data: [String: Any] = [
+        let data: [String: Any] = [
             "avatarType": type.rawValue
         ]
-        
         userRef.setData(data, merge: true)
-        
-        // 메이트에게도 내 아바타 반영
-        if let mateUid = mateUid {
-            let mateRef = db.collection("users").document(mateUid)
-            mateRef.setData([
-                "mate.avatarType": type.rawValue
-            ], merge: true)
-        }
     }
     
     /// Firestore에 저장된 사용자의 선택 아바타를 불러오는 메서드

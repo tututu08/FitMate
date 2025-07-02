@@ -22,6 +22,7 @@ class JumpRopeBattleViewController: BaseViewController {
     private let mateUid: String
     private let myUid: String
     
+    
     init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
         self.matchCode = matchCode
         self.myUid = myUid
@@ -134,13 +135,15 @@ class JumpRopeBattleViewController: BaseViewController {
     
     // 피니쉬화면으로 이동
     private func navigateToFinish(success: Bool) {
+        let avatarType = AvatarType(rawValue: myCharacter) ?? .kaepy
+        
         let finishVM = FinishViewModel(
             mode: .battle,
             sport: "줄넘기",
             goal: viewModel.goalCount,
             goalUnit: "개",
             myDistance: Double(viewModel.myCount),
-            character: myCharacter,
+            avatarType: avatarType,
             success: success
         )
         
@@ -166,6 +169,8 @@ class JumpRopeBattleViewController: BaseViewController {
                     print("🔥 승자 정보 불러오기 실패")
                     return
                 }
+                
+                let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
 
                 let finishVM = FinishViewModel(
                     mode: .battle,
@@ -173,7 +178,7 @@ class JumpRopeBattleViewController: BaseViewController {
                     goal: self.viewModel.goalCount,
                     goalUnit: "개",
                     myDistance: Double(self.viewModel.myCount),
-                    character: self.myCharacter,
+                    avatarType: avatarType,
                     success: isWinner  // ✅ Firestore에서 가져온 최종 결과
                 )
 

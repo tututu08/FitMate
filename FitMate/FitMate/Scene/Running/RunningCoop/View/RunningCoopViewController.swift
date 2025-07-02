@@ -161,13 +161,15 @@ final class RunningCoopViewController: BaseViewController {
     }
     
     private func navigateToFinish(success: Bool, myDistance: Double) {
+        let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
+        
         let finishVM = FinishViewModel(
             mode: .cooperation,
             sport: exerciseType,
             goal: goalDistance,
             goalUnit: "Km",
             myDistance: myDistance,
-            character: myCharacter,
+            avatarType: avatarType,
             success: success
         )
         
