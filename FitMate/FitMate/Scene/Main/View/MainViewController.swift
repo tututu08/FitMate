@@ -47,7 +47,7 @@ class MainViewController: BaseViewController {
         // 메이트 여부를 판단해서 UI를 변경함
         fetchMateStatusAndUpdateUI()
         updateMyAvatarImage()
-        
+
         if let mateUid = mateUid {
             updateMateAvatarImage(mateUid: mateUid)
         }
@@ -218,6 +218,7 @@ class MainViewController: BaseViewController {
         let components = calendar.dateComponents([.day], from: start, to: today)
         return (components.day ?? 0) + 1 // 연결일도 포함해서 +1
     }
+    
     private func updateMyAvatarImage() {
         AvatarManager.shared.selectedAvatarRelay
             .compactMap { $0 }
@@ -234,17 +235,22 @@ class MainViewController: BaseViewController {
     }
     
     private func updateMateAvatarImage(mateUid: String) {
-        FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
-            .subscribe(onSuccess: { [weak self] avatarType in
+        // 메이트 아바타 Firestore에서 불러와 relay에 반영
+        AvatarManager.shared.fetchMateAvatar(uid: mateUid)
+
+        // relay 값이 업데이트되면 이미지 갱신
+        AvatarManager.shared.mateAvatarRelay
+            .compactMap { $0 }
+            .distinctUntilChanged() // 같은 값은 무시
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] avatarType in
                 guard let self,
-                      let avatarType,
-                      let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
-                      let image = UIImage(named: avatar.imageName),
+                      let image = UIImage(named: avatarType.imageName),
                       let cgImage = image.cgImage else { return }
 
                 let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
                 self.mainView.mateAvatarImage.image = fixed
-            })
+            }
             .disposed(by: disposeBag)
     }
 }

@@ -29,7 +29,7 @@ class MainView: BaseView {
         coinImg.clipsToBounds = true
         return coinImg
     }()
-//    
+ 
 //    let bellButton: UIButton = {
 //        let bell = UIButton()
 //        bell.setImage(UIImage(named: "bell"), for: .normal)
@@ -108,8 +108,10 @@ class MainView: BaseView {
             [topBar, explainLabel, dDaysLabel, myAvatarImage,
              mateAvatarImage, exerciseButton,
              myNicknameStack, mateNicknameStack].forEach { addSubview($0) }
+
         [coinLabel, coinIcon ].forEach({topBar.addSubview($0)})
 //        [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
+
     }
     
     override func setLayoutUI() {
@@ -130,7 +132,7 @@ class MainView: BaseView {
             make.centerY.equalTo(topBar)
             make.leading.equalTo(coinIcon.snp.trailing).offset(8)
         }
-//        
+
 //        bellButton.snp.makeConstraints{ make in
 //            make.centerY.equalTo(topBar)
 //            make.trailing.equalToSuperview().inset(20)

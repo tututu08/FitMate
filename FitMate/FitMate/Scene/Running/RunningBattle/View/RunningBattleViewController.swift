@@ -161,13 +161,15 @@ class RunningBattleViewController: BaseViewController {
     }
     
     private func navigateToFinish(success: Bool, myDistance: Double) {
+        let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
+        
         let finishVM = FinishViewModel(
             mode: .battle,
             sport: exerciseType,
             goal: goalDistance,
             goalUnit: "Km",
             myDistance: myDistance,
-            character: myCharacter,
+            avatarType: avatarType,
             success: success
         )
         let vc = FinishViewController(
