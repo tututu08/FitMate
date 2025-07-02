@@ -13,7 +13,7 @@ class CustomAlertView: UIView {
     private let containerVIew = UIView() // alert 본체
     private let iconContainer = UIView()
     private var hasIcon: UIImageView? = nil
-    private let alertTitle = UILabel()
+    let alertTitle = UILabel()
     private let alertMessage = UILabel()
     private let buttonStack = UIStackView()
     private let background = UIView() // alert 뒤에 화면

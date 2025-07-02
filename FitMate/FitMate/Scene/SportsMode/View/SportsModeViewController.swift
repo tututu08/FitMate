@@ -298,5 +298,15 @@ class SportsModeViewController: BaseViewController {
         descriptionLabel.text = item.description
         effectLabel.text = "\(item.effect)"
         caloriesLabel.text = "\(item.calorie)"
+        
+        battleModeButton.isHidden = (item.title == "플랭크")
+        if battleModeButton.isHidden{
+            cooperationModeButton.snp.remakeConstraints {
+                $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(36)
+                $0.centerX.equalToSuperview()
+                $0.width.equalTo(157.5)
+                $0.height.equalTo(60)
+            }
+        }
     }
 }

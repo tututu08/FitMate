@@ -17,10 +17,12 @@ class MainViewController: BaseViewController {
     
     // 로그인 유저의 uid
     private let uid: String
+    private let mateUid: String?
     
     // 초기화 함수
-    init(uid: String) {
+    init(uid: String, mateUid: String?) {
         self.uid = uid // 의존성 주입
+        self.mateUid = mateUid
         self.viewModel = MainViewModel(uid: uid)
         super.init(nibName: nil, bundle: nil)
     }
@@ -44,6 +46,11 @@ class MainViewController: BaseViewController {
         
         // 메이트 여부를 판단해서 UI를 변경함
         fetchMateStatusAndUpdateUI()
+        updateMyAvatarImage()
+        
+        if let mateUid = mateUid {
+            updateMateAvatarImage(mateUid: mateUid)
+        }
         
         // 사용자 코인 정보를 가져와 화면에 출력
         fetchMyCoin(uid: uid)
@@ -85,6 +92,10 @@ class MainViewController: BaseViewController {
                 if hasMate,
                    let mate = data["mate"] as? [String: Any],
                    let mateNickname = mate["nickname"] as? String {
+                    // 여기에 mateUid 있는지 확인하고 아바타 업데이트..
+                    if let mateUid = mate["uid"] as? String {
+                            self.updateMateAvatarImage(mateUid: mateUid)
+                        }
                     self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
                     if let startDateString = mate["startDate"] as? String,
                            let dDay = calculateDDay(from: startDateString) {
@@ -206,6 +217,35 @@ class MainViewController: BaseViewController {
         let start = calendar.startOfDay(for: startDate)
         let components = calendar.dateComponents([.day], from: start, to: today)
         return (components.day ?? 0) + 1 // 연결일도 포함해서 +1
+    }
+    private func updateMyAvatarImage() {
+        AvatarManager.shared.selectedAvatarRelay
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] avatarType in
+                guard let self,
+                      let image = UIImage(named: avatarType.imageName),
+                      let cgImage = image.cgImage else { return }
+                
+                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                self.mainView.myAvatarImage.image = fixed
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func updateMateAvatarImage(mateUid: String) {
+        FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
+            .subscribe(onSuccess: { [weak self] avatarType in
+                guard let self,
+                      let avatarType,
+                      let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
+                      let image = UIImage(named: avatar.imageName),
+                      let cgImage = image.cgImage else { return }
+
+                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                self.mainView.mateAvatarImage.image = fixed
+            })
+            .disposed(by: disposeBag)
     }
 }
 
