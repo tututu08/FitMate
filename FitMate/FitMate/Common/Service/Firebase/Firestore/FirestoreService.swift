@@ -434,7 +434,7 @@ class FirestoreService {
                     if let error = error {
                         single(.failure(error))
                     } else if let data = snapshot?.data(),
-                              let raw = data["selectedAvatar"] as? String,
+                              let raw = data["avatarType"] as? String,
                               let avatarType = AvatarType(rawValue: raw) {
                         single(.success(avatarType))
                     } else {

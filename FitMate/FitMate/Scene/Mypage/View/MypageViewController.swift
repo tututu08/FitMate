@@ -75,18 +75,18 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     }
     
     private func updateSelectedAvatarImage() {
-        FirestoreService.shared.loadSelectedAvatar(uid: uid)
-            .subscribe(onSuccess: { [weak self] avatarType in
-                guard let self,
-                      let avatarType,
-                      let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
-                      let image = UIImage(named: avatar.imageName),
-                      let cgImage = image.cgImage else { return }
-
-                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-                self.rootView.profileImageView.image = fixed
-            })
+        AvatarManager.shared.selectedAvatarRelay
+            .compactMap { $0 } // AvatarModel
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] avatar in
+                guard let self else { return }
+                
+                if let image = UIImage(named: avatar.imageName),
+                   let cgImage = image.cgImage {
+                    let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                    self.rootView.profileImageView.image = fixed
+                }
+            }
             .disposed(by: disposeBag)
     }
-
 }

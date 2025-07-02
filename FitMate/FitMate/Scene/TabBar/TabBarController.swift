@@ -40,6 +40,10 @@ class TabBarController: UITabBarController {
         
         // 전역 초대 알림 감지 및 처리 로직 실행
         observeMatchInvites()
+        
+        // 아바타 초기화
+        AvatarManager.shared.fetchInitialAvatar(uid: uid)
+
     }
     
     deinit {

@@ -191,19 +191,18 @@ class MainViewController: BaseViewController {
         let components = calendar.dateComponents([.day], from: start, to: today)
         return (components.day ?? 0) + 1 // 연결일도 포함해서 +1
     }
-    
     private func updateMyAvatarImage() {
-        FirestoreService.shared.loadSelectedAvatar(uid: uid)
-            .subscribe(onSuccess: { [weak self] avatarType in
+        AvatarManager.shared.selectedAvatarRelay
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] avatarType in
                 guard let self,
-                      let avatarType,
-                      let avatar = AvatarType.allCases.first(where: { $0 == avatarType }),
-                      let image = UIImage(named: avatar.imageName),
+                      let image = UIImage(named: avatarType.imageName),
                       let cgImage = image.cgImage else { return }
-
+                
                 let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
                 self.mainView.myAvatarImage.image = fixed
-            })
+            }
             .disposed(by: disposeBag)
     }
     
