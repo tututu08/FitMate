@@ -203,7 +203,7 @@ final class FinishView: BaseView {
     }
     func updateReward(text: String, hideCoin: Bool) {
         rewardLabel.text = text
-        coinBackImage.isHidden = hideCoin
+        coinBackImage.isHidden = !hideCoin
     }
     
     func updateResult(text: String, imageName: String) {
