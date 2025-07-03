@@ -12,7 +12,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "협력 모드"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 22)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
     
@@ -38,7 +38,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "나"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 25)
+        label.font = .boldSystemFont(ofSize: 24)
         return label
     }()
     
@@ -47,7 +47,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "메이트"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 25)
+        label.font = .boldSystemFont(ofSize: 24)
         return label
     }()
     
@@ -142,6 +142,8 @@ class PlankCoopView: BaseView {
         return label
     }()
     
+    private let middleContainer = UIView()
+
     private let myCharacterImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "kaepy")
@@ -159,17 +161,30 @@ class PlankCoopView: BaseView {
     
     // 일시정지 버튼
     let pauseButton: UIButton = {
-        let Button = UIButton()
-        Button.setImage(UIImage(named: "pause"), for: .normal)
-        return Button
-    }()
+           let button = UIButton()
+           button.setImage(UIImage(named: "pause"), for: .normal)
+           button.backgroundColor = .clear // 필요시 색상, cornerRadius 등 적용
+           return button
+       }()
     
     // 종료 버튼
     let stopButton: UIButton = {
-        let Button = UIButton()
-        Button.setImage(UIImage(named: "quit"), for: .normal)
-        return Button
+        let button = UIButton()
+        button.setTitle("그만하기", for: .normal)
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
+        button.setTitleColor(.white, for: .normal)
+        button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
+        return button
     }()
+    
+    private let bottomStackView: UIStackView = {
+           let stack = UIStackView()
+           stack.axis = .horizontal
+           stack.spacing = 16
+           stack.alignment = .center
+           stack.distribution = .fill
+           return stack
+       }()
     
     // UI 구성 요소 추가
     override func configureUI() {
@@ -185,78 +200,103 @@ class PlankCoopView: BaseView {
           goalImage,
           recordStackView,
           progressBackgroundView,
-          coopImage,
-          pauseButton,
-          stopButton
+          middleContainer,
+          bottomStackView
         ].forEach{self.addSubview($0)}
+        
+        middleContainer.addSubview(coopImage)
+        bottomStackView.addArrangedSubview(pauseButton)
+               bottomStackView.addArrangedSubview(stopButton)
     }
     
     // SnapKit으로 레이아웃 제약 설정
     override func setLayoutUI() {
+        let safeArea = self.safeAreaLayoutGuide
+        let contentWidthRatio: CGFloat = 0.88
+        let contentWidth = UIScreen.main.bounds.width * contentWidthRatio
+        
         modeLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(60)
+            $0.top.equalTo(safeArea.snp.top).offset(36)
             $0.centerX.equalToSuperview()
         }
+        
         goalImage.snp.makeConstraints {
             $0.top.equalTo(modeLabel.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(350)
-            $0.height.equalTo(55)
+            $0.width.equalTo(contentWidth)
+            $0.height.equalTo(50)
         }
         goalLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
+        
         recordStackView.snp.makeConstraints{
             $0.top.equalTo(goalImage.snp.bottom).offset(20)
-            $0.leading.equalToSuperview().inset(25)
-        }
-        progressBackgroundView.snp.makeConstraints {
-            $0.top.equalTo(recordStackView.snp.bottom).offset(12)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(30)
-        }
-        progressForegroundView.snp.makeConstraints {
-            $0.leading.top.bottom.equalToSuperview().inset(6)
-            progressWidthConstraint = $0.width.equalTo(0).constraint // 채워지는 바 width 제약
-        }
-        coopImage.snp.makeConstraints {
-            $0.bottom.equalTo(stopButton.snp.top).inset(-50)
             $0.centerX.equalToSuperview()
-            $0.width.equalTo(340)
-            $0.height.equalTo(310)
-        }
-        stateLabel.snp.makeConstraints {
-            $0.top.equalTo(coopImage).offset(14)
-            $0.centerX.equalTo(coopImage)
+            $0.width.equalTo(contentWidth)
         }
         
+        progressBackgroundView.snp.makeConstraints {
+            $0.top.equalTo(recordStackView.snp.bottom).offset(12)
+            $0.centerX.equalToSuperview()
+            $0.width.equalTo(contentWidth)
+            $0.height.equalTo(34)
+        }
+        
+        progressForegroundView.snp.makeConstraints {
+            $0.top.bottom.leading.equalToSuperview().inset(6)
+            progressWidthConstraint = $0.width.equalTo(0).priority(.high).constraint
+        }
+        
+        middleContainer.snp.makeConstraints {
+            $0.top.equalTo(progressBackgroundView.snp.bottom).offset(0)
+            $0.bottom.equalTo(stopButton.snp.top).offset(0)
+            $0.leading.trailing.equalToSuperview()
+        }
+        coopImage.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(contentWidth)
+            $0.height.equalTo(contentWidth * 0.72)
+        }
+        stateLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(5)
+            $0.centerX.equalTo(coopImage)
+        }
         timerLabel.snp.makeConstraints {
             $0.top.equalTo(stateLabel.snp.bottom).offset(10)
             $0.centerX.equalTo(coopImage)
         }
+        
         myCharacterImage.snp.makeConstraints{
-            $0.leading.equalTo(coopImage.snp.leading).inset(10)
-            $0.bottom.equalTo(coopImage.snp.bottom).inset(18)
-            $0.height.equalTo(140)
-            $0.width.equalTo(120)
-        }
-        mateCharacterImage.snp.makeConstraints{
-            $0.trailing.equalTo(coopImage.snp.trailing).inset(10)
-            $0.bottom.equalTo(coopImage.snp.bottom).inset(18)
-            $0.height.equalTo(140)
-            $0.width.equalTo(120)
+            $0.leading.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(12)
+            $0.width.equalToSuperview().multipliedBy(0.32)
+            $0.height.equalToSuperview().multipliedBy(0.55)
         }
         
-        pauseButton.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(60)
-            $0.leading.equalToSuperview().offset(20)
-            $0.width.height.equalTo(60)
+        mateCharacterImage.snp.makeConstraints{
+            $0.trailing.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(16)
+            $0.width.equalToSuperview().multipliedBy(0.32)
+            $0.height.equalToSuperview().multipliedBy(0.55)
         }
-        stopButton.snp.makeConstraints{
-            $0.bottom.equalToSuperview().inset(60)
-            $0.leading.equalTo(pauseButton.snp.trailing).offset(12)
+        
+        
+        bottomStackView.snp.makeConstraints {
+            $0.width.equalTo(contentWidth)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
             $0.height.equalTo(60)
-            $0.width.equalTo(260)
+        }
+        // pauseButton 정사각형
+        pauseButton.snp.makeConstraints {
+            $0.width.equalTo(60)
+            $0.height.equalTo(60)
+        }
+        // stopButton 높이만 고정(가로는 스택뷰에서 자동)
+        stopButton.snp.makeConstraints {
+            $0.height.equalTo(60)
         }
     }
     // 내 기록 라벨 갱신
@@ -371,7 +411,7 @@ extension PlankCoopView {
     /// 일시정지 버튼 활성/비활성 & 이미지 교체
     func setPauseButtonEnabled(_ enabled: Bool) {
         pauseButton.isEnabled = enabled
-        let imageName = enabled ? "pause" : "unlockpause"
+        let imageName = enabled ? "pause" : "lockpause"
         pauseButton.setImage(UIImage(named: imageName), for: .normal)
     }
 }
