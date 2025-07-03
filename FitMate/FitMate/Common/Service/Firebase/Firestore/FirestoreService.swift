@@ -439,7 +439,7 @@ class FirestoreService {
                               let avatarType = AvatarType(rawValue: raw) {
                         single(.success(avatarType))
                     } else {
-                        single(.success(nil))
+                        single(.success(.kaepy))
                     }
                 }
             return Disposables.create()

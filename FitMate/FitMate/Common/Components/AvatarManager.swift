@@ -58,11 +58,12 @@ final class AvatarManager {
         FirestoreService.shared.loadSelectedAvatar(uid: uid)
             .subscribe(onSuccess: { [weak self] avatarType in
                 guard let self else { return }
-
-                // 이전 값과 비교해서 다를 때만 relay 갱신
-                if avatarType != self.previousMateAvatarType {
-                    self.previousMateAvatarType = avatarType
-                    self.mateAvatarRelay.accept(avatarType)
+                // avatarType이 nil일 경우 디폴트로 캐피 표시
+                let finalType = avatarType ?? .kaepy
+                
+                if finalType != self.previousMateAvatarType {
+                    self.previousMateAvatarType = finalType
+                    self.mateAvatarRelay.accept(finalType)
                 }
             })
             .disposed(by: disposeBag)
