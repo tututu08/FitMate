@@ -279,15 +279,28 @@ final class PlankCoopViewModel: ViewModelType {
                     self.finish(success: true)
                 } else {
                     // 턴 넘김 (Firestore의 turn 값 변경)
-                    let nextTurn = !isMyTurn
-                    FirestoreService.shared.updatePlankTurn(
-                        matchCode: self.matchCode,
-                        isMyTurn: nextTurn
-                    )
-                    .subscribe()
-                    .disposed(by: self.disposeBag)
-                    self.pauseRemainTime = nil
-                    // 준비(ready) 단계 없음!
+                    // 내 턴이 끝났을 때만 다음 턴으로 넘김
+                    if isMyTurn {
+                        // Firestore에는 초대자 기준으로 다음 턴을 저장
+                        let nextTurnIsMy = !self.isInviter
+                        FirestoreService.shared.updatePlankTurn(
+                            matchCode: self.matchCode,
+                            isMyTurn: nextTurnIsMy
+                        )
+                        .subscribe()
+                        .disposed(by: self.disposeBag)
+                        self.pauseRemainTime = nil
+                        // 준비(ready) 단계 없음!
+                    }
+                    //                    let nextTurn = !isMyTurn
+//                    FirestoreService.shared.updatePlankTurn(
+//                        matchCode: self.matchCode,
+//                        isMyTurn: nextTurn
+//                    )
+//                    .subscribe()
+//                    .disposed(by: self.disposeBag)
+//                    self.pauseRemainTime = nil
+//                    // 준비(ready) 단계 없음!
                 }
             }
         }
