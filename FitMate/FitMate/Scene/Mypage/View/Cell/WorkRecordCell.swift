@@ -97,7 +97,7 @@ final class WorkRecordCell: UICollectionViewCell {
     
     func configure(with record: WorkoutRecord, index: Int) {
         typeLabel.text = record.type
-        unitLabel.text = record.unit
+        unitLabel.text = record.type == "플랭크" ? "분" : record.unit
         
         let unit = record.unit.trimmingCharacters(in: .whitespacesAndNewlines)
         let raw = record.totalDistance.trimmingCharacters(in: .whitespacesAndNewlines)
