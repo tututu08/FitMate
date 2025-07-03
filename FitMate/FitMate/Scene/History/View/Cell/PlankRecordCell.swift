@@ -35,8 +35,6 @@ final class PlankRecordCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "협력-성공"
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .white
-        label.backgroundColor = UIColor(named: "Primary500")
         label.textAlignment = .center
         label.layer.cornerRadius = 4
         label.clipsToBounds = true
@@ -87,7 +85,7 @@ final class PlankRecordCell: UICollectionViewCell {
             makeDetailLabel(value: "0", unit: "메이트(분)")
         ])
         detailStack.axis = .horizontal
-        detailStack.spacing = 16
+        detailStack.distribution = .equalSpacing
         detailStack.alignment = .center
 
         let textStack = UIStackView(arrangedSubviews: [headerStack, detailStack])
@@ -124,7 +122,7 @@ final class PlankRecordCell: UICollectionViewCell {
         stack.axis = .vertical
         stack.spacing = 4
         stack.alignment = .leading
-        stack.snp.makeConstraints { $0.size.equalTo(CGSize(width: 70, height: 56)) }
+        stack.snp.makeConstraints { $0.size.equalTo(CGSize(width: 70, height: 56)) } 
         return stack
     }
 
@@ -135,20 +133,14 @@ final class PlankRecordCell: UICollectionViewCell {
         resultLabel.backgroundColor = UIColor(named: "Primary500")
         resultLabel.textColor = .white
 
-        let detail1 = record.detail1
-        let detail2 = convertSecondsToMinutes(record.detail2)
-        let detail3 = convertSecondsToMinutes(record.detail3)
+        let me = Int(record.detail2) ?? 0
+        let mate = Int(record.detail3) ?? 0
 
-        let converted = [detail1, detail2, detail3]
+        let converted = [record.detail1,String(me / 60),String(mate / 60)]
+
         for (index, label) in detailLabels.enumerated() {
             guard index < converted.count else { break }
             label.text = converted[index]
         }
-    }
-
-    private func convertSecondsToMinutes(_ secondsString: String) -> String {
-        guard let seconds = Int(secondsString) else { return "0" }
-        let minutes = seconds / 60
-        return "\(minutes)"
     }
 }
