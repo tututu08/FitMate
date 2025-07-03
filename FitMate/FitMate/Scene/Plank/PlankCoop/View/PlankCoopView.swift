@@ -260,7 +260,7 @@ class PlankCoopView: BaseView {
             $0.height.equalTo(contentWidth * 0.72)
         }
         stateLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(5)
+            $0.top.equalToSuperview().inset(-15)
             $0.centerX.equalTo(coopImage)
         }
         timerLabel.snp.makeConstraints {
