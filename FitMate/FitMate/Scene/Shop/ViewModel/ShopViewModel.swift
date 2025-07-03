@@ -12,7 +12,7 @@ final class ShopViewModel {
     
     let selectedCategoryRelay = BehaviorRelay<RankCategory>(value: .all)
     let allAvatarsRelay = BehaviorRelay<[AvatarModel]>(value: [])
-    private let currentFilteredAvatarsRelay = BehaviorRelay<[AvatarModel]>(value: [])
+    let currentFilteredAvatarsRelay = BehaviorRelay<[AvatarModel]>(value: [])
     let selectedAvatarRelay = BehaviorRelay<AvatarModel?>(value: nil)
     let currentAvatarTypeRelay = BehaviorRelay<AvatarType?>(value: nil)
     let selectedPreviewAvatarRelay = BehaviorRelay<AvatarModel?>(value: nil)
