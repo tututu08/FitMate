@@ -334,7 +334,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                 self.viewModel.selectedPreviewAvatarRelay.accept(selected)
                 
                 // 셀 선택 UI 반영
-                if let index = self.viewModel.allAvatarsRelay.value.firstIndex(where: { $0.type == selected.type }) {
+                if let index = self.viewModel.currentFilteredAvatarsRelay.value.firstIndex(where: { $0.type == selected.type }) {
                     let indexPath = IndexPath(item: index, section: 0)
                     self.rootView.avatarCollection.selectItem(at: indexPath, animated: true, scrollPosition: [])
                 }
