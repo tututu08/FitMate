@@ -162,7 +162,7 @@ class FinishViewController: BaseViewController {
         // 모드 계수
         let modeFactor: Double = {
             switch mode {
-            case .cooperation: return 0.5
+            case .cooperation: return isWin ? 0.5 : 0.0
             case .battle: return isWin ? 1.0 : 0.0
             }
         }()

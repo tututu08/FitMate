@@ -622,9 +622,9 @@ extension FirestoreService {
             "players.\(myUid).status": "finished",
             "players.\(mateUid).status": "finished"
         ]
-        if mode == .battle {
+        //if mode == .battle {
             matchData["players.\(myUid).isWinner"] = isWinner
-        }
+        //}
         batch.updateData(matchData, forDocument: matchRef)
         
         // 2. users/{myUid} 문서 업데이트
