@@ -15,6 +15,7 @@ final class ShopViewModel {
     private let currentFilteredAvatarsRelay = BehaviorRelay<[AvatarModel]>(value: [])
     let selectedAvatarRelay = BehaviorRelay<AvatarModel?>(value: nil)
     let currentAvatarTypeRelay = BehaviorRelay<AvatarType?>(value: nil)
+    let selectedPreviewAvatarRelay = BehaviorRelay<AvatarModel?>(value: nil)
     var disposeBag = DisposeBag()
     
     var currentFilteredAvatars: Observable<[AvatarModel]> {
@@ -69,7 +70,6 @@ final class ShopViewModel {
         return sorted
     }
 
-    
     func fetchAvatars(uid: String) {
         Single.zip(
             FirebaseStorage.shared.fetchAllAvatars(), // [AvatarModel]
@@ -93,6 +93,13 @@ final class ShopViewModel {
         }
         .subscribe(onSuccess: { [weak self] sortedAvatars in
             self?.allAvatarsRelay.accept(sortedAvatars)
+            
+            // selectedAvatarRelay 캐피로 기본값 설정
+            if let kaepyModel = sortedAvatars.first(where: { $0.type == .kaepy }) {
+                if self?.selectedAvatarRelay.value == nil {
+                    self?.selectedAvatarRelay.accept(kaepyModel)
+                }
+            }
         }, onFailure: { error in
             print("아바타 불러오기 실패: \(error.localizedDescription)")
         })

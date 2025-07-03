@@ -405,13 +405,23 @@ class FirestoreService {
     
     /// 사용자가 선택한 대표 아바타를 Firestore에 저장하는 메서드
     /// uid ->  로그인된 사용자 UID
-    /// avatarImageName ->  저장할 아바타 타입의 rawValue
-    func saveSelectedAvatar(uid: String, type: AvatarType) {
-        let userRef = db.collection("users").document(uid)
-        let data: [String: Any] = [
-            "avatarType": type.rawValue
-        ]
-        userRef.setData(data, merge: true)
+    func saveSelectedAvatar(uid: String, type: AvatarType) -> Single<Void> {
+        return Single.create { single in
+            let data: [String: Any] = [
+                "selectedAvatar": type.rawValue // ← "avatarType" → "selectedAvatar"
+            ]
+            self.db.collection("users")
+                .document(uid)
+                .setData(data, merge: true) { error in
+                    if let error = error {
+                        single(.failure(error))
+                    } else {
+                        single(.success(()))
+                    }
+                }
+
+            return Disposables.create()
+        }
     }
     
     /// Firestore에 저장된 사용자의 선택 아바타를 불러오는 메서드
@@ -425,11 +435,11 @@ class FirestoreService {
                     if let error = error {
                         single(.failure(error))
                     } else if let data = snapshot?.data(),
-                              let raw = data["avatarType"] as? String,
+                              let raw = data["selectedAvatar"] as? String,
                               let avatarType = AvatarType(rawValue: raw) {
                         single(.success(avatarType))
                     } else {
-                        single(.success(nil))
+                        single(.success(.kaepy))
                     }
                 }
             return Disposables.create()
