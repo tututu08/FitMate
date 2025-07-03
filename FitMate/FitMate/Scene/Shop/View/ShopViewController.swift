@@ -20,6 +20,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
     private var didSelectInitialKaepy = false
     
     private let uid: String
+    private var myCoin: Int = 0
     init(uid: String, mateUid: String?) {
         self.uid = uid
         self.mateUid = mateUid
@@ -32,6 +33,12 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
     
     override func loadView() {
         self.view = rootView
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 자신의 코인 불러오기
+        fetchMyCoin(uid: self.uid)
     }
     
     override func viewDidLoad() {
@@ -149,16 +156,86 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                 popup.configure(avatarImageName: model.imageName, coinCost: model.conCost ?? 0)
                 
                 popup.onConfirm = {
-                    var selected = model
-                    selected.isUnlocked = true
-                    
-                    var updated = self.viewModel.allAvatarsRelay.value
-                    if let index = updated.firstIndex(where: { $0.type == selected.type }) {
-                        updated[index] = selected
+                    // print("나의 잔고 : \(self.myCoin)")
+                  
+                    guard let conCost = model.conCost else {
+                        print("아바타 가격 정보가 없습니다.\n")
+                        return
                     }
-                    self.viewModel.allAvatarsRelay.accept(updated)
                     
-                    if let image = UIImage(named: selected.imageName),
+                    // 아바타 가격보다 가진 코인이 없다면,
+                    if conCost > self.myCoin {
+                        // print("아바타를 살 코인이 없습니다.")
+                        let alert = PartnerLeftAlertView()
+                        alert.configure(title: "아바타 구매 실패", description: "🪙 코인이 부족합니다.\n열심히 운동해서 코인을 모아주세요.")
+                        alert.frame = self.view.bounds
+                        self.view.addSubview(alert)
+                        
+                        // 확인 버튼 누르면 알림 제거
+                        alert.confirmButton.rx.tap
+                            .bind { [weak alert] in
+                                alert?.removeFromSuperview()
+                            }
+                            .disposed(by: self.disposeBag)
+                    } else {
+                        // print("살 수 있어!")
+                        
+                        var selected = model
+                        selected.isUnlocked = true
+                        
+//                        var updated = self.viewModel.allAvatarsRelay.value
+//                        if let index = updated.firstIndex(where: { $0.type == selected.type }) {
+//                            updated[index] = selected
+//                        }
+                        
+                        // 아바타 가격만큼 코인 차감.
+                        self.myCoin = self.myCoin - conCost
+                        
+                        // print("잔액 : \(self.myCoin)")
+                        
+                        // 사용자 DB에 잔액 업데이트
+                        FirestoreService.shared.updateDocument(collectionName: "users", documentName: self.uid, fields: ["coin": self.myCoin])
+                            .subscribe(
+                                onSuccess: {
+                                    print("잔액 업데이트 성공\n")
+                                }, onFailure: { error in
+                                    print("잔액 업데이트 실패 : \(error)\n")
+                                }
+                            ).disposed(by: self.disposeBag)
+                        
+                        // 상점 coin 라벨 업데이트
+                        self.rootView.coinLabel.text = "\(self.myCoin)"
+                        
+                        // 전체 아바타 리스트에서 해당 모델 갱신
+                        var updated = self.viewModel.allAvatarsRelay.value
+                        if let index = updated.firstIndex(where: { $0.type == selected.type }) {
+                            updated[index] = selected
+                        }
+                        self.viewModel.allAvatarsRelay.accept(updated)
+                        
+                        // Firestore에 해금 정보만 저장 (대표 아바타 저장 )
+                        FirestoreService.shared.saveUnlockedAvatar(uid: self.uid, newType: selected.type)
+                        
+                        // UI 미리보기만 업데이트 (선택 아바타는 그대로 유지)
+                        if let image = UIImage(named: selected.imageName),
+                           let cgImage = image.cgImage {
+                            let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                            let flipped = UIImage(cgImage: fixed.cgImage!, scale: fixed.scale, orientation: .upMirrored)
+                            self.rootView.selectedAvatarImg.image = flipped
+                        }
+                        
+                        self.rootView.avatarNameStack.updateNickname(selected.avatarName)
+                        
+                        // Firestore에 해금 정보 + 대표 아바타 저장
+                        FirestoreService.shared.saveUnlockedAvatar(uid: self.uid, newType: selected.type)
+                        FirestoreService.shared.saveSelectedAvatar(uid: self.uid, type: selected.type)
+                      
+                        // 아바타 목록 새로고침 (잠금 해제 반영)
+                        self.viewModel.fetchAvatars(uid: self.uid)
+                    }
+                      
+                    /* 
+                      if let image = UIImage(named: selected.imageName),
                        let cgImage = image.cgImage {
                         let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
                         let flipped = UIImage(cgImage: fixed.cgImage!, scale: fixed.scale, orientation: .upMirrored)
@@ -173,6 +250,8 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                         uid: self.uid, type: selected.type)
                     
                     self.viewModel.fetchAvatars(uid: self.uid)
+                    */
+
                 }
                 popup.onCancel = {
                     print("구매 취소")
@@ -290,5 +369,27 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
         } else {
             return CGSize(width: 100, height: 100)
         }
+    }
+    
+    /// 사용자 코인 정보 가져오기
+    private func fetchMyCoin(uid: String) {
+        // DB 에서 사용자 uid 로 coin 정보 가져오기
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
+            .subscribe(
+                onSuccess: { [weak self] data in
+                    guard let self else { return }
+                    guard let coin = data["coin"] as? Int else {
+                        print("Error : 코인 데이터 가져오기 실패\n")
+                        return
+                    }
+                    // print("코인 : \(coin)") // 디버깅용
+                    
+                    myCoin = coin
+                    //print("현재 나의 코인 : \(myCoin)\n")
+                    
+                    // 코인 라벨에 사용자 코인 출력하기
+                    self.rootView.coinLabel.text = "\(coin)"
+                }
+            ).disposed(by: disposeBag)
     }
 }
