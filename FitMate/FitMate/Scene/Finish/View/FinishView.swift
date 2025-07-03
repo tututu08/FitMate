@@ -143,7 +143,7 @@ final class FinishView: BaseView {
         resultLabel.snp.makeConstraints{
             $0.top.equalTo(goalImage.snp.bottom).offset(28)
             $0.centerX.equalToSuperview()
-            $0.horizontalEdges.equalToSuperview().inset(109)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(68)
         }
         
