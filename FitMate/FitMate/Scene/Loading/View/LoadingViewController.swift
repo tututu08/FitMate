@@ -134,8 +134,9 @@ class LoadingViewController: BaseViewController {
                 }
                 return .just((inviterUid, inviteeUid, exerciseType, mode, goalValue))
             }
-            .flatMap { inviterUid, inviteeUid, exerciseType, mode, goalValue -> Single<(String, String, String, String, Int, String)> in
-                let mateUid = self.uid == inviterUid ? inviteeUid : inviterUid
+            .flatMap { inviterUid, inviteeUid, exerciseType, mode, goalValue -> Single<(String, String, String, String, Int, String, Bool)> in
+                           let mateUid = self.uid == inviterUid ? inviteeUid : inviterUid
+                           let isInviter = self.uid == inviterUid
 
                 // 내 아바타
                 guard let myAvatarRaw = AvatarManager.shared.selectedAvatarRelay.value?.rawValue else {
@@ -146,11 +147,11 @@ class LoadingViewController: BaseViewController {
                 return FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
                     .map { mateAvatarType in
                         let mateAvatarRaw = mateAvatarType?.rawValue ?? "kaepy" // fallback
-                        return (exerciseType, mode, myAvatarRaw, mateAvatarRaw, goalValue, mateUid)
+                        return (exerciseType, mode, myAvatarRaw, mateAvatarRaw, goalValue, mateUid, isInviter)
                     }
             }
             .observe(on: MainScheduler.instance)
-            .subscribe(onSuccess: { exerciseType, mode, myCharacter, mateCharacter, goalValue, mateUid in
+            .subscribe(onSuccess: { exerciseType, mode, myCharacter, mateCharacter, goalValue, mateUid, isInviter in
                 let matchCode = self.matchCode
                 let myUid = self.uid
 
@@ -197,6 +198,7 @@ class LoadingViewController: BaseViewController {
                             matchCode: matchCode,
                             myUID: myUid,
                             mateUID: mateUid,
+                            isInviter: isInviter,
                             myCharacter: myCharacter,
                             mateCharacter: mateCharacter
                         )
