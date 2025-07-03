@@ -157,11 +157,6 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                 
                 popup.onConfirm = {
                     // print("나의 잔고 : \(self.myCoin)")
-                    
-                    var updated = self.viewModel.allAvatarsRelay.value
-                    if let index = updated.firstIndex(where: { $0.type == selected.type }) {
-                        updated[index] = selected
-                    }
                   
                     guard let conCost = model.conCost else {
                         print("아바타 가격 정보가 없습니다.\n")
@@ -187,6 +182,11 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                         
                         var selected = model
                         selected.isUnlocked = true
+                        
+//                        var updated = self.viewModel.allAvatarsRelay.value
+//                        if let index = updated.firstIndex(where: { $0.type == selected.type }) {
+//                            updated[index] = selected
+//                        }
                         
                         // 아바타 가격만큼 코인 차감.
                         self.myCoin = self.myCoin - conCost
@@ -228,8 +228,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                         
                         // Firestore에 해금 정보 + 대표 아바타 저장
                         FirestoreService.shared.saveUnlockedAvatar(uid: self.uid, newType: selected.type)
-                        FirestoreService.shared.saveSelectedAvatar(
-                        uid: self.uid, type: selected.type)
+                        FirestoreService.shared.saveSelectedAvatar(uid: self.uid, type: selected.type)
                       
                         // 아바타 목록 새로고침 (잠금 해제 반영)
                         self.viewModel.fetchAvatars(uid: self.uid)
