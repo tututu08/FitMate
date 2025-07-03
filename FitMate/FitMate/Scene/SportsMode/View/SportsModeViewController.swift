@@ -143,6 +143,15 @@ class SportsModeViewController: BaseViewController {
         return label
     }()
     
+    // 모드 버튼 스택뷰
+    private let buttonStack: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 20
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
+    
     // 협력 모드 선택 버튼
     private let cooperationModeButton: UIButton = {
         let button = UIButton(type: .system)
@@ -212,18 +221,23 @@ class SportsModeViewController: BaseViewController {
             backgroundView,
             titleLabel,
             middleContainer,
-            cooperationModeButton,
-            battleModeButton
+            buttonStack
+//            cooperationModeButton,
+//            battleModeButton
         ].forEach { view.addSubview($0) } // 모든 요소 메인 뷰에 추가
         
         middleContainer.addSubview(infoStackView)
+        
+        buttonStack.addArrangedSubview(cooperationModeButton)
+        buttonStack.addArrangedSubview(battleModeButton)
 
         let safeArea = view.safeAreaLayoutGuide
         // 오토레이아웃 설정
         backgroundView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(24)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(307)
+//            $0.height.equalTo(307)
+            $0.bottom.equalTo(titleLabel.snp.top).inset(-20)
         }
         imageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
@@ -232,11 +246,12 @@ class SportsModeViewController: BaseViewController {
             $0.height.equalTo(272)
         }
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(backgroundView.snp.bottom).offset(24)
+            //$0.top.equalTo(backgroundView.snp.bottom).offset(24)
+            $0.bottom.equalTo(middleContainer.snp.top)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
         middleContainer.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom)
+            //$0.top.equalTo(titleLabel.snp.bottom)
             $0.bottom.equalTo(cooperationModeButton.snp.top)
             $0.leading.trailing.equalToSuperview()
         }
@@ -244,7 +259,9 @@ class SportsModeViewController: BaseViewController {
         // infoStackView: middleContainer의 정중앙!
         infoStackView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
+            $0.top.equalToSuperview().offset(20)
             $0.leading.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview().inset(20)
         }
 //        descriptionLabelTitle.snp.makeConstraints {
 //            $0.top.equalTo(titleLabel.snp.bottom).offset(25)
@@ -277,18 +294,26 @@ class SportsModeViewController: BaseViewController {
 //            $0.top.equalTo(caloriesLabelText.snp.bottom).offset(10)
 //            $0.leading.trailing.equalToSuperview().inset(20)
 //        }
-        cooperationModeButton.snp.makeConstraints {
+        
+        buttonStack.snp.makeConstraints {
+            //$0.top.equalTo(middleContainer.snp.bottom).offset(30)
             $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
-            $0.leading.equalToSuperview().inset(20)
-            $0.width.equalTo(157.5)
+            $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(60)
         }
-        battleModeButton.snp.makeConstraints {
-            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
-            $0.trailing.equalToSuperview().inset(20)
-            $0.width.equalTo(157.5)
-            $0.height.equalTo(60)
-        }
+        
+//        cooperationModeButton.snp.makeConstraints {
+//            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
+//            $0.leading.equalToSuperview().inset(20)
+//            $0.width.equalTo(157.5)
+//            $0.height.equalTo(60)
+//        }
+//        battleModeButton.snp.makeConstraints {
+//            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
+//            $0.trailing.equalToSuperview().inset(20)
+//            $0.width.equalTo(157.5)
+//            $0.height.equalTo(60)
+//        }
     }
     
     // 운동 아이템을 기반으로 각 UI에 데이터 바인딩
