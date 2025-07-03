@@ -48,6 +48,7 @@ final class PlankCoopViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.shared.isIdleTimerDisabled = true
         sportsView.updateGoal("플랭크 \(viewModel.goalMinutes)분") // 또는 회, 개, whatever
         sportsView.updateMyCharacter(myCharacter)
         sportsView.updateMateCharacter(mateCharacter)
@@ -78,7 +79,16 @@ final class PlankCoopViewController: BaseViewController {
         listenStartTime()
         
     }
-    
+    override func viewWillDisappear(_ animated: Bool) {
+           super.viewWillDisappear(animated)
+           // 꺼짐 방지 해제
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
+       
+       // 혹시라도 강제 종료 시점이 있을 수 있으니
+    deinit {
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
     private func listenStartTime() {
             MatchEventService.shared.listenStartTime(matchCode: matchCode)
                 .observe(on: MainScheduler.instance)
