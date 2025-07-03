@@ -12,7 +12,7 @@ final class HistoryViewController: UIViewController, UICollectionViewDelegateFlo
     private let selectedCategorySubject = PublishSubject<ExerciseType>()
     private let uid: String
 
-    private let filteredTypes: [ExerciseType] = ExerciseType.allCases.filter { $0 != .plank }
+    private let filteredTypes: [ExerciseType] = ExerciseType.allCases
 
     init(uid: String) {
         self.uid = uid
@@ -115,6 +115,11 @@ extension HistoryViewController: UICollectionViewDataSource {
 
         case .run:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RunRecordCell.identifier, for: indexPath) as! RunRecordCell
+            cell.configure(with: record)
+            return cell
+            
+        case .plank:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlankRecordCell.identifier, for: indexPath) as! PlankRecordCell
             cell.configure(with: record)
             return cell
 
