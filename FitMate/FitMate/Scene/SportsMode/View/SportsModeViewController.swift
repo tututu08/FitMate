@@ -222,8 +222,6 @@ class SportsModeViewController: BaseViewController {
             titleLabel,
             middleContainer,
             buttonStack
-//            cooperationModeButton,
-//            battleModeButton
         ].forEach { view.addSubview($0) } // 모든 요소 메인 뷰에 추가
         
         middleContainer.addSubview(infoStackView)
@@ -232,26 +230,27 @@ class SportsModeViewController: BaseViewController {
         buttonStack.addArrangedSubview(battleModeButton)
 
         let safeArea = view.safeAreaLayoutGuide
+        
         // 오토레이아웃 설정
         backgroundView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).inset(24)
             $0.leading.trailing.equalToSuperview().inset(20)
-//            $0.height.equalTo(307)
             $0.bottom.equalTo(titleLabel.snp.top).inset(-20)
         }
+        
         imageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
             $0.width.equalTo(251)
             $0.height.equalTo(272)
         }
+        
         titleLabel.snp.makeConstraints {
-            //$0.top.equalTo(backgroundView.snp.bottom).offset(24)
             $0.bottom.equalTo(middleContainer.snp.top)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
+        
         middleContainer.snp.makeConstraints {
-            //$0.top.equalTo(titleLabel.snp.bottom)
             $0.bottom.equalTo(cooperationModeButton.snp.top)
             $0.leading.trailing.equalToSuperview()
         }
@@ -263,37 +262,6 @@ class SportsModeViewController: BaseViewController {
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(20)
         }
-//        descriptionLabelTitle.snp.makeConstraints {
-//            $0.top.equalTo(titleLabel.snp.bottom).offset(25)
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//        }
-//        descriptionLabel.snp.makeConstraints {
-//            $0.top.equalTo(descriptionLabelTitle.snp.bottom).offset(10)
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//        }
-//        infoStackView.snp.makeConstraints {
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//            $0.centerY.equalToSuperview()
-//            $0.top.greaterThanOrEqualTo(titleLabel.snp.bottom).offset(18)
-//            $0.bottom.lessThanOrEqualTo(cooperationModeButton.snp.top).offset(-18)
-//        }
-//        effectLabelText.snp.makeConstraints {
-//            $0.top.equalTo(descriptionLabel.snp.bottom).offset(10)
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//        }
-//        effectLabel.snp.makeConstraints {
-//            $0.top.equalTo(effectLabelText.snp.bottom).offset(10)
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//        }
-//
-//        caloriesLabelText.snp.makeConstraints {
-//            $0.top.equalTo(effectLabel.snp.bottom).offset(10)
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//        }
-//        caloriesLabel.snp.makeConstraints {
-//            $0.top.equalTo(caloriesLabelText.snp.bottom).offset(10)
-//            $0.leading.trailing.equalToSuperview().inset(20)
-//        }
         
         buttonStack.snp.makeConstraints {
             //$0.top.equalTo(middleContainer.snp.bottom).offset(30)
@@ -301,19 +269,6 @@ class SportsModeViewController: BaseViewController {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(60)
         }
-        
-//        cooperationModeButton.snp.makeConstraints {
-//            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
-//            $0.leading.equalToSuperview().inset(20)
-//            $0.width.equalTo(157.5)
-//            $0.height.equalTo(60)
-//        }
-//        battleModeButton.snp.makeConstraints {
-//            $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
-//            $0.trailing.equalToSuperview().inset(20)
-//            $0.width.equalTo(157.5)
-//            $0.height.equalTo(60)
-//        }
     }
     
     // 운동 아이템을 기반으로 각 UI에 데이터 바인딩
@@ -326,10 +281,11 @@ class SportsModeViewController: BaseViewController {
         
         battleModeButton.isHidden = (item.title == "플랭크")
         if battleModeButton.isHidden{
+            buttonStack.spacing = 0
             cooperationModeButton.snp.remakeConstraints {
                 $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(36)
                 $0.centerX.equalToSuperview()
-                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.leading.trailing.equalToSuperview()
                 $0.height.equalTo(60)
             }
         }
