@@ -304,7 +304,7 @@ class SportsModeViewController: BaseViewController {
             cooperationModeButton.snp.remakeConstraints {
                 $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(36)
                 $0.centerX.equalToSuperview()
-                $0.width.equalTo(157.5)
+                $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(60)
             }
         }
