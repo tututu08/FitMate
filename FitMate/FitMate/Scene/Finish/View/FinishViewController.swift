@@ -7,6 +7,7 @@ class FinishViewController: BaseViewController {
     
     private let finishView = FinishView()
     private let viewModel: FinishViewModel
+
     let uid: String
     let mateUid: String
     let matchCode: String
@@ -27,6 +28,12 @@ class FinishViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if viewModel.success {
+            SoundManage.shared.playSuccess()
+        } else {
+            SoundManage.shared.playFail()
+        }
         
         let reward = calculateReward(
             exerciseType: viewModel.sport,

@@ -17,11 +17,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
         
-        SoundManage.shared.isSoundEnabled = UserDefaults.standard.object(forKey: "soundEnabled") as? Bool ?? true
-        
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
+        
+        SoundManage.shared.initializeSoundSetting()
         
         window.rootViewController = UINavigationController(rootViewController: SplashViewController())
         window.makeKeyAndVisible()

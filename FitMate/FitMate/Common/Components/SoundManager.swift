@@ -11,10 +11,26 @@ class SoundManage {
     static let shared = SoundManage()
     private var audioPlayer: AVAudioPlayer?
     
-    var isSoundEnabled: Bool = true
+    var isSoundEnabled: Bool {
+        get {
+            UserDefaults.standard.object(forKey: "soundEnabled") as? Bool ?? true
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "soundEnabled")
+            UserDefaults.standard.synchronize()
+        }
+    }
     
     private init() {}
     
+    func initializeSoundSetting() {
+        if let saved = UserDefaults.standard.object(forKey: "soundEnabled") as? Bool {
+            isSoundEnabled = saved
+        } else {
+            isSoundEnabled = true
+        }
+    }
+
     func coinSound() {
         guard isSoundEnabled else { return }
         guard let url = Bundle.main.url(forResource: "coin", withExtension: "wav") else { return }
