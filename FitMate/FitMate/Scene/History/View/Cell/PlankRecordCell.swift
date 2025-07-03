@@ -1,4 +1,3 @@
-
 import UIKit
 import SnapKit
 
@@ -6,7 +5,7 @@ final class PlankRecordCell: UICollectionViewCell {
     static let identifier = "PlankRecordCell"
 
     private var detailLabels: [UILabel] = []
-    
+
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "plank")
@@ -84,7 +83,8 @@ final class PlankRecordCell: UICollectionViewCell {
 
         let detailStack = UIStackView(arrangedSubviews: [
             makeDetailLabel(value: "0", unit: "목표(분)"),
-            makeDetailLabel(value: "0", unit: "함께(분)")
+            makeDetailLabel(value: "0", unit: "나(분)"),
+            makeDetailLabel(value: "0", unit: "메이트(분)")
         ])
         detailStack.axis = .horizontal
         detailStack.spacing = 16
@@ -112,7 +112,7 @@ final class PlankRecordCell: UICollectionViewCell {
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
 
         detailLabels.append(valueLabel)
-        
+
         let unitLabel = UILabel()
         unitLabel.text = unit
         unitLabel.font = .systemFont(ofSize: 13)
@@ -124,27 +124,31 @@ final class PlankRecordCell: UICollectionViewCell {
         stack.axis = .vertical
         stack.spacing = 4
         stack.alignment = .leading
-        stack.snp.makeConstraints { $0.size.equalTo(CGSize(width: 109, height: 56)) }
+        stack.snp.makeConstraints { $0.size.equalTo(CGSize(width: 70, height: 56)) }
         return stack
     }
 
     func configure(with record: ExerciseRecord) {
         dateLabel.text = record.dateOnly
         resultLabel.text = record.result.rawValue
-        
-        switch record.result {
-        case .teamSuccess, .teamFail:
-            resultLabel.backgroundColor = UIColor(named: "Primary500")
-            resultLabel.textColor = .white
-        case .versusWin, .versusLose:
-            resultLabel.backgroundColor = UIColor(named: "Secondary400")
-            resultLabel.textColor = .black
-        }
-        
-        let details = [record.detail1, record.detail2, record.detail3]
+
+        resultLabel.backgroundColor = UIColor(named: "Primary500")
+        resultLabel.textColor = .white
+
+        let detail1 = record.detail1
+        let detail2 = convertSecondsToMinutes(record.detail2)
+        let detail3 = convertSecondsToMinutes(record.detail3)
+
+        let converted = [detail1, detail2, detail3]
         for (index, label) in detailLabels.enumerated() {
-            guard index < details.count else { break }
-            label.text = details[index]
+            guard index < converted.count else { break }
+            label.text = converted[index]
         }
+    }
+
+    private func convertSecondsToMinutes(_ secondsString: String) -> String {
+        guard let seconds = Int(secondsString) else { return "0" }
+        let minutes = seconds / 60
+        return "\(minutes)"
     }
 }

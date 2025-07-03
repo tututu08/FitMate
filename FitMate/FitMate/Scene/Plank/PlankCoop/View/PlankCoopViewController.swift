@@ -233,6 +233,7 @@ final class PlankCoopViewController: BaseViewController {
             sport: "플랭크",
             goal: viewModel.goalMinutes,
             goalUnit: "분",
+            myDistance: Double(viewModel.myTime),
             avatarType: avatarType,
             success: success
         )

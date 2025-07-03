@@ -97,26 +97,32 @@ final class WorkRecordCell: UICollectionViewCell {
     
     func configure(with record: WorkoutRecord, index: Int) {
         typeLabel.text = record.type
-        unitLabel.text = record.type == "플랭크" ? "분" : record.unit
-        
+
         let unit = record.unit.trimmingCharacters(in: .whitespacesAndNewlines)
         let raw = record.totalDistance.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         if let value = Double(raw) {
             let cleanedValue = abs(value) < 0.01 ? 0.0 : value
-            
-            switch unit {
-            case "Km":
-                totalLabel.text = String(format: "%.2f", cleanedValue)
-            case "회", "초":
-                totalLabel.text = String(format: "%.0f", cleanedValue)
-            default:
-                totalLabel.text = String(format: "%.0f", cleanedValue)
+
+            if record.type == "플랭크" {
+                let minutes = Int(cleanedValue / 60.0)
+                totalLabel.text = "\(minutes)"
+                unitLabel.text = "분"
+            } else {
+                switch unit {
+                case "Km":
+                    totalLabel.text = String(format: "%.2f", cleanedValue)
+                case "회", "초":
+                    totalLabel.text = String(format: "%.0f", cleanedValue)
+                default:
+                    totalLabel.text = String(format: "%.0f", cleanedValue)
+                }
+                unitLabel.text = record.unit
             }
         } else {
             totalLabel.text = "0"
         }
-        
+
         switch record.type {
         case "걷기":
             characterImage.image = UIImage(named: "walk")
@@ -131,7 +137,7 @@ final class WorkRecordCell: UICollectionViewCell {
         default:
             characterImage.image = nil
         }
-        
+
         switch index {
         case 0:
             cardView.backgroundColor = UIColor(named: "Primary50")
