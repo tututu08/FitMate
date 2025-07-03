@@ -88,6 +88,10 @@ class FinishViewController: BaseViewController {
             .bind { [weak self] in
                 guard let self else { return }
                 
+                if viewModel.success {
+                    SoundManage.shared.coinSound()
+                }
+                
                 // 보상 결과
                 let reward = calculateReward(
                     exerciseType: viewModel.sport,

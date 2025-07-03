@@ -10,18 +10,14 @@ import RxCocoa
 
 class MainViewController: BaseViewController {
     
-    // ViewModel 객체 생성
     private let viewModel: MainViewModel
-    
     let mainView = MainView()
-    
-    // 로그인 유저의 uid
     private let uid: String
     private let mateUid: String?
     
-    // 초기화 함수
+    
     init(uid: String, mateUid: String?) {
-        self.uid = uid // 의존성 주입
+        self.uid = uid
         self.mateUid = mateUid
         self.viewModel = MainViewModel(uid: uid)
         super.init(nibName: nil, bundle: nil)
@@ -31,116 +27,94 @@ class MainViewController: BaseViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     override func loadView() {
         self.view = mainView
-        
         navigationItem.backButtonTitle = ""
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        bindAvatarRelays()
+        
+        if let avatarType = AvatarManager.shared.selectedAvatarRelay.value {
+            mainView.myAvatarImage.image = UIImage(named: avatarType.imageName)
+        }
+        
+        AvatarManager.shared.fetchInitialAvatar(uid: uid)
+        
+        if let mateUid = mateUid {
+            AvatarManager.shared.fetchMateAvatar(uid: mateUid)
+        }
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // 네비게이션 영역 숨김
         navigationController?.setNavigationBarHidden(true, animated: false)
-        
-        // 메이트 여부를 판단해서 UI를 변경함
         fetchMateStatusAndUpdateUI()
-        updateMyAvatarImage()
-
-        if let mateUid = mateUid {
-            updateMateAvatarImage(mateUid: mateUid)
-        }
-        
-        // 사용자 코인 정보를 가져와 화면에 출력
         fetchMyCoin(uid: uid)
     }
     
-    // 네비게이션 영역 다시 보여줌
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
-    /// 사용자 코인 정보 가져오기
-    private func fetchMyCoin(uid: String) {
-        // DB 에서 사용자 uid 로 coin 정보 가져오기
-        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
-            .subscribe(
-                onSuccess: { [weak self] data in
-                    guard let self else { return }
-                    guard let coin = data["coin"] as? Int else {
-                        print("Error : 코인 데이터 가져오기 실패\n")
-                        return
-                    }
-                    // print("코인 : \(coin)") // 디버깅용
-                    
-                    // 코인 라벨에 사용자 코인 출력하기
-                    self.mainView.coinLabel.text = "\(coin)"
-                }
-            ).disposed(by: disposeBag)
-    }
     
-    private func fetchMateStatusAndUpdateUI() {
-        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
-            .subscribe(onSuccess: { [weak self] data in
-                guard let self else { return }
-                
-                let hasMate = data["hasMate"] as? Bool ?? false
-                let myNickname = data["nickname"] as? String ?? "나"
-                
-                if hasMate,
-                   let mate = data["mate"] as? [String: Any],
-                   let mateNickname = mate["nickname"] as? String {
-                    // 여기에 mateUid 있는지 확인하고 아바타 업데이트..
-                    if let mateUid = mate["uid"] as? String {
-                            self.updateMateAvatarImage(mateUid: mateUid)
-                        }
-                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
-                    if let startDateString = mate["startDate"] as? String,
-                           let dDay = calculateDDay(from: startDateString) {
-                            self.mainView.dDaysLabel.text = "\(dDay)일째"
-                        }
-                } else {
-                    self.mainView.dDaysLabel.text = "0일째..."
-                    self.mainView.changeAvatarLayout(hasMate: false, myNickname: myNickname, mateNickname: "")
-                }
-            }, onFailure: { error in
-                print("메이트 상태 조회 실패: \(error.localizedDescription)")
-            })
+    private func bindAvatarRelays() {
+        AvatarManager.shared.selectedAvatarRelay
+            .compactMap { $0 }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] avatarType in
+                guard let self,
+                      let image = UIImage(named: avatarType.imageName),
+                      let cgImage = image.cgImage else { return }
+                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                self.mainView.myAvatarImage.image = fixed
+            }
+            .disposed(by: disposeBag)
+        
+        AvatarManager.shared.mateAvatarRelay
+            .compactMap { $0 }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] avatarType in
+                guard let self,
+                      let image = UIImage(named: avatarType.imageName),
+                      let cgImage = image.cgImage else { return }
+                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
+                self.mainView.mateAvatarImage.image = fixed
+            }
             .disposed(by: disposeBag)
     }
     
     override func bindViewModel() {
-        /// 뷰모델에 전달할 입력 정의
         let input = MainViewModel.Input(
             exerciseTap: mainView.exerciseButton.rx.tap.asObservable(),
             mateAvatarTap: mainView.mateAvatarImage.rx.tap
         )
         
-        ///  transform 통해 output 정의
         let output = viewModel.transform(input: input)
-
-        /// 메이트가 없을 때 → 초대코드 화면으로 이동하기
+        
         output.hasNoMate
             .drive(onNext: { [weak self] in
                 guard let self else { return }
-                let codeShareVC = CodeShareViewController(uid: self.uid, hasMate: false)
-                let nav = UINavigationController(rootViewController: codeShareVC)
+                let vc = CodeShareViewController(uid: self.uid, hasMate: false)
+                let nav = UINavigationController(rootViewController: vc)
                 nav.modalPresentationStyle = .fullScreen
                 nav.modalTransitionStyle = .coverVertical
-                
                 self.present(nav, animated: true)
             })
             .disposed(by: disposeBag)
         
-        /// 메이트가 있을 때 → 운동 선택 화면 이동
         output.moveToExercise
             .drive(onNext: { [weak self] in
                 guard let self else { return }
-                let selectSports = SportsSelectionViewController(uid: self.uid)
-                selectSports.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(selectSports, animated: true)
+                let vc = SportsSelectionViewController(uid: self.uid)
+                vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -166,27 +140,61 @@ class MainViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
+    
+    private func fetchMateStatusAndUpdateUI() {
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
+            .subscribe(onSuccess: { [weak self] data in
+                guard let self else { return }
+                let hasMate = data["hasMate"] as? Bool ?? false
+                let myNickname = data["nickname"] as? String ?? "나"
+                
+                if hasMate,
+                   let mate = data["mate"] as? [String: Any],
+                   let mateNickname = mate["nickname"] as? String {
+                    if let mateUid = mate["uid"] as? String {
+                        self.updateMateAvatarImage(mateUid: mateUid)
+                    }
+                    self.mainView.changeAvatarLayout(hasMate: true, myNickname: myNickname, mateNickname: mateNickname)
+                    if let startDateString = mate["startDate"] as? String,
+                       let dDay = calculateDDay(from: startDateString) {
+                        self.mainView.dDaysLabel.text = "\(dDay)일째"
+                    }
+                } else {
+                    self.mainView.dDaysLabel.text = "0일째..."
+                    self.mainView.changeAvatarLayout(hasMate: false, myNickname: myNickname, mateNickname: "")
+                }
+            }, onFailure: { error in
+                print("메이트 상태 조회 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func fetchMyCoin(uid: String) {
+        FirestoreService.shared.fetchDocument(collectionName: "users", documentName: uid)
+            .subscribe(onSuccess: { [weak self] data in
+                guard let self else { return }
+                if let coin = data["coin"] as? Int {
+                    self.mainView.coinLabel.text = "\(coin)"
+                }
+            }, onFailure: { error in
+                print("코인 조회 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func presentMateAlert(description: String) {
         let popup = PartnerLeftAlertView()
         popup.configure(description: description)
-        
         popup.alpha = 0
         
-        // window에 직접 추가하여 어떤 화면에서도 보이도록(현재 활성화된 키 윈도우 가져오기)
         if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
             window.addSubview(popup)
             popup.snp.makeConstraints { $0.edges.equalToSuperview() }
-            
-            // fade-in 애니메이션 실행
-            UIView.animate(withDuration: 0.25) {
-                popup.alpha = 1
-            }
+            UIView.animate(withDuration: 0.25) { popup.alpha = 1 }
             
             popup.confirmButton.rx.tap
                 .bind { [weak self, weak popup] in
                     guard let self, let popup else { return }
-                    
-                    // fade-out 애니메이션 실행
                     UIView.animate(withDuration: 0.2, animations: {
                         popup.alpha = 0
                     }) { _ in
@@ -198,75 +206,36 @@ class MainViewController: BaseViewController {
         }
     }
     
-    // Firestore 메이트 정보 삭제 → UI 갱신
     private func cleanupMateAndRefresh() {
         FirestoreService.shared.deleteMate(myUid: uid)
             .subscribe(onSuccess: { [weak self] in
                 self?.fetchMateStatusAndUpdateUI()
             }, onFailure: { error in
-                print("삭제 실패:", error.localizedDescription)
+                print("삭제 실패: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
     
-    func calculateDDay(from startDateString: String) -> Int? {
+    private func updateMateAvatarImage(mateUid: String) {
+        AvatarManager.shared.fetchMateAvatar(uid: mateUid)
+    }
+    
+    private func calculateDDay(from startDateString: String) -> Int? {
         let formatter = FirestoreService.dateFormatter
         guard let startDate = formatter.date(from: startDateString) else { return nil }
-        let calendar = Calendar(identifier: .gregorian)
-        let today = calendar.startOfDay(for: Date())
-        let start = calendar.startOfDay(for: startDate)
-        let components = calendar.dateComponents([.day], from: start, to: today)
-        return (components.day ?? 0) + 1 // 연결일도 포함해서 +1
-    }
-    
-    private func updateMyAvatarImage() {
-        AvatarManager.shared.selectedAvatarRelay
-            .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
-            .bind { [weak self] avatarType in
-                guard let self,
-                      let image = UIImage(named: avatarType.imageName),
-                      let cgImage = image.cgImage else { return }
-                
-                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-                self.mainView.myAvatarImage.image = fixed
-            }
-            .disposed(by: disposeBag)
-    }
-    
-    private func updateMateAvatarImage(mateUid: String) {
-        // 메이트 아바타 Firestore에서 불러와 relay에 반영
-        AvatarManager.shared.fetchMateAvatar(uid: mateUid)
-
-        // relay 값이 업데이트되면 이미지 갱신
-        AvatarManager.shared.mateAvatarRelay
-            .compactMap { $0 }
-            .distinctUntilChanged() // 같은 값은 무시
-            .observe(on: MainScheduler.instance)
-            .bind { [weak self] avatarType in
-                guard let self,
-                      let image = UIImage(named: avatarType.imageName),
-                      let cgImage = image.cgImage else { return }
-
-                let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-                self.mainView.mateAvatarImage.image = fixed
-            }
-            .disposed(by: disposeBag)
+        let today = Calendar.current.startOfDay(for: Date())
+        let start = Calendar.current.startOfDay(for: startDate)
+        let components = Calendar.current.dateComponents([.day], from: start, to: today)
+        return (components.day ?? 0) + 1
     }
 }
 
-/// UIImageView에 rx.tap 기능 확장
+
 extension Reactive where Base: UIImageView {
-    /// UIImageView에 UITapGestureRecognizer를 붙이고
-    ///  Void 이벤트를 Observable로 방출
     var tap: Observable<Void> {
         let tapGesture = UITapGestureRecognizer()
-        
         base.addGestureRecognizer(tapGesture)
         base.isUserInteractionEnabled = true
-        
-        return tapGesture.rx.event
-            .map { _ in () } // 이벤트 무시하고 Void 반환
-            .asObservable()
+        return tapGesture.rx.event.map { _ in () }
     }
 }

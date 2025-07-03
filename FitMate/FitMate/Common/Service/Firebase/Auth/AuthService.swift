@@ -243,25 +243,18 @@ final class AuthService: NSObject {
             return Disposables.create()
         }
     }
-
     
     func deleteAccount() -> Single<Void> {
         return Single.create { single in
-            /// // 현재 로그인한 유저가 있는지 확인
             if let user = Auth.auth().currentUser {
-                // 유저 삭제 요청
                 user.delete { error in
                     if let error = error {
-                        // 실패 시 에러 반환
                         single(.failure(error))
                     } else {
-                        print("탈퇴 성공")
-                        // 성공 시 빈 성공 값 반환
                         single(.success(()))
                     }
                 }
             } else {
-                // 로그인 정보가 없을 경우 커스텀 에러 반환
                 let error = NSError(
                     domain: "FirebaseAuth",
                     code: -1,
@@ -269,6 +262,7 @@ final class AuthService: NSObject {
                 )
                 single(.failure(error))
             }
+
             return Disposables.create()
         }
     }

@@ -159,6 +159,7 @@ final class SettingViewController: UIViewController {
                 return self.performWithdrawProcess()
             }
             .subscribe(onNext: { [weak self] in
+                AvatarManager.shared.reset()
                 self?.navigateToLogin()
             }, onError: { error in
                 print("회원 탈퇴 실패: \(error.localizedDescription)")

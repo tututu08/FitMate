@@ -29,29 +29,49 @@ final class AvatarManager {
     func fetchInitialAvatar(uid: String) {
         FirestoreService.shared.loadSelectedAvatar(uid: uid)
             .subscribe(onSuccess: { [weak self] avatarType in
-                self?.selectedAvatarRelay.accept(avatarType)
+                guard let self else { return }
+
+                if avatarType != self.selectedAvatarRelay.value {
+                    self.selectedAvatarRelay.accept(avatarType)
+                }
+            }, onFailure: { error in
+                print("아바타 소환 실패: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
 
     /// 새로 선택한 아바타 저장과 반영
     func updateAvatar(uid: String, avatarType: AvatarType) {
-        FirestoreService.shared.saveSelectedAvatar(uid: uid, type: avatarType)
         selectedAvatarRelay.accept(avatarType)
+
+        FirestoreService.shared.saveSelectedAvatar(uid: uid, type: avatarType)
+            .subscribe(onSuccess: {
+                print("파이어스토어 저장 완료")
+            }, onFailure: { error in
+                print("파이어스토어 저장 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
-    
+
     /// 메이트 아바타 Firestore에서 fetch해서 반영
     func fetchMateAvatar(uid: String) {
         FirestoreService.shared.loadSelectedAvatar(uid: uid)
             .subscribe(onSuccess: { [weak self] avatarType in
                 guard let self else { return }
-
-                // 이전 값과 비교해서 다를 때만 relay 갱신
-                if avatarType != self.previousMateAvatarType {
-                    self.previousMateAvatarType = avatarType
-                    self.mateAvatarRelay.accept(avatarType)
+                // avatarType이 nil일 경우 디폴트로 캐피 표시
+                let finalType = avatarType ?? .kaepy
+                
+                if finalType != self.previousMateAvatarType {
+                    self.previousMateAvatarType = finalType
+                    self.mateAvatarRelay.accept(finalType)
                 }
             })
             .disposed(by: disposeBag)
+    }
+    ///  탈퇴 후 재가입시 아바타 초기화
+    func reset() {
+        selectedAvatarRelay.accept(nil)
+        mateAvatarRelay.accept(nil)
+        previousMateAvatarType = nil
     }
 }
