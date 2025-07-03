@@ -211,6 +211,11 @@ final class PlankCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
         // 게임 종료시 결과화면 이동
         output.didFinish
+            .distinctUntilChanged({ prev, curr in
+              let prevSuccess = prev
+              let currSuccess = curr
+              return prevSuccess == currSuccess ? true : false
+            })
             .emit(with: self) { owner, success in
                 owner.navigateToFinish(success: success)
             }
@@ -257,7 +262,6 @@ final class PlankCoopViewController: BaseViewController {
             type: .mateQuit,
             onBack: { [weak self] in
                 guard let self else { return }
-                SoundManage.shared.playFail()
                 self.viewModel.finish(success: false)
                 self.navigateToFinish(success: false)
             }

@@ -137,12 +137,12 @@ class RunningBattleViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.didFinish
+            .distinctUntilChanged({ prev, curr in
+              let prevSuccess = prev.0
+              let currSuccess = curr.0
+              return prevSuccess == currSuccess ? true : false
+            })
             .emit(onNext: { [weak self] (success, myDistance) in
-                if success {
-                    SoundManage.shared.playSuccess()
-                } else {
-                    SoundManage.shared.playFail()
-                }
                 self?.navigateToFinish(success: success, myDistance: myDistance)
             })
             .disposed(by: disposeBag)

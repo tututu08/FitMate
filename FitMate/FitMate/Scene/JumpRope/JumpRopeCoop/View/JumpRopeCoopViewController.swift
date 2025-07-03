@@ -116,6 +116,11 @@ class JumpRopeCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.didFinish
+            .distinctUntilChanged({ prev, curr in
+              let prevSuccess = prev
+              let currSuccess = curr
+              return prevSuccess == currSuccess ? true : false
+            })
             .emit(onNext: { [weak self] success in
                 self?.navigateToFinish(success: success)
             })
