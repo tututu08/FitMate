@@ -102,7 +102,8 @@ class PlankCoopView: BaseView {
     private let progressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
-        view.layer.borderColor = UIColor.primary500.cgColor
+        view.layer.borderColor = UIColor.primary200.cgColor
+        view.layer.cornerRadius = 5
         return view
     }()
     
