@@ -50,7 +50,7 @@ final class QuitAlert: UIView {
         paragraphStyle.lineSpacing = 6  // 원하는 줄간격으로 조절 (예: 6)
         paragraphStyle.alignment = .center //
         let attributedString = NSAttributedString(string: text, attributes: [
-            .font: UIFont(name: "Pretendard-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14),
+            .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14),
             .foregroundColor: UIColor.background400,
             .paragraphStyle: paragraphStyle
         ])
@@ -75,8 +75,8 @@ final class QuitAlert: UIView {
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
 //        iconImageView.isHidden = true
-        titleLabel.font = UIFont(name: "Pretendard-Regular", size: 25)
-        titleLabel.textColor = .background900
+        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
+        titleLabel.textColor = UIColor(named: "Background900")
         titleLabel.textAlignment = .center
 //        messageLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
 //        messageLabel.textColor = .gray
@@ -92,6 +92,7 @@ final class QuitAlert: UIView {
         stopButton.setTitle("그만하기", for: .normal)
         stopButton.setTitleColor(.white, for: .normal)
         stopButton.backgroundColor = .primary500
+//        stopButton.backgroundColor = UIColor(named: "Background500")
         stopButton.layer.cornerRadius = 4
         stopButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
@@ -155,7 +156,7 @@ final class QuitAlert: UIView {
     }
     
     private func setAlert(for type: AlertType) {
-        iconImageView.image = UIImage(named: "stop")
+        iconImageView.image = UIImage(named: "newStop")
         switch type {
         case .myQuitConfirm:
             titleLabel.text = "정말 그만하시겠어요?"

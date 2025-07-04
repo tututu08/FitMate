@@ -48,36 +48,36 @@ final class PauseAlert: UIView {
         // 2. 알럿 컨테이너
         addSubview(alertContainer)
         alertContainer.backgroundColor = .white
-        alertContainer.layer.cornerRadius = 5
+        alertContainer.layer.cornerRadius = 8
         alertContainer.clipsToBounds = true
         alertContainer.snp.makeConstraints {
             $0.center.equalToSuperview()
-            $0.width.equalTo(320)
-            $0.height.equalTo(340) // 높이 고정 시 너무 길면 .greaterThanOrEqualTo로
+            $0.width.equalTo(326)
+            //$0.height.equalTo(340) // 높이 고정 시 너무 길면 .greaterThanOrEqualTo로
         }
 
         // 3. 각 요소 스타일 세팅
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.image = UIImage(named: "pause")
         
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 21)
+        titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         titleLabel.textAlignment = .center
-        titleLabel.textColor = .black
+        titleLabel.textColor = UIColor(named: "Background900")
 
-        messageLabel.font = UIFont.systemFont(ofSize: 15, weight: .medium)
-        messageLabel.textAlignment = .center
-        messageLabel.numberOfLines = 2
-        messageLabel.textColor = .darkGray
+//        messageLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
+//        messageLabel.textAlignment = .center
+//        messageLabel.numberOfLines = 2
+//        messageLabel.textColor = UIColor(named: "Background400")
 
-        timerLabel.font = .systemFont(ofSize: 14, weight: .medium)
-        timerLabel.textColor = .systemPurple
+        timerLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
+        timerLabel.textColor = .primary400
         timerLabel.textAlignment = .center
 
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.white, for: .normal)
         resumeButton.backgroundColor = .primary500
-        resumeButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
-        resumeButton.layer.cornerRadius = 5
+        resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
+        resumeButton.layer.cornerRadius = 4
 
         // 4. StackView 배치 (spacing 맞추기)
         let stack = UIStackView(arrangedSubviews: [
@@ -92,19 +92,25 @@ final class PauseAlert: UIView {
         stack.alignment = .center
 
         alertContainer.addSubview(stack)
-        stack.snp.makeConstraints { $0.edges.equalToSuperview().inset(20) }
+        stack.snp.makeConstraints {
+            //$0.edges.equalToSuperview().inset(20)
+            $0.top.equalToSuperview().offset(32)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview().inset(20)
+        }
 
         iconImageView.snp.makeConstraints {
             $0.size.equalTo(84) // 원하는 크기로!
         }
+        
         resumeButton.snp.makeConstraints {
             $0.height.equalTo(48)
             $0.width.equalTo(alertContainer).multipliedBy(0.85)
         }
+        
         timerLabel.snp.makeConstraints {
             $0.width.equalTo(resumeButton)
         }
-
     }
     
     private func setAlert(type: AlertType) {
@@ -112,16 +118,22 @@ final class PauseAlert: UIView {
         switch type {
         case .myPause:
             titleLabel.text = "운동이 잠시 멈췄어요"
-            messageLabel.text = "운동이 일시정지 되었습니다.\n준비되면 이어서 계속해 보세요!"
+            setMessage("""
+                운동이 일시정지 되었습니다.\n준비되면 이어서 계속해 보세요!
+                """)
+            //messageLabel.text = "운동이 일시정지 되었습니다.\n준비되면 이어서 계속해 보세요!"
             resumeButton.isHidden = false
             resumeButton.setTitle("계속하기", for: .normal)
             resumeButton.isEnabled = true
-            resumeButton.backgroundColor = .primary300
+            resumeButton.backgroundColor = .primary500
             resumeButton.setTitleColor(.white, for: .normal)
             startCountdown(from: 10) // 3분(=180), 테스트용 10
         case .matePause:
             titleLabel.text = "메이트가 일시정지를 했습니다."
-            messageLabel.text = "메이트가 돌아올 때까지 잠시만 기다려주세요.\n대기 시간이 지나면 자동으로 재개됩니다."
+            setMessage("""
+                메이트가 돌아올 때까지 잠시만 기다려주세요.\n대기 시간이 지나면 자동으로 재개됩니다.
+                """)
+            //messageLabel.text = "메이트가 돌아올 때까지 잠시만 기다려주세요.\n대기 시간이 지나면 자동으로 재개됩니다."
             resumeButton.isHidden = false
             resumeButton.setTitle("잠시만 기다려주세요", for: .normal)
             resumeButton.isEnabled = false
@@ -157,5 +169,20 @@ final class PauseAlert: UIView {
         let sec = seconds % 60
         return String(format: "%d:%02d", min, sec)
     }
+    
+    func setMessage(_ text: String) {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 6  // 원하는 줄간격으로 조절 (예: 6)
+        paragraphStyle.alignment = .center //
+        let attributedString = NSAttributedString(string: text, attributes: [
+            .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14),
+            .foregroundColor: UIColor.background400,
+            .paragraphStyle: paragraphStyle
+        ])
+        messageLabel.textAlignment = .center
+        messageLabel.numberOfLines = 0
+        messageLabel.attributedText = attributedString
+       }
+    
     deinit { timerDisposable?.dispose() }
 }
