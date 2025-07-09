@@ -4,12 +4,14 @@ import SnapKit
 
 final class MateEndPopupView: UIView {
 
+    // 팝업 외 영역 반투명 어둠영역
     let backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         return view
     }()
 
+    //팝업 메인 ㄴ컨테이너
     let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -17,6 +19,7 @@ final class MateEndPopupView: UIView {
         return view
     }()
 
+    // 팝업 제목
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "정말 종료하시겠어요?"
@@ -26,6 +29,7 @@ final class MateEndPopupView: UIView {
         return label
     }()
 
+    // 종료 시 안내
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트 종료 시 현재 연결된 상대와의\n운동 진행이 중단됩니다."
@@ -36,6 +40,7 @@ final class MateEndPopupView: UIView {
         return label
     }()
 
+    // 취소
     let cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("취소", for: .normal)
@@ -45,6 +50,7 @@ final class MateEndPopupView: UIView {
         return button
     }()
 
+    // 종료
     let confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("종료", for: .normal)
@@ -54,6 +60,7 @@ final class MateEndPopupView: UIView {
         return button
     }()
 
+    // 버튼 2개 수평배치
     private lazy var buttonStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [cancelButton, confirmButton])
         stack.axis = .horizontal
@@ -71,6 +78,7 @@ final class MateEndPopupView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // 전체 레이아웃
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(containerView)
