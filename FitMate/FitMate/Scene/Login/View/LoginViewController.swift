@@ -71,7 +71,6 @@ class LoginViewController: BaseViewController {
                 // ViewModel에서 전달한 목적에 따라 화면 이동만 수행
                 switch nav {
                 case .goToMainViewController(let uid):
-                    print("로그인 유져 UID : \(uid)")
                     AvatarManager.shared.fetchInitialAvatar(uid: uid)
                     
                     // SceneDelegate를 가져오기
@@ -95,7 +94,6 @@ class LoginViewController: BaseViewController {
                         sceneDelegate.window?.rootViewController = tabBarController
                     })
                 case .goToInputMateCode(let uid):
-                    print("메이트 코드 : \(uid)")
                     guard let sceneDelegate = UIApplication.shared.connectedScenes
                         .first?.delegate as? SceneDelegate,
                           let window = sceneDelegate.window else { return }
@@ -115,20 +113,16 @@ class LoginViewController: BaseViewController {
                             nav.present(modalNav, animated: true)
                         }
                     }
-
                 case .goToInputNickName(let uid):
-                    print("닉네임 입력 : \(uid)")
                     // 닉네임이 없음 → 닉네임 입력
                     let vc = NicknameViewController(uid: uid)
                     self.navigationController?.pushViewController(vc, animated: true)
 
                 case .error:
-                    // 에러 발생 시 메시지 띄우기
-                    print("로그인이 취소됨")
+                    break
                 }
             }).disposed(by: disposeBag)
-        
-        
+    
     }
     
     func showErrorAlert(message: String) {

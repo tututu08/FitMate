@@ -35,22 +35,6 @@ class NicknameView: BaseView {
         return button
     }()
     
-//    let termsLabel: UIButton = {
-//        let terms = UIButton()
-//        terms.setTitle("이용약관(필수)", for: .normal)
-//        terms.titleLabel?.font = UIFont(name: "Pretendard-Medium", size: 14)
-//        terms.titleLabel?.textColor = .background400
-//        return terms
-//    }()
-//    
-//    let privacyLabel: UIButton = {
-//        let privacy = UIButton()
-//        privacy.setTitle("개인정보 수집 및 이용동의(필수)", for: .normal)
-//        privacy.titleLabel?.font = UIFont(name: "Pretendard-Medium", size: 14)
-//        privacy.titleLabel?.textColor = .background400
-//        return privacy
-//    }()
-    
     let termsLabel: UILabel = {
         let label = UILabel()
         label.text = "이용약관(필수)"

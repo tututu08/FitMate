@@ -217,17 +217,17 @@ final class AuthService: NSObject {
             // (1) tokens 문서 삭제
             tokensRef.delete { tokenError in
                 if let tokenError = tokenError {
-                    print("❌ tokens 문서 삭제 실패: \(tokenError.localizedDescription)")
+                    print("tokens 문서 삭제 실패: \(tokenError.localizedDescription)")
                 } else {
-                    print("✅ tokens 문서 삭제 완료")
+                    print("tokens 문서 삭제 완료")
                 }
 
                 // (2) users 문서에서 fcmToken 필드만 삭제
                 usersRef.updateData(["fcmToken": FieldValue.delete()]) { userError in
                     if let userError = userError {
-                        print("⚠️ users 문서 fcmToken 필드 삭제 실패: \(userError.localizedDescription)")
+                        print("users 문서 fcmToken 필드 삭제 실패: \(userError.localizedDescription)")
                     } else {
-                        print("✅ users 문서 fcmToken 필드 삭제 완료")
+                        print("users 문서 fcmToken 필드 삭제 완료")
                     }
 
                     // (3) Firebase 로그아웃 수행

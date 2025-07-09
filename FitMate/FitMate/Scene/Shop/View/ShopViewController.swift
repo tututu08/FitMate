@@ -178,20 +178,10 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                             }
                             .disposed(by: self.disposeBag)
                     } else {
-                        // print("살 수 있어!")
                         
                         var selected = model
                         selected.isUnlocked = true
-                        
-//                        var updated = self.viewModel.allAvatarsRelay.value
-//                        if let index = updated.firstIndex(where: { $0.type == selected.type }) {
-//                            updated[index] = selected
-//                        }
-                        
-                        // 아바타 가격만큼 코인 차감.
                         self.myCoin = self.myCoin - conCost
-                        
-                        // print("잔액 : \(self.myCoin)")
                         
                         // 사용자 DB에 잔액 업데이트
                         FirestoreService.shared.updateDocument(collectionName: "users", documentName: self.uid, fields: ["coin": self.myCoin])
@@ -233,25 +223,6 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                         // 아바타 목록 새로고침 (잠금 해제 반영)
                         self.viewModel.fetchAvatars(uid: self.uid)
                     }
-                      
-                    /* 
-                      if let image = UIImage(named: selected.imageName),
-                       let cgImage = image.cgImage {
-                        let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-                        let flipped = UIImage(cgImage: fixed.cgImage!, scale: fixed.scale, orientation: .upMirrored)
-                        self.rootView.selectedAvatarImg.image = flipped
-                    }
-                    
-                    self.viewModel.selectedAvatarRelay.accept(selected)
-                    
-                    // Firestore에 해금 정보 + 대표 아바타 저장
-                    FirestoreService.shared.saveUnlockedAvatar(uid: self.uid, newType: selected.type)
-                    FirestoreService.shared.saveSelectedAvatar(
-                        uid: self.uid, type: selected.type)
-                    
-                    self.viewModel.fetchAvatars(uid: self.uid)
-                    */
-
                 }
                 popup.onCancel = {
                     print("구매 취소")
