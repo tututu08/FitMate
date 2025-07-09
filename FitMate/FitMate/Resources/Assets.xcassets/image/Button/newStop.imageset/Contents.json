@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "type=Off.png",
+      "filename" : "Frame 317.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "type=Off@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "type=Off@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
