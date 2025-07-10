@@ -90,13 +90,20 @@ class AvatarPopUpViewController: CustomAlertViewController {
 
     // 팝업 뷰 안에 보여줄 이미지와 코인 금액을 직접 셋팅하는 역할
     func configure(avatarImageName: String, coinCost: Int) {
+        // 코인 라벨에 가격 숫자 표시
         coinLabel.text = "\(coinCost)"
-
+        // 아바타 이미지 이름으로 UIImage 생성
         if let image = UIImage(named: avatarImageName),
            let cgImage = image.cgImage {
             // 뷰컨에서 메인 이미지 반전시키는 방식과 마찬가지로 이미지 반전
-            let fixedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-            let flippedImage = UIImage(cgImage: fixedImage.cgImage!, scale: fixedImage.scale, orientation: .upMirrored)
+            let fixedImage = UIImage(
+                cgImage: cgImage,
+                scale: image.scale,
+                orientation: .up) // 이미지 방향을 고정시켜서 반전 처리를 위한 기준 이미지 생성
+            let flippedImage = UIImage(
+                cgImage: fixedImage.cgImage!,
+                scale: fixedImage.scale,
+                orientation: .upMirrored) // 메인 뷰와 동일하게 좌우 반전된 이미지 생성 -> .upMirrored 방향 사용
             avatarImage.image = flippedImage
         } else {
             avatarImage.image = UIImage(named: avatarImageName)
