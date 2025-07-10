@@ -61,17 +61,10 @@ class GoalSelectionViewModel: ViewModelType {
                     return Array(stride(from: 100, through: 2000, by: 100)).map { "\($0)회" }
                 case ("줄넘기", .battle):
                     return Array(stride(from: 100, through: 1500, by: 100)).map { "\($0)회" }
-                    
                 default:
                     return []
                 }
             }
             .asDriver(onErrorJustReturn: [])
-    }
-    func saveTitle(_ title: String) {
-        
-    }
-    func saveGoal() {
-        
     }
 }

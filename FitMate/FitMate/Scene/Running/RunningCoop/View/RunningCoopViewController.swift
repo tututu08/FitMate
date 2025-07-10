@@ -92,6 +92,7 @@ final class RunningCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
         // 위치 추적 시작
         startRelay.accept(())
+        
         runningCoopViewModel.bindDistanceFromFirestore()
         
         rootView.stopButton.rx.tap
@@ -152,7 +153,7 @@ final class RunningCoopViewController: BaseViewController {
                 self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
-        
+        // 위치 권한 거부 이벤트 감지 시 알림 표시
         output.locationAuthDenied
             .emit(onNext: { [weak self] in
                 self?.showLocationDeniedAlert()
@@ -194,7 +195,7 @@ final class RunningCoopViewController: BaseViewController {
             }
         )
     }
-    
+    // 상대가 위치 권한 거부 시 알림 띄우고 홈으로 이동 처리
     func showMateLocationRejectedAlert() {
         rootView.showQuitAlert(
             type: .cancelLocation,
@@ -220,6 +221,7 @@ final class RunningCoopViewController: BaseViewController {
             }
         )
     }
+    // 위치 권한 거부 시 시스템 알림 띄우기
     private func showLocationDeniedAlert() {
         let alert = UIAlertController(
             title: "위치 권한 필요",

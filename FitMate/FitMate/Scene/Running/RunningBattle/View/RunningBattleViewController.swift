@@ -159,7 +159,7 @@ class RunningBattleViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+    // 운동 종료 후 결과 화면 이동
     private func navigateToFinish(success: Bool, myDistance: Double) {
         let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
         
@@ -181,7 +181,8 @@ class RunningBattleViewController: BaseViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
-    
+
+    // 메이트 종료 수신 시 처리
     func receiveMateQuit() {
         viewModel.stopLocationUpdates()
         rootView.showQuitAlert(
@@ -192,7 +193,7 @@ class RunningBattleViewController: BaseViewController {
             }
         )
     }
-    
+    // 메이트가 위치 권한 거절한 경우
     func showMateLocationRejectedAlert() {
         rootView.showQuitAlert(
             type: .cancelLocation,
@@ -218,7 +219,7 @@ class RunningBattleViewController: BaseViewController {
             }
         )
     }
-    
+    // 위치 권한 거부 알림
     private func showLocationDeniedAlert() {
         let alert = UIAlertController(
             title: "위치 권한 필요",
