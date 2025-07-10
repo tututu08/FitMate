@@ -200,10 +200,10 @@ final class SettingViewController: UIViewController {
                 .asObservable()
                 .do(
                     onNext: {
-                        print("🟢 [1] 구글 재인증 성공")
+                        //print("[1] 구글 재인증 성공")
                     },
                     onError: { error in
-                        print("🔴 [1] 구글 재인증 실패: \(error.localizedDescription)")
+                        //print("[1] 구글 재인증 실패: \(error.localizedDescription)")
                     }
                 )
                 .asObservable()
@@ -214,10 +214,10 @@ final class SettingViewController: UIViewController {
                 .asObservable()
                 .do(
                     onNext: {
-                        print("🟢 [1] 애플 재인증 성공")
+                        //print("[1] 애플 재인증 성공")
                     },
                     onError: { error in
-                        print("🔴 [1] 애플 재인증 실패: \(error.localizedDescription)")
+                        //print("[1] 애플 재인증 실패: \(error.localizedDescription)")
                     }
                 )
                 .asObservable()
@@ -230,9 +230,9 @@ final class SettingViewController: UIViewController {
                 }
                 .asObservable()
                 .do(onNext: {
-                    print("🟢 [1] 카카오 재인증 성공")
+                    //print("[1] 카카오 재인증 성공")
                 }, onError: { error in
-                    print("🔴 [1] 카카오 재인증 실패: \(error.localizedDescription)")
+                    //print("[1] 카카오 재인증 실패: \(error.localizedDescription)")
                 })
             
         default:
@@ -245,22 +245,22 @@ final class SettingViewController: UIViewController {
             .flatMap { mateUid -> Single<Void> in
                 if mateUid.isEmpty {
                     // 메이트가 없으면 생략
-                    print("🟡 [2] 메이트 없음 - 연결 끊기 생략")
+                    //print("[2] 메이트 없음 - 연결 끊기 생략")
                     return .just(())
                 } else {
-                    print("🟢 [2] 메이트 있음 - 연결 끊기 시도")
+                    //print("[2] 메이트 있음 - 연결 끊기 시도")
                     return FirestoreService.shared.disconnectMate(forUid: self.uid, mateUid: mateUid, reason: .byWithdrawal)
                 }
             }
             .do(onSuccess: {
-                print("🟢 [2-2] 연결 끊기 완료")
+                //print("[2-2] 연결 끊기 완료")
             })
             .asObservable()
         
         // 3. Firebase 계정 삭제
         let deleteAccountObservable = AuthService.shared.deleteAccount()
             .do(onSuccess: {
-                print("🟢 [3] Firebase 계정 삭제 성공")
+                //print("[3] Firebase 계정 삭제 성공")
             })
             .asObservable()
         
@@ -270,7 +270,7 @@ final class SettingViewController: UIViewController {
             documentName: self.uid
         )
             .do(onSuccess: {
-                print("🟢 [4] Firestore 문서 삭제 성공")
+                //print("[4] Firestore 문서 삭제 성공")
             })
             .asObservable()
         

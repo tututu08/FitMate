@@ -154,7 +154,7 @@ class JumpRopeCoopViewController: BaseViewController {
         sportsView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
-                // 피니쉬화면으로 이동 등
+                // 피니쉬화면으로 이동 등                
                 self?.viewModel.finish(success: false) // 위치 정지 및 기록 저장
                 self?.navigateToFinish(success: false)
             }

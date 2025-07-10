@@ -103,12 +103,12 @@ class LoadingViewController: BaseViewController {
             .observe(on: MainScheduler.instance)
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] status in
-                print("🔥 받은 상태: \(status)")
+                print("받은 상태: \(status)")
                 guard let self else { return }
                 
                 // started 상태가 되면 시작
                 if status == "started" && !self.hasNavigatedToGame {
-                    print("✅ 동시에 시작 조건 충족 → 게임화면 이동")
+                    print("동시에 시작 조건 충족 → 게임화면 이동")
                     self.hasNavigatedToGame = true
                     
                     // 실시간 감지 리스너 종료
@@ -260,14 +260,6 @@ class LoadingViewController: BaseViewController {
                 return Disposables.create()
             }
         }
-    
-//    internal func popToTabBar() {
-//            if let nav = self.navigationController {
-//                nav.popToRootViewController(animated: true)
-//            } else {
-//                self.dismiss(animated: true)
-//            }
-//        }
     
     deinit {
         print("LoadingViewController deinit")

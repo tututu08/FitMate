@@ -62,7 +62,6 @@ final class HistoryViewModel {
             .subscribe(onSuccess: { [weak self] records in
                 print("기록 로드 성공!\n불러온 기록 개수: \(records.count)")
                 for record in records {
-                    //필요시에 기록 디버깅 로그
                     //print("기록: \(record)")
                 }
                 //전체 기록을 릴레이에 저장
