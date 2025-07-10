@@ -151,7 +151,7 @@ final class RunningBattleViewModel: ViewModelType {
             locationAuthDenied: locationAuthDeniedRelay.asSignal(onErrorJustReturn: ())
         )
     }
-    
+    // 위치 업데이트 시작 및 거리 계산
     private func startLocationUpdates() {
         locationManager.requestWhenInUseAuthorization()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -180,7 +180,7 @@ final class RunningBattleViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
     }
-    
+    // 종료 처리 (내가 종료 혹은 메이트 종료)
     private func confirmQuit(isMine: Bool) {
         locationManager.stopUpdatingLocation()
         
@@ -195,12 +195,12 @@ final class RunningBattleViewModel: ViewModelType {
         }
         finish(success: false)
     }
-    
+    // 종료 완료 처리 및 신호 방출
     func finish(success: Bool) {
         locationManager.stopUpdatingLocation()
         didFinishRelay.accept((success, Double(myDistance)))
     }
-    
+    // 메이트 종료 상태 Firestore 감지 바인딩
     private func bindMateQuitListener() {
         FirestoreService.shared.listenMateQuitStatus(matchCode: matchCode, myUid: myUid)
             .observe(on: MainScheduler.instance)

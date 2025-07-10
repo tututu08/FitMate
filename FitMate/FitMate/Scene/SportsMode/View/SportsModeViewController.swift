@@ -255,7 +255,7 @@ class SportsModeViewController: BaseViewController {
             $0.leading.trailing.equalToSuperview()
         }
 
-        // infoStackView: middleContainer의 정중앙!
+        // infoStackView: middleContainer의 정중앙
         infoStackView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
             $0.top.equalToSuperview().offset(20)
@@ -264,7 +264,6 @@ class SportsModeViewController: BaseViewController {
         }
         
         buttonStack.snp.makeConstraints {
-            //$0.top.equalTo(middleContainer.snp.bottom).offset(30)
             $0.bottom.equalTo(safeArea.snp.bottom).inset(36)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(60)
@@ -279,6 +278,7 @@ class SportsModeViewController: BaseViewController {
         effectLabel.text = "\(item.effect)"
         caloriesLabel.text = "\(item.calorie)"
         
+        // 플랭크는 배틀버튼 숨김
         battleModeButton.isHidden = (item.title == "플랭크")
         if battleModeButton.isHidden{
             buttonStack.spacing = 0

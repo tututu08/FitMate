@@ -159,7 +159,7 @@ class RunningBattleViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+    // 운동 종료 후 결과 화면 이동
     private func navigateToFinish(success: Bool, myDistance: Double) {
         let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
         
@@ -181,51 +181,7 @@ class RunningBattleViewController: BaseViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
-    
-//    private func navigateToFinish() {
-//        Firestore.firestore().collection("matches").document(matchCode)
-//            .getDocument { [weak self] snapshot, error in
-//                guard let self = self else { return }
-//                guard let data = snapshot?.data() else {
-//                    print("snapshot?.data() 없음\n")
-//                    return
-//                }
-//                guard let players = data["players"] as? [String: Any] else {
-//                    print("data[\"players\"] 정보 못가져옴\n")
-//                    return
-//                }
-//                guard let myData = players[self.myUid] as? [String: Any] else {
-//                    print("players[self.myUid] 정보 못가져옴\n")
-//                    return
-//                }
-//                guard let isWinner = myData["isWinner"] as? Bool else {
-//                    print("승자 정보 불러오기 실패")
-//                    return
-//                }
-//                
-//                print("isWinner: \(isWinner)\n")
-//                
-//                let finishVM = FinishViewModel(
-//                    mode: .battle,
-//                    sport: exerciseType,
-//                    goal: goalDistance,
-//                    goalUnit: "Km",
-//                    myDistance: self.viewModel.myDistanceRelay.value,
-//                    character: self.myCharacter,
-//                    success: isWinner  // Firestore에서 가져온 최종 결과
-//                )
-//                
-//                let vc = FinishViewController(
-//                    uid: self.myUid,
-//                    mateUid: self.mateUid,
-//                    matchCode: self.matchCode,
-//                    viewModel: finishVM
-//                )
-//                vc.modalPresentationStyle = .fullScreen
-//                self.present(vc, animated: true)
-//            }
-//    }
-    
+    // 메이트 종료 수신 시 처리
     func receiveMateQuit() {
         viewModel.stopLocationUpdates()
         rootView.showQuitAlert(
@@ -237,7 +193,7 @@ class RunningBattleViewController: BaseViewController {
             }
         )
     }
-    
+    // 메이트가 위치 권한 거절한 경우
     func showMateLocationRejectedAlert() {
         rootView.showQuitAlert(
             type: .cancelLocation,
@@ -263,7 +219,7 @@ class RunningBattleViewController: BaseViewController {
             }
         )
     }
-    
+    // 위치 권한 거부 알림
     private func showLocationDeniedAlert() {
         let alert = UIAlertController(
             title: "위치 권한 필요",
