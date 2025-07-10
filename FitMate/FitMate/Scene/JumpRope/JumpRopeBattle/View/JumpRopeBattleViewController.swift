@@ -59,11 +59,6 @@ class JumpRopeBattleViewController: BaseViewController {
         sportsView.updateMyCharacter(myCharacter)
         sportsView.updateMateCharacter(mateCharacter)
         
-//        FirestoreService.shared
-//            .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
-//            .bind(to: mateCountRelay)
-//            .disposed(by: disposeBag)
-        
         startRelay.accept(())
         
         sportsView.stopButton.rx.tap
@@ -97,7 +92,6 @@ class JumpRopeBattleViewController: BaseViewController {
     override func bindViewModel() {
         let input = JumpRopeBattleViewModel.Input(
             start: startRelay.asObservable(),
-            //mateCount: mateCountRelay.asObservable(),
             quit: quitRelay.asObservable(),
             mateQuit: mateQuitRelay.asObservable()
         )
@@ -182,7 +176,6 @@ class JumpRopeBattleViewController: BaseViewController {
                       let players = data["players"] as? [String: Any],
                       let myData = players[self.myUid] as? [String: Any],
                       let isWinner = myData["isWinner"] as? Bool else {
-                    print("🔥 승자 정보 불러오기 실패")
                     return
                 }
                 
@@ -195,7 +188,7 @@ class JumpRopeBattleViewController: BaseViewController {
                     goalUnit: "개",
                     myDistance: Double(self.viewModel.myCount),
                     avatarType: avatarType,
-                    success: isWinner  // ✅ Firestore에서 가져온 최종 결과
+                    success: isWinner  // Firestore에서 가져온 최종 결과
                 )
 
                 let vc = FinishViewController(
@@ -216,10 +209,8 @@ class JumpRopeBattleViewController: BaseViewController {
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                //self?.navigationController?.popToRootViewController(animated: true)
                 
-                self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
-                //self?.navigateToFinish(success: true)
+                self?.viewModel.finish(success: true) // 위치 정지 및 기록 저장
                 self?.navigateToFinish()
             }
         )

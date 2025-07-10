@@ -50,7 +50,7 @@ final class HistoryViewModel {
             .subscribe(onSuccess: { [weak self] records in
                 print("기록 로드 성공!\n불러온 기록 개수: \(records.count)")
                 for record in records {
-                    //print("📌 기록: \(record)")
+                    //print("기록: \(record)")
                 }
                 self?.recordsRelay.accept(records)
             }, onFailure: { error in
