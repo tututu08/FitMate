@@ -12,9 +12,11 @@ final class SettingViewController: UIViewController {
     private let viewModel = SettingViewModel()
     private let disposeBag = DisposeBag()
     
+    // 팝업뷰
     private var withdrawPopupView: WithdrawPopupView?
     private var mateEndPopupView: MateEndPopupView?
     
+    // 현재 사용자 uid
     private let uid: String
     
     init(uid: String) {
@@ -38,6 +40,7 @@ final class SettingViewController: UIViewController {
         view.addSubview(settingView)
         settingView.snp.makeConstraints { $0.edges.equalToSuperview() }
         
+        //파이어스토어에서 설정 불러오기
         Firestore.firestore().collection("users").document(uid).getDocument { [weak self] snapshot, error in
             guard let self else { return }
             let data = snapshot?.data() ?? [:]
@@ -45,8 +48,10 @@ final class SettingViewController: UIViewController {
             let isPushOn = data["pushEnabled"] as? Bool ?? true
             let isSoundOn = data["soundEnabled"] as? Bool ?? true
                 
+            // 토글 상태 초기화
             self.settingView.noticeToggle.setOn(isPushOn, animated: false)
             self.settingView.effectToggle.setOn(isSoundOn, animated: false)
+            //뷰모델에 초기 상태 전달
             self.viewModel.updatePushEnabled(isPushOn)
             self.viewModel.updateSoundEnabled(isSoundOn)
         
@@ -57,6 +62,7 @@ final class SettingViewController: UIViewController {
         bindCustomSwitch()
     }
     
+    // 커스텀 토글 스위치 바인딩
     private func bindCustomSwitch() {
         settingView.noticeToggle.valueChanged = { [weak self] isOn in
             self?.handlePushSwitchChange(isOn: isOn)
@@ -67,8 +73,10 @@ final class SettingViewController: UIViewController {
         }
     }
 
+    // 푸시 알림 토글 변경 시
     private func handlePushSwitchChange(isOn: Bool) {
         if isOn {
+            // 푸시 권한 요청
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in
                 DispatchQueue.main.async {
                     UIApplication.shared.registerForRemoteNotifications()
@@ -78,6 +86,7 @@ final class SettingViewController: UIViewController {
             UIApplication.shared.unregisterForRemoteNotifications()
         }
 
+        // 파이어스토어에 푸시 상태 저장
         FirestoreService.shared.updateDocument(
             collectionName: "users",
             documentName: uid,
@@ -91,9 +100,11 @@ final class SettingViewController: UIViewController {
         .disposed(by: disposeBag)
     }
 
+    //효과음 토글 변경 시
     private func handleSoundSwitchChange(isOn: Bool) {
         SoundManage.shared.isSoundEnabled = isOn
         
+        //파이어스토어에 상태 저장
         FirestoreService.shared.updateDocument(
             collectionName: "users",
             documentName: uid,
@@ -107,6 +118,7 @@ final class SettingViewController: UIViewController {
         .disposed(by: disposeBag)
     }
     
+    // 뷰모델과 바인딩
     private func bindViewModel() {
         let input = SettingViewModel.Input(
             pushToggleTapped: .empty(),
@@ -118,18 +130,21 @@ final class SettingViewController: UIViewController {
         
         let output = viewModel.transform(input: input)
         
+        // 메이트끊기
         output.partnerEvent
             .emit(onNext: { [weak self] in
                 self?.showMateEndPopup()
             })
             .disposed(by: disposeBag)
         
+        //로그아웃
         output.logoutEvent
             .emit(onNext: { [weak self] in
                 self?.logoutFunc()
             })
             .disposed(by: disposeBag)
         
+        //회원탈퇴
         output.withdrawEvent
             .emit(onNext: { [weak self] in
                 self?.showWithdrawPopup()
@@ -185,10 +200,10 @@ final class SettingViewController: UIViewController {
                 .asObservable()
                 .do(
                     onNext: {
-                        print("🟢 [1] 구글 재인증 성공")
+                        //print("[1] 구글 재인증 성공")
                     },
                     onError: { error in
-                        print("🔴 [1] 구글 재인증 실패: \(error.localizedDescription)")
+                        //print("[1] 구글 재인증 실패: \(error.localizedDescription)")
                     }
                 )
                 .asObservable()
@@ -199,10 +214,10 @@ final class SettingViewController: UIViewController {
                 .asObservable()
                 .do(
                     onNext: {
-                        print("🟢 [1] 애플 재인증 성공")
+                        //print("[1] 애플 재인증 성공")
                     },
                     onError: { error in
-                        print("🔴 [1] 애플 재인증 실패: \(error.localizedDescription)")
+                        //print("[1] 애플 재인증 실패: \(error.localizedDescription)")
                     }
                 )
                 .asObservable()
@@ -215,9 +230,9 @@ final class SettingViewController: UIViewController {
                 }
                 .asObservable()
                 .do(onNext: {
-                    print("🟢 [1] 카카오 재인증 성공")
+                    //print("[1] 카카오 재인증 성공")
                 }, onError: { error in
-                    print("🔴 [1] 카카오 재인증 실패: \(error.localizedDescription)")
+                    //print("[1] 카카오 재인증 실패: \(error.localizedDescription)")
                 })
             
         default:
@@ -230,22 +245,22 @@ final class SettingViewController: UIViewController {
             .flatMap { mateUid -> Single<Void> in
                 if mateUid.isEmpty {
                     // 메이트가 없으면 생략
-                    print("🟡 [2] 메이트 없음 - 연결 끊기 생략")
+                    //print("[2] 메이트 없음 - 연결 끊기 생략")
                     return .just(())
                 } else {
-                    print("🟢 [2] 메이트 있음 - 연결 끊기 시도")
+                    //print("[2] 메이트 있음 - 연결 끊기 시도")
                     return FirestoreService.shared.disconnectMate(forUid: self.uid, mateUid: mateUid, reason: .byWithdrawal)
                 }
             }
             .do(onSuccess: {
-                print("🟢 [2-2] 연결 끊기 완료")
+                //print("[2-2] 연결 끊기 완료")
             })
             .asObservable()
         
         // 3. Firebase 계정 삭제
         let deleteAccountObservable = AuthService.shared.deleteAccount()
             .do(onSuccess: {
-                print("🟢 [3] Firebase 계정 삭제 성공")
+                //print("[3] Firebase 계정 삭제 성공")
             })
             .asObservable()
         
@@ -255,7 +270,7 @@ final class SettingViewController: UIViewController {
             documentName: self.uid
         )
             .do(onSuccess: {
-                print("🟢 [4] Firestore 문서 삭제 성공")
+                //print("[4] Firestore 문서 삭제 성공")
             })
             .asObservable()
         

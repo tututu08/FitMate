@@ -15,25 +15,6 @@ import AuthenticationServices
 import CryptoKit
 import FirebaseFirestore
 
-enum KakaoLoginError: LocalizedError {
-  case userCancelled
-  case networkError
-  case invalidToken
-  case unknownError(String)
-  var errorDescription: String? {
-    switch self {
-    case .userCancelled:
-      return "사용자가 로그인을 취소했습니다."
-    case .networkError:
-      return "네트워크 연결을 확인해주세요."
-    case .invalidToken:
-      return "로그인 토큰이 유효하지 않습니다."
-    case .unknownError(let message):
-      return message
-    }
-  }
-}
-
 typealias KakaoUser = KakaoSDKUser.User
 
 final class AuthService: NSObject {
@@ -45,9 +26,18 @@ final class AuthService: NSObject {
         configureGoogleSignIn()
     }
     
+    /// Firebase에 google 인증 연결
+    /// - Firebase 프로젝트의 Google Client ID를 가져와서
+    /// - Google Sign-In에 필요한 설정(GIDConfiguration)을 만들고
+    /// - Google 로그인 싱글톤에 설정을 적용하는 함수입니다.
     private func configureGoogleSignIn() {
+        // Firebase에 등록된 Google 서비스의 Client ID 가져오기
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+        
+        // GIDConfiguration: Google 로그인 환경 설정 객체
         let config = GIDConfiguration(clientID: clientID)
+        
+        // GIDSignIn.sharedInstance: Google 로그인 동작을 관리하는 싱글톤 인스턴스
         GIDSignIn.sharedInstance.configuration = config
     }
     
@@ -283,7 +273,7 @@ final class AuthService: NSObject {
             if GIDSignIn.sharedInstance.currentUser == nil {
                 GIDSignIn.sharedInstance.restorePreviousSignIn { restoredUser, error in
                     if let restoredUser = restoredUser {
-                        print("🔁 구글 세션 복원 성공")
+                        print("구글 세션 복원 성공")
                         self.performGoogleReauth(user: user, googleUser: restoredUser, single: single)
                     } else {
                         single(.failure(NSError(
@@ -383,7 +373,7 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
                 return Disposables.create()
             }
             
-            guard let user = Auth.auth().currentUser else {
+            guard Auth.auth().currentUser != nil else {
                 single(.failure(NSError(domain: "AppleAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "로그인 유저 없음"])))
                 return Disposables.create()
             }
@@ -399,13 +389,13 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
             controller.delegate = self
             controller.presentationContextProvider = self
             
-            // ✅ 결과를 여기에 저장해두었다가 delegate에서 사용
+            // 결과를 여기에 저장해두었다가 delegate에서 사용
             self.appleObserver = { result in
                 switch result {
-                case .success(let user):
-                    single(.success(())) // ✅ 재인증 성공
+                case .success:
+                    single(.success(())) // 재인증 성공
                 case .failure(let error):
-                    single(.failure(error)) // ❌ 재인증 실패
+                    single(.failure(error)) // 재인증 실패
                 }
                 self.appleObserver = nil
             }

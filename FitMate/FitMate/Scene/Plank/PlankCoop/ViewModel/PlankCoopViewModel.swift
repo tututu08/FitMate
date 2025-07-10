@@ -292,15 +292,6 @@ final class PlankCoopViewModel: ViewModelType {
                         self.pauseRemainTime = nil
                         // 준비(ready) 단계 없음!
                     }
-                    //                    let nextTurn = !isMyTurn
-//                    FirestoreService.shared.updatePlankTurn(
-//                        matchCode: self.matchCode,
-//                        isMyTurn: nextTurn
-//                    )
-//                    .subscribe()
-//                    .disposed(by: self.disposeBag)
-//                    self.pauseRemainTime = nil
-//                    // 준비(ready) 단계 없음!
                 }
             }
         }

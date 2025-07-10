@@ -42,8 +42,6 @@ class FinishViewController: BaseViewController {
             isWin: viewModel.success
         )
         
-        //print("보상 : \(reward)\n")
-        
         finishView.updateReward(text: "\(reward)", hideCoin: viewModel.success)
     }
     
@@ -106,9 +104,7 @@ class FinishViewController: BaseViewController {
                     mode: viewModel.mode,
                     isWin: viewModel.success
                 )
-                
-                //print("보상 : \(reward)\n")
-                
+
                 // 코인 가산
                 rewardCoins(coinAmount: reward)
                 
@@ -225,9 +221,7 @@ class FinishViewController: BaseViewController {
             }
         }()
 
-        //print("운동계수 : \(exerciseFactor)\n모드계수 : \(modeFactor)\n지속 보너스 : \(durationBonus)\n목표치 : \(goalValue)\n")
         let reward = (exerciseFactor * 100 * modeFactor * durationBonus).rounded(.toNearestOrEven)
-        //print("함수 안 reward: \(reward)")
         return Int((reward / 10.0).rounded() * 10)
     }
     
@@ -238,19 +232,10 @@ class FinishViewController: BaseViewController {
                 onSuccess: { [weak self] data in
                     guard let self else { return }
                     
-                    //print(" 문서 데이터: \(data)")
-                    
                     let myCoin = data["coin"] as? Int
                     
                     FirestoreService.shared.updateDocument(collectionName: "users", documentName: self.uid, fields: ["coin": (myCoin ?? 0) + coinAmount])
-                        .subscribe(
-//                            onSuccess: {
-//                                //print("업데이트 성공!")
-//                            },
-//                            onFailure: { error in
-//                                //print("실패: \(error.localizedDescription)")
-//                            }
-                        )
+                        .subscribe()
                         .disposed(by: self.disposeBag)
                     
                 }, onFailure: { error in

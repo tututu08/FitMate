@@ -58,12 +58,7 @@ class JumpRopeBattleViewController: BaseViewController {
         //(파이널베이스 내의 만약 캐릭터 이미지 바인딩 시 이곳에서)
         sportsView.updateMyCharacter(myCharacter)
         sportsView.updateMateCharacter(mateCharacter)
-        
-//        FirestoreService.shared
-//            .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
-//            .bind(to: mateCountRelay)
-//            .disposed(by: disposeBag)
-        
+
         startRelay.accept(())
         
         sportsView.stopButton.rx.tap
@@ -74,8 +69,6 @@ class JumpRopeBattleViewController: BaseViewController {
                         // 그냥 닫고 아무 동작 없음 (계속 운동)
                     },
                     onQuit: { [weak self] in
-                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        //self?.viewModel.finish(success: false)
                         self?.quitRelay.accept(())
                         // 혹은 didFinishRelay 트리거 등
                     }
@@ -97,7 +90,6 @@ class JumpRopeBattleViewController: BaseViewController {
     override func bindViewModel() {
         let input = JumpRopeBattleViewModel.Input(
             start: startRelay.asObservable(),
-            //mateCount: mateCountRelay.asObservable(),
             quit: quitRelay.asObservable(),
             mateQuit: mateQuitRelay.asObservable()
         )
@@ -182,7 +174,6 @@ class JumpRopeBattleViewController: BaseViewController {
                       let players = data["players"] as? [String: Any],
                       let myData = players[self.myUid] as? [String: Any],
                       let isWinner = myData["isWinner"] as? Bool else {
-                    print("🔥 승자 정보 불러오기 실패")
                     return
                 }
                 
@@ -195,7 +186,7 @@ class JumpRopeBattleViewController: BaseViewController {
                     goalUnit: "개",
                     myDistance: Double(self.viewModel.myCount),
                     avatarType: avatarType,
-                    success: isWinner  // ✅ Firestore에서 가져온 최종 결과
+                    success: isWinner  // Firestore에서 가져온 최종 결과
                 )
 
                 let vc = FinishViewController(
@@ -216,10 +207,8 @@ class JumpRopeBattleViewController: BaseViewController {
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                //self?.navigationController?.popToRootViewController(animated: true)
                 
-                self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
-                //self?.navigateToFinish(success: true)
+                self?.viewModel.finish(success: true) // 위치 정지 및 기록 저장
                 self?.navigateToFinish()
             }
         )

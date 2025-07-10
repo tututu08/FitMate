@@ -96,7 +96,7 @@ final class RunningCoopViewModel: ViewModelType {
         
         input.mateDistance
             .subscribe(onNext: { [weak self] km in
-                let meter = km * 1000.0                          // 🔸 내부 계산용 (progress 등)
+                let meter = km * 1000.0 // 내부 계산용 (progress 등)
                 self?.mateDistanceRelay.accept(meter)
                 
                 // 🔹 텍스트 표시용: 그대로 km를 사용 (String만 포맷)
@@ -105,7 +105,7 @@ final class RunningCoopViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        // ✅ Firestore에서 받아온 거리로 표시 (KM 단위 그대로)
+        // Firestore에서 받아온 거리로 표시 (KM 단위 그대로)
         let myText = myDistanceDisplayRelay
             .map { [weak self] km in self?.formatDistance(km) ?? "\(km) km" }
             .asDriver(onErrorJustReturn: "0.0 km")
@@ -181,14 +181,14 @@ final class RunningCoopViewModel: ViewModelType {
     // // 사용자가 직접 '그만하기'를 누른 경우 또는 상대가 종료한 경우의 정리 및 종료 처리
     private func confirmQuit(isMine: Bool) {
         locationManager.stopUpdatingLocation()
-        
+
         // 그만하기 버튼 탭 시, QuitStatus 업데이트
         if isMine {
             FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUid)
                 .subscribe(onCompleted: {
-                    //print("✅ quitStatus 저장 성공")
+                    //print("quitStatus 저장 성공")
                 }, onError: { error in
-                    //print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
+                    //print("quitStatus 저장 실패: \(error.localizedDescription)")
                 })
                 .disposed(by: disposeBag)
         }

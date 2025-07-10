@@ -10,9 +10,6 @@ final class QuitAlert: UIView {
         case myQuitConfirm    // 내가 그만하기 눌렀을 때: 일시정지/그만하기
         case mateQuit        // 상대가 그만하기 눌러서 나도 종료: 돌아가기만
         case cancelLocation
-//        case cancelLocationByMe
-//        case cancelLocationByMate
-        
     }
     
     // 콜백(이어할때, 그만둘때,mateQuit되어서 돌아가기)
@@ -67,22 +64,15 @@ final class QuitAlert: UIView {
         container.layer.cornerRadius = 8
         container.snp.makeConstraints {
             $0.center.equalToSuperview()
-//            $0.width.equalTo(320)
             $0.width.equalTo(326)
-            //$0.height.equalTo(350)
         }
         
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
-//        iconImageView.isHidden = true
         titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         titleLabel.textColor = UIColor(named: "Background900")
         titleLabel.textAlignment = .center
-//        messageLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
-//        messageLabel.textColor = .gray
-//        messageLabel.textAlignment = .center
-//        messageLabel.numberOfLines = 0
-        
+
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.gray, for: .normal)
         resumeButton.backgroundColor = .background50
@@ -92,7 +82,6 @@ final class QuitAlert: UIView {
         stopButton.setTitle("그만하기", for: .normal)
         stopButton.setTitleColor(.white, for: .normal)
         stopButton.backgroundColor = .primary500
-//        stopButton.backgroundColor = UIColor(named: "Background500")
         stopButton.layer.cornerRadius = 4
         stopButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
@@ -115,7 +104,6 @@ final class QuitAlert: UIView {
             iconImageView,
             titleLabel,
             messageLabel,
-            //buttonStack,
             backButton
         ])
         mainStack.axis = .vertical
@@ -127,7 +115,6 @@ final class QuitAlert: UIView {
         container.addSubview(backButton)
         
         mainStack.snp.makeConstraints {
-//            $0.edges.equalToSuperview()
             $0.top.equalToSuperview().offset(32)
             $0.horizontalEdges.equalToSuperview().inset(20)
         }
@@ -144,12 +131,10 @@ final class QuitAlert: UIView {
         }
         stopButton.snp.makeConstraints {
             $0.height.equalTo(48)
-            //$0.width.equalTo(124)
         }
         backButton.snp.makeConstraints {
             $0.height.equalTo(48)
             $0.width.equalTo(270)
-//            $0.bottom.equalToSuperview().inset(20)
             $0.centerX.equalToSuperview()
             $0.bottom.equalTo(container.snp.bottom).inset(20) //
         }
@@ -181,7 +166,6 @@ final class QuitAlert: UIView {
             기록은 걱정마요~ 센스있는 제가 
             안전하게 저장해두었답니다!
             """)
-//            iconImageView.isHidden = false
             buttonStack.isHidden = true
             backButton.isHidden = false
             backButton.rx.tap
@@ -194,25 +178,11 @@ final class QuitAlert: UIView {
             메이트가 위치 권한 설정 동의 후
             우리 다시 운동해봐요~!
             """)
-//            iconImageView.isHidden = false
             buttonStack.isHidden = true
             backButton.isHidden = false
             backButton.rx.tap
                 .bind { [weak self] in self?.onHome?() }
                 .disposed(by: disposeBag)
-//        case .cancelLocationByMe:
-//            titleLabel.text = "위치 권한이 필요합니다"
-//            setMessage("""
-//            위치 권한이 거부되어서 운동이 종료됩니다ㅠㅠ
-//            [설정]에서 위치 권한을 허용하신 뒤 
-//            다시 시도해 주세요!
-//            """)
-//            iconImageView.isHidden = false
-//            buttonStack.isHidden = true
-//            backButton.isHidden = false
-//            backButton.rx.tap
-//                .bind { [weak self] in self?.onHome?() }
-//                .disposed(by: disposeBag)
         }
     }
 }

@@ -76,7 +76,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         self.findMateUid(uid: uid) // 메이트 uid 검색
     }
     
-    @MainActor required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

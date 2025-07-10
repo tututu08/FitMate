@@ -71,18 +71,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
                 self?.observeMateCount()
             })
             .disposed(by: disposeBag)
-        
-        // 메이트 점프 수가 들어오면 Relay에 바인딩
-//        input.mateCount
-//            .subscribe(onNext: { [weak self] count in
-//                guard let self else { return }
-//                self.mateCountRelay.accept(count)
-//                if Double(self.myCountRelay.value) + Double(self.mateCountRelay.value) >= Double(self.goalCount) {
-//                    self.finish(success: true)
-//                }
-//            })
-//            .disposed(by: disposeBag)
-        
+
         input.quit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
             .disposed(by: disposeBag)
@@ -149,16 +138,13 @@ final class JumpRopeCoopViewModel: ViewModelType {
     }
     private func confirmQuit(isMine: Bool) {
         motionManager.stopAccelerometerUpdates()
-        //finish(success: false)
-        // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
-        
         // 그만하기 버튼 탭 시, QuitStatus 업데이트
         if isMine {
             FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUID)
                 .subscribe(onCompleted: {
-                    //print("✅ quitStatus 저장 성공")
+                    //print("quitStatus 저장 성공")
                 }, onError: { error in
-                    //print("❌ quitStatus 저장 실패: \(error.localizedDescription)")
+                    //print("quitStatus 저장 실패: \(error.localizedDescription)")
                 })
                 .disposed(by: disposeBag)
         }
@@ -169,25 +155,6 @@ final class JumpRopeCoopViewModel: ViewModelType {
         motionManager.stopAccelerometerUpdates()
         didFinishRelay.accept(success)
     }
-    // 내 점프수 Firestore에 저장 (실시간)
-    //        private func updateMyCountToFirestore(_ count: Int) {
-    //            let data = [myUID: count]
-    //            db.collection("jumpMatch")
-    //                .document(matchID)
-    //                .setData(data, merge: true) // merge: true로 각 유저 점프 수 분리 저장
-    //        }
-    //
-    // 메이트 점프 수를 Firestore에서 실시간 감지
-    //        private func observeMateCount() {
-    //            db.collection("jumpMatch")
-    //                .document(matchID)
-    //                .addSnapshotListener { [weak self] snapshot, error in
-    //                    guard let self, let data = snapshot?.data(),
-    //                          let mateCount = data[self.mateUID] as? Int else { return }
-    //                    self.mateCountRelay.accept(mateCount)
-    //                }
-    //        }
-    // 뷰모델 소멸시 센서 종료
     
     // 내 점프수 Firestore에 저장 (실시간)
     private func updateMyCountToFirestore(_ count: Int) {
@@ -197,9 +164,9 @@ final class JumpRopeCoopViewModel: ViewModelType {
                 "players.\(myUID).progress": count
             ]) { error in
                 if let error = error {
-                    print("❌ 점프 수 저장 실패: \(error.localizedDescription)")
+                    print("점프 수 저장 실패: \(error.localizedDescription)")
                 } else {
-                    print("✅ 점프 수 저장 완료: \(count)")
+                    print("점프 수 저장 완료: \(count)")
                 }
             }
     }
@@ -217,7 +184,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
                     return
                 }
                 
-                print("👀 메이트 점프 수 업데이트: \(progress)")
+                print("메이트 점프 수 업데이트: \(progress)")
                 self.mateCountRelay.accept(progress)
                 
                 if progress >= self.goalCount {

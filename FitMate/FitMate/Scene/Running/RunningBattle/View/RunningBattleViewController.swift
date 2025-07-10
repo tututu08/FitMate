@@ -181,6 +181,7 @@ class RunningBattleViewController: BaseViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
+
     // 메이트 종료 수신 시 처리
     func receiveMateQuit() {
         viewModel.stopLocationUpdates()
@@ -189,7 +190,6 @@ class RunningBattleViewController: BaseViewController {
             onBack: { [weak self] in
                 self?.viewModel.finish(success: true)
                 self?.navigateToFinish(success: true, myDistance: self?.viewModel.myDistanceRelay.value ?? 0.0)
-                //self?.navigateToFinish()
             }
         )
     }

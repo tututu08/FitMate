@@ -31,7 +31,7 @@ final class MateCodeViewController: BaseViewController {
     }
     
     /// 스토리보드 사용하지 않기 때문에 구현하지 않음
-    @MainActor required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

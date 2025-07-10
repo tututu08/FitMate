@@ -4,12 +4,15 @@ import RxCocoa
 
 final class MypageViewController: UIViewController, UICollectionViewDelegateFlowLayout {
 
+    //상단바 구성
     let rootView = MypageView(showSettingButton: true, titleText: "마이페이지", showBackButton: false)
+    
+    // 사용자 식별에 따른 뷰모델 인스턴스
     private let viewModel: MypageViewModel
     private let disposeBag = DisposeBag()
-    
     private let uid: String
     
+    //uid 기반 생성자
     init(uid: String) {
         self.uid = uid
         self.viewModel = MypageViewModel(uid: uid)
@@ -21,34 +24,42 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     }
     
     override func loadView() {
-        self.view = rootView
+        self.view = rootView //루트 뷰 설정
     }
 
+    // 네비게이션 바 숨김처리
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
         
+        // 프로필 이미지 업뎃
         updateSelectedAvatarImage()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 기록 컬렉션 뷰 부분 delegate 설정
         rootView.recordCollectionView.delegate = self
+        // 뷰모델 바인딩 및 버튼 액션 바인딩
         bindViewModel()
         bindActions()
+        //셀등록
         rootView.recordCollectionView.register(
             WorkRecordCell.self,
             forCellWithReuseIdentifier: WorkRecordCell.identifier
         )
     }
 
+    // 뷰모델의 아웃풋을 위한 view와 바인딩
     private func bindViewModel() {
         let output = viewModel.transform()
 
+        //닉네임바인딩
         output.nickname
             .drive(rootView.nicknameLabel.rx.text)
             .disposed(by: disposeBag)
 
+        //기록 바인딩
         output.records
             .drive(rootView.recordCollectionView.rx.items(
                 cellIdentifier: WorkRecordCell.identifier,
@@ -59,6 +70,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             .disposed(by: disposeBag)
     }
 
+    //설정버튼 탭 바인딩 (설정 화면 모달 표시)
     private func bindActions() {
         rootView.settingButton.rx.tap
             .bind { [weak self] in
@@ -70,17 +82,21 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             .disposed(by: disposeBag)
     }
 
+    // 셀 크기 설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width - 32, height: 120)
     }
     
+    //Rx를 사용해 선택된 아바타를 업데이트
     private func updateSelectedAvatarImage() {
+        // 앱 전역에서 현재 선택된 아바타 정보를 실시간으로 감지해서 반영시키기 위해 BehaviorRelay 사용
         AvatarManager.shared.selectedAvatarRelay
-            .compactMap { $0 } // AvatarModel
+            .compactMap { $0 } // nil 제거
             .observe(on: MainScheduler.instance)
             .bind { [weak self] avatar in
                 guard let self else { return }
                 
+                // 이미지 방향 고정
                 if let image = UIImage(named: avatar.imageName),
                    let cgImage = image.cgImage {
                     let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)

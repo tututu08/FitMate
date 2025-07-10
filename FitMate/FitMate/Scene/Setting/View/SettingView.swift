@@ -17,6 +17,7 @@ final class SettingView: UIView {
         return view
     }()
 
+    // 상단 제목 설정
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "설정"
@@ -26,6 +27,7 @@ final class SettingView: UIView {
         return label
     }()
 
+    //닫기
     let closeButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -33,9 +35,10 @@ final class SettingView: UIView {
         return button
     }()
 
-    let noticeToggle = CustomSwitchView()
-    let effectToggle = CustomSwitchView()
+    let noticeToggle = CustomSwitchView() // 푸시 알림 설정 스위치
+    let effectToggle = CustomSwitchView() // 효과음 설정 스위치
 
+    // 푸시알림
     private let noticeLabel: UILabel = {
         let label = UILabel()
         label.text = "푸시알림"
@@ -44,6 +47,7 @@ final class SettingView: UIView {
         return label
     }()
 
+    // 효과음
     private let effectLabel: UILabel = {
         let label = UILabel()
         label.text = "효과음"
@@ -52,6 +56,7 @@ final class SettingView: UIView {
         return label
     }()
 
+    // 토글 섹션과 버튼을 하는 구분선
     private let separator: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Primary300")
@@ -62,6 +67,7 @@ final class SettingView: UIView {
     let logoutButton = SettingView.makeButton(title: "로그아웃")
     let withdrawButton = SettingView.makeButton(title: "회원탈퇴")
 
+    // 위 3개의 버튼을 정렬하는 스택
     private let buttonStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -80,6 +86,7 @@ final class SettingView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // 전체 레이아웃
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(containerView)
@@ -95,7 +102,8 @@ final class SettingView: UIView {
         [titleLabel, closeButton, separator].forEach {
             containerView.addSubview($0)
         }
-
+        
+        // 푸시알림/효과음을 각각 담는 스택
         let noticeStack = UIStackView(arrangedSubviews: [noticeLabel, noticeToggle])
         noticeStack.axis = .horizontal
         noticeStack.spacing = 6
@@ -106,6 +114,7 @@ final class SettingView: UIView {
         effectStack.spacing = 6
         effectStack.alignment = .center
 
+        // 위 두 스택을 하나로 묶는 스택
         let toggleStack = UIStackView(arrangedSubviews: [noticeStack, effectStack])
         toggleStack.axis = .horizontal
         toggleStack.spacing = 20
@@ -149,6 +158,7 @@ final class SettingView: UIView {
         }
     }
 
+    // 공통된 스타일의 버튼을 생성하는 유틸리티
     private static func makeButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)

@@ -5,8 +5,9 @@ import SnapKit
 final class WalkRecordCell: UICollectionViewCell {
     static let identifier = "WalkRecordCell"
     
-    private var detailLabels: [UILabel] = []
+    private var detailLabels: [UILabel] = [] // 기록 업데이트를 위한 배열
     
+    // 캐릭터 이미지
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "walk")
@@ -16,6 +17,7 @@ final class WalkRecordCell: UICollectionViewCell {
         return imageView
     }()
     
+    //걷기
     private let typeLabel: UILabel = {
         let label = UILabel()
         label.text = "걷기"
@@ -23,7 +25,7 @@ final class WalkRecordCell: UICollectionViewCell {
         label.textColor = .black
         return label
     }()
-    
+    //날짜
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "0000.00.00"
@@ -32,6 +34,7 @@ final class WalkRecordCell: UICollectionViewCell {
         return label
     }()
     
+    // 결과
     private let resultLabel: UILabel = {
         let label = UILabel()
         label.text = "대결-패배"
@@ -55,6 +58,7 @@ final class WalkRecordCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //전체 셀 레이아웃 구성
     private func setupLayout() {
         backgroundColor = .white
         layer.cornerRadius = 8
@@ -129,10 +133,12 @@ final class WalkRecordCell: UICollectionViewCell {
         return stack
     }
     
+    // 데이터를 받아 업데이트
     func configure(with record: ExerciseRecord) {
         dateLabel.text = record.dateOnly
         resultLabel.text = record.result.rawValue
         
+        // 결과에 따라 색상 변경
         switch record.result {
         case .teamSuccess, .teamFail:
             resultLabel.backgroundColor = UIColor(named: "Primary500")
