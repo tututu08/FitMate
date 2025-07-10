@@ -1,9 +1,3 @@
-//
-//  MateEndedPopupView.swift
-//  FitMate
-//
-//  Created by 김은서 on 6/23/25.
-//
 
 import UIKit
 import SnapKit
@@ -23,6 +17,7 @@ final class PartnerLeftAlertView: UIView {
         return view
     }()
 
+    // 종료 안내
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "상대방이 메이트를\n 종료하였습니다."
@@ -33,6 +28,7 @@ final class PartnerLeftAlertView: UIView {
         return label
     }()
 
+    // 안내 설명문구
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "기록은 보관되어 있으니 언제든 확인할 수 있습니다.\n새로운 메이트를 추가해 운동을 이어가보세요."
@@ -43,6 +39,7 @@ final class PartnerLeftAlertView: UIView {
         return label
     }()
 
+    // 확인
     let confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("확인", for: .normal)
@@ -61,6 +58,7 @@ final class PartnerLeftAlertView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // 전체 레이아웃
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(containerView)
@@ -74,8 +72,6 @@ final class PartnerLeftAlertView: UIView {
         containerView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)
-            //$0.horizontalEdges.equalToSuperview().inset(24)
-            //$0.height.equalTo(210)
         }
 
         titleLabel.snp.makeConstraints {

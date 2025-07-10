@@ -41,11 +41,11 @@ final class PauseAlert: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func setupUI() {
-        // 1. 전체 dimmedView
+        // 전체 dimmedView
         addSubview(dimmedView)
         dimmedView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        // 2. 알럿 컨테이너
+        // 알럿 컨테이너
         addSubview(alertContainer)
         alertContainer.backgroundColor = .white
         alertContainer.layer.cornerRadius = 8
@@ -53,10 +53,9 @@ final class PauseAlert: UIView {
         alertContainer.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)
-            //$0.height.equalTo(340) // 높이 고정 시 너무 길면 .greaterThanOrEqualTo로
         }
 
-        // 3. 각 요소 스타일 세팅
+        // 각 요소 스타일 세팅
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.image = UIImage(named: "pause")
         
@@ -64,10 +63,6 @@ final class PauseAlert: UIView {
         titleLabel.textAlignment = .center
         titleLabel.textColor = UIColor(named: "Background900")
 
-//        messageLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
-//        messageLabel.textAlignment = .center
-//        messageLabel.numberOfLines = 2
-//        messageLabel.textColor = UIColor(named: "Background400")
 
         timerLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
         timerLabel.textColor = .primary400
@@ -79,7 +74,7 @@ final class PauseAlert: UIView {
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         resumeButton.layer.cornerRadius = 4
 
-        // 4. StackView 배치 (spacing 맞추기)
+        // StackView 배치 (spacing 맞추기)
         let stack = UIStackView(arrangedSubviews: [
             iconImageView,
             titleLabel,
@@ -93,14 +88,13 @@ final class PauseAlert: UIView {
 
         alertContainer.addSubview(stack)
         stack.snp.makeConstraints {
-            //$0.edges.equalToSuperview().inset(20)
             $0.top.equalToSuperview().offset(32)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(20)
         }
 
         iconImageView.snp.makeConstraints {
-            $0.size.equalTo(84) // 원하는 크기로!
+            $0.size.equalTo(84)
         }
         
         resumeButton.snp.makeConstraints {
@@ -121,19 +115,17 @@ final class PauseAlert: UIView {
             setMessage("""
                 운동이 일시정지 되었습니다.\n준비되면 이어서 계속해 보세요!
                 """)
-            //messageLabel.text = "운동이 일시정지 되었습니다.\n준비되면 이어서 계속해 보세요!"
             resumeButton.isHidden = false
             resumeButton.setTitle("계속하기", for: .normal)
             resumeButton.isEnabled = true
             resumeButton.backgroundColor = .primary500
             resumeButton.setTitleColor(.white, for: .normal)
-            startCountdown(from: 10) // 3분(=180), 테스트용 10
+            startCountdown(from: 10) //
         case .matePause:
             titleLabel.text = "메이트가 일시정지를 했습니다."
             setMessage("""
                 메이트가 돌아올 때까지 잠시만 기다려주세요.\n대기 시간이 지나면 자동으로 재개됩니다.
                 """)
-            //messageLabel.text = "메이트가 돌아올 때까지 잠시만 기다려주세요.\n대기 시간이 지나면 자동으로 재개됩니다."
             resumeButton.isHidden = false
             resumeButton.setTitle("잠시만 기다려주세요", for: .normal)
             resumeButton.isEnabled = false
@@ -172,7 +164,7 @@ final class PauseAlert: UIView {
     
     func setMessage(_ text: String) {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 6  // 원하는 줄간격으로 조절 (예: 6)
+        paragraphStyle.lineSpacing = 6  // 원하는 줄간격으로 조절
         paragraphStyle.alignment = .center //
         let attributedString = NSAttributedString(string: text, attributes: [
             .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14),

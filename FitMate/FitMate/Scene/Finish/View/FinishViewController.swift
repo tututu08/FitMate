@@ -104,7 +104,7 @@ class FinishViewController: BaseViewController {
                     mode: viewModel.mode,
                     isWin: viewModel.success
                 )
-                
+
                 // 코인 가산
                 rewardCoins(coinAmount: reward)
                 

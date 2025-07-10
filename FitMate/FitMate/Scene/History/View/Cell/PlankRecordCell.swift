@@ -4,8 +4,10 @@ import SnapKit
 final class PlankRecordCell: UICollectionViewCell {
     static let identifier = "PlankRecordCell"
 
+    // 기록을 담기 위한 배열
     private var detailLabels: [UILabel] = []
 
+    // 캐릭터이미지
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "plank")
@@ -15,6 +17,7 @@ final class PlankRecordCell: UICollectionViewCell {
         return imageView
     }()
 
+    // 플랭크
     private let typeLabel: UILabel = {
         let label = UILabel()
         label.text = "플랭크"
@@ -23,6 +26,7 @@ final class PlankRecordCell: UICollectionViewCell {
         return label
     }()
 
+    // 날짜
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "0000.00.00"
@@ -31,6 +35,7 @@ final class PlankRecordCell: UICollectionViewCell {
         return label
     }()
 
+    // 결과
     private let resultLabel: UILabel = {
         let label = UILabel()
         label.text = "협력-성공"
@@ -52,6 +57,7 @@ final class PlankRecordCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // 전체 셀 설정
     private func setupLayout() {
         backgroundColor = .white
         layer.cornerRadius = 8
@@ -101,6 +107,7 @@ final class PlankRecordCell: UICollectionViewCell {
         }
     }
 
+    // 셀 기록을 구성하는 라벨스택들
     private func makeDetailLabel(value: String, unit: String) -> UIStackView {
         let valueLabel = UILabel()
         valueLabel.text = value
@@ -109,7 +116,7 @@ final class PlankRecordCell: UICollectionViewCell {
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
 
-        detailLabels.append(valueLabel)
+        detailLabels.append(valueLabel) //configure에 값을 업데이트하기위해 배열저장
 
         let unitLabel = UILabel()
         unitLabel.text = unit
@@ -126,16 +133,19 @@ final class PlankRecordCell: UICollectionViewCell {
         return stack
     }
 
+    // 데이터를 받아 셀 내용 구성
     func configure(with record: ExerciseRecord) {
         dateLabel.text = record.dateOnly
         resultLabel.text = record.result.rawValue
 
-        resultLabel.backgroundColor = UIColor(named: "Primary500")
+        resultLabel.backgroundColor = UIColor(named: "Primary500") // 플랭크는 대결이 없어서 색상 고정
         resultLabel.textColor = .white
 
+        // 나, 메이트는 초 단위 -> 분단위 볍ㄴ환
         let me = Int(record.detail2) ?? 0
         let mate = Int(record.detail3) ?? 0
 
+        // 목표치는 분단위라 그대로 사용
         let converted = [record.detail1,String(me / 60),String(mate / 60)]
 
         for (index, label) in detailLabels.enumerated() {

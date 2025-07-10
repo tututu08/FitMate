@@ -58,7 +58,7 @@ class JumpRopeBattleViewController: BaseViewController {
         //(파이널베이스 내의 만약 캐릭터 이미지 바인딩 시 이곳에서)
         sportsView.updateMyCharacter(myCharacter)
         sportsView.updateMateCharacter(mateCharacter)
-        
+
         startRelay.accept(())
         
         sportsView.stopButton.rx.tap
@@ -69,8 +69,6 @@ class JumpRopeBattleViewController: BaseViewController {
                         // 그냥 닫고 아무 동작 없음 (계속 운동)
                     },
                     onQuit: { [weak self] in
-                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        //self?.viewModel.finish(success: false)
                         self?.quitRelay.accept(())
                         // 혹은 didFinishRelay 트리거 등
                     }

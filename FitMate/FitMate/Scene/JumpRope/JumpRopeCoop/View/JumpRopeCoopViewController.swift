@@ -64,7 +64,6 @@ class JumpRopeCoopViewController: BaseViewController {
                         // 그냥 닫고 아무 동작 없음 (계속 운동)
                     },
                     onQuit: { [weak self] in
-                        // 진짜로 종료 → 기록 저장 & 화면 이동 등                        
                         self?.quitRelay.accept(())
                     }
                 )

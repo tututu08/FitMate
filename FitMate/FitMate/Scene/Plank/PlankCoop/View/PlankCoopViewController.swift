@@ -104,17 +104,6 @@ final class PlankCoopViewController: BaseViewController {
         UIApplication.shared.isIdleTimerDisabled = false
     }
 
-//    // (Optional) 매칭 스타트타임 외부 리스너 - 실제 운동 시작을 서버타임 기준으로 맞추고 싶을 때 사용
-//    private func listenStartTime() {
-//        MatchEventService.shared.listenStartTime(matchCode: matchCode)
-//            .observe(on: MainScheduler.instance)
-//            .subscribe(onNext: { [weak self] startTime in
-//                guard let self = self else { return }
-//                let delay = startTime.timeIntervalSinceNow
-//                print("운동 시작까지 \(delay)초 대기")
-//            })
-//    }
-
     // ViewModel과 Rx 바인딩 세팅
     private func bind() {
         // Input - 버튼 등에서 발생한 이벤트를 ViewModel로 전달

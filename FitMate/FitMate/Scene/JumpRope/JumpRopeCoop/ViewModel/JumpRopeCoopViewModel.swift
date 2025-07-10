@@ -71,7 +71,7 @@ final class JumpRopeCoopViewModel: ViewModelType {
                 self?.observeMateCount()
             })
             .disposed(by: disposeBag)
-        
+
         input.quit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
             .disposed(by: disposeBag)

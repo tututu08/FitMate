@@ -1,14 +1,9 @@
-//
-//  LogoutPopupView.swift
-//  FitMate
-//
-//  Created by 김은서 on 7/1/25.
-//
 
 import UIKit
 import SnapKit
 import RxCocoa
 
+//로그아웃 확인용 팝업 뷰
 final class LogoutPopupView: UIView {
 
     let backgroundView: UIView = {
@@ -24,6 +19,7 @@ final class LogoutPopupView: UIView {
         return view
     }()
 
+    // 로그아웃 여부 묻기
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "정말 로그아웃하시겠어요?"
@@ -33,6 +29,7 @@ final class LogoutPopupView: UIView {
         return label
     }()
 
+    //로그아웃 후 안내
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "로그아웃시 로그인화면으로 돌아갑니다."
@@ -43,6 +40,7 @@ final class LogoutPopupView: UIView {
         return label
     }()
 
+    // 취소 버튼(팝업닫기)
     let cancelButton: UIButton = {
         let button = UIButton()
         button.setTitle("취소", for: .normal)
@@ -52,6 +50,7 @@ final class LogoutPopupView: UIView {
         return button
     }()
 
+    // 로그아웃버튼
     let confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("로그아웃", for: .normal)
@@ -61,6 +60,7 @@ final class LogoutPopupView: UIView {
         return button
     }()
 
+    // 버튼 2개를 수평으로 배치하는 뷰
     private lazy var buttonStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [cancelButton, confirmButton])
         stack.axis = .horizontal
@@ -78,6 +78,7 @@ final class LogoutPopupView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    //레이아웃구성
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(containerView)

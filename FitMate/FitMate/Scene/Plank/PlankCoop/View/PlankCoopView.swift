@@ -409,7 +409,7 @@ class PlankCoopView: BaseView {
 
 }
 extension PlankCoopView {
-    /// 일시정지 버튼 활성/비활성 & 이미지 교체
+    // 일시정지 버튼 활성/비활성 & 이미지 교체
     func setPauseButtonEnabled(_ enabled: Bool) {
         pauseButton.isEnabled = enabled
         let imageName = enabled ? "pause" : "lockpause"
