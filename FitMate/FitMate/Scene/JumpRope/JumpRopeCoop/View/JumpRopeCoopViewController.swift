@@ -64,10 +64,6 @@ class JumpRopeCoopViewController: BaseViewController {
                         // 그냥 닫고 아무 동작 없음 (계속 운동)
                     },
                     onQuit: { [weak self] in
-                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        //self?.viewModel.finish(success: false)
-                        // 혹은 didFinishRelay 트리거 등
-                        
                         self?.quitRelay.accept(())
                     }
                 )
@@ -159,9 +155,7 @@ class JumpRopeCoopViewController: BaseViewController {
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                //self?.navigationController?.popToRootViewController(animated: true)
-                
-                self?.viewModel.finish(success: false) // ✅ 위치 정지 및 기록 저장
+                self?.viewModel.finish(success: false) // 위치 정지 및 기록 저장
                 self?.navigateToFinish(success: false)
             }
         )

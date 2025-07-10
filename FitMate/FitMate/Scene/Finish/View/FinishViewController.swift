@@ -106,9 +106,7 @@ class FinishViewController: BaseViewController {
                     mode: viewModel.mode,
                     isWin: viewModel.success
                 )
-                
-                //print("보상 : \(reward)\n")
-                
+                                
                 // 코인 가산
                 rewardCoins(coinAmount: reward)
                 
@@ -225,7 +223,6 @@ class FinishViewController: BaseViewController {
             }
         }()
 
-        //print("운동계수 : \(exerciseFactor)\n모드계수 : \(modeFactor)\n지속 보너스 : \(durationBonus)\n목표치 : \(goalValue)\n")
         let reward = (exerciseFactor * 100 * modeFactor * durationBonus).rounded(.toNearestOrEven)
         //print("함수 안 reward: \(reward)")
         return Int((reward / 10.0).rounded() * 10)
