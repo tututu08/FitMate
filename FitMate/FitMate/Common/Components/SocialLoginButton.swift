@@ -5,6 +5,8 @@
 //  Created by soophie on 6/18/25.
 //
 
+
+// TODO: 따로 파일로 뺴기
 enum SocialLoginType {
     case kakao, google, apple
     

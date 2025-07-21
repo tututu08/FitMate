@@ -10,7 +10,7 @@ import SnapKit
 
 class CustomAlertView: UIView {
     
-    private let containerVIew = UIView() //  알림 전체를 담는 박스 -> 기본 배경 뷰에 올라감
+    private let containerView = UIView() //  알림 전체를 담는 박스 -> 기본 배경 뷰에 올라감
     private var hasIcon: UIImageView? = nil // 아이콘이 있으면 이 프로퍼티에 저장됨
     let alertTitle = UILabel() // 제목 라벨 (외부에서 접근 가능)
     private let alertMessage = UILabel() // 본문 메시지 라벨
