@@ -3,6 +3,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
+// TODO: - QuitAlert 에서 QuitAlertView 로 바꾸면 더 좋을듯
 final class QuitAlert: UIView {
     
     // 종류(내가 누름/상대가 누름)
