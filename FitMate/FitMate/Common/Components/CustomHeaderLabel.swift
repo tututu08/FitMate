@@ -16,7 +16,6 @@ class CustomHeaderLabel: UILabel {
         self.text = text
         self.font = UIFont(name: "Pretendard-Medium", size: 14)
         self.textColor = .background500
-        self.translatesAutoresizingMaskIntoConstraints = false
     }
     
     required init?(coder: NSCoder) {

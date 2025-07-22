@@ -67,7 +67,6 @@ final class JumpRopeBattleViewModel: ViewModelType {
         input.start
             .subscribe(onNext: { [weak self] in
                 self?.startAccelerometer()
-                // self?.observeMateCount()
                 // 메이트 종료 감지
                 self?.bindMateQuitListener()
                 self?.observeMateCount() // ✅ 메이트 점프 수 감지 시작
@@ -81,15 +80,6 @@ final class JumpRopeBattleViewModel: ViewModelType {
         input.mateQuit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
             .disposed(by: disposeBag)
-        
-//        input.mateCount
-//            .subscribe(onNext: { [weak self] count in
-//                guard let self else {return}
-//                self.mateCountRelay.accept(Int(count))
-//                if Int(count) >= self.goalCount {
-//                    self.finish(success: false)
-//                }
-//            }).disposed(by: disposeBag)
         
         // 내 점프 수를 문자열로 변환(Driver로 변환)
         let myText = myCountRelay
@@ -152,9 +142,6 @@ final class JumpRopeBattleViewModel: ViewModelType {
     
     private func confirmQuit(isMine: Bool) {
         motionManager.stopAccelerometerUpdates()
-        //finish(success: false)
-        // 실제로 완전히 끝내려면 finish(success: false) 호출 필요
-        
         // 그만하기 버튼 탭 시, QuitStatus 업데이트
         if isMine {
             FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUID)
@@ -182,9 +169,9 @@ final class JumpRopeBattleViewModel: ViewModelType {
                 "players.\(myUID).progress": count
             ]) { error in
                 if let error = error {
-                    print("❌ 점프 수 저장 실패: \(error.localizedDescription)")
+                    print("점프 수 저장 실패: \(error.localizedDescription)")
                 } else {
-                    print("✅ 점프 수 저장 완료: \(count)")
+                    print("점프 수 저장 완료: \(count)")
                 }
             }
     }
@@ -202,7 +189,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
                     return
                 }
                 
-                print("👀 메이트 점프 수 업데이트: \(progress)")
+                print("메이트 점프 수 업데이트: \(progress)")
                 self.mateCountRelay.accept(progress)
                 
                 if progress >= self.goalCount {

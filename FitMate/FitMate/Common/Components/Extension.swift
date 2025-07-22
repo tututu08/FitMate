@@ -21,7 +21,7 @@ extension UINavigationBar {
         appearance.backgroundColor = .background800
         appearance.titleTextAttributes = [
             .foregroundColor: titleColor,
-            .font: UIFont(name: "Pretendard-Semibold", size: 20)!
+            .font: UIFont(name: "Pretendard-Semibold", size: 20)! // TODO: - 강제 언래핑 수정하기
         ]
         
         var backImage = backImage
@@ -47,12 +47,15 @@ extension Reactive where Base: CLLocationManager {
     }
 }
 
+
+// TODO: - LoginViewController로 옮기기.
 // Apple 로그인 창을 띄울 때 어느 윈도우에서 띄울지를 지정
 extension LoginViewController: ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        return self.view.window!
+        return self.view.window! // TODO: - 강제 언래핑 수정하기
     }
 }
+
 extension UIViewController {
     func popToTabBar() {
         if let nav = self.navigationController {

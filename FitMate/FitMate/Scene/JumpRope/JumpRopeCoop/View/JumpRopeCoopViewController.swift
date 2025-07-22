@@ -1,4 +1,5 @@
 import RxSwift
+import UIKit
 import Foundation
 import RxCocoa
 
@@ -50,6 +51,7 @@ class JumpRopeCoopViewController: BaseViewController {
     // viewDidLoad에서 goal값 불러오기, 뷰모델 생성, 시작 신호
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.shared.isIdleTimerDisabled = true
         sportsView.updateGoal("줄넘기 \(viewModel.goalCount)개")
         sportsView.updateMyCharacter(viewModel.myCharacter)
         sportsView.updateMateCharacter(viewModel.mateCharacter)
@@ -62,16 +64,22 @@ class JumpRopeCoopViewController: BaseViewController {
                         // 그냥 닫고 아무 동작 없음 (계속 운동)
                     },
                     onQuit: { [weak self] in
-                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        //self?.viewModel.finish(success: false)
-                        // 혹은 didFinishRelay 트리거 등
-                        
                         self?.quitRelay.accept(())
                     }
                 )
             }
             .disposed(by: disposeBag)
     }
+    override func viewWillDisappear(_ animated: Bool) {
+           super.viewWillDisappear(animated)
+           // 꺼짐 방지 해제
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
+       
+       // 혹시라도 강제 종료 시점이 있을 수 있으니
+    deinit {
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
     // ViewModel과 UI 바인딩
     override func bindViewModel() {
         let input = JumpRopeCoopViewModel.Input(
@@ -104,6 +112,11 @@ class JumpRopeCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.didFinish
+            .distinctUntilChanged({ prev, curr in
+              let prevSuccess = prev
+              let currSuccess = curr
+              return prevSuccess == currSuccess ? true : false
+            })
             .emit(onNext: { [weak self] success in
                 self?.navigateToFinish(success: success)
             })
@@ -118,13 +131,15 @@ class JumpRopeCoopViewController: BaseViewController {
     
     
     private func navigateToFinish(success: Bool) {
+        let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
+        
         let finishVM = FinishViewModel(
             mode: .cooperation,
             sport: "줄넘기",
             goal: viewModel.goalCount,
             goalUnit: "개",
             myDistance: Double(viewModel.myCount),
-            character: myCharacter,
+            avatarType: avatarType,
             success: success
         )
         let vc = FinishViewController(uid: myUid,
@@ -139,10 +154,8 @@ class JumpRopeCoopViewController: BaseViewController {
         sportsView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
-                // 피니쉬화면으로 이동 등
-                //self?.navigationController?.popToRootViewController(animated: true)
-                
-                self?.viewModel.finish(success: false) // ✅ 위치 정지 및 기록 저장
+                // 피니쉬화면으로 이동 등                
+                self?.viewModel.finish(success: false) // 위치 정지 및 기록 저장
                 self?.navigateToFinish(success: false)
             }
         )

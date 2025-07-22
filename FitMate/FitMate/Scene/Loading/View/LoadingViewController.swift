@@ -103,12 +103,12 @@ class LoadingViewController: BaseViewController {
             .observe(on: MainScheduler.instance)
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] status in
-                print("🔥 받은 상태: \(status)")
+                print("받은 상태: \(status)")
                 guard let self else { return }
                 
                 // started 상태가 되면 시작
                 if status == "started" && !self.hasNavigatedToGame {
-                    print("✅ 동시에 시작 조건 충족 → 게임화면 이동")
+                    print("동시에 시작 조건 충족 → 게임화면 이동")
                     self.hasNavigatedToGame = true
                     
                     // 실시간 감지 리스너 종료
@@ -123,61 +123,107 @@ class LoadingViewController: BaseViewController {
     
     /// 게임 화면으로 이동하는 메서드
     private func goToGameScreen() {
-        
-        // MARK: - 게임 선택에 따른 화면 분기처리
         FirestoreService.shared.fetchDocument(collectionName: "matches", documentName: self.matchCode)
-            .subscribe(onSuccess: { data in
-                if let goalValue = data["goalValue"] as? Int,
-                   let inviterUid = data["inviterUid"] as? String,
-                   let inviteeUid = data["inviteeUid"] as? String,
-                   let exerciseType = data["exerciseType"] as? String,
-                   let mode = data["mode"] as? String {
-                    
-                    let mateUid = self.uid == inviterUid ? inviteeUid : inviterUid
-                    
-                    if mode == "battle" {
-                        // 배틀모드
-                        switch exerciseType {
-                        case "걷기":
-                            self.navigationController?.pushViewController(RunningBattleViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        case "달리기":
-                            self.navigationController?.pushViewController(RunningBattleViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        case "자전거":
-                            self.navigationController?.pushViewController(RunningBattleViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        case "줄넘기":
-                            self.navigationController?.pushViewController(JumpRopeBattleViewController(goalCount: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        default:
-                            return
-                        }
-                    } else {
-                        // 협동모드
-                        switch exerciseType {
-                        case "걷기":
-                            self.navigationController?.pushViewController(RunningCoopViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        case "달리기":
-                            self.navigationController?.pushViewController(RunningCoopViewController(exerciseType: exerciseType, goalDistance: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        case "자전거":
-                            self.navigationController?.pushViewController(
-                                RunningCoopViewController(
-                                    exerciseType: exerciseType, 
-                                    goalDistance: goalValue,
-                                    matchCode: self.matchCode,
-                                    myUid: self.uid,
-                                    mateUid: mateUid,
-                                    myCharacter: "kaepy",
-                                    mateCharacter: "kaepy"
-                                ), animated: true)
-                        case "플랭크":
-                            self.navigationController?.pushViewController(PlankCoopViewController(goalMinutes: goalValue, matchCode: self.matchCode, myUID: self.uid, mateUID: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        case "줄넘기":
-                            self.navigationController?.pushViewController(JumpRopeCoopViewController(goalCount: goalValue, matchCode: self.matchCode, myUid: self.uid, mateUid: mateUid, myCharacter: "kaepy", mateCharacter: "kaepy"), animated: true)
-                        default:
-                            return
-                        }
+            .flatMap { data -> Single<(String, String, String, String, Int)> in
+                guard let goalValue = data["goalValue"] as? Int,
+                      let inviterUid = data["inviterUid"] as? String,
+                      let inviteeUid = data["inviteeUid"] as? String,
+                      let exerciseType = data["exerciseType"] as? String,
+                      let mode = data["mode"] as? String else {
+                    return .error(NSError(domain: "DataError", code: -1, userInfo: nil))
+                }
+                return .just((inviterUid, inviteeUid, exerciseType, mode, goalValue))
+            }
+            .flatMap { inviterUid, inviteeUid, exerciseType, mode, goalValue -> Single<(String, String, String, String, Int, String, Bool)> in
+                           let mateUid = self.uid == inviterUid ? inviteeUid : inviterUid
+                           let isInviter = self.uid == inviterUid
+
+                // 내 아바타
+                guard let myAvatarRaw = AvatarManager.shared.selectedAvatarRelay.value?.rawValue else {
+                    return .error(NSError(domain: "AvatarError", code: -2, userInfo: [NSLocalizedDescriptionKey: "내 아바타 없음"]))
+                }
+
+                // 상대 아바타 불러오기
+                return FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
+                    .map { mateAvatarType in
+                        let mateAvatarRaw = mateAvatarType?.rawValue ?? "kaepy" // fallback
+                        return (exerciseType, mode, myAvatarRaw, mateAvatarRaw, goalValue, mateUid, isInviter)
+                    }
+            }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onSuccess: { exerciseType, mode, myCharacter, mateCharacter, goalValue, mateUid, isInviter in
+                let matchCode = self.matchCode
+                let myUid = self.uid
+
+                let pushVC: UIViewController?
+
+                if mode == "battle" {
+                    switch exerciseType {
+                    case "걷기", "달리기", "자전거":
+                        pushVC = RunningBattleViewController(
+                            exerciseType: exerciseType,
+                            goalDistance: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
+                    case "줄넘기":
+                        pushVC = JumpRopeBattleViewController(
+                            goalCount: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
+                    default: return
+                    }
+                } else {
+                    switch exerciseType {
+                    case "걷기", "달리기", "자전거":
+                        pushVC = RunningCoopViewController(
+                            exerciseType: exerciseType,
+                            goalDistance: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
+                    case "플랭크":
+                        pushVC = PlankCoopViewController(
+                            goalMinutes: goalValue,
+                            matchCode: matchCode,
+                            myUID: myUid,
+                            mateUID: mateUid,
+                            isInviter: isInviter,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
+                    case "줄넘기":
+                        pushVC = JumpRopeCoopViewController(
+                            goalCount: goalValue,
+                            matchCode: matchCode,
+                            myUid: myUid,
+                            mateUid: mateUid,
+                            myCharacter: myCharacter,
+                            mateCharacter: mateCharacter
+                        )
+                    default: return
                     }
                 }
-            }).disposed(by: disposeBag)
+
+                if let vc = pushVC {
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }, onFailure: { error in
+                print("아바타 에러: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
+
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드
     private func presentRejectedAlert(message: String) {
@@ -214,14 +260,6 @@ class LoadingViewController: BaseViewController {
                 return Disposables.create()
             }
         }
-    
-//    internal func popToTabBar() {
-//            if let nav = self.navigationController {
-//                nav.popToRootViewController(animated: true)
-//            } else {
-//                self.dismiss(animated: true)
-//            }
-//        }
     
     deinit {
         print("LoadingViewController deinit")

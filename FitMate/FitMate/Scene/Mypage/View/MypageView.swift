@@ -4,13 +4,14 @@ import SnapKit
 
 final class MypageView: UIView {
 
+    //설정버튼
     let settingButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "gearshape"), for: .normal)
         button.tintColor = .white
         return button
     }()
-    
+    //뒤로가기버튼
     let backButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "backButton"), for: .normal)
@@ -18,8 +19,10 @@ final class MypageView: UIView {
         return button
     }()
 
+    // 상단 바
     let topBar = UIView()
 
+    // 상단 타이틀 라벨
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = ""
@@ -28,6 +31,7 @@ final class MypageView: UIView {
         return label
     }()
 
+    // 프로필 이미지 배경
     private let profileImageContainer: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Secondary50")
@@ -36,7 +40,8 @@ final class MypageView: UIView {
         return view
     }()
 
-    private let profileImageView: UIImageView = {
+    // 프로필 이미지 뷰
+    let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "kaepy")
         imageView.contentMode = .scaleAspectFit
@@ -45,6 +50,7 @@ final class MypageView: UIView {
         return imageView
     }()
 
+    //닉네임 라벨
     let nicknameLabel: UILabel = {
         let label = UILabel()
         label.text = "닉네임"
@@ -53,15 +59,17 @@ final class MypageView: UIView {
         return label
     }()
 
+    //프로필 아래 배치되는 언더라인
     private let underline: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "Primary500")
         return view
     }()
 
-    let scrollView = UIScrollView()
-    let contentView = UIView()
+    let scrollView = UIScrollView() //전체 스크롤뷰
+    let contentView = UIView()//스크롤 뷰 내부의 컨텐츠뷰
 
+    // 업적 타이틀 라벨
     let achievementTitle: UILabel = {
         let label = UILabel()
         label.text = "달성한 업적"
@@ -70,6 +78,7 @@ final class MypageView: UIView {
         return label
     }()
 
+    //업적 더보기버튼
     let achievementMoreButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
@@ -77,6 +86,7 @@ final class MypageView: UIView {
         return button
     }()
 
+    // 업적타이틀 + 더보기버튼 수평스택
     lazy var achievementTitleStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [achievementTitle, achievementMoreButton])
         stack.axis = .horizontal
@@ -85,6 +95,7 @@ final class MypageView: UIView {
         return stack
     }()
 
+    //업적 이미지
     let achievementImageView: UIView = {
         let view = UIView()
         view.backgroundColor = .lightGray
@@ -92,6 +103,8 @@ final class MypageView: UIView {
         return view
     }()
 
+    
+    //누적 기록 타이틀 라벨
     let levelTitle: UILabel = {
         let label = UILabel()
         label.text = "누적 기록"
@@ -100,6 +113,7 @@ final class MypageView: UIView {
         return label
     }()
 
+    // 누적기록 컬렉션 뷰
     let recordCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -111,6 +125,7 @@ final class MypageView: UIView {
         return collectionView
     }()
 
+    //기록이 없을 경우 표시되는 라벨
     private let contentLabel: UILabel = {
         let label = UILabel()
         label.text = "기록이 없습니다"
@@ -119,6 +134,7 @@ final class MypageView: UIView {
         return label
     }()
 
+    // 설정버튼이랑 타이틀 설정을 위한 초기화 이닛
     convenience init(showSettingButton: Bool = true, titleText: String = "", showBackButton: Bool = true) {
         self.init(frame: .zero)
         settingButton.isHidden = !showSettingButton
@@ -136,6 +152,7 @@ final class MypageView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // 전체 레이아웃 구성
     private func setupLayout() {
         addSubview(topBar)
         addSubview(profileImageContainer)
@@ -237,9 +254,11 @@ final class MypageView: UIView {
             $0.center.equalToSuperview()
         }
 
+        // 현재 업적관련은 완료되지 않아서 숨김처리 해둠
         achievementTitleStack.isHidden = true
         achievementImageView.isHidden = true
 
+        // 업적이 없을 때 누적위치 조정(업적 들어가면 이후에 지워야함)
         levelTitle.snp.remakeConstraints {
             $0.top.equalToSuperview().offset(16)
             $0.leading.equalToSuperview().offset(20)

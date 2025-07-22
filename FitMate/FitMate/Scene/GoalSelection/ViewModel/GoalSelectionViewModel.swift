@@ -44,34 +44,27 @@ class GoalSelectionViewModel: ViewModelType {
             .map { title, mode in
                 switch (title, mode) {
                 case ("걷기", .cooperation):
-                    return Array(2...20).map { "\($0) km" }
+                    return Array(1...20).map { "\($0) km" }
                 case ("걷기", .battle):
                     return Array(1...10).map { "\($0) km" }
                 case ("달리기", .cooperation):
-                    return Array(2...40).map { "\($0) km" }
+                    return Array(1...40).map { "\($0) km" }
                 case ("달리기", .battle):
                     return Array(1...20).map { "\($0) km" }
                 case ("자전거", .cooperation):
-                    return Array(4...60).map { "\($0) km" }
+                    return Array(1...60).map { "\($0) km" }
                 case ("자전거", .battle):
-                    return Array(2...30).map { "\($0) km" }
+                    return Array(1...30).map { "\($0) km" }
                 case ("플랭크", _):
-                    return Array(2...10).map { "\($0) 분" }
+                    return Array(stride(from: 2, through: 20, by: 2)).map { "\($0) 분" }
                 case ("줄넘기", .cooperation):
-                    return Array(stride(from: 200, through: 2000, by: 100)).map { "\($0)회" }
+                    return Array(stride(from: 100, through: 2000, by: 100)).map { "\($0)회" }
                 case ("줄넘기", .battle):
                     return Array(stride(from: 100, through: 1500, by: 100)).map { "\($0)회" }
-                    
                 default:
                     return []
                 }
             }
             .asDriver(onErrorJustReturn: [])
-    }
-    func saveTitle(_ title: String) {
-        
-    }
-    func saveGoal() {
-        
     }
 }

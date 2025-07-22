@@ -13,10 +13,6 @@ class CustomTextField: UITextField {
     // 텍스트 필드에 입력될 문자열 리밋 설정
     var stringLimit: Int = Int.max
     
-    // 기존 코드
-    //let overLimitRelay = PublishRelay<Void>()
-    
-    // MARK: 알림 enum 타입으로 변경
     let overLimitRelay = PublishRelay<SystemAlertType>()
     
     // 텍스트 변경을 외부에서 감지
@@ -79,7 +75,7 @@ extension CustomTextField: UITextFieldDelegate {
             // 기존 코드
             // overLimitRelay.accept(())
             
-            // MARK: 오류 정보 바로 전달
+            // 오류 정보 바로 전달
             overLimitRelay.accept(.overLimit)
             textRelay.accept(updatedText)
             return false

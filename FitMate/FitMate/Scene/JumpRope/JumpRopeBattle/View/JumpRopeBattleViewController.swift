@@ -1,4 +1,5 @@
 import RxSwift
+import UIKit
 import Foundation
 import RxCocoa
 import FirebaseFirestore
@@ -21,6 +22,7 @@ class JumpRopeBattleViewController: BaseViewController {
     private let matchCode: String
     private let mateUid: String
     private let myUid: String
+    
     
     init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
         self.matchCode = matchCode
@@ -51,16 +53,12 @@ class JumpRopeBattleViewController: BaseViewController {
     // viewDidLoad에서 goal값 불러오기, 뷰모델 생성, 시작 신호
     override func viewDidLoad() {
         super.viewDidLoad()
+        UIApplication.shared.isIdleTimerDisabled = true
         sportsView.updateGoal("줄넘기 \(viewModel.goalCount)개")
         //(파이널베이스 내의 만약 캐릭터 이미지 바인딩 시 이곳에서)
         sportsView.updateMyCharacter(myCharacter)
         sportsView.updateMateCharacter(mateCharacter)
-        
-//        FirestoreService.shared
-//            .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
-//            .bind(to: mateCountRelay)
-//            .disposed(by: disposeBag)
-        
+
         startRelay.accept(())
         
         sportsView.stopButton.rx.tap
@@ -71,8 +69,6 @@ class JumpRopeBattleViewController: BaseViewController {
                         // 그냥 닫고 아무 동작 없음 (계속 운동)
                     },
                     onQuit: { [weak self] in
-                        // 진짜로 종료 → 기록 저장 & 화면 이동 등
-                        //self?.viewModel.finish(success: false)
                         self?.quitRelay.accept(())
                         // 혹은 didFinishRelay 트리거 등
                     }
@@ -80,12 +76,20 @@ class JumpRopeBattleViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+    override func viewWillDisappear(_ animated: Bool) {
+           super.viewWillDisappear(animated)
+           // 꺼짐 방지 해제
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
+       
+       // 혹시라도 강제 종료 시점이 있을 수 있으니
+    deinit {
+           UIApplication.shared.isIdleTimerDisabled = false
+       }
     // ViewModel과 UI 바인딩
     override func bindViewModel() {
         let input = JumpRopeBattleViewModel.Input(
             start: startRelay.asObservable(),
-            //mateCount: mateCountRelay.asObservable(),
             quit: quitRelay.asObservable(),
             mateQuit: mateQuitRelay.asObservable()
         )
@@ -106,6 +110,11 @@ class JumpRopeBattleViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         output.didFinish
+            .distinctUntilChanged({ prev, curr in
+              let prevSuccess = prev
+              let currSuccess = curr
+              return prevSuccess == currSuccess ? true : false
+            })
             .emit(onNext: { [weak self] success in
                 self?.navigateToFinish(success: success)
             })
@@ -134,13 +143,15 @@ class JumpRopeBattleViewController: BaseViewController {
     
     // 피니쉬화면으로 이동
     private func navigateToFinish(success: Bool) {
+        let avatarType = AvatarType(rawValue: myCharacter) ?? .kaepy
+        
         let finishVM = FinishViewModel(
             mode: .battle,
             sport: "줄넘기",
             goal: viewModel.goalCount,
             goalUnit: "개",
             myDistance: Double(viewModel.myCount),
-            character: myCharacter,
+            avatarType: avatarType,
             success: success
         )
         
@@ -163,9 +174,10 @@ class JumpRopeBattleViewController: BaseViewController {
                       let players = data["players"] as? [String: Any],
                       let myData = players[self.myUid] as? [String: Any],
                       let isWinner = myData["isWinner"] as? Bool else {
-                    print("🔥 승자 정보 불러오기 실패")
                     return
                 }
+                
+                let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
 
                 let finishVM = FinishViewModel(
                     mode: .battle,
@@ -173,8 +185,8 @@ class JumpRopeBattleViewController: BaseViewController {
                     goal: self.viewModel.goalCount,
                     goalUnit: "개",
                     myDistance: Double(self.viewModel.myCount),
-                    character: self.myCharacter,
-                    success: isWinner  // ✅ Firestore에서 가져온 최종 결과
+                    avatarType: avatarType,
+                    success: isWinner  // Firestore에서 가져온 최종 결과
                 )
 
                 let vc = FinishViewController(
@@ -195,10 +207,8 @@ class JumpRopeBattleViewController: BaseViewController {
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                //self?.navigationController?.popToRootViewController(animated: true)
                 
-                self?.viewModel.finish(success: true) // ✅ 위치 정지 및 기록 저장
-                //self?.navigateToFinish(success: true)
+                self?.viewModel.finish(success: true) // 위치 정지 및 기록 저장
                 self?.navigateToFinish()
             }
         )

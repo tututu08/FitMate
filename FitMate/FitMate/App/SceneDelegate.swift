@@ -21,6 +21,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
+        SoundManage.shared.initializeSoundSetting()
+        
         window.rootViewController = UINavigationController(rootViewController: SplashViewController())
         window.makeKeyAndVisible()
         

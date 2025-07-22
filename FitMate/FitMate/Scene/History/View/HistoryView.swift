@@ -4,8 +4,9 @@ import SnapKit
 
 final class HistoryView: UIView {
 
-    let topBar = UIView()
+    let topBar = UIView() //상단 바
 
+    // 화면 제목 라벨
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "운동 기록"
@@ -14,8 +15,10 @@ final class HistoryView: UIView {
         return label
     }()
 
+    // 카테고리 하다 언더라인(보라줄) 뷰
     let categoryUnderlineView = UIView()
 
+    // 카테고리 선택용 컬렉션뷰
     let categoryCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -28,6 +31,7 @@ final class HistoryView: UIView {
         return collectionView
     }()
 
+    // 운동기록을 세로로 스크롤하는 컬렉션뷰
     let recordCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -37,6 +41,7 @@ final class HistoryView: UIView {
         return collectionView
     }()
 
+    // 기록이 없을 때 표시되는 안내 문구
     let contentLabel: UILabel = {
         let label = UILabel()
         label.text = "기록이 없습니다"
@@ -49,7 +54,10 @@ final class HistoryView: UIView {
         super.init(frame: frame)
         backgroundColor = UIColor(named: "Background800")
 
+        // 카테고리 셀 등록
         categoryCollectionView.register(CategoryCell.self, forCellWithReuseIdentifier: CategoryCell.identifier)
+        
+        //기록카드 셀 등록
         recordCollectionView.register(WalkRecordCell.self, forCellWithReuseIdentifier: WalkRecordCell.identifier)
         recordCollectionView.register(JumpRopeRecordCell.self, forCellWithReuseIdentifier: JumpRopeRecordCell.identifier)
         recordCollectionView.register(BicycleRecordCell.self, forCellWithReuseIdentifier: BicycleRecordCell.identifier)
@@ -63,6 +71,7 @@ final class HistoryView: UIView {
         fatalError()
     }
 
+    // 전체 레이아웃 설정
     private func setupLayout() {
         addSubview(topBar)
         topBar.addSubview(titleLabel)
@@ -84,7 +93,7 @@ final class HistoryView: UIView {
         }
 
         categoryCollectionView.snp.makeConstraints {
-            $0.top.equalTo(topBar.snp.bottom)
+            $0.top.equalTo(topBar.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(40)
         }

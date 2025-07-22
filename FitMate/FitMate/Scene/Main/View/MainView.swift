@@ -14,22 +14,22 @@ class MainView: BaseView {
         return view
     }()
 
-//    let coinLabel: UILabel = {
-//        let coin = UILabel()
-//        coin.text = "100"
-//        coin.font = UIFont(name: "DungGeunMo", size: 26)
-//        coin.textColor = .secondary400
-//        return coin
-//    }()
-//    
-//    let coinIcon: UIImageView = {
-//        let coinImg = UIImageView()
-//        coinImg.image = UIImage(named: "coin")
-//        coinImg.contentMode = .scaleAspectFit
-//        coinImg.clipsToBounds = true
-//        return coinImg
-//    }()
-//    
+    let coinLabel: UILabel = {
+        let coin = UILabel()
+        coin.text = "0"
+        coin.font = UIFont(name: "DungGeunMo", size: 26)
+        coin.textColor = .secondary400
+        return coin
+    }()
+    
+    let coinIcon: UIImageView = {
+        let coinImg = UIImageView()
+        coinImg.image = UIImage(named: "coin")
+        coinImg.contentMode = .scaleAspectFit
+        coinImg.clipsToBounds = true
+        return coinImg
+    }()
+ 
 //    let bellButton: UIButton = {
 //        let bell = UIButton()
 //        bell.setImage(UIImage(named: "bell"), for: .normal)
@@ -108,7 +108,10 @@ class MainView: BaseView {
             [topBar, explainLabel, dDaysLabel, myAvatarImage,
              mateAvatarImage, exerciseButton,
              myNicknameStack, mateNicknameStack].forEach { addSubview($0) }
+
+        [coinLabel, coinIcon ].forEach({topBar.addSubview($0)})
 //        [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
+
     }
     
     override func setLayoutUI() {
@@ -119,17 +122,17 @@ class MainView: BaseView {
             make.height.equalTo(56)
         }
         
-//        coinIcon.snp.makeConstraints { make in
-//            make.centerY.equalTo(topBar)
-//            make.leading.equalToSuperview().inset(20)
-//            make.size.equalTo(23)
-//        }
-//        
-//        coinLabel.snp.makeConstraints { make in
-//            make.centerY.equalTo(topBar)
-//            make.leading.equalTo(coinIcon.snp.trailing).offset(8)
-//        }
-//        
+        coinIcon.snp.makeConstraints { make in
+            make.centerY.equalTo(topBar)
+            make.leading.equalToSuperview().inset(20)
+            make.size.equalTo(23)
+        }
+        
+        coinLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(topBar)
+            make.leading.equalTo(coinIcon.snp.trailing).offset(8)
+        }
+
 //        bellButton.snp.makeConstraints{ make in
 //            make.centerY.equalTo(topBar)
 //            make.trailing.equalToSuperview().inset(20)
@@ -203,9 +206,7 @@ class MainView: BaseView {
             make.bottom.equalTo(mateAvatarImage.snp.top).inset(-10)
         }
         
-//        // 메이트 없을 때는 안보이게 처리
-//        mateAvatarImage.isHidden = !hasMate // = hasMate가 false면 안보이도록
-//        print("기대값false:\(hasMate)")
-//        mateNicknameStack.isHidden = !hasMate
+        // 메이트가 없을 때, 운동하기 버튼 -> 메이트 추가하기로 버튼 타이틀 변경
+        hasMate ? exerciseButton.setTitle("운동 선택", for: .normal) : exerciseButton.setTitle("메이트 추가하기", for: .normal)
     }
 }

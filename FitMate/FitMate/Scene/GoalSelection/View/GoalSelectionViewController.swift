@@ -76,7 +76,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         self.findMateUid(uid: uid) // 메이트 uid 검색
     }
     
-    @MainActor required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -133,11 +133,8 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         // 목표 설정 클릭시 바인딩
         goalSettingButton.rx.tap
             .bind(onNext: { [weak self] selectedGoal in
-                guard let self = self else { return }
+                guard let self else { return }
                 
-                // 저장(종목 타이틀, 목표치)
-                //                let selectedMode = self.selectedModeRelay.value // 운동 모드 저장
-                //                let selectedGoal = self.selectedGoalRelay.value // 운동 목표 저장
                 if self.selectedGoalValueRelay.value == 0,
                    self.pickerData.indices.contains(self.pickerView.selectedRow(inComponent: 0)) {
                     let text = self.pickerData[self.pickerView.selectedRow(inComponent: 0)]
@@ -261,6 +258,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         updateGoalSelection(with: selected)
         pickerView.reloadAllComponents()
     }
+    
     private func updateGoalSelection(with text: String) {
         selectedGoalRelay.accept(text)
         let (value, unit) = splitValueAndUnit(from: text)
@@ -273,6 +271,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 100
     }
+    
     // 문자열 분리 메서드
     private func splitValueAndUnit(from text: String) -> (String, String) {
         // 정규식 패턴 정의

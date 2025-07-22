@@ -17,7 +17,7 @@ class TabBarController: UITabBarController {
     // 운동 초대 수락 시 Firestore 상태 변경을 위한 ViewModel
     private let matchAcceptViewModel = MatchAcceptViewModel()
     
-    lazy var mainVC = MainViewController(uid: self.uid)
+    lazy var mainVC = MainViewController(uid: self.uid, mateUid: self.uid)
     
     // 초기화 함수
     init(uid: String) {
@@ -34,13 +34,16 @@ class TabBarController: UITabBarController {
         setValue(CustomTabBar(), forKey: "tabBar")
         configureTabBar()
         setUp()
-        selectedIndex = 1 // 시작화면을 메인뷰로 시작
         
         // 운동 매칭 글로벌 리스너 서비스 시작
         MatchEventService.shared.startListening(for: uid)
         
         // 전역 초대 알림 감지 및 처리 로직 실행
         observeMatchInvites()
+        
+        // 아바타 초기화
+        AvatarManager.shared.fetchInitialAvatar(uid: uid)
+
     }
     
     deinit {
@@ -59,23 +62,31 @@ class TabBarController: UITabBarController {
             selectedImage: UIImage(named: "historyTapped")
         )
         
-        let mainVC = MainViewController(uid: self.uid)
+        let mainVC = MainViewController(uid: self.uid, mateUid: self.uid)
         let nav2 = UINavigationController(rootViewController: mainVC)
         nav2.tabBarItem = UITabBarItem(
-            title: "메인",
+            title: "홈",
             image: UIImage(named: "main"),
             selectedImage: UIImage(named: "mainTapped")
         )
         
-        let myPageVC = MypageViewController(uid: self.uid)
-        let nav3 = UINavigationController(rootViewController: myPageVC)
+        let shopVC = ShopViewController(uid: self.uid, mateUid: self.uid)
+        let nav3 = UINavigationController(rootViewController: shopVC)
         nav3.tabBarItem = UITabBarItem(
+            title: "상점",
+            image: UIImage(named: "shop"),
+            selectedImage: UIImage(named: "shopTapped")
+        )
+        
+        let myPageVC = MypageViewController(uid: self.uid)
+        let nav4 = UINavigationController(rootViewController: myPageVC)
+        nav4.tabBarItem = UITabBarItem(
             title: "마이페이지",
             image: UIImage(named: "mypage"),
             selectedImage: UIImage(named: "mypageTapped")
         )
         
-        viewControllers = [nav1, nav2, nav3]
+        viewControllers = [nav2, nav3, nav1, nav4]
     }
     
     private func setUp() {
@@ -84,6 +95,7 @@ class TabBarController: UITabBarController {
         tabBar.tintColor = .secondary400
         tabBar.unselectedItemTintColor = .background400
         tabBar.isTranslucent = false
+        view.backgroundColor = .background800
     }
     
     // matchEventRelay를 전역에서 구독하여 초대 수신 시 alert 띄우기
@@ -91,6 +103,7 @@ class TabBarController: UITabBarController {
         MatchEventService.shared.matchEventRelay
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] matchCode in
+                SoundManage.shared.playInviteSound()
                 self?.presentMatchAlert(matchCode: matchCode, message: "")
             })
             .disposed(by: disposeBag)

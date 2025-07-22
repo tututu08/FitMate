@@ -4,14 +4,16 @@ import UIKit
 final class CategoryCell: UICollectionViewCell {
     static let identifier = "CategoryCell"
 
+    // 카테고리 이름을 보여줌
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14)
-        label.textColor = UIColor(named: "Background50")
+        label.textColor = UIColor(named: "Background50") // 선택하지 않았을 경우의 상태 색상
         label.textAlignment = .center
         return label
     }()
 
+    // 셀이 선택된 경우의 UI
     override var isSelected: Bool {
         didSet {
             contentView.backgroundColor = isSelected
@@ -29,7 +31,7 @@ final class CategoryCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(titleLabel)
-        contentView.layer.cornerRadius = 10
+        contentView.layer.cornerRadius = 4
         contentView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.layer.masksToBounds = true
 
@@ -44,6 +46,7 @@ final class CategoryCell: UICollectionViewCell {
         fatalError()
     }
 
+    // 외부에서 카테고리 이름을 지정시킴
     func configure(with title: String) {
         titleLabel.text = title
     }

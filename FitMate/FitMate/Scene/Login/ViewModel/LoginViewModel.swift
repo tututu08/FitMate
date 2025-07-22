@@ -37,9 +37,12 @@ final class LoginViewModel {
     
     func transform(input: Input, presentingVC: UIViewController) -> Output {
         let gooeleLoginFlow = input.googleLoginTrigger
-            .flatMapLatest {
+            .flatMapLatest { [weak presentingVC] in
+                guard let presentingVC = presentingVC else {
+                    return Observable<Result<FirebaseAuth.User, Error>>.empty()
+                }
                 // 실제 로그인 시도
-                AuthService.shared
+                return AuthService.shared
                     .signInWithGoogle(presentingVC: presentingVC) // single<User> 를 반환
                     .map { Result.success($0) } // 성공시 Result로 래핑 / User → Result<User, Error>로 변환
                     .catch { .just(.failure($0)) } // 실패시 Result.failure로 변환 / catch는 에러를 잡아서, 에러 스트림 대신 Result.failure(error)를 담은 이벤트로 변환
@@ -110,7 +113,6 @@ final class LoginViewModel {
                             }
                         }
                     }
-                    
                     // 카카오톡 앱이 설치된 경우
                     if UserApi.isKakaoTalkLoginAvailable() {
                         UserApi.shared.loginWithKakaoTalk { _, error in
@@ -132,7 +134,6 @@ final class LoginViewModel {
                             }
                         }
                     }
-                    
                     return Disposables.create() // Observable 리소스 해제
                 }
                 // 성공적으로 KakaoUser를 받아온 경우 Result.success로 감쌈
@@ -203,8 +204,12 @@ final class LoginViewModel {
             }
         
         let appleLoginFlow = input.appleLoginTrigger
-            .flatMapLatest {
-                AuthService.shared.signInWithApple(presentingVC: presentingVC)
+            .flatMapLatest { [weak presentingVC] in
+                guard let presentingVC = presentingVC else {
+                    return Observable<Result<FirebaseAuth.User, Error>>.empty()
+                }
+                return AuthService.shared
+                    .signInWithApple(presentingVC: presentingVC)
                     .map { Result.success($0) }
                     .catch { .just(.failure($0)) }
                     .asObservable()

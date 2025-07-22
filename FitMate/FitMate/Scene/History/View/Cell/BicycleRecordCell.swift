@@ -5,8 +5,10 @@ import SnapKit
 final class BicycleRecordCell: UICollectionViewCell {
     static let identifier = "BicycleRecordCell"
 
+    // 상세 기록을 저장하는 배열. configure에서 index로 접근하게 설정
     private var detailLabels: [UILabel] = []
     
+    // 캐릭터 이미지
     private let characterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "bicycle")
@@ -16,6 +18,7 @@ final class BicycleRecordCell: UICollectionViewCell {
         return imageView
     }()
 
+    // 자전거관련
     private let typeLabel: UILabel = {
         let label = UILabel()
         label.text = "자전거"
@@ -24,6 +27,7 @@ final class BicycleRecordCell: UICollectionViewCell {
         return label
     }()
 
+    // 날짜 표시용
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "0000.00.00"
@@ -32,12 +36,13 @@ final class BicycleRecordCell: UICollectionViewCell {
         return label
     }()
 
+    // 운동 결과
     private let resultLabel: UILabel = {
         let label = UILabel()
-        label.text = "대결-패배"
+        label.text = "대결-패배" // configure에서 갱신된다. 초기값은 그냥 넣어둠
         label.font = .systemFont(ofSize: 12)
         label.textColor = .black
-        label.backgroundColor = UIColor(named: "Secondary400")
+        label.backgroundColor = UIColor(named: "Secondary400") // configure에서 갱신된다.
         label.textAlignment = .center
         label.layer.cornerRadius = 4
         label.clipsToBounds = true
@@ -55,6 +60,7 @@ final class BicycleRecordCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    //셀 전체 레이아웃
     private func setupLayout() {
         backgroundColor = .white
         layer.cornerRadius = 8
@@ -82,6 +88,7 @@ final class BicycleRecordCell: UICollectionViewCell {
         headerStack.distribution = .equalSpacing
         headerStack.alignment = .center
 
+        // 셀 기록 영역 (목표, 나, 메이트 등)
         let detailStack = UIStackView(arrangedSubviews: [
             makeDetailLabel(value: "0", unit: "목표(km)"),
             makeDetailLabel(value: "0", unit: "나(km)"),
@@ -104,6 +111,7 @@ final class BicycleRecordCell: UICollectionViewCell {
         }
     }
 
+    // 기록 구성하는 스택뷰 생성 함수
     private func makeDetailLabel(value: String, unit: String) -> UIStackView {
         let valueLabel = UILabel()
         valueLabel.text = value
@@ -112,7 +120,7 @@ final class BicycleRecordCell: UICollectionViewCell {
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
 
-        detailLabels.append(valueLabel)
+        detailLabels.append(valueLabel) // detailLabels 배열에 저장해서 추후에 configure에서 접근시킴
         
         let unitLabel = UILabel()
         unitLabel.text = unit
@@ -129,10 +137,12 @@ final class BicycleRecordCell: UICollectionViewCell {
         return stack
     }
 
+    // 실제 기록값을 기록영역에 반영
     func configure(with record: ExerciseRecord) {
         dateLabel.text = record.dateOnly
         resultLabel.text = record.result.rawValue
         
+        // 결과타입(대결,협력)에 따라 색상 변경
         switch record.result {
         case .teamSuccess, .teamFail:
             resultLabel.backgroundColor = UIColor(named: "Primary500")

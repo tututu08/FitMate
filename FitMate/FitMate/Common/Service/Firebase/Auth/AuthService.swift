@@ -45,9 +45,18 @@ final class AuthService: NSObject {
         configureGoogleSignIn()
     }
     
+    /// Firebase에 google 인증 연결
+    /// - Firebase 프로젝트의 Google Client ID를 가져와서
+    /// - Google Sign-In에 필요한 설정(GIDConfiguration)을 만들고
+    /// - Google 로그인 싱글톤에 설정을 적용하는 함수입니다.
     private func configureGoogleSignIn() {
+        // Firebase에 등록된 Google 서비스의 Client ID 가져오기
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+        
+        // GIDConfiguration: Google 로그인 환경 설정 객체
         let config = GIDConfiguration(clientID: clientID)
+        
+        // GIDSignIn.sharedInstance: Google 로그인 동작을 관리하는 싱글톤 인스턴스
         GIDSignIn.sharedInstance.configuration = config
     }
     
@@ -217,17 +226,17 @@ final class AuthService: NSObject {
             // (1) tokens 문서 삭제
             tokensRef.delete { tokenError in
                 if let tokenError = tokenError {
-                    print("❌ tokens 문서 삭제 실패: \(tokenError.localizedDescription)")
+                    print("tokens 문서 삭제 실패: \(tokenError.localizedDescription)")
                 } else {
-                    print("✅ tokens 문서 삭제 완료")
+                    print("tokens 문서 삭제 완료")
                 }
 
                 // (2) users 문서에서 fcmToken 필드만 삭제
                 usersRef.updateData(["fcmToken": FieldValue.delete()]) { userError in
                     if let userError = userError {
-                        print("⚠️ users 문서 fcmToken 필드 삭제 실패: \(userError.localizedDescription)")
+                        print("users 문서 fcmToken 필드 삭제 실패: \(userError.localizedDescription)")
                     } else {
-                        print("✅ users 문서 fcmToken 필드 삭제 완료")
+                        print("users 문서 fcmToken 필드 삭제 완료")
                     }
 
                     // (3) Firebase 로그아웃 수행
@@ -243,25 +252,18 @@ final class AuthService: NSObject {
             return Disposables.create()
         }
     }
-
     
     func deleteAccount() -> Single<Void> {
         return Single.create { single in
-            /// // 현재 로그인한 유저가 있는지 확인
             if let user = Auth.auth().currentUser {
-                // 유저 삭제 요청
                 user.delete { error in
                     if let error = error {
-                        // 실패 시 에러 반환
                         single(.failure(error))
                     } else {
-                        print("탈퇴 성공")
-                        // 성공 시 빈 성공 값 반환
                         single(.success(()))
                     }
                 }
             } else {
-                // 로그인 정보가 없을 경우 커스텀 에러 반환
                 let error = NSError(
                     domain: "FirebaseAuth",
                     code: -1,
@@ -269,6 +271,7 @@ final class AuthService: NSObject {
                 )
                 single(.failure(error))
             }
+
             return Disposables.create()
         }
     }
@@ -284,42 +287,54 @@ final class AuthService: NSObject {
                 )))
                 return Disposables.create()
             }
-            
-            guard let googleUser = GIDSignIn.sharedInstance.currentUser else {
-                single(.failure(NSError(
-                    domain: "GoogleAuth",
-                    code: -2,
-                    userInfo: [NSLocalizedDescriptionKey: "Google 사용자 정보 없음"]
-                )))
-                return Disposables.create()
-            }
 
-            let idToken = googleUser.idToken?.tokenString
-            let accessToken = googleUser.accessToken.tokenString
-
-            guard let idToken, !idToken.isEmpty else {
-                single(.failure(NSError(
-                    domain: "GoogleAuth",
-                    code: -3,
-                    userInfo: [NSLocalizedDescriptionKey: "idToken 없음"]
-                )))
-                return Disposables.create()
-            }
-
-            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
-
-            user.reauthenticate(with: credential) { _, error in
-                if let error = error {
-                    single(.failure(error))
-                } else {
-                    single(.success(()))
+            // 세션 복원 먼저 시도
+            if GIDSignIn.sharedInstance.currentUser == nil {
+                GIDSignIn.sharedInstance.restorePreviousSignIn { restoredUser, error in
+                    if let restoredUser = restoredUser {
+                        print("구글 세션 복원 성공")
+                        self.performGoogleReauth(user: user, googleUser: restoredUser, single: single)
+                    } else {
+                        single(.failure(NSError(
+                            domain: "GoogleAuth",
+                            code: -99,
+                            userInfo: [NSLocalizedDescriptionKey: "Google 세션 복원 실패: \(error?.localizedDescription ?? "알 수 없음")"]
+                        )))
+                    }
                 }
+            } else {
+                // 세션 이미 살아있으면 바로 재인증 시도
+                let googleUser = GIDSignIn.sharedInstance.currentUser!
+                self.performGoogleReauth(user: user, googleUser: googleUser, single: single)
             }
 
             return Disposables.create()
         }
     }
     
+    private func performGoogleReauth(user: FirebaseAuth.User, googleUser: GIDGoogleUser, single: @escaping (SingleEvent<Void>) -> Void) {
+        guard let idToken = googleUser.idToken?.tokenString else {
+            single(.failure(NSError(
+                domain: "GoogleAuth",
+                code: -3,
+                userInfo: [NSLocalizedDescriptionKey: "idToken 없음"]
+            )))
+            return
+        }
+
+        let accessToken = googleUser.accessToken.tokenString
+        let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+
+        user.reauthenticate(with: credential) { _, error in
+            if let error = error {
+                single(.failure(error))
+            } else {
+                single(.success(()))
+            }
+        }
+    }
+    
+    // MARK: 카카오 재인증
     func reauthenticateKakaoUser(kakaoUser: KakaoUser) -> Single<Void> {
         return Single.create { single in
             guard let user = Auth.auth().currentUser else {
@@ -377,7 +392,7 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
                 return Disposables.create()
             }
             
-            guard let user = Auth.auth().currentUser else {
+            guard Auth.auth().currentUser != nil else {
                 single(.failure(NSError(domain: "AppleAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "로그인 유저 없음"])))
                 return Disposables.create()
             }
@@ -393,13 +408,13 @@ extension AuthService: ASAuthorizationControllerDelegate, ASAuthorizationControl
             controller.delegate = self
             controller.presentationContextProvider = self
             
-            // ✅ 결과를 여기에 저장해두었다가 delegate에서 사용
+            // 결과를 여기에 저장해두었다가 delegate에서 사용
             self.appleObserver = { result in
                 switch result {
-                case .success(let user):
-                    single(.success(())) // ✅ 재인증 성공
+                case .success:
+                    single(.success(())) // 재인증 성공
                 case .failure(let error):
-                    single(.failure(error)) // ❌ 재인증 실패
+                    single(.failure(error)) // 재인증 실패
                 }
                 self.appleObserver = nil
             }
