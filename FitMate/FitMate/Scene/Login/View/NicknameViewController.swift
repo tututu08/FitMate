@@ -39,19 +39,10 @@ class NicknameViewController: BaseViewController {
     }
     
     override func bindViewModel() {
-        //        nicknameView.registerButton.rx.tap
-        //            .asDriver(onErrorDriveWith: .empty())
-        //            .drive(onNext: { [weak self] _ in
-        //                guard let self else { return }
-        //                let codeShareView = CodeShareViewController(uid: self.uid)
-        //                self.navigationController?.pushViewController(
-        //                    codeShareView, animated: true)
-        //            })
-        //            .disposed(by: disposeBag)
-        
+    
         let termsGesture = UITapGestureRecognizer()
         nicknameView.termsLabel.addGestureRecognizer(termsGesture)
-        nicknameView.termsLabel.isUserInteractionEnabled = true // 중요!
+        nicknameView.termsLabel.isUserInteractionEnabled = true
         
         termsGesture.rx.event
             .map { _ in () }
@@ -78,9 +69,6 @@ class NicknameViewController: BaseViewController {
             privacyToggleTap: nicknameView.privacyButton.rx.tap.asObservable(),
             termsLabelTap: termsLabelTapped.asObservable(),
             privacyLabelTap: privacyLabelTapped.asObservable(),
-            // 텍스트 필드 입력
-//            nicknameText: nicknameView.nicknameField.textRelay.asObservable(),
-            // 등록완료 버튼 탭
             registerTap: nicknameView.registerButton.rx.tap.asObservable()
         )
         

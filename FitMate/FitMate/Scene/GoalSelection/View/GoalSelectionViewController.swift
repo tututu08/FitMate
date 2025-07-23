@@ -133,7 +133,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         // 목표 설정 클릭시 바인딩
         goalSettingButton.rx.tap
             .bind(onNext: { [weak self] selectedGoal in
-                guard let self = self else { return }
+                guard let self else { return }
                 
                 // 저장(종목 타이틀, 목표치)
                 if self.selectedGoalValueRelay.value == 0,
@@ -259,6 +259,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         updateGoalSelection(with: selected)
         pickerView.reloadAllComponents()
     }
+    
     private func updateGoalSelection(with text: String) {
         selectedGoalRelay.accept(text)
         let (value, unit) = splitValueAndUnit(from: text)
@@ -271,6 +272,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 100
     }
+    
     // 문자열 분리 메서드
     private func splitValueAndUnit(from text: String) -> (String, String) {
         // 정규식 패턴 정의

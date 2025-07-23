@@ -40,11 +40,11 @@ enum CustomAlertType {
             return message
         case .rejectRequest(let message):
             return message
-        case .sportsMateRequest(let message):
+        case .sportsMateRequest:
             return "운동 초대가 도착했어요!"
-        case .alreadyCancel(let message):
+        case .alreadyCancel:
             return "이미 취소된 운동입니다"
-        case .matchingFail(let message):
+        case .matchingFail:
             return "메이트가 거절했습니다"
         case .avatarPurchase:
             return ""

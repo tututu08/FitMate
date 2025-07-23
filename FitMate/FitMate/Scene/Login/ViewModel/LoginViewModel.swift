@@ -113,7 +113,6 @@ final class LoginViewModel {
                             }
                         }
                     }
-                    
                     // 카카오톡 앱이 설치된 경우
                     if UserApi.isKakaoTalkLoginAvailable() {
                         UserApi.shared.loginWithKakaoTalk { _, error in
@@ -135,7 +134,6 @@ final class LoginViewModel {
                             }
                         }
                     }
-                    
                     return Disposables.create() // Observable 리소스 해제
                 }
                 // 성공적으로 KakaoUser를 받아온 경우 Result.success로 감쌈

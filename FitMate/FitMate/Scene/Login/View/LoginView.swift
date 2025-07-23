@@ -57,7 +57,6 @@ class LoginView: BaseView {
         fitMateLogo.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide).offset(144)
             make.centerX.equalToSuperview()
-//            make.leading.trailing.equalTo(87)
             make.height.equalTo(60)
         }
        

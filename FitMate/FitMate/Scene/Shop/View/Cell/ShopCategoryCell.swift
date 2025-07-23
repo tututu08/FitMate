@@ -37,11 +37,12 @@ class ShopCategoryCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError()
     }
-
+    
+    /// 셀을 외부 데이터에 맞게 설정하는 함수
     func configure(with category: RankCategory, isSelected: Bool) {
+        // 타이틀 라벨에 카테고리 이름 표시
         titleLabel.text = category.rawValue
         contentView.backgroundColor = isSelected ? .primary500 : .clear
         titleLabel.textColor = isSelected ? .white : .primary100
     }
-    
 }
