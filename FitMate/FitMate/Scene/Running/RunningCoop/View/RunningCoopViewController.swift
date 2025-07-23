@@ -11,7 +11,7 @@ final class RunningCoopViewController: BaseViewController {
     private let startRelay = PublishRelay<Void>()
     private let mateDistanceRelay = BehaviorRelay<Double>(value: 0)
     private let goalselecionViewModel = GoalSelectionViewModel()
-    private let locationAuthStatusRelay = BehaviorRelay<CLAuthorizationStatus>(value: CLLocationManager.authorizationStatus())
+    private let locationAuthStatusRelay = BehaviorRelay<CLAuthorizationStatus>(value: CLLocationManager().authorizationStatus)
     
     private let exerciseType: String
     private let goalDistance: Int
@@ -65,11 +65,11 @@ final class RunningCoopViewController: BaseViewController {
         rootView.updateMateCharacter(runningCoopViewModel.mateCharacter)
         
         // 화면 진입 시 권한 상태 체크
-        locationAuthStatusRelay.accept(CLLocationManager.authorizationStatus())
+        locationAuthStatusRelay.accept(CLLocationManager().authorizationStatus)
         
         // 앱 포그라운드 복귀 시 권한 상태 체크
         NotificationCenter.default.rx.notification(UIApplication.didBecomeActiveNotification)
-            .map { _ in CLLocationManager.authorizationStatus() }
+            .map { _ in CLLocationManager().authorizationStatus }
             .bind(to: locationAuthStatusRelay)
             .disposed(by: disposeBag)
         
