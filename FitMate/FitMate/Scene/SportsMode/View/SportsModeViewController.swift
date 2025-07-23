@@ -23,6 +23,15 @@ class SportsModeViewController: BaseViewController {
         }
     }
     
+    enum ExerciseType: String {
+        case walking = "걷기"
+        case running = "달리기"
+        case cycling = "자전거"
+        case plank = "플랭크"
+        case jumpRope = "줄넘기"
+    }
+
+    
     // 모드 선택 이벤트를 전달하는 Relay (Rx 방식)
     private let modeSelectedRelay = PublishRelay<(String, ExerciseMode)>()
     
