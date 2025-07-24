@@ -6,7 +6,7 @@ class GoalSelectionViewModel: ViewModelType {
     
     // ViewModel의 Input 정의: 외부에서 주입되는 selectedTitle 스트림
     struct Input {
-        let selectedTitle: Observable<String>
+        let selectedTitle: Observable<SportsModeViewController.ExerciseType>
         let selectedMode: Observable<SportsModeViewController.ExerciseMode>
     }
     
@@ -15,8 +15,8 @@ class GoalSelectionViewModel: ViewModelType {
         let pickerItems: Driver<[String]>
     }
     
-    // 선택된 운동 제목을 저장하는 BehaviorRelay (초기값은 빈 문자열)
-    let selectedGoalTitleRelay = BehaviorRelay<String>(value: "")
+    // 선택된 운동 제목을 저장하는 BehaviorRelay
+    let selectedGoalTitleRelay = BehaviorRelay<SportsModeViewController.ExerciseType>(value: .walking)
     // 선택된 운동 모드를 저장
     private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
     
@@ -35,34 +35,31 @@ class GoalSelectionViewModel: ViewModelType {
         
         return Output(pickerItems: pickerDataDriver)
     }
-    
-    
+        
     // 선택된 운동 제목에 따라 피커에 표시할 데이터를 반환하는 Driver
     private var pickerDataDriver: Driver<[String]> {
         Observable
             .combineLatest(selectedGoalTitleRelay, selectedModeRelay)
             .map { title, mode in
                 switch (title, mode) {
-                case ("걷기", .cooperation):
+                case (.walking, .cooperation):
                     return Array(1...20).map { "\($0) km" }
-                case ("걷기", .battle):
+                case (.walking, .battle):
                     return Array(1...10).map { "\($0) km" }
-                case ("달리기", .cooperation):
+                case (.running, .cooperation):
                     return Array(1...40).map { "\($0) km" }
-                case ("달리기", .battle):
+                case (.running, .battle):
                     return Array(1...20).map { "\($0) km" }
-                case ("자전거", .cooperation):
+                case (.cycling, .cooperation):
                     return Array(1...60).map { "\($0) km" }
-                case ("자전거", .battle):
+                case (.cycling, .battle):
                     return Array(1...30).map { "\($0) km" }
-                case ("플랭크", _):
+                case (.plank, _):
                     return Array(stride(from: 2, through: 20, by: 2)).map { "\($0) 분" }
-                case ("줄넘기", .cooperation):
+                case (.jumpRope, .cooperation):
                     return Array(stride(from: 100, through: 2000, by: 100)).map { "\($0)회" }
-                case ("줄넘기", .battle):
+                case (.jumpRope, .battle):
                     return Array(stride(from: 100, through: 1500, by: 100)).map { "\($0)회" }
-                default:
-                    return []
                 }
             }
             .asDriver(onErrorJustReturn: [])

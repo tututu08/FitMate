@@ -54,39 +54,39 @@ class TabBarController: UITabBarController {
     private func configureTabBar() {
         
         let historyVC = HistoryViewController(uid: self.uid)
-        let nav1 = UINavigationController(rootViewController: historyVC)
+        let historyNav = UINavigationController(rootViewController: historyVC)
         
-        nav1.tabBarItem = UITabBarItem(
+        historyNav.tabBarItem = UITabBarItem(
             title: "기록",
             image: UIImage(named: "history"),
             selectedImage: UIImage(named: "historyTapped")
         )
         
         let mainVC = MainViewController(uid: self.uid, mateUid: self.uid)
-        let nav2 = UINavigationController(rootViewController: mainVC)
-        nav2.tabBarItem = UITabBarItem(
+        let mainNav = UINavigationController(rootViewController: mainVC)
+        mainNav.tabBarItem = UITabBarItem(
             title: "홈",
             image: UIImage(named: "main"),
             selectedImage: UIImage(named: "mainTapped")
         )
         
         let shopVC = ShopViewController(uid: self.uid, mateUid: self.uid)
-        let nav3 = UINavigationController(rootViewController: shopVC)
-        nav3.tabBarItem = UITabBarItem(
+        let shopNav = UINavigationController(rootViewController: shopVC)
+        shopNav.tabBarItem = UITabBarItem(
             title: "상점",
             image: UIImage(named: "shop"),
             selectedImage: UIImage(named: "shopTapped")
         )
         
         let myPageVC = MypageViewController(uid: self.uid)
-        let nav4 = UINavigationController(rootViewController: myPageVC)
-        nav4.tabBarItem = UITabBarItem(
+        let myPageNav = UINavigationController(rootViewController: myPageVC)
+        myPageNav.tabBarItem = UITabBarItem(
             title: "마이페이지",
             image: UIImage(named: "mypage"),
             selectedImage: UIImage(named: "mypageTapped")
         )
         
-        viewControllers = [nav2, nav3, nav1, nav4]
+        viewControllers = [mainNav, shopNav, historyNav, myPageNav]
     }
     
     private func setUp() {
