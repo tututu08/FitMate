@@ -1,16 +1,6 @@
 
 import Foundation
 
-//운동 유형 정의 (전체,걷기,달리기)
-//enum ExerciseType: String, CaseIterable {
-//    case all = "전체"
-//    case walk = "걷기"
-//    case run = "달리기"
-//    case bicycle = "자전거"
-//    case plank = "플랭크"
-//    case jumpRope = "줄넘기"
-//}
-
 //운동 결과 유형 정의 (협력성공,실패/대결승리,패배)
 enum ExerciseResult: String {
     case teamSuccess = "협력-성공"

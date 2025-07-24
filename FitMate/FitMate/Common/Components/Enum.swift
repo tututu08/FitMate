@@ -113,9 +113,3 @@ enum ExerciseType: String, CaseIterable { // from HistoryModel
     case plank = "플랭크"
     case jumpRope = "줄넘기"
 }
-
-
-
-
-
-
