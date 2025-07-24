@@ -5,44 +5,6 @@
 //  Created by soophie on 6/18/25.
 //
 
-
-// TODO: 따로 파일로 뺴기
-//enum SocialLoginType {
-//    case kakao, google, apple
-//    
-//    var title: String {
-//        switch self {
-//        case .kakao: return "카카오로 시작하기"
-//        case .google: return "Google로 시작하기"
-//        case .apple: return "Apple로 시작하기"
-//        }
-//    }
-//    
-//    var iconName: String {
-//        switch self {
-//        case .kakao: return "kakao_renew"
-//        case .google: return "google_renew"
-//        case .apple: return "apple_renew"
-//        }
-//    }
-//    
-//    var backgroundColor: UIColor {
-//        switch self {
-//        case .kakao: return UIColor(red: 254/255, green: 229/255, blue: 0/255, alpha: 1.0)
-//        case .google: return .white
-//        case .apple: return .background900
-//        }
-//    }
-//    
-//    var textColor: UIColor {
-//        switch self {
-//        case .kakao: return .background900
-//        case .google: return .background900
-//        case .apple: return .white
-//        }
-//    }
-//}
-
 import UIKit
 import SnapKit
 
