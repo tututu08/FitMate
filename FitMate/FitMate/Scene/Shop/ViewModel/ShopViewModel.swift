@@ -40,7 +40,12 @@ final class ShopViewModel {
         let filtered = Observable
                 .combineLatest(selectedCategoryRelay, allAvatarsRelay)
                 .map { selected, avatars in
-                    (selected == .all) ? avatars : avatars.filter { $0.type.category == selected }
+                    (selected == .all)
+                    ? avatars
+                    : avatars.filter {
+                        guard let type = $0.type else { return false }
+                        return type.category == selected
+                    }
                 }
                 .do(onNext: { [weak self] avatars in
                     self?.currentFilteredAvatarsRelay.accept(avatars)
@@ -49,23 +54,31 @@ final class ShopViewModel {
 
             return Output(selectedAvatar: filtered)
     }
+    
     /// 등급 별 카테고리 대로 셀들 나열
     /// 위 조건을 기본으로 해금 여부를 우선사항으로 설정
     private func sortAvatars(_ avatars: [AvatarModel]) -> [AvatarModel] {
         let sorted = avatars.sorted {
-            // 캐피는 무조건 맨 앞 맨 첫번째
-            if $0.type == .kaepy { return true }
-            if $1.type == .kaepy { return false }
-            
+            // type 옵셔널 안전하게 언래핑
+            guard let firstType = $0.type,
+                  let secondType = $1.type else {
+                return false // 타입이 없으면 우선순위 뒤로
+            }
+            // 캐피는 무조건 맨 앞
+            if firstType == .kaepy { return true }
+            if secondType == .kaepy { return false }
+
             if $0.isUnlocked != $1.isUnlocked {
                 return $0.isUnlocked && !$1.isUnlocked
             }
-            if $0.type.category != $1.type.category {
-                return RankCategory.allCases.firstIndex(of: $0.type.category)! <
-                    RankCategory.allCases.firstIndex(of: $1.type.category)!
+
+            if firstType.category != secondType.category {
+                return RankCategory.allCases.firstIndex(of: firstType.category)! <
+                       RankCategory.allCases.firstIndex(of: secondType.category)!
             }
-            return AvatarType.allCases.firstIndex(of: $0.type)! <
-                AvatarType.allCases.firstIndex(of: $1.type)!
+
+            return AvatarType.allCases.firstIndex(of: firstType)! <
+                   AvatarType.allCases.firstIndex(of: secondType)!
         }
         return sorted
     }
@@ -78,12 +91,12 @@ final class ShopViewModel {
         .map { avatars, unlockedTypes in
             avatars.map { avatar in
                 var updated = avatar
-
-                // 캐피는 항상 해금 상태로
-                if avatar.type == .kaepy {
-                    updated.isUnlocked = true
-                } else {
-                    updated.isUnlocked = unlockedTypes.contains(avatar.type)
+                if let type = avatar.type {
+                    if type == .kaepy {
+                        updated.isLocked = false
+                    } else {
+                        updated.isLocked = !unlockedTypes.contains(type)
+                    }
                 }
                 return updated
             }
