@@ -31,38 +31,41 @@ final class ShopViewModel {
     struct Output {
         let selectedAvatar: Driver<[AvatarModel]>
     }
-
     func transform(input: Input) -> Output {
         input.selectedCategory
             .bind(to: selectedCategoryRelay)
             .disposed(by: disposeBag)
 
         let filtered = Observable
-                .combineLatest(selectedCategoryRelay, allAvatarsRelay)
-                .map { selected, avatars in
-                    (selected == .all)
-                    ? avatars
-                    : avatars.filter {
-                        guard let type = $0.type else { return false }
-                        return type.category == selected
+            .combineLatest(selectedCategoryRelay, allAvatarsRelay)
+            .map { selected, avatars -> [AvatarModel] in
+                if selected == .all {
+                    return avatars
+                } else {
+                    return avatars.filter { avatar in
+                        guard let avatarCategory = RankCategory(
+                            rawValue: avatar.category) else {
+                            return false
+                        }
+                        return avatarCategory == selected
                     }
                 }
-                .do(onNext: { [weak self] avatars in
-                    self?.currentFilteredAvatarsRelay.accept(avatars)
-                })
-                .asDriver(onErrorJustReturn: [])
+            }
+            .do(onNext: { [weak self] avatars in
+                self?.currentFilteredAvatarsRelay.accept(avatars)
+            })
+            .asDriver(onErrorJustReturn: [])
 
-            return Output(selectedAvatar: filtered)
+        return Output(selectedAvatar: filtered)
     }
     
     /// 등급 별 카테고리 대로 셀들 나열
     /// 위 조건을 기본으로 해금 여부를 우선사항으로 설정
     private func sortAvatars(_ avatars: [AvatarModel]) -> [AvatarModel] {
         let sorted = avatars.sorted {
-            // type 옵셔널 안전하게 언래핑
             guard let firstType = $0.type,
                   let secondType = $1.type else {
-                return false // 타입이 없으면 우선순위 뒤로
+                return false
             }
             // 캐피는 무조건 맨 앞
             if firstType == .kaepy { return true }
@@ -71,12 +74,19 @@ final class ShopViewModel {
             if $0.isUnlocked != $1.isUnlocked {
                 return $0.isUnlocked && !$1.isUnlocked
             }
-
-            if firstType.category != secondType.category {
-                return RankCategory.allCases.firstIndex(of: firstType.category)! <
-                       RankCategory.allCases.firstIndex(of: secondType.category)!
+            
+            // 서버에서 내려온 문자열 category를 enum으로 변환
+            guard let firstCategory = RankCategory(rawValue: $0.category),
+                  let secondCategory = RankCategory(rawValue: $1.category) else {
+                return false
             }
 
+            if firstCategory != secondCategory {
+                return RankCategory.allCases.firstIndex(of: firstCategory)! <
+                       RankCategory.allCases.firstIndex(of: secondCategory)!
+            }
+
+            // 마지막 정렬 기준: AvatarType 순서
             return AvatarType.allCases.firstIndex(of: firstType)! <
                    AvatarType.allCases.firstIndex(of: secondType)!
         }

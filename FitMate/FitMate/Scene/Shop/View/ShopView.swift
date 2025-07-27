@@ -35,15 +35,17 @@ class ShopView: BaseView {
         return coinImg
     }()
     
+    // iOS 15+ 기준으로는 contentEdgeInsets가 무시되기 때문에 UIButton.Configuration 기반으로 변경 -> 노란 에러 수정
     let changeButton: UIButton = {
-        let button = UIButton()
+        var config = UIButton.Configuration.filled() // 또는 .plain(), .tinted()도 가능
+        config.title = "아바타 변경"
+        config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8)
+        config.baseBackgroundColor = .secondary500
+        config.baseForegroundColor = .background800 // 텍스트 컬러
+
+        let button = UIButton(configuration: config)
         button.layer.cornerRadius = 4
-        button.setTitle("아바타 변경", for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-Medium", size: 14)
-        button.setTitleColor(.background800, for: .normal)
-        button.backgroundColor = .secondary500
-        button.contentEdgeInsets = UIEdgeInsets(
-            top: 6, left: 8, bottom: 6, right: 8)
         return button
     }()
     

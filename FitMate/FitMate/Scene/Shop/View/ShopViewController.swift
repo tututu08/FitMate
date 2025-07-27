@@ -104,8 +104,8 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
             selectedAvatar: rootView.avatarCollection.rx.modelSelected(AvatarModel.self).asObservable()
         )
         
-        let selectedAvatarInfo = viewModel.selectedAvatarRelay
-            .compactMap { $0 }
+//        let selectedAvatarInfo = viewModel.selectedAvatarRelay
+//            .compactMap { $0 }
         
         let output = viewModel.transform(input: input)
         
