@@ -23,7 +23,8 @@ final class RunningCoopViewController: BaseViewController {
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
     
-    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String) {
+    // matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String -> ,matchInfo: MatchInfo으로 변경
+    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String /*,matchInfo: MatchInfo*/) {
         self.exerciseType = exerciseType
         self.goalDistance = goalDistance
         self.matchCode = matchCode
@@ -31,6 +32,12 @@ final class RunningCoopViewController: BaseViewController {
         self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+        //        위에 5줄 하단 5줄 코드로 변경
+        //        matchCode = matchInfo.matchCode
+        //        myUid = matchInfo.myUid
+        //        mateUid = matchInfo.mateUid
+        //        myCharacter = matchInfo.myCharacter
+        //        mateCharacter = matchInfo.mateCharacter
         
         self.runningCoopViewModel = RunningCoopViewModel(
             goalDistance: goalDistance,

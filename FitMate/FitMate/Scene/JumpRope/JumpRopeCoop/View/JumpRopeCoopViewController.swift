@@ -22,12 +22,19 @@ class JumpRopeCoopViewController: BaseViewController {
     private let mateUid: String
     private let myUid: String
     
-    init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String) {
+    // matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String -> ,matchInfo: MatchInfo으로 변경
+    init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String /*,matchInfo: MatchInfo*/) {
         self.matchCode = matchCode
         self.myUid = myUid
         self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
+//        위에 5줄 하단 5줄 코드로 변경
+//        matchCode = matchInfo.matchCode
+//        myUid = matchInfo.myUid
+//        mateUid = matchInfo.mateUid
+//        myCharacter = matchInfo.myCharacter
+//        mateCharacter = matchInfo.mateCharacter
         
         self.viewModel = JumpRopeCoopViewModel(
             goalCount: goalCount,
