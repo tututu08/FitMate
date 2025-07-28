@@ -191,7 +191,7 @@ final class CodeShareViewController: BaseViewController {
         toastLabel.text = message
         toastLabel.textColor = .white
         toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        toastLabel.font = .systemFont(ofSize: 14)
+        toastLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
         toastLabel.textAlignment = .center
         toastLabel.alpha = 0
         toastLabel.layer.cornerRadius = 8
