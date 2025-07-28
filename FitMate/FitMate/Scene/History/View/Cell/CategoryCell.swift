@@ -7,7 +7,6 @@ final class CategoryCell: UICollectionViewCell {
     // 카테고리 이름을 보여줌
     private let titleLabel: UILabel = {
         let label = UILabel()
-        //label.font = .systemFont(ofSize: 14)
         label.font = UIFont(name: "Pretendard-Regular", size: 16)
         label.textColor = UIColor(named: "Background50") // 선택하지 않았을 경우의 상태 색상
         label.textAlignment = .center
@@ -23,9 +22,6 @@ final class CategoryCell: UICollectionViewCell {
             titleLabel.textColor = isSelected
                 ? .white
                 : UIColor(named: "Primary100")
-//            titleLabel.font = isSelected
-//                ? .boldSystemFont(ofSize: 14)
-//                : .systemFont(ofSize: 14)
         }
     }
 
