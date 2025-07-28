@@ -31,7 +31,7 @@ final class FinishView: BaseView {
         let label = UILabel()
         label.text = "종목 목표치" // 예: "목표 100회"
         label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 20)
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
     
