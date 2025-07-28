@@ -29,7 +29,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "종목 목표치"
         label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 20)
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
 
@@ -37,7 +37,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "나"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
@@ -46,7 +46,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "나의기록"
         label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
 
@@ -54,7 +54,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "메이트"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
@@ -63,7 +63,7 @@ class BattleSportsView: BaseView {
         let label = UILabel()
         label.text = "메이트기록"
         label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
 
