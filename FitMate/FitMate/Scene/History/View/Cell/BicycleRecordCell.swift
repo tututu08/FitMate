@@ -31,7 +31,7 @@ final class BicycleRecordCell: UICollectionViewCell {
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "0000.00.00"
-        label.font = UIFont(name: "Pretendard-Medium", size: 13)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         label.textColor = .gray
         return label
     }()
