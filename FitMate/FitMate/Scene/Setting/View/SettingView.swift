@@ -1,5 +1,4 @@
 import UIKit
-
 import SnapKit
 
 final class SettingView: UIView {
@@ -64,6 +63,7 @@ final class SettingView: UIView {
     }()
 
     let partnerButton = SettingView.makeButton(title: "메이트 끊기")
+    let languagesButton = SettingView.makeButton(title: "언어 선택")
     let logoutButton = SettingView.makeButton(title: "로그아웃")
     let withdrawButton = SettingView.makeButton(title: "회원탈퇴")
 
@@ -96,7 +96,7 @@ final class SettingView: UIView {
         containerView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)
-            $0.height.equalTo(355)
+            $0.height.equalTo(379)
         }
 
         [titleLabel, closeButton, separator].forEach {
@@ -123,7 +123,7 @@ final class SettingView: UIView {
 
         containerView.addSubview(toggleStack)
 
-        [partnerButton, logoutButton, withdrawButton].forEach {
+        [partnerButton, languagesButton, logoutButton, withdrawButton].forEach {
             buttonStack.addArrangedSubview($0)
         }
         containerView.addSubview(buttonStack)
@@ -154,7 +154,7 @@ final class SettingView: UIView {
         buttonStack.snp.makeConstraints {
             $0.top.equalTo(separator.snp.bottom).offset(16)
             $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(193)
+            $0.bottom.equalToSuperview().inset(16)
         }
     }
 

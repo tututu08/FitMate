@@ -18,20 +18,20 @@ class LoginView: BaseView {
        return logo
     }()
     
-    let kakaoLogin: SocialLoginButton = {
-        let button = SocialLoginButton()
+    let kakaoLogin: CustomButton = {
+        let button = CustomButton()
         button.configureUI(for: .kakao)
         return button
     }()
     
-    let googleLogin: SocialLoginButton = {
-        let button = SocialLoginButton()
+    let googleLogin: CustomButton = {
+        let button = CustomButton()
         button.configureUI(for: .google)
         return button
     }()
     
-    let appleLogin: SocialLoginButton = {
-        let button = SocialLoginButton()
+    let appleLogin: CustomButton = {
+        let button = CustomButton()
         button.configureUI(for: .apple)
         return button
     }()

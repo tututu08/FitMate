@@ -20,7 +20,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     private var pickerData: [String] = []
     
     // 선택된 운동 제목을 전달하는 Rx Relay
-    private let selectedTitleRelay = BehaviorRelay<String>(value: "")
+    private let selectedTitleRelay = BehaviorRelay<SportsModeViewController.ExerciseType>(value: .walking)
     
     // 선택된 운동 모드를 전달하는 Rx Relay
     private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
@@ -146,7 +146,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
                 FirestoreService.shared.createMatchDocument(
                     inviterUid: self.uid,
                     inviteeUid: self.mateUid,
-                    exerciseType: self.selectedTitleRelay.value,
+                    exerciseType: self.selectedTitleRelay.value.rawValue,
                     goalValue: self.selectedGoalValueRelay.value,
                     goalUnit: self.selectedGoalUnitRelay.value,
                     mode: self.selectedModeRelay.value.asString
@@ -165,7 +165,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // 외부에서 선택된 운동 제목을 업데이트할 때 호출
     func updateSelectedTitle(_ title: String) {
-        selectedTitleRelay.accept(title)
+        selectedTitleRelay.accept(SportsModeViewController.ExerciseType(rawValue: title) ?? .running)
     }
     
     // 외부에서 선택된 운동 모드를 업데이트할 때 호출

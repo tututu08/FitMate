@@ -110,7 +110,6 @@ class CarouselCell: UICollectionViewCell {
             $0.centerY.equalToSuperview()
             $0.width.equalTo(132)
             $0.height.equalTo(144)
-            $0.width.equalTo(172)
         }
         
         titleLabel.snp.makeConstraints {
