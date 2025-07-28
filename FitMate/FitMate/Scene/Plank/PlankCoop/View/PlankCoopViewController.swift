@@ -25,6 +25,8 @@ final class PlankCoopViewController: BaseViewController {
     private let mateUID: String          // 상대 UID
     private let isInviter: Bool          // 내가 초대자인지 여부
 
+    // matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String -> ,matchInfo: MatchInfo으로 변경
+    // myUID,mateUID 에러 뜰 시 이름 myUid, mateUid로 변경해줘야함
     // 생성자(매치 기본정보 및 내/상대 정보 주입)
     init(
         goalMinutes: Int,
@@ -34,14 +36,21 @@ final class PlankCoopViewController: BaseViewController {
         isInviter: Bool,
         myCharacter: String,
         mateCharacter: String
+        /*,matchInfo: MatchInfo*/
     ) {
+        self.isInviter = isInviter
         self.matchCode = matchCode
         self.myUID = myUID
         self.mateUID = mateUID
-        self.isInviter = isInviter
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
-
+        //        위에 5줄 하단 5줄 코드로 변경
+        //        matchCode = matchInfo.matchCode
+        //        myUid = matchInfo.myUid
+        //        mateUid = matchInfo.mateUid
+        //        myCharacter = matchInfo.myCharacter
+        //        mateCharacter = matchInfo.mateCharacter
+        
         // 뷰모델 생성
         self.viewModel = PlankCoopViewModel(
             goalMinutes: goalMinutes,

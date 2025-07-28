@@ -21,7 +21,7 @@ extension UINavigationBar {
         appearance.backgroundColor = .background800
         appearance.titleTextAttributes = [
             .foregroundColor: titleColor,
-            .font: UIFont(name: "Pretendard-Semibold", size: 20)! // TODO: - 강제 언래핑 수정하기
+            .font: UIFont(name: "Pretendard-Semibold", size: 20) ?? "system" // TODO: - 강제 언래핑 수정하기
         ]
         
         var backImage = backImage
