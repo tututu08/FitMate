@@ -35,7 +35,7 @@ final class WorkRecordCell: UICollectionViewCell {
     private let typeLabel: UILabel = {
         let label = UILabel()
         label.text = "종목명"
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         label.textColor = .black
         return label
     }()
@@ -44,7 +44,7 @@ final class WorkRecordCell: UICollectionViewCell {
     private let totalLabel: UILabel = {
         let label = UILabel()
         label.text = "총기록"
-        label.font = .systemFont(ofSize: 32, weight: .bold)
+        label.font = UIFont(name: "Pretendard-Bold", size: 48)
         label.textColor = .black
         return label
     }()
@@ -53,7 +53,7 @@ final class WorkRecordCell: UICollectionViewCell {
     private let unitLabel: UILabel = {
         let label = UILabel()
         label.text = "단위"
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         label.textColor = UIColor(red: 87/255, green: 87/255, blue: 87/255, alpha: 1) //에셋에서 불러오니 다크모드변경에 따라 색상이 하얀색으로 보일 때가 있어서 그냥 RGB로 지정시킴
         return label
     }()
@@ -69,6 +69,9 @@ final class WorkRecordCell: UICollectionViewCell {
     
     // 레이아웃 구성
     private func setupLayout() {
+        // TODO: - 오토 레이아웃 다시 잡아야 됨.
+        // 피그마에 있는 폰트로 수정 시, 레이아웃 깨짐.
+        
         contentView.addSubview(cardView)
         cardView.snp.makeConstraints {
             $0.edges.equalToSuperview()
