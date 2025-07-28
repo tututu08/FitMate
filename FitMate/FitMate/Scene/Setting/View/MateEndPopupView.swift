@@ -23,7 +23,7 @@ final class MateEndPopupView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "정말 종료하시겠어요?"
-        label.font = .systemFont(ofSize: 24, weight: .semibold)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         label.textColor = UIColor(named: "Background900")
         label.textAlignment = .center
         return label
@@ -33,7 +33,7 @@ final class MateEndPopupView: UIView {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트 종료 시 현재 연결된 상대와의\n운동 진행이 중단됩니다."
-        label.font = .systemFont(ofSize: 14)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         label.textColor = UIColor(named: "Background400")
         label.textAlignment = .center
         label.numberOfLines = 2
