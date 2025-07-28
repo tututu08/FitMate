@@ -167,7 +167,7 @@ class SportsModeViewController: BaseViewController {
         button.setTitleColor(.systemBlue, for: .normal)
         button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         button.setTitle("협력 모드", for: .normal)
         button.setTitleColor(.white, for: .normal)
         return button
@@ -179,7 +179,7 @@ class SportsModeViewController: BaseViewController {
         button.setTitleColor(.systemBlue, for: .normal)
         button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
-        button.titleLabel?.font = .systemFont(ofSize: 20, weight: .medium)
+        button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         button.setTitle("대결 모드", for: .normal)
         button.setTitleColor(.white, for: .normal)
         return button
