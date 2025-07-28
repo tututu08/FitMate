@@ -206,6 +206,7 @@ final class PlankCoopViewModel: ViewModelType {
                 }
                 // 턴 전환 감지(준비 없이 바로 다음 턴)
                 else if self.isMyTurn != myTurn {
+                    self.timer?.invalidate()
                     self.isMyTurn = myTurn
                     self.startTurn(isMyTurn: myTurn)
                 }
