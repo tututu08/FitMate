@@ -21,7 +21,7 @@ final class WalkRecordCell: UICollectionViewCell {
     private let typeLabel: UILabel = {
         let label = UILabel()
         label.text = "걷기"
-        label.font = .boldSystemFont(ofSize: 16)
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         label.textColor = .black
         return label
     }()
@@ -29,7 +29,7 @@ final class WalkRecordCell: UICollectionViewCell {
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "0000.00.00"
-        label.font = .systemFont(ofSize: 13)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         label.textColor = .gray
         return label
     }()
@@ -38,7 +38,7 @@ final class WalkRecordCell: UICollectionViewCell {
     private let resultLabel: UILabel = {
         let label = UILabel()
         label.text = "대결-패배"
-        label.font = .systemFont(ofSize: 12)
+        label.font = UIFont(name: "Pretendard-Regular", size: 12)
         label.textColor = .black
         label.backgroundColor = UIColor(named: "Secondary400")
         label.textAlignment = .center
@@ -111,7 +111,7 @@ final class WalkRecordCell: UICollectionViewCell {
     private func makeDetailLabel(value: String, unit: String) -> UIStackView {
         let valueLabel = UILabel()
         valueLabel.text = value
-        valueLabel.font = .boldSystemFont(ofSize: 20)
+        valueLabel.font = UIFont(name: "Pretendard-SemiBold", size: 22)
         valueLabel.textColor = .black
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
@@ -120,7 +120,7 @@ final class WalkRecordCell: UICollectionViewCell {
         
         let unitLabel = UILabel()
         unitLabel.text = unit
-        unitLabel.font = .systemFont(ofSize: 13)
+        unitLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
         unitLabel.textColor = .gray
         unitLabel.textAlignment = .left
         unitLabel.snp.makeConstraints { $0.height.equalTo(21) }
