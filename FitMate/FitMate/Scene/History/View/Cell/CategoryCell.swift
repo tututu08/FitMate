@@ -8,7 +8,7 @@ final class CategoryCell: UICollectionViewCell {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-Regular", size: 16)
-        label.textColor = UIColor(named: "Background50") // 선택하지 않았을 경우의 상태 색상
+        label.textColor = .background50 // 선택하지 않았을 경우의 상태 색상
         label.textAlignment = .center
         return label
     }()
@@ -17,11 +17,11 @@ final class CategoryCell: UICollectionViewCell {
     override var isSelected: Bool {
         didSet {
             contentView.backgroundColor = isSelected
-                ? UIColor(named: "Primary500")
-                : .clear
+            ? .primary500
+            : .clear
             titleLabel.textColor = isSelected
-                ? .white
-                : UIColor(named: "Primary100")
+            ? .background0
+            : .primary100
         }
     }
 
