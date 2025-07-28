@@ -23,16 +23,16 @@ class CustomTextField: UITextField {
         self.placeholder = placeholder
         self.attributedPlaceholder = NSAttributedString(
             string: placeholder,
-            attributes: [.foregroundColor: UIColor.lightGray] // 컬러 변경 필요
+            attributes: [.foregroundColor: UIColor.background400]
         )
         self.contentVerticalAlignment = .center
-        self.textColor = .white
+        self.textColor = .background0
         self.layer.cornerRadius = 4
         self.clipsToBounds = true
         self.borderStyle = .line
-        self.layer.borderColor = UIColor.systemPurple.cgColor // 컬러 변경 필요
+        self.layer.borderColor = UIColor.primary300.cgColor
         self.layer.borderWidth = 1.5
-        self.backgroundColor = .darkGray // 컬러 변경 필요
+        self.backgroundColor = .background700
         self.translatesAutoresizingMaskIntoConstraints = false
         self.leftPadding()
         // 텍스트 변경 이벤트 등록
