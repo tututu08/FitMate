@@ -110,7 +110,7 @@ class SportsModeViewController: BaseViewController {
     // 운동 설명 라벨
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "pretendard-regular", size:17)
+        label.font = UIFont(name: "pretendard-regular", size:16)
         label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -128,7 +128,7 @@ class SportsModeViewController: BaseViewController {
     // 운동 효과 설명 라벨
     private let effectLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "pretendard-regular", size: 17)
+        label.font = UIFont(name: "pretendard-regular", size: 16)
         label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -146,7 +146,7 @@ class SportsModeViewController: BaseViewController {
     // 칼로리 정보 라벨
     private let caloriesLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "pretendard-regular", size: 17)
+        label.font = UIFont(name: "pretendard-regular", size: 16)
         label.textColor = .white
         label.textAlignment = .center
         return label
