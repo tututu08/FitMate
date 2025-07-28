@@ -61,7 +61,7 @@ final class QuitAlert: UIView {
         addSubview(dimmedView)
         dimmedView.snp.makeConstraints { $0.edges.equalToSuperview() }
         addSubview(container)
-        container.backgroundColor = .white
+        container.backgroundColor = .background0
         container.layer.cornerRadius = 8
         container.snp.makeConstraints {
             $0.center.equalToSuperview()
@@ -71,7 +71,7 @@ final class QuitAlert: UIView {
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
         titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
-        titleLabel.textColor = UIColor(named: "Background900")
+        titleLabel.textColor = .background900
         titleLabel.textAlignment = .center
 
         resumeButton.setTitle("계속하기", for: .normal)
