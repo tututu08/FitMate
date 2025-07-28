@@ -29,7 +29,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "종목 목표치" // 예: "목표 100회"
         label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 20)
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
     
@@ -38,7 +38,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "나"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         return label
     }()
     
@@ -47,7 +47,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "메이트"
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         return label
     }()
     
@@ -56,7 +56,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "나의기록"
         label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
     
@@ -65,7 +65,7 @@ class PlankCoopView: BaseView {
         let label = UILabel()
         label.text = "메이트기록"
         label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
     
@@ -128,7 +128,7 @@ class PlankCoopView: BaseView {
     private let stateLabel: UILabel = {
         let label = UILabel()
         label.text = "내 차례"
-        label.font = .boldSystemFont(ofSize: 23)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         label.textColor = UIColor(red: 206/255, green: 255/255, blue: 67/255, alpha: 1.0)
         label.textAlignment = .center
         return label
@@ -137,7 +137,7 @@ class PlankCoopView: BaseView {
     let timerLabel: UILabel = {
         let label = UILabel()
         label.text = "30"
-        label.font = .boldSystemFont(ofSize: 50)
+        label.font = UIFont(name: "Pretendard-Bold", size: 50)
         label.textColor = .white
         label.textAlignment = .center
         return label
