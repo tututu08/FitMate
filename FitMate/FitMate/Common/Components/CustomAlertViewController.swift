@@ -140,11 +140,7 @@ class CustomAlertViewController: UIViewController {
             dismiss(animated: true) { [weak self] in
                 self?.onConfirm?()
             }
-        case .avatarPurchase(let name, let cost):
-            dismiss(animated: true) { [weak self] in
-                self?.onConfirm?() //  여기서 구매 처리 로직 실행하도록 트리거
-            }
-            
+
         case .avatarPurchase:
             dismiss(animated: true) { [weak self] in
                 self?.onConfirm?()
