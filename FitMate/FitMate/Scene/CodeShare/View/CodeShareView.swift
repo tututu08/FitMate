@@ -24,7 +24,7 @@ class CodeShareView: BaseView {
     let titleLabel: UILabel = {
         let title = UILabel()
         title.text = "코드 공유"
-        title.textColor = .white
+        title.textColor = .background0
         title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return title
     }()
@@ -57,7 +57,7 @@ class CodeShareView: BaseView {
     let mateCodeButton: UIButton = {
         let button = UIButton()
         button.setTitle("메이트 코드 입력", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
