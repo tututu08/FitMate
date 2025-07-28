@@ -185,9 +185,10 @@ final class PlankCoopViewModel: ViewModelType {
                 let startAt = ts.dateValue()
                 let paused = data["paused"] as? Bool ?? false
                 let myTurn = self.isInviter ? (turn == "my") : (turn == "mate")
-
+                print("턴 Firestore 리스너 turn=\(turn), isInviter=\(self.isInviter), myTurn=\(myTurn), isMyTurn=\(self.isMyTurn)")
                 // 최초 진입 (혹은 세션 새로 시작)
                 if self.lastStartAt == nil {
+                    print("턴 최초 진입 startAt=\(startAt)")
                     self.lastStartAt = startAt
                     self.isMyTurn = myTurn
                     if paused {
@@ -199,13 +200,16 @@ final class PlankCoopViewModel: ViewModelType {
                 // 일시정지 상태 변화 감지 (내가 누른게 아니어도 실시간 반영)
                 else if paused && !(self.statusRelay.value == .paused(isMine: false) || self.statusRelay.value == .paused(isMine: true)) {
                     self.pause(isMine: false)
+                    print("턴 일시정지 감지")
                 }
                 // 일시정지 → 해제(재개) 신호 감지
                 else if !paused && (self.statusRelay.value == .paused(isMine: false) || self.statusRelay.value == .paused(isMine: true)) {
                     self.resume(startAt: startAt)
+                    print("턴 일시정지 해제(재개) 감지")
                 }
                 // 턴 전환 감지(준비 없이 바로 다음 턴)
                 else if self.isMyTurn != myTurn {
+                    print("턴 전환 감지. isMyTurn=\(self.isMyTurn) → \(myTurn)")
                     self.isMyTurn = myTurn
                     self.startTurn(isMyTurn: myTurn)
                 }
@@ -245,6 +249,7 @@ final class PlankCoopViewModel: ViewModelType {
     // 내 턴/상대 턴 시작(타이머 작동)
     private func startTurn(isMyTurn: Bool, remainSeconds: Int? = nil) {
         timer?.invalidate()
+        print("턴 startTurn 진입: isMyTurn=\(isMyTurn), remainSeconds=\(String(describing: remainSeconds)), myTime=\(self.myTimeRelay.value), mateTime=\(self.mateTimeRelay.value)")
         // 준비 단계 없이 바로 턴 시작
         let totalRemain = goalMinutes * 60 - myTimeRelay.value - mateTimeRelay.value
         let seconds = min(remainSeconds ?? turnDuration, totalRemain)
@@ -275,7 +280,9 @@ final class PlankCoopViewModel: ViewModelType {
                 // 턴이 끝났을 때 목표 달성하면 종료
                 let total = self.myTimeRelay.value + self.mateTimeRelay.value
                 let goal = self.goalMinutes * 60
+                print("턴 타이머 종료. isMyTurn=\(isMyTurn), total=\(total), goal=\(goal)")
                 if total >= goal {
+                    print("턴 목표 달성, finish(success: true) 호출")
                     self.finish(success: true)
                 } else {
                     // 턴 넘김 (Firestore의 turn 값 변경)
@@ -283,6 +290,7 @@ final class PlankCoopViewModel: ViewModelType {
                     if isMyTurn {
                         // Firestore에는 초대자 기준으로 다음 턴을 저장
                         let nextTurnIsMy = !self.isInviter
+                        print("턴 내 턴 종료 → Firestore에 다음 턴(\(nextTurnIsMy ? "my" : "mate"))으로 업데이트")
                         FirestoreService.shared.updatePlankTurn(
                             matchCode: self.matchCode,
                             isMyTurn: nextTurnIsMy
@@ -349,6 +357,7 @@ final class PlankCoopViewModel: ViewModelType {
 
     // 게임 종료 처리(성공/실패)
     func finish(success: Bool) {
+        print("턴 finish, myTime: \(myTimeRelay.value), mateTime: \(mateTimeRelay.value)")
         timer?.invalidate()
         statusRelay.accept(.finished(success: success))
         didFinishRelay.accept(success)
