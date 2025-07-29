@@ -31,42 +31,73 @@ final class ShopViewModel {
     struct Output {
         let selectedAvatar: Driver<[AvatarModel]>
     }
-
     func transform(input: Input) -> Output {
         input.selectedCategory
             .bind(to: selectedCategoryRelay)
             .disposed(by: disposeBag)
 
         let filtered = Observable
-                .combineLatest(selectedCategoryRelay, allAvatarsRelay)
-                .map { selected, avatars in
-                    (selected == .all) ? avatars : avatars.filter { $0.type.category == selected }
+            .combineLatest(selectedCategoryRelay, allAvatarsRelay)
+            .map { selected, avatars -> [AvatarModel] in
+                if selected == .all {
+                    return avatars
+                } else {
+                    return avatars.filter { avatar in
+                        guard let avatarCategory = RankCategory(
+                            rawValue: avatar.category) else {
+                            return false
+                        }
+                        return avatarCategory == selected
+                    }
                 }
-                .do(onNext: { [weak self] avatars in
-                    self?.currentFilteredAvatarsRelay.accept(avatars)
-                })
-                .asDriver(onErrorJustReturn: [])
+            }
+            .do(onNext: { [weak self] avatars in
+                self?.currentFilteredAvatarsRelay.accept(avatars)
+            })
+            .asDriver(onErrorJustReturn: [])
 
-            return Output(selectedAvatar: filtered)
+        return Output(selectedAvatar: filtered)
     }
+    
     /// 등급 별 카테고리 대로 셀들 나열
     /// 위 조건을 기본으로 해금 여부를 우선사항으로 설정
     private func sortAvatars(_ avatars: [AvatarModel]) -> [AvatarModel] {
         let sorted = avatars.sorted {
-            // 캐피는 무조건 맨 앞 맨 첫번째
-            if $0.type == .kaepy { return true }
-            if $1.type == .kaepy { return false }
-            
+            guard let firstType = $0.type,
+                  let secondType = $1.type else {
+                return false
+            }
+            // 캐피는 무조건 맨 앞
+            if firstType == .kaepy { return true }
+            if secondType == .kaepy { return false }
+
+            // 해금된 아바타를 앞으로
             if $0.isUnlocked != $1.isUnlocked {
                 return $0.isUnlocked && !$1.isUnlocked
             }
-            if $0.type.category != $1.type.category {
-                return RankCategory.allCases.firstIndex(of: $0.type.category)! <
-                    RankCategory.allCases.firstIndex(of: $1.type.category)!
+            
+            guard let firstCategory = RankCategory(rawValue: $0.category),
+                  let secondCategory = RankCategory(rawValue: $1.category) else {
+                return false
             }
-            return AvatarType.allCases.firstIndex(of: $0.type)! <
-                AvatarType.allCases.firstIndex(of: $1.type)!
+
+            // 카테고리 정렬
+            if firstCategory != secondCategory {
+                guard let firstIndex = RankCategory.allCases.firstIndex(of: firstCategory),
+                      let secondIndex = RankCategory.allCases.firstIndex(of: secondCategory) else {
+                    return false
+                }
+                return firstIndex < secondIndex
+            }
+
+            // 마지막 정렬 기준: AvatarType 순서
+            guard let firstIndex = AvatarType.allCases.firstIndex(of: firstType),
+                  let secondIndex = AvatarType.allCases.firstIndex(of: secondType) else {
+                return false
+            }
+            return firstIndex < secondIndex
         }
+
         return sorted
     }
 
@@ -78,12 +109,12 @@ final class ShopViewModel {
         .map { avatars, unlockedTypes in
             avatars.map { avatar in
                 var updated = avatar
-
-                // 캐피는 항상 해금 상태로
-                if avatar.type == .kaepy {
-                    updated.isUnlocked = true
-                } else {
-                    updated.isUnlocked = unlockedTypes.contains(avatar.type)
+                if let type = avatar.type {
+                    if type == .kaepy {
+                        updated.isLocked = false
+                    } else {
+                        updated.isLocked = !unlockedTypes.contains(type)
+                    }
                 }
                 return updated
             }

@@ -5,25 +5,45 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
-struct AvatarModel {
+struct AvatarModel: Codable, Hashable {
     
-    let type: AvatarType // 어떤 아바타인지
-    var isUnlocked: Bool // 해금 여부
-    let conCost: Int? // 해금 필요 코인 -> 해금 안되었을 때 중요
-    let ratioOverride: CGFloat? // 서버에서 직접 비율 내려줄 수도
+    @DocumentID var id: String? // ← Firestore 문서 ID 자동 매핑
+    
+    // Firestore에서 직접 내려주는 값들 -> 디코딩 대상
+    let name: String
+    let category: String
     let imageUrl: String
+    let price: Int?
+    var isLocked: Bool
+    let ratio: Double?
     
+    // AvatarType을 enum에 다시 매핑
+    var type: AvatarType? {
+        guard let id = id else { return nil }
+        return AvatarType(rawValue: id)
+    }
+
+    // 기존 필드 대체 또는 계산용 -> Codable에 포함되지 x
+    var isUnlocked: Bool {
+        return !isLocked
+    }
+    
+    var conCost: Int? {
+        return isLocked ? price : nil
+    }
+
     var finalRatio: CGFloat {
-        return ratioOverride ?? type.defaultRatio
+        return ratio ?? 1.0
     }
-    
+
+    // UI에서 에셋 접근용 -> imageName = 문서 ID
+    var imageName: String? {
+        return id
+    }
+
     var avatarName: String {
-        return type.avatarName // ← enum AvatarType에 정의
-    }
-    
-    // UI 랜더링을 위해 파베 이미지 접근용 네이밍
-    var imageName: String {
-        return type.imageName // ← rawValue (Storage 파일명)
+        return name
     }
 }

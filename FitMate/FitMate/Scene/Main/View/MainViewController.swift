@@ -195,11 +195,17 @@ class MainViewController: BaseViewController {
         popup.configure(description: description)
         popup.alpha = 0
         
-        if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
-            window.addSubview(popup)
-            popup.snp.makeConstraints { $0.edges.equalToSuperview() }
-            UIView.animate(withDuration: 0.25) { popup.alpha = 1 }
-            
+        let scenes = UIApplication.shared.connectedScenes
+        let windowScene = scenes.first as? UIWindowScene
+        let window = windowScene?.windows.first
+        
+        if let window {
+                window.addSubview(popup)
+                popup.snp.makeConstraints { $0.edges.equalToSuperview() }
+
+                UIView.animate(withDuration: 0.25) {
+                    popup.alpha = 1
+                }
             popup.confirmButton.rx.tap
                 .bind { [weak self, weak popup] in
                     guard let self, let popup else { return }

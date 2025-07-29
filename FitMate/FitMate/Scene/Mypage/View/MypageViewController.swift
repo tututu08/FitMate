@@ -89,15 +89,14 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     
     //Rx를 사용해 선택된 아바타를 업데이트
     private func updateSelectedAvatarImage() {
-        // 앱 전역에서 현재 선택된 아바타 정보를 실시간으로 감지해서 반영시키기 위해 BehaviorRelay 사용
         AvatarManager.shared.selectedAvatarRelay
-            .compactMap { $0 } // nil 제거
+            .compactMap { $0 } // AvatarType
             .observe(on: MainScheduler.instance)
             .bind { [weak self] avatar in
                 guard let self else { return }
-                
-                // 이미지 방향 고정
-                if let image = UIImage(named: avatar.imageName),
+
+                let imageName = avatar.imageName
+                if let image = UIImage(named: imageName),
                    let cgImage = image.cgImage {
                     let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
                     self.rootView.profileImageView.image = fixed
@@ -105,4 +104,5 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             }
             .disposed(by: disposeBag)
     }
+
 }
