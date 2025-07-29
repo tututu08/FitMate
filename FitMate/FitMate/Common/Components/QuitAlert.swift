@@ -81,13 +81,13 @@ final class QuitAlert: UIView {
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
         stopButton.setTitle("그만하기", for: .normal)
-        stopButton.setTitleColor(.white, for: .normal)
+        stopButton.setTitleColor(.background0, for: .normal)
         stopButton.backgroundColor = .primary500
         stopButton.layer.cornerRadius = 4
         stopButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
         backButton.setTitle("돌아가기", for: .normal)
-        backButton.setTitleColor(.white, for: .normal)
+        backButton.setTitleColor(.background0, for: .normal)
         backButton.backgroundColor = .primary300
         backButton.layer.cornerRadius = 5
         backButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
