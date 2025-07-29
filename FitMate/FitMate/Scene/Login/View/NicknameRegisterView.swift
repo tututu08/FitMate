@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 class NicknameView: BaseView {
-
+    
     let nicknameViewTitle: UILabel = {
         let title = UILabel()
         title.text = "닉네임 등록"
@@ -27,7 +27,7 @@ class NicknameView: BaseView {
         button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
-
+    
     let privacyButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "checkBox"), for: .normal)
@@ -52,7 +52,7 @@ class NicknameView: BaseView {
         label.isUserInteractionEnabled = true
         return label
     }()
-
+    
     
     lazy var termsStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [termsButton, termsLabel])
@@ -71,7 +71,7 @@ class NicknameView: BaseView {
     }()
     
     let validationMessageLabel: UILabel = {
-       let label = UILabel()
+        let label = UILabel()
         label.text = ""
         label.font = UIFont(name: "Pretendard-Regular", size: 12)
         label.textColor = .background400
@@ -92,16 +92,16 @@ class NicknameView: BaseView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-    
+        
         configureUI()
         setLayoutUI()
         
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func configureUI() {
         backgroundColor = .black
         [nicknameViewTitle, nicknameHeader, nicknameField,

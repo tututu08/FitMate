@@ -24,7 +24,7 @@ struct AvatarModel: Codable, Hashable {
         guard let id = id else { return nil }
         return AvatarType(rawValue: id)
     }
-
+    
     // 기존 필드 대체 또는 계산용 -> Codable에 포함되지 x
     var isUnlocked: Bool {
         return !isLocked
@@ -33,16 +33,16 @@ struct AvatarModel: Codable, Hashable {
     var conCost: Int? {
         return isLocked ? price : nil
     }
-
+    
     var finalRatio: CGFloat {
         return ratio ?? 1.0
     }
-
+    
     // UI에서 에셋 접근용 -> imageName = 문서 ID
     var imageName: String? {
         return id
     }
-
+    
     var avatarName: String {
         return name
     }

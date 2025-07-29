@@ -26,14 +26,14 @@ class ShopCategoryCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 10
         contentView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.layer.masksToBounds = true
-
+        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError()
     }

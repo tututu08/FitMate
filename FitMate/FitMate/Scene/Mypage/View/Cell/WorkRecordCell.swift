@@ -109,13 +109,13 @@ final class WorkRecordCell: UICollectionViewCell {
     // 외부에서 데이터를 받아 셀에 적용시키는 메서드
     func configure(with record: WorkoutRecord, index: Int) {
         typeLabel.text = record.type
-
+        
         let unit = record.unit.trimmingCharacters(in: .whitespacesAndNewlines)
         let raw = record.totalDistance.trimmingCharacters(in: .whitespacesAndNewlines)
-
+        
         if let value = Double(raw) {
             let cleanedValue = abs(value) < 0.01 ? 0.0 : value
-
+            
             if record.type == "플랭크" {
                 // 초 단위로 저장된 값은 분으로 전환시킴
                 let minutes = Int(cleanedValue / 60.0)
@@ -136,7 +136,7 @@ final class WorkRecordCell: UICollectionViewCell {
         } else {
             totalLabel.text = "0"
         }
-
+        
         // 종목에 따른 캐릭터 이미지 설정
         switch record.type {
         case "걷기":
@@ -152,7 +152,7 @@ final class WorkRecordCell: UICollectionViewCell {
         default:
             characterImage.image = nil
         }
-
+        
         // 인덱스에 따라 카드 색상 다르게 지정 (캐릭터들어가는 뷰도 함께)
         switch index {
         case 0:

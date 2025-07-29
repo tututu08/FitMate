@@ -65,7 +65,7 @@ class HasNoMateViewController: UIViewController {
             .setResumeButton(laterButton)
             .setStopButton(addMateButton)
             .buildAlert()
-       
+        
         view.addSubview(alert)
         alert.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -84,7 +84,7 @@ class HasNoMateViewController: UIViewController {
     @objc private func goToAddMate() {
         // 먼저 dismiss 전에 safe하게 저장해놓기
         guard let presentingVC = self.presentingViewController else { return }
-
+        
         dismiss(animated: true) {
             let codeShareVC = CodeShareViewController(uid: self.uid, hasMate: false)
             let nav = UINavigationController(rootViewController: codeShareVC)
@@ -93,6 +93,6 @@ class HasNoMateViewController: UIViewController {
             presentingVC.present(nav, animated: true)
         }
     }
-
-
+    
+    
 }

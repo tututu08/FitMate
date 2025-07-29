@@ -3,20 +3,20 @@ import UIKit
 import SnapKit
 
 final class PartnerLeftAlertView: UIView {
-
+    
     let backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         return view
     }()
-
+    
     let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.layer.cornerRadius = 8
         return view
     }()
-
+    
     // 종료 안내
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -27,7 +27,7 @@ final class PartnerLeftAlertView: UIView {
         label.textAlignment = .center
         return label
     }()
-
+    
     // 안내 설명문구
     private let descriptionLabel: UILabel = {
         let label = UILabel()
@@ -38,7 +38,7 @@ final class PartnerLeftAlertView: UIView {
         label.numberOfLines = 2
         return label
     }()
-
+    
     // 확인
     let confirmButton: UIButton = {
         let button = UIButton()
@@ -48,42 +48,44 @@ final class PartnerLeftAlertView: UIView {
         button.layer.cornerRadius = 4
         return button
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // 전체 레이아웃
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(containerView)
-
+        
         [titleLabel, descriptionLabel, confirmButton].forEach {
             containerView.addSubview($0)
         }
-
-        backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
+        
+        backgroundView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
         containerView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)
         }
-
+        
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(32)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-
+        
         descriptionLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-
+        
         confirmButton.snp.makeConstraints {
             $0.top.equalTo(descriptionLabel.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(20)
@@ -91,11 +93,12 @@ final class PartnerLeftAlertView: UIView {
             $0.bottom.equalToSuperview().inset(20)
         }
     }
-
+    
     func configure(title: String? = nil, description: String? = nil) {
         if let title = title {
             titleLabel.text = title
         }
+        
         if let description = description {
             descriptionLabel.text = description
         }

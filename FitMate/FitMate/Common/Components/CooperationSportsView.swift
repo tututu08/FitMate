@@ -66,6 +66,7 @@ class CooperationSportsView: BaseView {
             stackView.alignment = .center
             return stackView
         }()
+        
         let mateStackView: UIStackView = {
             let stackView = UIStackView(arrangedSubviews: [mateLabel,mateRecordLabel])
             stackView.axis = .horizontal
@@ -73,6 +74,7 @@ class CooperationSportsView: BaseView {
             stackView.alignment = .center
             return stackView
         }()
+        
         let mergeStackView: UIStackView = {
             let stackView = UIStackView(arrangedSubviews: [myStackView,mateStackView])
             stackView.axis = .vertical
@@ -80,6 +82,7 @@ class CooperationSportsView: BaseView {
             stackView.alignment = .leading
             return stackView
         }()
+        
         return mergeStackView
     }()
     
@@ -98,7 +101,7 @@ class CooperationSportsView: BaseView {
     }()
     
     private var progressWidthConstraint: Constraint?
-
+    
     private let coopImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "coopBackground")
@@ -131,7 +134,7 @@ class CooperationSportsView: BaseView {
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         return button
     }()
-
+    
     override func configureUI() {
         self.backgroundColor = .background800
         goalImage.addSubview(goalLabel) // 목표 라벨을 이미지 위에 올림(중앙 표시)
@@ -142,14 +145,14 @@ class CooperationSportsView: BaseView {
           goalImage,
           recordStackView,
           progressBackgroundView,
-//          coopImage,
+          //          coopImage,
           middleContainer,
           stopButton
         ].forEach{self.addSubview($0)}
         
         middleContainer.addSubview(coopImage)
     }
-
+    
     // SnapKit으로 레이아웃 제약 설정
     override func setLayoutUI() {
         let safeArea = self.safeAreaLayoutGuide
@@ -167,6 +170,7 @@ class CooperationSportsView: BaseView {
             $0.width.equalTo(contentWidth)
             $0.height.equalTo(50)
         }
+        
         goalLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
@@ -226,21 +230,25 @@ class CooperationSportsView: BaseView {
     }
     
     func updateMyRecord(_ text: String) {
-         myRecordLabel.text = text
+        myRecordLabel.text = text
     }
+    
     func updateMateRecord(_ text: String) {
-         mateRecordLabel.text = text
+        mateRecordLabel.text = text
     }
+    
     func updateGoal(_ text: String) {
-         goalLabel.text = text
+        goalLabel.text = text
     }
+    
     func updateMyCharacter(_ name: String) {
         myCharacterImage.image = UIImage(named: name)
     }
+    
     func updateMateCharacter(_ name: String) {
         mateCharacterImage.image = UIImage(named: name)
     }
-
+    
     func updateProgress(ratio: CGFloat) {
         DispatchQueue.main.async {
             self.layoutIfNeeded()

@@ -146,9 +146,9 @@ final class RunningCoopViewController: BaseViewController {
         
         output.didFinish
             .distinctUntilChanged({ prev, curr in
-              let prevSuccess = prev.0
-              let currSuccess = curr.0
-              return prevSuccess == currSuccess ? true : false
+                let prevSuccess = prev.0
+                let currSuccess = curr.0
+                return prevSuccess == currSuccess ? true : false
             })
             .emit(onNext: { [weak self] (success, myDistance) in
                 self?.navigateToFinish(success: success, myDistance: myDistance)
@@ -160,6 +160,7 @@ final class RunningCoopViewController: BaseViewController {
                 self?.receiveMateQuit()
             })
             .disposed(by: disposeBag)
+        
         // 위치 권한 거부 이벤트 감지 시 알림 표시
         output.locationAuthDenied
             .emit(onNext: { [weak self] in

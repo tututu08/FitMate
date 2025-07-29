@@ -9,31 +9,32 @@ import SnapKit
 
 // JumpRope 협동 모드의 루트 뷰
 final class RunningCoopView: BaseView {
-
+    
     // 실제 메인 UI 뷰
     private let sportsView = CooperationSportsView()
     var quitAlertView: QuitAlert?
     var stopButton: UIButton {
         return sportsView.stopButton
-       }
-
+    }
+    
     // sportsView를 서브뷰로 추가
     override func configureUI() {
         addSubview(sportsView)
     }
+    
     // sportsView를 전체 영역에 맞게 제약
     override func setLayoutUI() {
         sportsView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
     }
+    
     func showQuitAlert(
         type: QuitAlert.AlertType,
         onResume: (() -> Void)? = nil,
         onQuit: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil,
         onHome: (() -> Void)? = nil
-
     ) {
         if quitAlertView != nil { return }
         let alert = QuitAlert(type: type)
@@ -43,7 +44,7 @@ final class RunningCoopView: BaseView {
         alert.onHome = { [weak self] in onHome?(); self?.hideQuitAlert() }
         self.addSubview(alert)
         alert.snp.makeConstraints {
-                $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
         self.quitAlertView = alert
     }

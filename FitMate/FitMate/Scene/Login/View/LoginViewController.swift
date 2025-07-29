@@ -37,7 +37,7 @@ class LoginViewController: BaseViewController {
     /// 버튼 이벤트를 ViewModel로 전달
     private func bindButton() {
         self.logInView.googleLogin.rx.tap
-            // UI에서 발생한 이벤트를 Relay로 보내는 상황
+        // UI에서 발생한 이벤트를 Relay로 보내는 상황
             .bind(to: googleLoginTrigger) // relay에 이벤트(빈 값)를 흘려보내라
             .disposed(by: disposeBag)
         // 사용자가 카카오 버튼을 누르면 이벤트가 ViewModel로 흐름
@@ -117,12 +117,12 @@ class LoginViewController: BaseViewController {
                     // 닉네임이 없음 → 닉네임 입력
                     let vc = NicknameViewController(uid: uid)
                     self.navigationController?.pushViewController(vc, animated: true)
-
+                    
                 case .error:
                     break
                 }
             }).disposed(by: disposeBag)
-    
+        
     }
     
     func showErrorAlert(message: String) {

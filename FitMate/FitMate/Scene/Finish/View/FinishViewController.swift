@@ -7,7 +7,7 @@ class FinishViewController: BaseViewController {
     
     private let finishView = FinishView()
     private let viewModel: FinishViewModel
-
+    
     let uid: String
     let mateUid: String
     let matchCode: String
@@ -20,7 +20,9 @@ class FinishViewController: BaseViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder: NSCoder) { fatalError("not implemented") }
+    required init?(coder: NSCoder) {
+        fatalError("not implemented")
+    }
     
     override func loadView() {
         self.view = finishView
@@ -104,7 +106,7 @@ class FinishViewController: BaseViewController {
                     mode: viewModel.mode,
                     isWin: viewModel.success
                 )
-
+                
                 // 코인 가산
                 rewardCoins(coinAmount: reward)
                 
@@ -169,7 +171,7 @@ class FinishViewController: BaseViewController {
             case .battle: return isWin ? 1.0 : 0.0
             }
         }()
-
+        
         // 지속 보너스 계수
         let durationBonus: Double = {
             switch exerciseType {
@@ -220,7 +222,7 @@ class FinishViewController: BaseViewController {
                 return 1.0
             }
         }()
-
+        
         let reward = (exerciseFactor * 100 * modeFactor * durationBonus).rounded(.toNearestOrEven)
         return Int((reward / 10.0).rounded() * 10)
     }

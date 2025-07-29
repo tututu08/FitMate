@@ -11,7 +11,7 @@ final class CustomSwitchView: UIControl {
     private let backgroundView = UIView()
     // 스위치 손잡이?(동그란거) 뷰
     private let thumbView = UIView()
-
+    
     //스위치 값이 변경될 때 외부로 전달하기 위한 클로저
     var valueChanged: ((Bool) -> Void)?
     

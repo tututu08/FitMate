@@ -18,13 +18,14 @@ struct ExerciseRecord {
     let detail2: String
     let detail3: String
 }
+
 extension ExerciseRecord {
     var dateForSorting: Date? { // 정렬을 위한 Data 전환
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy.MM.dd HH:mm"
         return formatter.date(from: self.date)
     }
-
+    
     var dateOnly: String {
         return String(self.date.prefix(10))  // "yyyy.MM.dd"로 호출되게 바꿈
     }

@@ -3,7 +3,7 @@ import UIKit
 
 final class CategoryCell: UICollectionViewCell {
     static let identifier = "CategoryCell"
-
+    
     // 카테고리 이름을 보여줌
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -12,7 +12,7 @@ final class CategoryCell: UICollectionViewCell {
         label.textAlignment = .center
         return label
     }()
-
+    
     // 셀이 선택된 경우의 UI
     override var isSelected: Bool {
         didSet {
@@ -27,25 +27,25 @@ final class CategoryCell: UICollectionViewCell {
                 : .systemFont(ofSize: 14)
         }
     }
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(titleLabel)
         contentView.layer.cornerRadius = 4
         contentView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.layer.masksToBounds = true
-
+        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError()
     }
-
+    
     // 외부에서 카테고리 이름을 지정시킴
     func configure(with title: String) {
         titleLabel.text = title

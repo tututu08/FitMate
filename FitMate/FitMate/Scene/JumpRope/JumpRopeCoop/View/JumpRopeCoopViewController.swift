@@ -29,12 +29,12 @@ class JumpRopeCoopViewController: BaseViewController {
         self.mateUid = mateUid
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
-//        위에 5줄 하단 5줄 코드로 변경
-//        matchCode = matchInfo.matchCode
-//        myUid = matchInfo.myUid
-//        mateUid = matchInfo.mateUid
-//        myCharacter = matchInfo.myCharacter
-//        mateCharacter = matchInfo.mateCharacter
+        //        위에 5줄 하단 5줄 코드로 변경
+        //        matchCode = matchInfo.matchCode
+        //        myUid = matchInfo.myUid
+        //        mateUid = matchInfo.mateUid
+        //        myCharacter = matchInfo.myCharacter
+        //        mateCharacter = matchInfo.mateCharacter
         
         self.viewModel = JumpRopeCoopViewModel(
             goalCount: goalCount,
@@ -78,15 +78,16 @@ class JumpRopeCoopViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     override func viewWillDisappear(_ animated: Bool) {
-           super.viewWillDisappear(animated)
-           // 꺼짐 방지 해제
-           UIApplication.shared.isIdleTimerDisabled = false
-       }
-       
-       // 혹시라도 강제 종료 시점이 있을 수 있으니
+        super.viewWillDisappear(animated)
+        // 꺼짐 방지 해제
+        UIApplication.shared.isIdleTimerDisabled = false
+    }
+    
+    // 혹시라도 강제 종료 시점이 있을 수 있으니
     deinit {
-           UIApplication.shared.isIdleTimerDisabled = false
-       }
+        UIApplication.shared.isIdleTimerDisabled = false
+    }
+    
     // ViewModel과 UI 바인딩
     override func bindViewModel() {
         let input = JumpRopeCoopViewModel.Input(
@@ -120,9 +121,9 @@ class JumpRopeCoopViewController: BaseViewController {
         
         output.didFinish
             .distinctUntilChanged({ prev, curr in
-              let prevSuccess = prev
-              let currSuccess = curr
-              return prevSuccess == currSuccess ? true : false
+                let prevSuccess = prev
+                let currSuccess = curr
+                return prevSuccess == currSuccess ? true : false
             })
             .emit(onNext: { [weak self] success in
                 self?.navigateToFinish(success: success)
@@ -135,7 +136,6 @@ class JumpRopeCoopViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
-    
     
     private func navigateToFinish(success: Bool) {
         let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
@@ -156,12 +156,13 @@ class JumpRopeCoopViewController: BaseViewController {
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
+    
     func receiveMateQuit()    {
         viewModel.stopLocationUpdates()
         sportsView.showQuitAlert(
             type: .mateQuit,
             onBack: { [weak self] in
-                // 피니쉬화면으로 이동 등                
+                // 피니쉬화면으로 이동 등
                 self?.viewModel.finish(success: false) // 위치 정지 및 기록 저장
                 self?.navigateToFinish(success: false)
             }

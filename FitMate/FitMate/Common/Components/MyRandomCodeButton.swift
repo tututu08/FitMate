@@ -39,13 +39,13 @@ class MyRandomCodeButton: UIButton {
     
     private func setrandomCodeStack() -> UIStackView {
         //copyIcon.image = UIImage(named: "copy")
-//        copyIcon.contentMode = .scaleAspectFit
+        //        copyIcon.contentMode = .scaleAspectFit
         
         copyIcon.setImage(UIImage(named: "copy"), for: .normal)
         copyIcon.imageView?.contentMode = .scaleAspectFit
         
         copyIcon.snp.makeConstraints { $0.size.equalTo(28) }
-    
+        
         randomCode.text = ""
         randomCode.font = UIFont(name: "Pretendard-SemiBold", size: 22)
         randomCode.textColor = .background900

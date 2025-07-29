@@ -9,10 +9,10 @@ import UIKit
 import SnapKit
 
 class NicknameStackView: UIStackView {
-/// 메인 화면에서 캐릭터 위에 뜨는 arrow와 닉네임을 묶어 스택뷰로 컴포넌트화 함
-/// 사유: 뷰에서의 코드 가독성을 높이기 위함 / 스택으로 묶어 레이아웃 잡기 용이
+    /// 메인 화면에서 캐릭터 위에 뜨는 arrow와 닉네임을 묶어 스택뷰로 컴포넌트화 함
+    /// 사유: 뷰에서의 코드 가독성을 높이기 위함 / 스택으로 묶어 레이아웃 잡기 용이
     private var arrowImage: UIImageView = {
-       let arrow = UIImageView()
+        let arrow = UIImageView()
         arrow.contentMode = .scaleAspectFit
         arrow.image = UIImage( // 메이트와 유저 본인 구분 위해 tintColor로 화살표 색상 변경 가능하도록 설정 
             named: "arrow")?.withRenderingMode(.alwaysTemplate)
@@ -20,8 +20,8 @@ class NicknameStackView: UIStackView {
     }()
     
     private var nicknameLabel: UILabel = {
-       let nickname = UILabel()
-        nickname.font = UIFont.systemFont(ofSize: 16)
+        let nickname = UILabel()
+        nickname.font = UIFont(name: "Pretendard-Regular", size: 16)
         nickname.textAlignment = .center
         return nickname
     }()
@@ -53,7 +53,7 @@ class NicknameStackView: UIStackView {
         arrowImage.snp.makeConstraints { make in
             make.size.equalTo(9)
         }
-       
+        
     }
     
     /// 닉네임 변경 시 호출

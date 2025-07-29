@@ -23,7 +23,7 @@ class MateCodeView: BaseView {
     }()
     
     let titleLabel: UILabel = {
-       let title = UILabel()
+        let title = UILabel()
         title.text = "메이트 코드 입력"
         title.textColor = .white
         title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
@@ -58,17 +58,17 @@ class MateCodeView: BaseView {
         configureUI()
         setLayoutUI()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func configureUI() {
         [customNavBar, mateDefaultAvatar, fillInMateCode, completeButton].forEach { addSubview($0) }
         customNavBar.addSubview(backButton)
         customNavBar.addSubview(titleLabel)
     }
-
+    
     override func setLayoutUI() {
         customNavBar.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
@@ -85,19 +85,19 @@ class MateCodeView: BaseView {
         titleLabel.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
         }
-
+        
         mateDefaultAvatar.snp.makeConstraints { make in
             make.top.equalTo(customNavBar.snp.bottom).offset(86)
             make.leading.trailing.equalToSuperview().inset(110)
             make.height.equalTo(mateDefaultAvatar.snp.width)
         }
-
+        
         fillInMateCode.snp.makeConstraints { make in
             make.top.equalTo(mateDefaultAvatar.snp.bottom).offset(83)
             make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(20)
             make.height.equalTo(62)
         }
-
+        
         completeButton.snp.makeConstraints { make in
             make.top.equalTo(fillInMateCode.snp.bottom).offset(20)
             make.leading.trailing.equalTo(safeAreaLayoutGuide).inset(20)

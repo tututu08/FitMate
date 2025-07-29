@@ -8,9 +8,9 @@ final class FinishViewModel: ViewModelType {
         case battle
         case cooperation
     }
-
+    
     struct Input { }
-
+    
     struct Output {
         let modeText: Driver<String>
         let goalText: Driver<String>
@@ -28,7 +28,7 @@ final class FinishViewModel: ViewModelType {
     let myDistance: Double
     let success: Bool
     let avatarType: AvatarType
-
+    
     init(mode: Mode, sport: String, goal: Int, goalUnit: String, myDistance: Double = 0.0, avatarType: AvatarType, success: Bool) {
         self.mode = mode
         self.sport = sport
@@ -38,7 +38,7 @@ final class FinishViewModel: ViewModelType {
         self.avatarType = avatarType
         self.success = success
     }
-
+    
     func transform(input: Input) -> Output {
         let modeText = Observable.just(mode == .battle ? "대결 모드" : "협력 모드")
         let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
@@ -48,8 +48,8 @@ final class FinishViewModel: ViewModelType {
         let result = Observable.just(resultMessage)
         let resultImage = Observable.just(success ? "win" : "Lose")
         let characterImage = Observable.just(success ? avatarType.rawValue : "\(avatarType.rawValue)Lose")
-
-
+        
+        
         return Output(
             modeText: modeText.asDriver(onErrorJustReturn: ""),
             goalText: goalText.asDriver(onErrorJustReturn: ""),
@@ -60,7 +60,7 @@ final class FinishViewModel: ViewModelType {
             characterImageName: characterImage.asDriver(onErrorJustReturn: "")
         )
     }
-
+    
     // 간단한 보상 계산 로직
     private var rewardCoin: Int {
         guard success else { return 0 }
@@ -69,7 +69,7 @@ final class FinishViewModel: ViewModelType {
         case .cooperation: return goal
         }
     }
-
+    
     // 성공/실패에 따른 문구 반환
     private var resultMessage: String {
         switch (mode, success) {
@@ -103,20 +103,20 @@ extension FinishViewModel {
     func saveRecord(uid: String, mateUid: String, matchCode: String) -> Completable {
         let db = Firestore.firestore()
         let matchRef = db.collection("matches").document(matchCode)
-
+        
         return Single<[String: Any]>.create { single in
             matchRef.getDocument { snapshot, error in
                 if let error = error {
                     single(.failure(error))
                     return
                 }
-
+                
                 guard let data = snapshot?.data() else {
                     let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "경기 데이터를 찾을 수 없습니다."])
                     single(.failure(error))
                     return
                 }
-
+                
                 single(.success(data))
             }
             return Disposables.create()
@@ -133,9 +133,9 @@ extension FinishViewModel {
                   let mateProgress = mateData["progress"] as? Double else {
                 return .error(NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "필드 누락 또는 변환 실패"]))
             }
-
+            
             let myIsWinner = myData["isWinner"] as? Bool ?? false
-
+            
             let result: ExerciseResult = {
                 switch self.mode {
                 case .battle:
@@ -144,10 +144,10 @@ extension FinishViewModel {
                     return self.success ? .teamSuccess : .teamFail
                 }
             }()
-
+            
             let detail2: String
             let detail3: String
-
+            
             switch exerciseType {
             case .jumpRope, .plank:
                 detail2 = "\(Int(myProgress))"
@@ -156,7 +156,7 @@ extension FinishViewModel {
                 detail2 = String(format: "%.2f", myProgress)
                 detail3 = String(format: "%.2f", mateProgress)
             }
-
+            
             let record = ExerciseRecord(
                 type: exerciseType,
                 date: self.formatDate(timestamp.dateValue()),
@@ -165,11 +165,11 @@ extension FinishViewModel {
                 detail2: detail2,
                 detail3: detail3
             )
-
+            
             return FirestoreService.shared.saveExerciseRecord(uid: uid, record: record)
         }
     }
-
+    
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy.MM.dd HH:mm"

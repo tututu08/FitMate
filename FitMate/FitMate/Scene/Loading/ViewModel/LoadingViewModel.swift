@@ -25,7 +25,7 @@ class LoadingViewModel {
             status: "accepted"
         )
         MatchEventService.shared.markReady(matchCode: matchCode, myUid: myUid)
-
+        
         // matchStatusRelay 구독해서 상태 바뀔 때마다 matchStatusEvent로 전달
         MatchEventService.shared.listenMatchStatus(matchCode: matchCode)
         

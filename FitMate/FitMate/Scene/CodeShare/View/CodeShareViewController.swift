@@ -81,7 +81,7 @@ final class CodeShareViewController: BaseViewController {
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.dismiss(animated: true)
-                })
+            })
             .disposed(by: disposeBag)
         
         // 사용자 초대 코드 텍스트 바인딩

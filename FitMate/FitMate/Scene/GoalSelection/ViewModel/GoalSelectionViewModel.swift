@@ -17,6 +17,7 @@ class GoalSelectionViewModel: ViewModelType {
     
     // 선택된 운동 제목을 저장하는 BehaviorRelay
     let selectedGoalTitleRelay = BehaviorRelay<SportsModeViewController.ExerciseType>(value: .walking)
+    
     // 선택된 운동 모드를 저장
     private let selectedModeRelay = BehaviorRelay<SportsModeViewController.ExerciseMode>(value: .cooperation)
     
@@ -35,7 +36,7 @@ class GoalSelectionViewModel: ViewModelType {
         
         return Output(pickerItems: pickerDataDriver)
     }
-        
+    
     // 선택된 운동 제목에 따라 피커에 표시할 데이터를 반환하는 Driver
     private var pickerDataDriver: Driver<[String]> {
         Observable

@@ -42,7 +42,7 @@ class ShopView: BaseView {
         config.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8)
         config.baseBackgroundColor = .secondary500
         config.baseForegroundColor = .background800 // 텍스트 컬러
-
+        
         let button = UIButton(configuration: config)
         button.layer.cornerRadius = 4
         button.titleLabel?.font = UIFont(name: "Pretendard-Medium", size: 14)
@@ -70,7 +70,7 @@ class ShopView: BaseView {
     let categoryUnderlineView = UIView()
     
     let selectedAvatarImg: UIImageView = {
-       let avatar = UIImageView()
+        let avatar = UIImageView()
         avatar.contentMode = .scaleAspectFit
         avatar.transform = .identity
         avatar.setContentHuggingPriority(.required, for: .vertical)

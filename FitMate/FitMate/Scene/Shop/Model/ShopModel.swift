@@ -37,8 +37,8 @@ enum AvatarType: String, CaseIterable {
     case yeongdeogi
     
     var imageName: String {
-           return self.rawValue
-       }
+        return self.rawValue
+    }
 }
 
 

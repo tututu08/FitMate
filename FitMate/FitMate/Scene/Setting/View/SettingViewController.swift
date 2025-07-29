@@ -44,19 +44,17 @@ final class SettingViewController: UIViewController {
         Firestore.firestore().collection("users").document(uid).getDocument { [weak self] snapshot, error in
             guard let self else { return }
             let data = snapshot?.data() ?? [:]
-                
+            
             let isPushOn = data["pushEnabled"] as? Bool ?? true
             let isSoundOn = data["soundEnabled"] as? Bool ?? true
-                
+            
             // 토글 상태 초기화
             self.settingView.noticeToggle.setOn(isPushOn, animated: false)
             self.settingView.effectToggle.setOn(isSoundOn, animated: false)
             //뷰모델에 초기 상태 전달
             self.viewModel.updatePushEnabled(isPushOn)
             self.viewModel.updateSoundEnabled(isSoundOn)
-        
         }
-        
         bindViewModel()
         bindCloseButton()
         bindCustomSwitch()
@@ -67,12 +65,12 @@ final class SettingViewController: UIViewController {
         settingView.noticeToggle.valueChanged = { [weak self] isOn in
             self?.handlePushSwitchChange(isOn: isOn)
         }
-
+        
         settingView.effectToggle.valueChanged = { [weak self] isOn in
             self?.handleSoundSwitchChange(isOn: isOn)
         }
     }
-
+    
     // 푸시 알림 토글 변경 시
     private func handlePushSwitchChange(isOn: Bool) {
         if isOn {
@@ -85,7 +83,7 @@ final class SettingViewController: UIViewController {
         } else {
             UIApplication.shared.unregisterForRemoteNotifications()
         }
-
+        
         // 파이어스토어에 푸시 상태 저장
         FirestoreService.shared.updateDocument(
             collectionName: "users",
@@ -99,7 +97,7 @@ final class SettingViewController: UIViewController {
         })
         .disposed(by: disposeBag)
     }
-
+    
     //효과음 토글 변경 시
     private func handleSoundSwitchChange(isOn: Bool) {
         SoundManage.shared.isSoundEnabled = isOn
@@ -181,7 +179,7 @@ final class SettingViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
-
+    
     // 회원 탈퇴 전체 처리 로직 (구글 재인증 포함)
     private func performWithdrawProcess() -> Observable<Void> {
         // 0. 로그인한 사용자 확인
@@ -239,7 +237,7 @@ final class SettingViewController: UIViewController {
             // 지원되지 않는 로그인 방식인 경우 에러 처리
             return Observable.error(NSError(domain: "WithdrawError", code: -2, userInfo: [NSLocalizedDescriptionKey: "지원하지 않는 로그인 방식입니다: \(providerID)"]))
         }
-
+        
         // 2. 메이트 연결 끊기
         let disconnectObservable = FirestoreService.shared.findMateUid(uid: self.uid)
             .flatMap { mateUid -> Single<Void> in
@@ -348,7 +346,7 @@ final class SettingViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
-
+    
     private func navigateToMain() {
         guard let presentingVC = self.presentingViewController else { return }
         self.dismiss(animated: true) {
@@ -357,7 +355,7 @@ final class SettingViewController: UIViewController {
             presentingVC.present(tabBarVC, animated: true)
         }
     }
-
+    
     private func bindCloseButton() {
         settingView.closeButton.rx.tap
             .bind { [weak self] in
@@ -365,14 +363,14 @@ final class SettingViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
-
+    
     private func logoutFunc() {
         settingView.isHidden = true
-
+        
         let popup = LogoutPopupView()
         popup.frame = view.bounds
         view.addSubview(popup)
-
+        
         // 취소 버튼 -> 팝업 제거
         popup.cancelButton.rx.tap
             .bind { [weak self] in
@@ -380,7 +378,7 @@ final class SettingViewController: UIViewController {
                 self?.settingView.isHidden = false
             }
             .disposed(by: disposeBag)
-
+        
         // 로그아웃 -> 로그인화면 이동
         popup.confirmButton.rx.tap
             .flatMapLatest { [weak self] _ -> Observable<Void> in
@@ -394,5 +392,4 @@ final class SettingViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
-
 }

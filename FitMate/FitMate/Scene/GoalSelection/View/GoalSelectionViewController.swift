@@ -27,8 +27,10 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     
     // 선택된 목표치를 전달하는 Rx Relay
     private let selectedGoalRelay = BehaviorRelay<String>(value: "")
+    
     // 숫자만
     private let selectedGoalValueRelay = BehaviorRelay<Int>(value: 0)
+    
     // 단위만
     private let selectedGoalUnitRelay = BehaviorRelay<String>(value: "")
     

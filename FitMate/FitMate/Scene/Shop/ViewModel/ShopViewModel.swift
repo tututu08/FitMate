@@ -19,23 +19,23 @@ final class ShopViewModel {
     var disposeBag = DisposeBag()
     
     var currentFilteredAvatars: Observable<[AvatarModel]> {
-            return currentFilteredAvatarsRelay.asObservable()
-        }
-
+        return currentFilteredAvatarsRelay.asObservable()
+    }
     
     struct Input {
         let selectedCategory: Observable<RankCategory>
         let selectedAvatar: Observable<AvatarModel>
     }
-
+    
     struct Output {
         let selectedAvatar: Driver<[AvatarModel]>
     }
+    
     func transform(input: Input) -> Output {
         input.selectedCategory
             .bind(to: selectedCategoryRelay)
             .disposed(by: disposeBag)
-
+        
         let filtered = Observable
             .combineLatest(selectedCategoryRelay, allAvatarsRelay)
             .map { selected, avatars -> [AvatarModel] in
@@ -55,7 +55,7 @@ final class ShopViewModel {
                 self?.currentFilteredAvatarsRelay.accept(avatars)
             })
             .asDriver(onErrorJustReturn: [])
-
+        
         return Output(selectedAvatar: filtered)
     }
     
@@ -70,7 +70,7 @@ final class ShopViewModel {
             // 캐피는 무조건 맨 앞
             if firstType == .kaepy { return true }
             if secondType == .kaepy { return false }
-
+            
             // 해금된 아바타를 앞으로
             if $0.isUnlocked != $1.isUnlocked {
                 return $0.isUnlocked && !$1.isUnlocked
@@ -80,7 +80,7 @@ final class ShopViewModel {
                   let secondCategory = RankCategory(rawValue: $1.category) else {
                 return false
             }
-
+            
             // 카테고리 정렬
             if firstCategory != secondCategory {
                 guard let firstIndex = RankCategory.allCases.firstIndex(of: firstCategory),
@@ -89,7 +89,7 @@ final class ShopViewModel {
                 }
                 return firstIndex < secondIndex
             }
-
+            
             // 마지막 정렬 기준: AvatarType 순서
             guard let firstIndex = AvatarType.allCases.firstIndex(of: firstType),
                   let secondIndex = AvatarType.allCases.firstIndex(of: secondType) else {
@@ -97,10 +97,10 @@ final class ShopViewModel {
             }
             return firstIndex < secondIndex
         }
-
+        
         return sorted
     }
-
+    
     func fetchAvatars(uid: String) {
         Single.zip(
             FirebaseStorage.shared.fetchAllAvatars(), // [AvatarModel]
@@ -144,5 +144,4 @@ final class ShopViewModel {
             })
             .disposed(by: disposeBag)
     }
-
 }

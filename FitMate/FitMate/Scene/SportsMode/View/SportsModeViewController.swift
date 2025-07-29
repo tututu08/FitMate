@@ -30,7 +30,7 @@ class SportsModeViewController: BaseViewController {
         case plank = "플랭크"
         case jumpRope = "줄넘기"
     }
-
+    
     
     // 모드 선택 이벤트를 전달하는 Relay (Rx 방식)
     private let modeSelectedRelay = PublishRelay<(String, ExerciseMode)>()
@@ -82,7 +82,7 @@ class SportsModeViewController: BaseViewController {
     }()
     
     private let middleContainer = UIView()
-
+    
     private lazy var infoStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [
             descriptionLabelTitle,
@@ -191,7 +191,7 @@ class SportsModeViewController: BaseViewController {
         navigationController?.navigationBar.applyCustomAppearance() // 커스텀 네비게이션 바 적용
         configureUI(with: exerciseItem) // 운동 아이템 정보로 UI 설정
     }
-
+    
     // Rx 바인딩 처리
     override func bindViewModel() {
         super.bindViewModel()
@@ -237,7 +237,7 @@ class SportsModeViewController: BaseViewController {
         
         buttonStack.addArrangedSubview(cooperationModeButton)
         buttonStack.addArrangedSubview(battleModeButton)
-
+        
         let safeArea = view.safeAreaLayoutGuide
         
         // 오토레이아웃 설정
@@ -263,7 +263,7 @@ class SportsModeViewController: BaseViewController {
             $0.bottom.equalTo(cooperationModeButton.snp.top)
             $0.leading.trailing.equalToSuperview()
         }
-
+        
         // infoStackView: middleContainer의 정중앙
         infoStackView.snp.makeConstraints {
             $0.centerY.equalToSuperview()

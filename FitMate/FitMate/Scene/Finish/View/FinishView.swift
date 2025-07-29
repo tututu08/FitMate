@@ -44,7 +44,7 @@ final class FinishView: BaseView {
         label.numberOfLines = 0
         return label
     }()
-
+    
     // 배경 이미지
     private let backgroundImage: UIImageView = {
         let imageView = UIImageView()
@@ -73,7 +73,7 @@ final class FinishView: BaseView {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-
+    
     // 코인 이미지 (성공 시 노출)
     let coinImage: UIImageView = {
         let imageView = UIImageView()
@@ -90,7 +90,7 @@ final class FinishView: BaseView {
         label.textColor = .black
         return label
     }()
-
+    
     // 보상 수령 버튼
     let rewardButton: UIButton = {
         let button = UIButton(type: .system)
@@ -153,7 +153,7 @@ final class FinishView: BaseView {
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalTo(rewardButton.snp.top).offset(-36)
         }
-
+        
         resultImage.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(backgroundImage.snp.top).offset(38)
@@ -174,12 +174,12 @@ final class FinishView: BaseView {
             $0.height.equalTo(42)
             $0.width.equalTo(108)
         }
-
+        
         coinImage.snp.makeConstraints {
             $0.width.height.equalTo(24)
             $0.top.equalTo(coinBackImage.snp.top).offset(7)
             $0.leading.equalTo(coinBackImage.snp.leading).offset(25)
-
+            
         }
         rewardLabel.snp.makeConstraints {
             $0.centerY.equalTo(coinImage.snp.centerY)
@@ -201,6 +201,7 @@ final class FinishView: BaseView {
     func updateGoal(_ text: String) {
         goalLabel.text = text
     }
+    
     func updateReward(text: String, hideCoin: Bool) {
         rewardLabel.text = text
         coinBackImage.isHidden = !hideCoin

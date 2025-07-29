@@ -10,12 +10,14 @@ class CarouselCell: UICollectionViewCell {
         backgroundView.backgroundColor = .secondary50
         return backgroundView
     }()
+    
     private var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
     }()
+    
     private var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "DungGeunMo", size: 32)
@@ -23,6 +25,7 @@ class CarouselCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
+    
     private let calorieLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
@@ -31,6 +34,7 @@ class CarouselCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
+    
     private var calorieTextLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-Regular", size: 16)
@@ -39,6 +43,7 @@ class CarouselCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
+    
     private let exerciseDescriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
@@ -47,6 +52,7 @@ class CarouselCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
+    
     private var exerciseDescriptionTextLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-Regular", size: 16)
@@ -55,6 +61,7 @@ class CarouselCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
+    
     private let exerciseEffectLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
@@ -63,6 +70,7 @@ class CarouselCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
+    
     private var exerciseEffectTextLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-Regular", size: 16)
@@ -74,7 +82,7 @@ class CarouselCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-      
+        
         configure()
     }
     
@@ -82,7 +90,7 @@ class CarouselCell: UICollectionViewCell {
         contentView.backgroundColor = .secondary400
         contentView.layer.cornerRadius = 12
         contentView.layer.masksToBounds = false // 그림자 표시를 위해 false로 설정
-
+        
         // 셀 그림자 설정 (셀 외부에 부드러운 그림자 표시)
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.15 // 그림자 투명도
@@ -118,36 +126,42 @@ class CarouselCell: UICollectionViewCell {
             $0.height.equalTo(42)
             $0.width.equalTo(172)
         }
+        
         calorieLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(4)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)
             $0.height.equalTo(21)
             $0.width.equalTo(172)
         }
+        
         calorieTextLabel.snp.makeConstraints {
             $0.top.equalTo(calorieLabel.snp.bottom).offset(2)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)
             $0.height.equalTo(24)
             $0.width.equalTo(172)
         }
+        
         exerciseDescriptionLabel.snp.makeConstraints {
             $0.top.equalTo(calorieTextLabel.snp.bottom).offset(8)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)
             $0.height.equalTo(21)
             $0.width.equalTo(172)
         }
+        
         exerciseDescriptionTextLabel.snp.makeConstraints {
             $0.top.equalTo(exerciseDescriptionLabel.snp.bottom).offset(2)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)
             $0.height.equalTo(24)
             $0.width.equalTo(155)
         }
+        
         exerciseEffectLabel.snp.makeConstraints {
             $0.top.equalTo(exerciseDescriptionTextLabel.snp.bottom).offset(8)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)
             $0.height.equalTo(21)
             $0.width.equalTo(172)
         }
+        
         exerciseEffectTextLabel.snp.makeConstraints {
             $0.top.equalTo(exerciseEffectLabel.snp.bottom).offset(2)
             $0.leading.equalTo(imageBackgroundView.snp.trailing).offset(20)

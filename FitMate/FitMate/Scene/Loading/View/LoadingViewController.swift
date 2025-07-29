@@ -17,7 +17,7 @@ class LoadingViewController: BaseViewController {
     private var hasNavigatedToGame = false
     private let uid: String
     private let matchCode: String
-        
+    
     init(uid: String, matchCode: String) {
         // ViewModel 의존성 주입을 통해 운동 경기 코드를 전달
         self.uid = uid
@@ -135,14 +135,14 @@ class LoadingViewController: BaseViewController {
                 return .just((inviterUid, inviteeUid, exerciseType, mode, goalValue))
             }
             .flatMap { inviterUid, inviteeUid, exerciseType, mode, goalValue -> Single<(String, String, String, String, Int, String, Bool)> in
-                           let mateUid = self.uid == inviterUid ? inviteeUid : inviterUid
-                           let isInviter = self.uid == inviterUid
-
+                let mateUid = self.uid == inviterUid ? inviteeUid : inviterUid
+                let isInviter = self.uid == inviterUid
+                
                 // 내 아바타
                 guard let myAvatarRaw = AvatarManager.shared.selectedAvatarRelay.value?.rawValue else {
                     return .error(NSError(domain: "AvatarError", code: -2, userInfo: [NSLocalizedDescriptionKey: "내 아바타 없음"]))
                 }
-
+                
                 // 상대 아바타 불러오기
                 return FirestoreService.shared.loadSelectedAvatar(uid: mateUid)
                     .map { mateAvatarType in
@@ -154,9 +154,9 @@ class LoadingViewController: BaseViewController {
             .subscribe(onSuccess: { exerciseType, mode, myCharacter, mateCharacter, goalValue, mateUid, isInviter in
                 let matchCode = self.matchCode
                 let myUid = self.uid
-
+                
                 let pushVC: UIViewController?
-
+                
                 if mode == "battle" {
                     switch exerciseType {
                     case "걷기", "달리기", "자전거":
@@ -214,7 +214,7 @@ class LoadingViewController: BaseViewController {
                     default: return
                     }
                 }
-
+                
                 if let vc = pushVC {
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
@@ -223,7 +223,7 @@ class LoadingViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
-
+    
     
     /// 운동 요청 거절 시, 띄워지는 알림창 메서드
     private func presentRejectedAlert(message: String) {
@@ -233,33 +233,33 @@ class LoadingViewController: BaseViewController {
         }
         UIApplication.topViewController()?.present(alert, animated: true)
         return
-            
-        }
+        
+    }
     
     func presentCancelingAlert() -> Observable<Bool> {
-            return Observable.create { [weak self] observer in
-                guard let self = self else {
-                    observer.onNext(false)
-                    observer.onCompleted()
-                    return Disposables.create()
-                }
-                let alert = UIAlertController(
-                    title: "매칭 취소",
-                    message: "정말 운동을 취소하시겠습니까?",
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: { _ in
-                    observer.onNext(false)
-                    observer.onCompleted()
-                }))
-                alert.addAction(UIAlertAction(title: "취소", style: .destructive, handler: { _ in
-                    observer.onNext(true)
-                    observer.onCompleted()
-                }))
-                self.present(alert, animated: true)
+        return Observable.create { [weak self] observer in
+            guard let self = self else {
+                observer.onNext(false)
+                observer.onCompleted()
                 return Disposables.create()
             }
+            let alert = UIAlertController(
+                title: "매칭 취소",
+                message: "정말 운동을 취소하시겠습니까?",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "아니오", style: .cancel, handler: { _ in
+                observer.onNext(false)
+                observer.onCompleted()
+            }))
+            alert.addAction(UIAlertAction(title: "취소", style: .destructive, handler: { _ in
+                observer.onNext(true)
+                observer.onCompleted()
+            }))
+            self.present(alert, animated: true)
+            return Disposables.create()
         }
+    }
     
     deinit {
         print("LoadingViewController deinit")

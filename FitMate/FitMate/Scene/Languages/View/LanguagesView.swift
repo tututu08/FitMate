@@ -30,7 +30,7 @@ class LanguagesView: BaseView {
     }
     
     private let languageButtonStack: UIStackView = {
-       let stack = UIStackView()
+        let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 43
         stack.distribution = .fillEqually
