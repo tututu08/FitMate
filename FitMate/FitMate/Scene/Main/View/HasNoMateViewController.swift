@@ -24,7 +24,7 @@ class HasNoMateViewController: UIViewController {
         let addMate = UIButton()
         addMate.setTitle("추가하기", for: .normal)
         addMate.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
-        addMate.setTitleColor(.white, for: .normal)
+        addMate.setTitleColor(.background0, for: .normal)
         addMate.backgroundColor = .primary500
         return addMate
     }()
