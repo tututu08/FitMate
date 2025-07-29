@@ -14,7 +14,7 @@ final class MateEndPopupView: UIView {
     //팝업 메인 ㄴ컨테이너
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .background0
         view.layer.cornerRadius = 8
         return view
     }()
@@ -54,7 +54,7 @@ final class MateEndPopupView: UIView {
     let confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("종료", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         button.backgroundColor = UIColor(named: "Primary500")
         button.layer.cornerRadius = 4
         return button
