@@ -76,7 +76,7 @@ class SportsModeViewController: BaseViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "DungGeunMo", size: 32)
-        label.textColor = .white
+        label.textColor = .background0
         label.textAlignment = .center
         return label
     }()
@@ -111,7 +111,7 @@ class SportsModeViewController: BaseViewController {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "pretendard-regular", size:16)
-        label.textColor = .white
+        label.textColor = .background0
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -129,7 +129,7 @@ class SportsModeViewController: BaseViewController {
     private let effectLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "pretendard-regular", size: 16)
-        label.textColor = .white
+        label.textColor = .background0
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -147,7 +147,7 @@ class SportsModeViewController: BaseViewController {
     private let caloriesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "pretendard-regular", size: 16)
-        label.textColor = .white
+        label.textColor = .background0
         label.textAlignment = .center
         return label
     }()
@@ -164,24 +164,24 @@ class SportsModeViewController: BaseViewController {
     // 협력 모드 선택 버튼
     private let cooperationModeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitleColor(.systemBlue, for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal) // TODO: 중복됨. 삭제 해애됨
         button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
         button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         button.setTitle("협력 모드", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         return button
     }()
     
     // 대결 모드 선택 버튼
     private let battleModeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitleColor(.systemBlue, for: .normal)
+        button.setTitleColor(.systemBlue, for: .normal) // TODO: 중복됨. 삭제 해애됨
         button.backgroundColor = .primary500
         button.layer.cornerRadius = 4
         button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         button.setTitle("대결 모드", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         return button
     }()
     
