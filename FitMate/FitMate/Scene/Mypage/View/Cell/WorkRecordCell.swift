@@ -8,7 +8,7 @@ final class WorkRecordCell: UICollectionViewCell {
     // 셀 전체를 감싸는 기록카드 스타일뷰
     private let cardView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .background0
         view.layer.cornerRadius = 8
         view.layer.masksToBounds = true
         return view
@@ -17,7 +17,7 @@ final class WorkRecordCell: UICollectionViewCell {
     // 캐릭터 이미지 담는 뷰(그냥 캐릭터 넣으면 캐릭터가 찌그러짐 이슈가 발생해서 넣음)
     private let characterImageView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .background0
         view.layer.cornerRadius = 4
         view.clipsToBounds = true
         return view
@@ -36,7 +36,7 @@ final class WorkRecordCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "종목명"
         label.font = UIFont(name: "Pretendard-Medium", size: 20)
-        label.textColor = .black
+        label.textColor = .background900
         return label
     }()
     
@@ -45,7 +45,7 @@ final class WorkRecordCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "총기록"
         label.font = UIFont(name: "Pretendard-Bold", size: 48)
-        label.textColor = .black
+        label.textColor = .background900
         return label
     }()
     
@@ -54,7 +54,8 @@ final class WorkRecordCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "단위"
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
-        label.textColor = UIColor(red: 87/255, green: 87/255, blue: 87/255, alpha: 1) //에셋에서 불러오니 다크모드변경에 따라 색상이 하얀색으로 보일 때가 있어서 그냥 RGB로 지정시킴
+        //label.textColor = UIColor(red: 87/255, green: 87/255, blue: 87/255, alpha: 1) //에셋에서 불러오니 다크모드변경에 따라 색상이 하얀색으로 보일 때가 있어서 그냥 RGB로 지정시킴
+        label.textColor = .background600
         return label
     }()
     
@@ -174,8 +175,8 @@ final class WorkRecordCell: UICollectionViewCell {
             cardView.backgroundColor = UIColor(named: "Secondary100")
             characterImageView.backgroundColor = UIColor(named: "Secondary100")
         default:
-            cardView.backgroundColor = .white
-            characterImageView.backgroundColor = .white
+            cardView.backgroundColor = .background0
+            characterImageView.backgroundColor = .background0
         }
     }
 }
