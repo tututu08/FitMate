@@ -247,7 +247,10 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                       let cgImage = image.cgImage else { return }
 
                 let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-                let flipped = UIImage(cgImage: fixed.cgImage!, scale: fixed.scale, orientation: .upMirrored)
+
+                guard let fixedImg = fixed.cgImage else { return } // 바인딩하여 강제 언래핑 수정
+
+                let flipped = UIImage(cgImage: fixedImg, scale: fixed.scale, orientation: .upMirrored)
                 self.rootView.selectedAvatarImg.image = flipped
 
                 self.rootView.avatarNameStack.updateNickname(model.avatarName)
@@ -268,7 +271,10 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                       let cgImage = image.cgImage else { return }
 
                 let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-                let flipped = UIImage(cgImage: fixed.cgImage!, scale: fixed.scale, orientation: .upMirrored)
+
+                guard let fixedImg = fixed.cgImage else { return } // 바인딩 해서 강제 언래핑 제거
+
+                let flipped = UIImage(cgImage: fixedImg, scale: fixed.scale, orientation: .upMirrored)
                 self.rootView.selectedAvatarImg.image = flipped
 
                 self.rootView.avatarNameStack.updateNickname(model.avatarName)

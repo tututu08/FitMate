@@ -71,25 +71,33 @@ final class ShopViewModel {
             if firstType == .kaepy { return true }
             if secondType == .kaepy { return false }
 
+            // 해금된 아바타를 앞으로
             if $0.isUnlocked != $1.isUnlocked {
                 return $0.isUnlocked && !$1.isUnlocked
             }
             
-            // 서버에서 내려온 문자열 category를 enum으로 변환
             guard let firstCategory = RankCategory(rawValue: $0.category),
                   let secondCategory = RankCategory(rawValue: $1.category) else {
                 return false
             }
 
+            // 카테고리 정렬
             if firstCategory != secondCategory {
-                return RankCategory.allCases.firstIndex(of: firstCategory)! <
-                       RankCategory.allCases.firstIndex(of: secondCategory)!
+                guard let firstIndex = RankCategory.allCases.firstIndex(of: firstCategory),
+                      let secondIndex = RankCategory.allCases.firstIndex(of: secondCategory) else {
+                    return false
+                }
+                return firstIndex < secondIndex
             }
 
             // 마지막 정렬 기준: AvatarType 순서
-            return AvatarType.allCases.firstIndex(of: firstType)! <
-                   AvatarType.allCases.firstIndex(of: secondType)!
+            guard let firstIndex = AvatarType.allCases.firstIndex(of: firstType),
+                  let secondIndex = AvatarType.allCases.firstIndex(of: secondType) else {
+                return false
+            }
+            return firstIndex < secondIndex
         }
+
         return sorted
     }
 
