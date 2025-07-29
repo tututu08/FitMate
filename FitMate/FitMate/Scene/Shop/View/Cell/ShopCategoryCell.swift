@@ -43,6 +43,6 @@ class ShopCategoryCell: UICollectionViewCell {
         // 타이틀 라벨에 카테고리 이름 표시
         titleLabel.text = category.rawValue
         contentView.backgroundColor = isSelected ? .primary500 : .clear
-        titleLabel.textColor = isSelected ? .white : .primary100
+        titleLabel.textColor = isSelected ? .background0 : .primary100
     }
 }

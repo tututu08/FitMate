@@ -50,7 +50,7 @@ final class PauseAlert: UIView {
         
         // 알럿 컨테이너
         addSubview(alertContainer)
-        alertContainer.backgroundColor = .white
+        alertContainer.backgroundColor = .background0
         alertContainer.layer.cornerRadius = 8
         alertContainer.clipsToBounds = true
         alertContainer.snp.makeConstraints {
@@ -72,7 +72,7 @@ final class PauseAlert: UIView {
         timerLabel.textAlignment = .center
         
         resumeButton.setTitle("계속하기", for: .normal)
-        resumeButton.setTitleColor(.white, for: .normal)
+        resumeButton.setTitleColor(.background0, for: .normal)
         resumeButton.backgroundColor = .primary500
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         resumeButton.layer.cornerRadius = 4
@@ -122,7 +122,7 @@ final class PauseAlert: UIView {
             resumeButton.setTitle("계속하기", for: .normal)
             resumeButton.isEnabled = true
             resumeButton.backgroundColor = .primary500
-            resumeButton.setTitleColor(.white, for: .normal)
+            resumeButton.setTitleColor(.background0, for: .normal)
             startCountdown(from: 10) //
         case .matePause:
             titleLabel.text = "메이트가 일시정지를 했습니다."
@@ -133,6 +133,7 @@ final class PauseAlert: UIView {
             resumeButton.setTitle("잠시만 기다려주세요", for: .normal)
             resumeButton.isEnabled = false
             resumeButton.backgroundColor = .background100
+            // TODO: - 색 확인 필요
             resumeButton.setTitleColor(.darkGray, for: .disabled)
             startCountdown(from: 10)
         }

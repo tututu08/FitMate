@@ -62,9 +62,9 @@ class MainView: BaseView {
     }()
     
     private let myNicknameStack = NicknameStackView(
-        nickname: "", textColor: .white,
+        nickname: "", textColor: .background0,
         font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
-        arrowColor: .white
+        arrowColor: .background0
     )
     
     private let mateNicknameStack = NicknameStackView(
@@ -84,7 +84,7 @@ class MainView: BaseView {
     let exerciseButton: UIButton = {
         let exercise = UIButton()
         exercise.setTitle("운동 선택", for: .normal)
-        exercise.setTitleColor(.white, for: .normal)
+        exercise.setTitleColor(.background0, for: .normal)
         exercise.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         exercise.backgroundColor = .primary500
         exercise.layer.cornerRadius = 4

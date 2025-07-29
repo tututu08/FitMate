@@ -40,7 +40,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         label.font = UIFont(name: "pretendard-semibold", size: 24)
         label.textAlignment = .left
         label.text = "오늘 얼마나 \n운동하고 싶으신가요?"
-        label.textColor = .white
+        label.textColor = .background0
         label.numberOfLines = 0
         return label
     }()
@@ -51,7 +51,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         label.font = UIFont(name: "pretendard-regular", size: 16)
         label.textAlignment = .left
         label.text = "메이트와 함께 정해보세요"
-        label.textColor = .lightGray
+        label.textColor = .background300
         label.numberOfLines = 0
         return label
     }()
@@ -60,7 +60,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
     private let goalSettingButton: UIButton = {
         let button = UIButton()
         button.setTitle("목표 설정", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         button.layer.cornerRadius = 4
         button.backgroundColor = .primary500
         button.titleLabel?.font = UIFont(name: "pretendard-semibold", size: 20)
@@ -230,7 +230,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         label.text = pickerData[row]
         label.font = UIFont(name: "pretendard-semibold", size: 40)
         label.textAlignment = .center
-        label.textColor = .white
+        label.textColor = .background0
         
         container.addSubview(label)
         label.snp.makeConstraints {
@@ -240,14 +240,14 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
         
         // 현재 선택된 행이라면 진하게 표시
         if row == pickerView.selectedRow(inComponent: component) {
-            container.backgroundColor = .darkGray
+            container.backgroundColor = UIColor.background0.withAlphaComponent(0.15)
             label.alpha = 1.0
             label.layer.borderWidth = 2
             label.layer.borderColor = UIColor.primary400.cgColor
             label.layer.cornerRadius = 4
             label.clipsToBounds = true
         } else {
-            container.backgroundColor = UIColor.darkGray.withAlphaComponent(0.3)
+            container.backgroundColor = UIColor.background700
             label.alpha = 0.7
         }
         

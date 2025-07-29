@@ -19,7 +19,7 @@ class CustomAlertView: UIView {
     // 초기화: 배경색과 cornerRadius 설정
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .white
+        self.backgroundColor = .background0
         self.layer.cornerRadius = 8
     }
     

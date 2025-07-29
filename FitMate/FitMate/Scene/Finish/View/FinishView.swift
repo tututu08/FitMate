@@ -14,7 +14,7 @@ final class FinishView: BaseView {
     let modeLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
-        label.textColor = .white
+        label.textColor = .background0
         return label
     }()
     
@@ -30,8 +30,8 @@ final class FinishView: BaseView {
     private let goalLabel: UILabel = {
         let label = UILabel()
         label.text = "종목 목표치" // 예: "목표 100회"
-        label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 20)
+        label.textColor = .background900
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
     
@@ -39,7 +39,7 @@ final class FinishView: BaseView {
     let resultLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
-        label.textColor = .white
+        label.textColor = .background0
         label.textAlignment = .center
         label.numberOfLines = 0
         return label
@@ -87,7 +87,7 @@ final class FinishView: BaseView {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "Pretendard-Regular", size: 16)
-        label.textColor = .black
+        label.textColor = .background900
         return label
     }()
     
@@ -96,7 +96,7 @@ final class FinishView: BaseView {
         let button = UIButton(type: .system)
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         button.setTitle("돌아가기", for: .normal)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return button
     }()

@@ -10,8 +10,8 @@ final class HistoryView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "운동 기록"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
     

@@ -11,7 +11,7 @@ class PlankCoopView: BaseView {
     private let modeLabel: UILabel = {
         let label = UILabel()
         label.text = "협력 모드"
-        label.textColor = .white
+        label.textColor = .background0
         label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
@@ -28,8 +28,8 @@ class PlankCoopView: BaseView {
     private let goalLabel: UILabel = {
         let label = UILabel()
         label.text = "종목 목표치" // 예: "목표 100회"
-        label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 20)
+        label.textColor = .background900
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
     
@@ -37,8 +37,8 @@ class PlankCoopView: BaseView {
     private let myLabel: UILabel = {
         let label = UILabel()
         label.text = "나"
-        label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         return label
     }()
     
@@ -46,8 +46,8 @@ class PlankCoopView: BaseView {
     private let mateLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트"
-        label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         return label
     }()
     
@@ -55,8 +55,8 @@ class PlankCoopView: BaseView {
     private let myRecordLabel: UILabel = {
         let label = UILabel()
         label.text = "나의기록"
-        label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.textColor = .background300
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
     
@@ -64,8 +64,8 @@ class PlankCoopView: BaseView {
     private let mateRecordLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트기록"
-        label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.textColor = .background300
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
     
@@ -128,7 +128,8 @@ class PlankCoopView: BaseView {
     private let stateLabel: UILabel = {
         let label = UILabel()
         label.text = "내 차례"
-        label.font = .boldSystemFont(ofSize: 23)
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
+        // TODO: - 색 변경 필요
         label.textColor = UIColor(red: 206/255, green: 255/255, blue: 67/255, alpha: 1.0)
         label.textAlignment = .center
         return label
@@ -137,8 +138,8 @@ class PlankCoopView: BaseView {
     let timerLabel: UILabel = {
         let label = UILabel()
         label.text = "30"
-        label.font = .boldSystemFont(ofSize: 50)
-        label.textColor = .white
+        label.font = UIFont(name: "Pretendard-Bold", size: 50)
+        label.textColor = .background0
         label.textAlignment = .center
         return label
     }()
@@ -173,7 +174,7 @@ class PlankCoopView: BaseView {
         let button = UIButton()
         button.setTitle("그만하기", for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         return button
     }()
@@ -335,7 +336,7 @@ class PlankCoopView: BaseView {
         switch status {
         case .ready:
             stateLabel.text = "준비하세요"
-            stateLabel.textColor = .white
+            stateLabel.textColor = .background0
             timerLabel.textColor = .red
         case .myTurn:
             if timer <= 7 {
@@ -345,7 +346,7 @@ class PlankCoopView: BaseView {
                 stateLabel.text = "플랭크 시작"
                 timerLabel.textColor = .secondary200
             }
-            stateLabel.textColor = .white
+            stateLabel.textColor = .background0
         case .mateTurn:
             if timer <= 5 {
                 stateLabel.text = "준비하시고~!"
@@ -354,7 +355,7 @@ class PlankCoopView: BaseView {
                 stateLabel.text = "휴식 타임"
                 timerLabel.textColor = .primary300
             }
-            stateLabel.textColor = .white
+            stateLabel.textColor = .background0
         default :
             break
         }

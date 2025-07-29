@@ -109,7 +109,7 @@ class NicknameViewController: BaseViewController {
                 
                 button.isEnabled = activated // 버튼 활성화 여부 설정
                 button.backgroundColor = activated ? UIColor.primary500 : UIColor.background50
-                button.setTitleColor(activated ? .white : .background500, for: .normal)
+                button.setTitleColor(activated ? .background0 : .background500, for: .normal)
             })
             .disposed(by: disposeBag)
         

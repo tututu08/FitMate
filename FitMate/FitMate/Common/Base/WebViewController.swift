@@ -23,7 +23,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .background0
         configureWeb()
         view.addSubview(closeButton)
         setUpUI()
@@ -57,7 +57,7 @@ class WebViewController: UIViewController, WKUIDelegate {
             make.trailing.equalToSuperview().inset(8)
             make.size.equalTo(28)
         }
-        closeButton.tintColor = .black
+        closeButton.tintColor = .background900
         closeButton.addTarget(self, action: #selector(closeModal), for: .touchUpInside)
     }
     

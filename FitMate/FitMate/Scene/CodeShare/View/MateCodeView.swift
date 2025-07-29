@@ -25,7 +25,7 @@ class MateCodeView: BaseView {
     let titleLabel: UILabel = {
         let title = UILabel()
         title.text = "메이트 코드 입력"
-        title.textColor = .white
+        title.textColor = .background0
         title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         title.textAlignment = .center
         return title

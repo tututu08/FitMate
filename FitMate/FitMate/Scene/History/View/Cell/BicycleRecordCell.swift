@@ -22,8 +22,8 @@ final class BicycleRecordCell: UICollectionViewCell {
     private let typeLabel: UILabel = {
         let label = UILabel()
         label.text = "자전거"
-        label.font = .boldSystemFont(ofSize: 16)
-        label.textColor = .black
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
+        label.textColor = .background900
         return label
     }()
     
@@ -31,8 +31,8 @@ final class BicycleRecordCell: UICollectionViewCell {
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "0000.00.00"
-        label.font = .systemFont(ofSize: 13)
-        label.textColor = .gray
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
+        label.textColor = .background300
         return label
     }()
     
@@ -40,9 +40,9 @@ final class BicycleRecordCell: UICollectionViewCell {
     private let resultLabel: UILabel = {
         let label = UILabel()
         label.text = "대결-패배" // configure에서 갱신된다. 초기값은 그냥 넣어둠
-        label.font = .systemFont(ofSize: 12)
-        label.textColor = .black
-        label.backgroundColor = UIColor(named: "Secondary400") // configure에서 갱신된다.
+        label.font = UIFont(name: "Pretendard-Regular", size: 12)
+        label.textColor = .background900
+        label.backgroundColor = .secondary400 // configure에서 갱신된다.
         label.textAlignment = .center
         label.layer.cornerRadius = 4
         label.clipsToBounds = true
@@ -62,7 +62,7 @@ final class BicycleRecordCell: UICollectionViewCell {
     
     //셀 전체 레이아웃
     private func setupLayout() {
-        backgroundColor = .white
+        backgroundColor = .background0
         layer.cornerRadius = 8
         clipsToBounds = true
         
@@ -115,8 +115,8 @@ final class BicycleRecordCell: UICollectionViewCell {
     private func makeDetailLabel(value: String, unit: String) -> UIStackView {
         let valueLabel = UILabel()
         valueLabel.text = value
-        valueLabel.font = .boldSystemFont(ofSize: 20)
-        valueLabel.textColor = .black
+        valueLabel.font = UIFont(name: "Pretendard-SemiBold", size: 22)
+        valueLabel.textColor = .background900
         valueLabel.textAlignment = .left
         valueLabel.snp.makeConstraints { $0.height.equalTo(31) }
         
@@ -124,8 +124,8 @@ final class BicycleRecordCell: UICollectionViewCell {
         
         let unitLabel = UILabel()
         unitLabel.text = unit
-        unitLabel.font = .systemFont(ofSize: 13)
-        unitLabel.textColor = .gray
+        unitLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
+        unitLabel.textColor = .background600
         unitLabel.textAlignment = .left
         unitLabel.snp.makeConstraints { $0.height.equalTo(21) }
         
@@ -145,11 +145,11 @@ final class BicycleRecordCell: UICollectionViewCell {
         // 결과타입(대결,협력)에 따라 색상 변경
         switch record.result {
         case .teamSuccess, .teamFail:
-            resultLabel.backgroundColor = UIColor(named: "Primary500")
-            resultLabel.textColor = .white
+            resultLabel.backgroundColor = .primary500
+            resultLabel.textColor = .background0
         case .versusWin, .versusLose:
-            resultLabel.backgroundColor = UIColor(named: "Secondary400")
-            resultLabel.textColor = .black
+            resultLabel.backgroundColor = .secondary400
+            resultLabel.textColor = .background900
         }
         
         let details = [record.detail1, record.detail2, record.detail3]
