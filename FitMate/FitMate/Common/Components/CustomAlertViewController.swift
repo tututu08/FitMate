@@ -80,35 +80,34 @@ class CustomAlertViewController: UIViewController {
     // 실제 AlertView 구성 및 화면에 배치
     private func setupAlertView() {
         // Builder 패턴으로 alertView 생성 준비
-        let builder = CustomAlertView.AlertBuilder()
-            .setTitle(alertType.title)  // 제목 설정
-            .setMessage(alertType.message)  // 메시지 설정
-        // 버튼 스타일에 따라 버튼 구성 넘김
+        var builder = CustomAlertView.AlertBuilder()
+            .setTitle(alertType.title)
+            .setMessage(alertType.message)
+
         switch alertType.buttonStyle {
-        case .single: // 버튼 한개만 필요할때
-            builder.setStopButton(confirmButton)
+        case .single:
+            builder = builder.setStopButton(confirmButton)
         case .double:
-            builder // 버튼 두개 필요할때
+            builder = builder
                 .setResumeButton(cancelButton)
                 .setStopButton(confirmButton)
         }
+
         // 최종적으로 alertView 완성
         let alertView = builder.buildAlert()
-        
+
         self.alertView = alertView
-        // alertView를 현재 화면-> view에 추가
         view.addSubview(alertView)
-        
-        // Hugging, Compression 우선순위 설정
+
         alertView.setContentHuggingPriority(.required, for: .vertical)
         alertView.setContentCompressionResistancePriority(.required, for: .vertical)
-        
-        // alertView의 위치 및 크기 설정
+
         alertView.snp.makeConstraints {
-            $0.center.equalToSuperview() // 화면 정중앙에 위치
-            $0.width.equalTo(326) // 고정 너비
+            $0.center.equalToSuperview()
+            $0.width.equalTo(326)
         }
     }
+    
     // 취소 버튼 탭 시 실행되는 함수
     @objc private func didTapCancel() {
         
