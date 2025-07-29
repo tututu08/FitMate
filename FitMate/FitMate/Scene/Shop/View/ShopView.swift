@@ -14,7 +14,7 @@ class ShopView: BaseView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "상점"
-        label.textColor = .white
+        label.textColor = .background0
         label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
@@ -48,9 +48,9 @@ class ShopView: BaseView {
     }()
     
     let avatarNameStack = NicknameStackView(
-        nickname: "", textColor: .white,
+        nickname: "", textColor: .background0,
         font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
-        arrowColor: .white
+        arrowColor: .background0
     )
     
     lazy var categoryCollectionView: UICollectionView = {
@@ -92,7 +92,7 @@ class ShopView: BaseView {
         
         if let arrowImageView = avatarNameStack.arrangedSubviews.first as? UIImageView {
             arrowImageView.image = UIImage(named: "arrowUp")?.withRenderingMode(.alwaysTemplate)
-            arrowImageView.tintColor = .white
+            arrowImageView.tintColor = .background0
         }
     }
     
