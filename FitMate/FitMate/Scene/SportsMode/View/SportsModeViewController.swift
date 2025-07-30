@@ -85,12 +85,12 @@ class SportsModeViewController: BaseViewController {
 
     private lazy var infoStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [
+            caloriesLabelText,
+            caloriesLabel,
             descriptionLabelTitle,
             descriptionLabel,
             effectLabelText,
-            effectLabel,
-            caloriesLabelText,
-            caloriesLabel
+            effectLabel
         ])
         stack.axis = .vertical
         stack.spacing = 10
@@ -234,7 +234,6 @@ class SportsModeViewController: BaseViewController {
         ].forEach { view.addSubview($0) } // 모든 요소 메인 뷰에 추가
         
         middleContainer.addSubview(infoStackView)
-        
         buttonStack.addArrangedSubview(cooperationModeButton)
         buttonStack.addArrangedSubview(battleModeButton)
 
