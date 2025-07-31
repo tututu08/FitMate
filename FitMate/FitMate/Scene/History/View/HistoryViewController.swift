@@ -135,9 +135,12 @@ extension HistoryViewController: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PlankRecordCell.identifier, for: indexPath) as! PlankRecordCell
             cell.configure(with: record)
             return cell
-
         default:
-            fatalError("종목 없음")
+        #if DEBUG // DEBUG 환경에서만 경고를 출력
+            // assertionFailure는 콘솔에 오류 메시지를 출력하고 중단(breakpoint)함.
+            assertionFailure("정의되지 않은 운동 타입: \(record.type)")
+        #endif
+            return UICollectionViewCell()
         }
     }
 }
