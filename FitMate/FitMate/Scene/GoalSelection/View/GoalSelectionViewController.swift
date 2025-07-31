@@ -135,6 +135,7 @@ class GoalSelectionViewController: BaseViewController, UIPickerViewDataSource, U
             .bind(onNext: { [weak self] selectedGoal in
                 guard let self else { return }
                 
+                // 저장(종목 타이틀, 목표치)
                 if self.selectedGoalValueRelay.value == 0,
                    self.pickerData.indices.contains(self.pickerView.selectedRow(inComponent: 0)) {
                     let text = self.pickerData[self.pickerView.selectedRow(inComponent: 0)]
