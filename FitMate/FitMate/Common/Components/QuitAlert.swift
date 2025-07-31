@@ -61,7 +61,7 @@ final class QuitAlert: UIView {
         addSubview(dimmedView)
         dimmedView.snp.makeConstraints { $0.edges.equalToSuperview() }
         addSubview(container)
-        container.backgroundColor = .white
+        container.backgroundColor = .background0
         container.layer.cornerRadius = 8
         container.snp.makeConstraints {
             $0.center.equalToSuperview()
@@ -71,7 +71,7 @@ final class QuitAlert: UIView {
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.snp.makeConstraints { $0.size.equalTo(84)}
         titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
-        titleLabel.textColor = UIColor(named: "Background900")
+        titleLabel.textColor = .background900
         titleLabel.textAlignment = .center
 
         resumeButton.setTitle("계속하기", for: .normal)
@@ -81,13 +81,13 @@ final class QuitAlert: UIView {
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
         stopButton.setTitle("그만하기", for: .normal)
-        stopButton.setTitleColor(.white, for: .normal)
+        stopButton.setTitleColor(.background0, for: .normal)
         stopButton.backgroundColor = .primary500
         stopButton.layer.cornerRadius = 4
         stopButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         
         backButton.setTitle("돌아가기", for: .normal)
-        backButton.setTitleColor(.white, for: .normal)
+        backButton.setTitleColor(.background0, for: .normal)
         backButton.backgroundColor = .primary300
         backButton.layer.cornerRadius = 5
         backButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)

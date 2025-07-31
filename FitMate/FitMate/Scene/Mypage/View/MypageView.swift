@@ -8,7 +8,7 @@ final class MypageView: UIView {
     let settingButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "gearshape"), for: .normal)
-        button.tintColor = .white
+        button.tintColor = .background0
         return button
     }()
     //뒤로가기버튼
@@ -26,8 +26,8 @@ final class MypageView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = ""
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
 
@@ -54,8 +54,8 @@ final class MypageView: UIView {
     let nicknameLabel: UILabel = {
         let label = UILabel()
         label.text = "닉네임"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
 
@@ -73,8 +73,8 @@ final class MypageView: UIView {
     let achievementTitle: UILabel = {
         let label = UILabel()
         label.text = "달성한 업적"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
 
@@ -82,7 +82,7 @@ final class MypageView: UIView {
     let achievementMoreButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "chevron.right"), for: .normal)
-        button.tintColor = .white
+        button.tintColor = .background0
         return button
     }()
 
@@ -98,7 +98,7 @@ final class MypageView: UIView {
     //업적 이미지
     let achievementImageView: UIView = {
         let view = UIView()
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .lightGray // TODO: 색 변경 필요(피그마에서 못찾음)
         view.layer.cornerRadius = 4
         return view
     }()
@@ -108,8 +108,8 @@ final class MypageView: UIView {
     let levelTitle: UILabel = {
         let label = UILabel()
         label.text = "누적 기록"
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
 

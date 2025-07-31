@@ -6,7 +6,7 @@ class CooperationSportsView: BaseView {
     private let modeLabel: UILabel = {
         let label = UILabel()
         label.text = "협력 모드"
-        label.textColor = .white
+        label.textColor = .background0
         label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
@@ -21,40 +21,40 @@ class CooperationSportsView: BaseView {
     private let goalLabel: UILabel = {
         let label = UILabel()
         label.text = "종목 목표치"
-        label.textColor = .black
-        label.font = .boldSystemFont(ofSize: 20)
+        label.textColor = .background900
+        label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
     
     private let myLabel: UILabel = {
         let label = UILabel()
         label.text = "나"
-        label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         return label
     }()
     
     private let mateLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트"
-        label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 24)
+        label.textColor = .background0
+        label.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         return label
     }()
     
     private let myRecordLabel: UILabel = {
         let label = UILabel()
         label.text = "나의기록"
-        label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.textColor = .background300
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
     
     private let mateRecordLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트기록"
-        label.textColor = .gray
-        label.font = .boldSystemFont(ofSize: 15)
+        label.textColor = .background300
+        label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
     
@@ -127,7 +127,7 @@ class CooperationSportsView: BaseView {
         let button = UIButton()
         button.setTitle("그만하기", for: .normal)
         button.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
-        button.setTitleColor(.white, for: .normal)
+        button.setTitleColor(.background0, for: .normal)
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         return button
     }()

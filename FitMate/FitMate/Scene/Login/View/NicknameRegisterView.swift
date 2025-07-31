@@ -13,7 +13,7 @@ class NicknameView: BaseView {
     let nicknameViewTitle: UILabel = {
         let title = UILabel()
         title.text = "닉네임 등록"
-        title.textColor = .white
+        title.textColor = .background0
         title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return title
     }()
@@ -82,7 +82,7 @@ class NicknameView: BaseView {
     let registerButton: UIButton = {
         let register = UIButton()
         register.setTitle("등록완료", for: .normal)
-        register.setTitleColor(.white, for: .normal)
+        register.setTitleColor(.background0, for: .normal)
         register.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         register.backgroundColor = .primary500
         register.layer.cornerRadius = 4

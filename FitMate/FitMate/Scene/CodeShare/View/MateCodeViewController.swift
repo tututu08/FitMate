@@ -84,8 +84,8 @@ final class MateCodeViewController: BaseViewController {
                 guard let self = self else { return }
                 let button = self.mateCodeView.completeButton
                 button.isEnabled = activated
-                button.backgroundColor = activated ? UIColor.primary500 : UIColor.background50
-                button.setTitleColor(activated ? .white : .background500, for: .normal)
+                button.backgroundColor = activated ? .primary500 : .background50
+                button.setTitleColor(activated ? .background0 : .background500, for: .normal)
             })
             .disposed(by: disposeBag)
     }

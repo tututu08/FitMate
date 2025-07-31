@@ -31,7 +31,7 @@ class CustomAlertViewController: UIViewController {
     lazy var confirmButton: UIButton = {
         let confirm = UIButton()
         confirm.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
-        confirm.setTitleColor(.white, for: .normal)
+        confirm.setTitleColor(.background0, for: .normal)
         confirm.backgroundColor = .primary500
         confirm.layer.cornerRadius = 4
         confirm.addTarget(self, action: #selector(didTapConfirm), for: .touchUpInside)

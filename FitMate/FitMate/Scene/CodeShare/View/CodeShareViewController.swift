@@ -189,9 +189,9 @@ final class CodeShareViewController: BaseViewController {
     private func showToast(message: String) {
         let toastLabel = UILabel()
         toastLabel.text = message
-        toastLabel.textColor = .white
+        toastLabel.textColor = .background0
         toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        toastLabel.font = .systemFont(ofSize: 14)
+        toastLabel.font = UIFont(name: "Pretendard-Regular", size: 14)
         toastLabel.textAlignment = .center
         toastLabel.alpha = 0
         toastLabel.layer.cornerRadius = 8

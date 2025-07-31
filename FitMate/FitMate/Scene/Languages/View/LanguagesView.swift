@@ -18,7 +18,7 @@ class LanguagesView: BaseView {
     private let titleLabel: UILabel = {
         let title = UILabel()
         title.text = "언어 선택"
-        title.textColor = .white
+        title.textColor = .background0
         title.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return title
     }()
@@ -40,7 +40,7 @@ class LanguagesView: BaseView {
     let selectButton: UIButton = {
         let btn = UIButton()
         btn.setTitle("선택 완료", for: .normal)
-        btn.setTitleColor(.white, for: .normal)
+        btn.setTitleColor(.background0, for: .normal)
         btn.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         btn.backgroundColor = .primary500
         btn.layer.cornerRadius = 4

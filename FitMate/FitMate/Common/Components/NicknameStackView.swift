@@ -21,7 +21,7 @@ class NicknameStackView: UIStackView {
     
     private var nicknameLabel: UILabel = {
        let nickname = UILabel()
-        nickname.font = UIFont.systemFont(ofSize: 16)
+        nickname.font = UIFont(name: "Pretendard-Regular", size: 16)
         nickname.textAlignment = .center
         return nickname
     }()

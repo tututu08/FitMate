@@ -60,7 +60,7 @@ class MyRandomCodeButton: UIButton {
     }
     
     private func setLayoutUI() {
-        self.backgroundColor = .white
+        self.backgroundColor = .background0
         self.layer.cornerRadius = 4
         
         addSubview(title)

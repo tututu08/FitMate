@@ -12,7 +12,7 @@ final class PartnerLeftAlertView: UIView {
 
     let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .background0
         view.layer.cornerRadius = 8
         return view
     }()
