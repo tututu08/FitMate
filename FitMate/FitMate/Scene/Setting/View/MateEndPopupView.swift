@@ -3,14 +3,14 @@ import UIKit
 import SnapKit
 
 final class MateEndPopupView: UIView {
-
+    
     // 팝업 외 영역 반투명 어둠영역
     let backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.6)
         return view
     }()
-
+    
     //팝업 메인 ㄴ컨테이너
     let containerView: UIView = {
         let view = UIView()
@@ -18,7 +18,7 @@ final class MateEndPopupView: UIView {
         view.layer.cornerRadius = 8
         return view
     }()
-
+    
     // 팝업 제목
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -28,7 +28,7 @@ final class MateEndPopupView: UIView {
         label.textAlignment = .center
         return label
     }()
-
+    
     // 종료 시 안내
     private let descriptionLabel: UILabel = {
         let label = UILabel()
@@ -39,7 +39,7 @@ final class MateEndPopupView: UIView {
         label.numberOfLines = 2
         return label
     }()
-
+    
     // 취소
     let cancelButton: UIButton = {
         let button = UIButton()
@@ -49,7 +49,7 @@ final class MateEndPopupView: UIView {
         button.layer.cornerRadius = 4
         return button
     }()
-
+    
     // 종료
     let confirmButton: UIButton = {
         let button = UIButton()
@@ -59,7 +59,7 @@ final class MateEndPopupView: UIView {
         button.layer.cornerRadius = 4
         return button
     }()
-
+    
     // 버튼 2개 수평배치
     private lazy var buttonStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [cancelButton, confirmButton])
@@ -68,44 +68,44 @@ final class MateEndPopupView: UIView {
         stack.distribution = .fillEqually
         return stack
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // 전체 레이아웃
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(containerView)
-
+        
         [titleLabel, descriptionLabel, buttonStack].forEach {
             containerView.addSubview($0)
         }
-
+        
         backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
+        
         containerView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)
             //$0.horizontalEdges.equalToSuperview().inset(25)
             $0.height.equalTo(210)
         }
-
+        
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(30)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-
+        
         descriptionLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(20)
         }
-
+        
         buttonStack.snp.makeConstraints {
             $0.top.equalTo(descriptionLabel.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(20)

@@ -3,18 +3,18 @@ import SnapKit
 
 // JumpRope 협동 모드의 루트 뷰
 final class JumpRopeBattleView: BaseView {
-
+    
     // 실제 메인 UI 뷰
     private let sportsView = BattleSportsView()
     var quitAlertView: QuitAlert?
     var stopButton: UIButton {
         return sportsView.stopButton
-       }
+    }
     // sportsView를 서브뷰로 추가
     override func configureUI() {
         addSubview(sportsView)
     }
-
+    
     // sportsView를 전체 영역에 맞게 제약
     override func setLayoutUI() {
         sportsView.snp.makeConstraints {
@@ -35,11 +35,11 @@ final class JumpRopeBattleView: BaseView {
         alert.onBack = { [weak self] in onBack?(); self?.hideQuitAlert() }
         self.addSubview(alert)
         alert.snp.makeConstraints {
-                $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
         self.quitAlertView = alert
     }
-
+    
     func hideQuitAlert() {
         quitAlertView?.removeFromSuperview()
         quitAlertView = nil
@@ -49,21 +49,27 @@ final class JumpRopeBattleView: BaseView {
     func updateMyRecord(_ text: String) {
         sportsView.updateMyRecord(text)
     }
+    
     func updateMateRecord(_ text: String) {
         sportsView.updateMateRecord(text)
     }
+    
     func updateMyCharacter(_ name: String) {
         sportsView.updateMyCharacter(name)
     }
+    
     func updateMateCharacter(_ name: String) {
         sportsView.updateMateCharacter(name)
     }
+    
     func myUpdateProgress(ratio: CGFloat) {
         sportsView.myUpdateProgress(ratio: ratio)
     }
+    
     func mateUpdateProgress(ratio: CGFloat) {
         sportsView.mateUpdateProgress(ratio: ratio)
     }
+    
     func updateGoal(_ text: String) {
         sportsView.updateGoal(text)
     }

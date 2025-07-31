@@ -41,7 +41,7 @@ final class MatchEventService {
             .whereField("matchStatus", isEqualTo: "waiting") // 운동 경기 상태가 waiting 일때
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self, let snapshot = snapshot, error == nil else { return }
-
+                
                 // 문서 변화 중 새로 추가된 문서 (.added)에 대해서만 처리
                 for change in snapshot.documentChanges where change.type == .added {
                     let matchCode = change.document.documentID
@@ -78,7 +78,7 @@ final class MatchEventService {
                         
                         current[matchCode] = status
                         self.matchStatusRelay.accept(current)
-
+                        
                         if status == "started" {
                             DispatchQueue.main.async {
                                 self.stopListening()
@@ -93,7 +93,7 @@ final class MatchEventService {
                    ["waiting", "accepted"].contains(status)  // 수정
                 {
                     let allReady = players.values.allSatisfy { $0["isReady"] as? Bool == true }
-
+                    
                     if allReady {
                         db.collection("matches").document(matchCode).updateData([
                             "matchStatus": "started",

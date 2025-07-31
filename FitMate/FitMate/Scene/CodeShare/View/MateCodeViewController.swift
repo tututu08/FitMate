@@ -116,9 +116,9 @@ final class MateCodeViewController: BaseViewController {
         //        let customType: CustomAlertType
         switch alert {
         case .inviteSent,
-             .requestFailed,
-             .mateRequest,
-             .rejectRequest:
+                .requestFailed,
+                .mateRequest,
+                .rejectRequest:
             
             let alertVC = CustomAlertViewController(alertType: alert)
             

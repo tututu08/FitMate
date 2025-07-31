@@ -41,7 +41,10 @@ final class QuitAlert: UIView {
         setupUI()
         setAlert(for: type)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func setMessage(_ text: String) {
         let paragraphStyle = NSMutableParagraphStyle()
@@ -55,7 +58,7 @@ final class QuitAlert: UIView {
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 0
         messageLabel.attributedText = attributedString
-       }
+    }
     
     private func setupUI() {
         addSubview(dimmedView)
@@ -73,7 +76,7 @@ final class QuitAlert: UIView {
         titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         titleLabel.textColor = .background900
         titleLabel.textAlignment = .center
-
+        
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.gray, for: .normal)
         resumeButton.backgroundColor = .background50
@@ -130,9 +133,11 @@ final class QuitAlert: UIView {
             $0.height.equalTo(48)
             //$0.width.equalTo(124)
         }
+        
         stopButton.snp.makeConstraints {
             $0.height.equalTo(48)
         }
+        
         backButton.snp.makeConstraints {
             $0.height.equalTo(48)
             $0.width.equalTo(270)

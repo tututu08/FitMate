@@ -64,7 +64,7 @@ class MateCodeViewModel {
                 guard let self = self else {
                     return Observable.just((.requestFailed(message: "사용자 인증 실패"), nil))
                 }
-
+                
                 // 입력한 초대 코드로 Firestore에서 해당 유저 문서 조회
                 return self.firestoreService
                     .fetchUserByInviteCode(code)
@@ -85,14 +85,14 @@ class MateCodeViewModel {
                         if hasMate {
                             return .just((.requestFailed(message: "이미 메이트와 연결된 사용자입니다."), nil))
                         }
-
+                        
                         // 해당 사용자의 문서에 초대 상태, 보낸 사람 UID 업데이트
                         let fields: [String: Any] = [
                             "fromUid": self.uid,
                             "inviteStatus": "invited",
                             "updatedAt": FieldValue.serverTimestamp()
                         ]
-
+                        
                         // 문서 업데이트 성공 시 알림 + 화면 뒤로 이동 신호 반환
                         return self.firestoreService
                             .updateDocument(collectionName: "users", documentName: inviterUid, fields: fields)
@@ -108,7 +108,7 @@ class MateCodeViewModel {
                 // 예상치 못한 오류에도 안전하게 처리
                 return Driver.just((.requestFailed(message: error.localizedDescription), nil))
             })
-
+        
         // Output으로 전달
         return Output(
             result: result,

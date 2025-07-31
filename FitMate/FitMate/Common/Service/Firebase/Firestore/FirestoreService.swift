@@ -98,10 +98,10 @@ final class FirestoreService {
     /* createUserDocument 사용 예시
      // 사용자 정보 저장
      FirestoreService.shared.createUserDocumentRx(uid: "abc123")
-        .subscribe(
-            onSuccess: { print("생성 성공") },
-            onFailure: { error in print("실패: \(error)") }
-        )
+     .subscribe(
+     onSuccess: { print("생성 성공") },
+     onFailure: { error in print("실패: \(error)") }
+     )
      */
     
     /// 운동 경기 데이터 저장 문서 만들기
@@ -193,11 +193,11 @@ final class FirestoreService {
     /* fetchDocument 사용 예시
      // 사용자 정보 가져오기
      FirestoreService.shared.fetchDocument(collectionName: "users", documentName: "abc123")
-        .subscribe(onSuccess: { data in
-                print(" 문서 데이터: \(data)")
-            }, onFailure: { error in
-                print(" 문서 가져오기 실패: \(error.localizedDescription)")
-            })
+     .subscribe(onSuccess: { data in
+     print(" 문서 데이터: \(data)")
+     }, onFailure: { error in
+     print(" 문서 가져오기 실패: \(error.localizedDescription)")
+     })
      */
     
     // MARK: - Update
@@ -219,16 +219,16 @@ final class FirestoreService {
     /* updateDocument 사용 예시
      // 사용자 닉네임 업데이트
      FirestoreService.shared
-         .updateDocumentRx(collectionName: "user", documentName: "abc123", fields: ["nickname": "노훈"])
-         .subscribe(
-             onSuccess: {
-                 print("업데이트 성공!")
-             },
-             onFailure: { error in
-                 print("실패: \(error.localizedDescription)")
-             }
-         )
-         .disposed(by: disposeBag)
+     .updateDocumentRx(collectionName: "user", documentName: "abc123", fields: ["nickname": "노훈"])
+     .subscribe(
+     onSuccess: {
+     print("업데이트 성공!")
+     },
+     onFailure: { error in
+     print("실패: \(error.localizedDescription)")
+     }
+     )
+     .disposed(by: disposeBag)
      */
     
     // MARK: - Delete
@@ -249,12 +249,12 @@ final class FirestoreService {
     /* deleteDocumentRx 사용 예시
      // 사용자 정보 삭제
      FirestoreService.shared
-         .deleteDocumentRx(collectionName: "user", documentName: "abc123")
-         .subscribe(
-             onSuccess: { print("삭제 성공!") },
-             onFailure: { error in print("삭제 실패: \(error.localizedDescription)") }
-         )
-         .disposed(by: disposeBag)
+     .deleteDocumentRx(collectionName: "user", documentName: "abc123")
+     .subscribe(
+     onSuccess: { print("삭제 성공!") },
+     onFailure: { error in print("삭제 실패: \(error.localizedDescription)") }
+     )
+     .disposed(by: disposeBag)
      */
     
 }
@@ -413,7 +413,7 @@ extension FirestoreService {
                         single(.success(()))
                     }
                 }
-
+            
             return Disposables.create()
         }
     }
@@ -617,7 +617,7 @@ extension FirestoreService {
             "players.\(mateUid).status": "finished"
         ]
         //if mode == .battle {
-            matchData["players.\(myUid).isWinner"] = isWinner
+        matchData["players.\(myUid).isWinner"] = isWinner
         //}
         batch.updateData(matchData, forDocument: matchRef)
         
@@ -657,7 +657,7 @@ extension FirestoreService {
         default: return [:]
         }
     }
-
+    
     // 사용자 누적 기록 저장 (마이데이터에서 조회)
     func saveExerciseRecord(uid: String, record: ExerciseRecord) -> Completable {
         let db = Firestore.firestore()
@@ -729,7 +729,7 @@ extension FirestoreService {
             return Disposables.create()
         }
     }
-
+    
     // 마이데이터에 표시 할 데이터 가져오기
     func fetchTotalStats(uid: String) -> Single<[WorkoutRecord]> {
         let ref = Firestore.firestore().collection("users").document(uid)
@@ -850,24 +850,24 @@ extension FirestoreService {
     func listenMateQuitStatus(matchCode: String, myUid: String) -> Observable<Bool> {
         return Observable.create { observer in
             let ref = self.db.collection("matches").document(matchCode)
-
+            
             let listener = ref.addSnapshotListener { snapshot, error in
                 if error != nil {
                     return
                 }
-
+                
                 guard let snapshot = snapshot else {
                     return
                 }
-
+                
                 guard snapshot.exists else {
                     return
                 }
-
+                
                 guard let data = snapshot.data() else {
                     return
                 }
-
+                
                 if let quitStatus = data["quitStatus"] as? [String: Bool] {
                     print("quitStatus 감지됨: \(quitStatus)")
                     for (uid, didQuit) in quitStatus {
@@ -878,7 +878,7 @@ extension FirestoreService {
                     }
                 }
             }
-
+            
             return Disposables.create {
                 listener.remove()
             }

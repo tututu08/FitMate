@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 class BattleSportsView: BaseView {
-
+    
     private let modeLabel: UILabel = {
         let label = UILabel()
         label.text = "대결 모드"
@@ -17,14 +17,14 @@ class BattleSportsView: BaseView {
         label.font = UIFont(name: "Pretendard-SemiBold", size: 20)
         return label
     }()
-
+    
     private let goalImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "goalbackground")
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
-
+    
     private let goalLabel: UILabel = {
         let label = UILabel()
         label.text = "종목 목표치"
@@ -32,7 +32,7 @@ class BattleSportsView: BaseView {
         label.font = UIFont(name: "Pretendard-Medium", size: 20)
         return label
     }()
-
+    
     private let myLabel: UILabel = {
         let label = UILabel()
         label.text = "나"
@@ -41,7 +41,7 @@ class BattleSportsView: BaseView {
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
-
+    
     let myRecordLabel: UILabel = {
         let label = UILabel()
         label.text = "나의기록"
@@ -49,7 +49,7 @@ class BattleSportsView: BaseView {
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
-
+    
     private let mateLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트"
@@ -58,7 +58,7 @@ class BattleSportsView: BaseView {
         label.setContentHuggingPriority(.required, for: .horizontal)
         return label
     }()
-
+    
     private let mateRecordLabel: UILabel = {
         let label = UILabel()
         label.text = "메이트기록"
@@ -66,7 +66,7 @@ class BattleSportsView: BaseView {
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
         return label
     }()
-
+    
     private lazy var myStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [myLabel, myRecordLabel])
         stackView.axis = .horizontal
@@ -74,7 +74,7 @@ class BattleSportsView: BaseView {
         stackView.alignment = .center
         return stackView
     }()
-
+    
     private lazy var mateStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [mateLabel, mateRecordLabel])
         stackView.axis = .horizontal
@@ -82,7 +82,7 @@ class BattleSportsView: BaseView {
         stackView.alignment = .center
         return stackView
     }()
-
+    
     private lazy var myProgressStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [myStackView, myProgressBackgroundView])
         stack.axis = .vertical
@@ -90,7 +90,7 @@ class BattleSportsView: BaseView {
         stack.alignment = .fill
         return stack
     }()
-
+    
     private lazy var mateProgressStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [mateStackView, mateProgressBackgroundView])
         stack.axis = .vertical
@@ -98,7 +98,7 @@ class BattleSportsView: BaseView {
         stack.alignment = .fill
         return stack
     }()
-
+    
     private let myProgressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
@@ -106,13 +106,13 @@ class BattleSportsView: BaseView {
         view.layer.cornerRadius = 5
         return view
     }()
-
+    
     private let myProgressForegroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .primary500
         return view
     }()
-
+    
     private let mateProgressBackgroundView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 2
@@ -120,16 +120,16 @@ class BattleSportsView: BaseView {
         view.layer.cornerRadius = 5
         return view
     }()
-
+    
     private let mateProgressForegroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .background100
         return view
     }()
-
+    
     private var myProgressWidthConstraint: Constraint?
     private var mateProgressWidthConstraint: Constraint?
-
+    
     
     private lazy var totalVerticalStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [myProgressStackView, mateProgressStackView])
@@ -138,14 +138,14 @@ class BattleSportsView: BaseView {
         stack.alignment = .fill
         return stack
     }()
-
+    
     private let battleImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "battleBackground")
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
-
+    
     private let middleContainer = UIView()
     
     private let myCharacterImage: UIImageView = {
@@ -154,7 +154,7 @@ class BattleSportsView: BaseView {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-
+    
     private let mateCharacterImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "kaepy")
@@ -162,7 +162,7 @@ class BattleSportsView: BaseView {
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-
+    
     let stopButton: UIButton = {
         let button = UIButton()
         button.setTitle("그만하기", for: .normal)
@@ -171,7 +171,7 @@ class BattleSportsView: BaseView {
         button.setBackgroundImage(UIImage(named: "350button"), for: .normal)
         return button
     }()
-
+    
     override func configureUI() {
         self.backgroundColor = .background800
         goalImage.addSubview(goalLabel)
@@ -190,27 +190,28 @@ class BattleSportsView: BaseView {
         
         middleContainer.addSubview(battleImage)
     }
-
+    
     override func setLayoutUI() {
         let safeArea = self.safeAreaLayoutGuide
         let contentWidthRatio: CGFloat = 0.88
         let contentWidth = UIScreen.main.bounds.width * contentWidthRatio
-
+        
         modeLabel.snp.makeConstraints {
             $0.top.equalTo(safeArea.snp.top).offset(36)
             $0.centerX.equalToSuperview()
         }
-
+        
         goalImage.snp.makeConstraints {
             $0.top.equalTo(modeLabel.snp.bottom).offset(16)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(contentWidth)
             $0.height.equalTo(50)
         }
+        
         goalLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
-
+        
         totalVerticalStack.snp.makeConstraints {
             $0.top.equalTo(goalImage.snp.bottom).offset(12)
             $0.centerX.equalToSuperview()
@@ -220,18 +221,21 @@ class BattleSportsView: BaseView {
         myProgressBackgroundView.snp.makeConstraints {
             $0.height.equalTo(34)
         }
+        
         myProgressForegroundView.snp.makeConstraints {
             $0.top.bottom.leading.equalToSuperview().inset(6)
             myProgressWidthConstraint = $0.width.equalTo(0).priority(.high).constraint
         }
+        
         mateProgressBackgroundView.snp.makeConstraints {
             $0.height.equalTo(34)
         }
+        
         mateProgressForegroundView.snp.makeConstraints {
             $0.top.bottom.leading.equalToSuperview().inset(6)
             mateProgressWidthConstraint = $0.width.equalTo(0).priority(.high).constraint
         }
-
+        
         middleContainer.snp.makeConstraints {
             $0.top.equalTo(totalVerticalStack.snp.bottom).offset(0)
             $0.bottom.equalTo(stopButton.snp.top).offset(0)
@@ -267,23 +271,27 @@ class BattleSportsView: BaseView {
             $0.height.equalTo(60)
         }
     }
-
+    
     func updateMyRecord(_ text: String) {
         myRecordLabel.text = text
     }
+    
     func updateMateRecord(_ text: String) {
         mateRecordLabel.text = text
     }
+    
     func updateGoal(_ text: String) {
         goalLabel.text = text
     }
+    
     func updateMyCharacter(_ name: String) {
         myCharacterImage.image = UIImage(named: name)
     }
+    
     func updateMateCharacter(_ name: String) {
         mateCharacterImage.image = UIImage(named: name)
     }
-
+    
     func myUpdateProgress(ratio: CGFloat) {
         DispatchQueue.main.async {
             self.layoutIfNeeded()
@@ -294,6 +302,7 @@ class BattleSportsView: BaseView {
             }
         }
     }
+    
     func mateUpdateProgress(ratio: CGFloat) {
         DispatchQueue.main.async {
             self.layoutIfNeeded()

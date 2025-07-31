@@ -43,7 +43,7 @@ class TabBarController: UITabBarController {
         
         // 아바타 초기화
         AvatarManager.shared.fetchInitialAvatar(uid: uid)
-
+        
     }
     
     deinit {
@@ -112,12 +112,12 @@ class TabBarController: UITabBarController {
     // 초대 alert 띄우고 수락/거절 처리
     private func presentMatchAlert(matchCode: String, message: String) {
         let alert = CustomAlertViewController(alertType: .sportsMateRequest(message: message))
-
+        
         alert.onCancel = { [weak self] in
             guard let self else { return }
             self.matchAcceptViewModel.respondToMatch(matchCode: matchCode, myUid: self.uid, accept: false)
         }
-
+        
         alert.onConfirm = { [weak self] in
             guard let self else { return }
             FirestoreService.shared.fetchDocument(collectionName: "matches", documentName: matchCode)
@@ -134,7 +134,7 @@ class TabBarController: UITabBarController {
                         UIApplication.topViewController()?.present(cancelAlert, animated: true)
                         return
                     }
-
+                    
                     let gameVC = LoadingViewController(uid: self.uid, matchCode: matchCode)
                     gameVC.hidesBottomBarWhenPushed = true
                     if let nav = self.selectedViewController as? UINavigationController {
@@ -143,10 +143,10 @@ class TabBarController: UITabBarController {
                 })
                 .disposed(by: self.disposeBag)
         }
-
+        
         UIApplication.topViewController()?.present(alert, animated: true)
     }
-
+    
     class CustomTabBar: UITabBar {
         override func sizeThatFits(_ size: CGSize) -> CGSize {
             var sizeThatFits = super.sizeThatFits(size)

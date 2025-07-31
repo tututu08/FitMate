@@ -104,8 +104,8 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
             selectedAvatar: rootView.avatarCollection.rx.modelSelected(AvatarModel.self).asObservable()
         )
         
-//        let selectedAvatarInfo = viewModel.selectedAvatarRelay
-//            .compactMap { $0 }
+        //        let selectedAvatarInfo = viewModel.selectedAvatarRelay
+        //            .compactMap { $0 }
         
         let output = viewModel.transform(input: input)
         
@@ -122,7 +122,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                    self.viewModel.selectedAvatarRelay.value == nil,
                    self.viewModel.selectedPreviewAvatarRelay.value == nil,
                    model.type == .kaepy {
-
+                    
                     let indexPath = IndexPath(item: index, section: 0)
                     self.rootView.avatarCollection.selectItem(at: indexPath, animated: false, scrollPosition: [])
                     self.viewModel.selectedPreviewAvatarRelay.accept(model)
@@ -146,7 +146,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
             .subscribe(onNext: { [weak self] model in
                 guard let self else { return }
                 guard let imageName = model.imageName else { return }
-
+                
                 let popup = AvatarPopUpViewController(
                     alertType: .avatarPurchase(
                         name: model.avatarName,
@@ -158,7 +158,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                 
                 popup.onConfirm = {
                     // print("나의 잔고 : \(self.myCoin)")
-                  
+                    
                     guard let conCost = model.conCost else {
                         print("아바타 가격 정보가 없습니다.\n")
                         return
@@ -200,7 +200,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                         // selected의 타입과 이미지 이름을 안전하게 꺼냄
                         guard let type = selected.type,
                               let imageName = selected.imageName else { return }
-
+                        
                         // 전체 아바타 리스트에서 해당 모델 갱신
                         var updated = self.viewModel.allAvatarsRelay.value
                         if let index = updated.firstIndex(where: { $0.type == selected.type }) {
@@ -224,7 +224,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                         // Firestore에 해금 정보 + 대표 아바타 저장
                         FirestoreService.shared.saveUnlockedAvatar(uid: self.uid, newType: type)
                         _ = FirestoreService.shared.saveSelectedAvatar(uid: self.uid, type: type) // 리턴값 무시하여 노란 오류 제거
-                      
+                        
                         // 아바타 목록 새로고침 (잠금 해제 반영)
                         self.viewModel.fetchAvatars(uid: self.uid)
                     }
@@ -245,16 +245,16 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                       let imageName = model.imageName,
                       let image = UIImage(named: imageName),
                       let cgImage = image.cgImage else { return }
-
+                
                 let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-
+                
                 guard let fixedImg = fixed.cgImage else { return } // 바인딩하여 강제 언래핑 수정
-
+                
                 let flipped = UIImage(cgImage: fixedImg, scale: fixed.scale, orientation: .upMirrored)
                 self.rootView.selectedAvatarImg.image = flipped
-
+                
                 self.rootView.avatarNameStack.updateNickname(model.avatarName)
-
+                
                 let currentType = self.viewModel.currentAvatarTypeRelay.value
                 self.rootView.changeButton.isHidden = !model.isUnlocked || model.type == currentType
             })
@@ -269,20 +269,20 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
                       let imageName = model.imageName,
                       let image = UIImage(named: imageName),
                       let cgImage = image.cgImage else { return }
-
+                
                 let fixed = UIImage(cgImage: cgImage, scale: image.scale, orientation: .up)
-
+                
                 guard let fixedImg = fixed.cgImage else { return } // 바인딩 해서 강제 언래핑 제거
-
+                
                 let flipped = UIImage(cgImage: fixedImg, scale: fixed.scale, orientation: .upMirrored)
                 self.rootView.selectedAvatarImg.image = flipped
-
+                
                 self.rootView.avatarNameStack.updateNickname(model.avatarName)
-
+                
                 if model.isUnlocked, let type = model.type {
                     _ = FirestoreService.shared.saveSelectedAvatar(uid: self.uid, type: type)
                 }
-
+                
                 self.rootView.avatarCollection.reloadData()
             })
             .disposed(by: disposeBag)
@@ -323,7 +323,6 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
             })
             .disposed(by: disposeBag)
         
-        
         // 전역 상태가 바뀌었을 때 → 뷰모델에도 반영 (다른 화면에서 변경 시 대응)
         AvatarManager.shared.selectedAvatarRelay
             .compactMap { $0 }
@@ -342,7 +341,7 @@ class ShopViewController: BaseViewController, UICollectionViewDelegateFlowLayout
             })
             .disposed(by: disposeBag)
     }
-
+    
     // 카테고리 셀 크기
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == rootView.categoryCollectionView {

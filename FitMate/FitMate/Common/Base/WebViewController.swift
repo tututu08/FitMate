@@ -16,7 +16,7 @@ class WebViewController: UIViewController, WKUIDelegate {
     var urlTitle: String? // 페이지 타이틀 서비스 이용약관 / 개인정보 이용방침
     
     private let closeButton: UIButton = {
-       let close = UIButton()
+        let close = UIButton()
         close.setImage(UIImage(systemName: "xmark"), for: .normal)
         return close
     }()
@@ -44,6 +44,7 @@ class WebViewController: UIViewController, WKUIDelegate {
         view.addSubview(webView) // 루트 뷰를 webView로 설정
         
     }
+    
     // 화면 제약
     private func setUpUI() {
         webView.snp.makeConstraints { make in
@@ -64,7 +65,6 @@ class WebViewController: UIViewController, WKUIDelegate {
     @objc private func closeModal() {
         dismiss(animated: true)
     }
-
     
     /// 네비게이션 바 타이틀 설정
     private func setupNavigationBar() {

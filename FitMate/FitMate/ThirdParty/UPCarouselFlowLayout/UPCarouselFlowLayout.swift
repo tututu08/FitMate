@@ -79,8 +79,8 @@ open class UPCarouselFlowLayout: UICollectionViewFlowLayout {
     
     override open func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         guard let superAttributes = super.layoutAttributesForElements(in: rect),
-            let attributes = NSArray(array: superAttributes, copyItems: true) as? [UICollectionViewLayoutAttributes]
-            else { return nil }
+              let attributes = NSArray(array: superAttributes, copyItems: true) as? [UICollectionViewLayoutAttributes]
+        else { return nil }
         return attributes.map({ self.transformLayoutAttributes($0) })
     }
     
@@ -114,8 +114,8 @@ open class UPCarouselFlowLayout: UICollectionViewFlowLayout {
     
     override open func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {
         guard let collectionView = collectionView , !collectionView.isPagingEnabled,
-            let layoutAttributes = self.layoutAttributesForElements(in: collectionView.bounds)
-            else { return super.targetContentOffset(forProposedContentOffset: proposedContentOffset) }
+              let layoutAttributes = self.layoutAttributesForElements(in: collectionView.bounds)
+        else { return super.targetContentOffset(forProposedContentOffset: proposedContentOffset) }
         
         let isHorizontal = (self.scrollDirection == .horizontal)
         

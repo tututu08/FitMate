@@ -12,5 +12,4 @@ struct MatchInfo {
     let mateUid: String
     let myCharacter: String
     let mateCharacter: String
-    
 }

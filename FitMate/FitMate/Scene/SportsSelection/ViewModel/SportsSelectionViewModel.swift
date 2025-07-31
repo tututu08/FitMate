@@ -11,16 +11,16 @@ import RxCocoa
 class CarouselViewModel: ViewModelType {
     
     let disposeBag = DisposeBag()  // Rx 구독 해제를 위한 DisposeBag
-
+    
     // 외부에서 전달받을 Input (현재는 사용하지 않음)
     struct Input {}
-
+    
     // View로 전달할 Output
     struct Output {
         let items: Driver<[ExerciseItem]>  // 컬렉션 뷰에 바인딩할 아이템 목록
         let originalCount: Int             // 가운데 위치로 초기 스크롤할 인덱스
     }
-
+    
     // 운동 아이템의 데이터 모델
     struct ExerciseItem {
         let image: UIImage      // 운동 이미지
@@ -29,9 +29,9 @@ class CarouselViewModel: ViewModelType {
         let description: String // 운동 설명
         let effect: String      // 운동 효과
     }
-
+    
     private let repeatCount = 100  // 무한 스크롤처럼 보이기 위한 반복 횟수
-
+    
     // 실제 운동 아이템 원본 배열
     private let originalItemsSource: [ExerciseItem] = [
         ExerciseItem(
@@ -70,22 +70,22 @@ class CarouselViewModel: ViewModelType {
             effect: "지구력 향상, 체지방 감소"
         )
     ]
-
+    
     // 반복된 운동 데이터를 담는 Relay
     private let itemsRelay = BehaviorRelay<[ExerciseItem]>(value: [])
-
+    
     // 컬렉션 뷰 초기 위치 설정용 (가운데 인덱스)
     var originalCount: Int {
         originalItemsSource.count * repeatCount / 2
     }
-
+    
     // 초기화
     init() {
         // 원본 아이템을 repeatCount만큼 반복하여 무한 스크롤처럼 보이게 만듦
         let repeatedItems = Array(repeating: originalItemsSource, count: repeatCount).flatMap { $0 }
         itemsRelay.accept(repeatedItems)
     }
-
+    
     func transform(input: Input) -> Output {
         // 반복된 데이터를 Driver로 변환하여 Output으로 내보냄
         return Output(

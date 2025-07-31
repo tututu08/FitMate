@@ -140,7 +140,6 @@ class MainViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    
     private func fetchMateStatusAndUpdateUI() {
         mainView.alpha = 0
         
@@ -200,12 +199,12 @@ class MainViewController: BaseViewController {
         let window = windowScene?.windows.first
         
         if let window {
-                window.addSubview(popup)
-                popup.snp.makeConstraints { $0.edges.equalToSuperview() }
-
-                UIView.animate(withDuration: 0.25) {
-                    popup.alpha = 1
-                }
+            window.addSubview(popup)
+            popup.snp.makeConstraints { $0.edges.equalToSuperview() }
+            
+            UIView.animate(withDuration: 0.25) {
+                popup.alpha = 1
+            }
             popup.confirmButton.rx.tap
                 .bind { [weak self, weak popup] in
                     guard let self, let popup else { return }
@@ -243,7 +242,6 @@ class MainViewController: BaseViewController {
         return (components.day ?? 0) + 1
     }
 }
-
 
 extension Reactive where Base: UIImageView {
     var tap: Observable<Void> {

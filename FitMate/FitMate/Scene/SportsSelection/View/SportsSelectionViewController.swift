@@ -40,7 +40,7 @@ class SportsSelectionViewController: BaseViewController {
         collectionView.register(CarouselCell.self, forCellWithReuseIdentifier: "cell")
         return collectionView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.backButtonTitle = ""  // 뒤로가기 버튼 타이틀 제거
@@ -53,7 +53,7 @@ class SportsSelectionViewController: BaseViewController {
         }
         view.backgroundColor = .background800
     }
-
+    
     // UI 요소 배치 설정
     override func configureUI() {
         super.configureUI()
@@ -65,14 +65,14 @@ class SportsSelectionViewController: BaseViewController {
             $0.leading.trailing.equalToSuperview()
         }
     }
-
+    
     // ViewModel과 바인딩
     override func bindViewModel() {
         super.bindViewModel()
         
         let input = CarouselViewModel.Input()  // 현재는 입력 없음
         let output = carouselViewModel.transform(input: input)
-
+        
         // ViewModel에서 전달받은 운동 아이템을 CollectionView에 바인딩
         output.items
             .drive(collectionView.rx.items(
@@ -104,20 +104,20 @@ class SportsSelectionViewController: BaseViewController {
     // 무한 스크롤 효과를 위한 중간 인덱스로 초기 위치 이동
     private func scrollToMiddle() {
         guard let layout = collectionView.collectionViewLayout as? UPCarouselFlowLayout else { return }
-
+        
         // 셀 높이와 셀 간 간격을 더한 총 높이
         let itemHeight = layout.itemSize.height
         let spacing = layout.minimumLineSpacing
         let totalHeight = itemHeight + spacing
-
+        
         // 중간 인덱스 (반복된 배열 중간 위치)
         let middleIndex = carouselViewModel.originalCount
-
+        
         // 해당 인덱스가 컬렉션 뷰 중앙에 오도록 offset 계산
         let offsetY = CGFloat(middleIndex) * totalHeight
-                     - (collectionView.bounds.height / 2)
-                     + (itemHeight / 2)
-
+        - (collectionView.bounds.height / 2)
+        + (itemHeight / 2)
+        
         // offset 적용 (애니메이션 없이)
         collectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
     }

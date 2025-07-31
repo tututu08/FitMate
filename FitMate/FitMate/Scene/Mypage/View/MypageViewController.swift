@@ -3,7 +3,7 @@ import RxSwift
 import RxCocoa
 
 final class MypageViewController: UIViewController, UICollectionViewDelegateFlowLayout {
-
+    
     //상단바 구성
     let rootView = MypageView(showSettingButton: true, titleText: "마이페이지", showBackButton: false)
     
@@ -26,7 +26,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
     override func loadView() {
         self.view = rootView //루트 뷰 설정
     }
-
+    
     // 네비게이션 바 숨김처리
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -49,16 +49,16 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             forCellWithReuseIdentifier: WorkRecordCell.identifier
         )
     }
-
+    
     // 뷰모델의 아웃풋을 위한 view와 바인딩
     private func bindViewModel() {
         let output = viewModel.transform()
-
+        
         //닉네임바인딩
         output.nickname
             .drive(rootView.nicknameLabel.rx.text)
             .disposed(by: disposeBag)
-
+        
         //기록 바인딩
         output.records
             .drive(rootView.recordCollectionView.rx.items(
@@ -69,7 +69,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             }
             .disposed(by: disposeBag)
     }
-
+    
     //설정버튼 탭 바인딩 (설정 화면 모달 표시)
     private func bindActions() {
         rootView.settingButton.rx.tap
@@ -81,7 +81,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             }
             .disposed(by: disposeBag)
     }
-
+    
     // 셀 크기 설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width - 32, height: 120)
@@ -94,7 +94,7 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             .observe(on: MainScheduler.instance)
             .bind { [weak self] avatar in
                 guard let self else { return }
-
+                
                 let imageName = avatar.imageName
                 if let image = UIImage(named: imageName),
                    let cgImage = image.cgImage {
@@ -104,5 +104,4 @@ final class MypageViewController: UIViewController, UICollectionViewDelegateFlow
             }
             .disposed(by: disposeBag)
     }
-
 }

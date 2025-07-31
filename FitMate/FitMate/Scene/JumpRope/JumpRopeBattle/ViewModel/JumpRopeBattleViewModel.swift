@@ -98,7 +98,6 @@ final class JumpRopeBattleViewModel: ViewModelType {
         let mateProgress = mateCountRelay
             .map { CGFloat(min(1.0, Float($0) / Float(self.goalCount))) }
             .asDriver(onErrorJustReturn: 0)
-
         
         let didFinish = didFinishRelay
             .asSignal(onErrorJustReturn: false)
@@ -153,7 +152,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
                 .disposed(by: disposeBag)
         }
         finish(success: false)
-
+        
     }
     
     func finish(success: Bool) {
@@ -175,7 +174,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
                 }
             }
     }
-
+    
     // 메이트 점프 수를 Firestore에서 실시간 감지
     private func observeMateCount() {
         db.collection("matches")
@@ -214,7 +213,7 @@ final class JumpRopeBattleViewModel: ViewModelType {
     func stopLocationUpdates() {
         motionManager.stopAccelerometerUpdates()
     }
-
+    
     deinit {
         motionManager.stopAccelerometerUpdates()
     }

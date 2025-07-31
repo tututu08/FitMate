@@ -26,7 +26,7 @@ final class PlankCoopViewModel: ViewModelType {
         let quit: Observable<Void>          // 내가 그만두기
         let mateQuit: Observable<Void>      // 상대가 그만두기
     }
-
+    
     // ViewModel이 출력하는 바인딩 값들
     struct Output {
         let status: Driver<PlankStatus>         // 현재 상태
@@ -37,7 +37,7 @@ final class PlankCoopViewModel: ViewModelType {
         let didFinish: Signal<Bool>             // 게임 종료 시(성공/실패)
         let mateQuitEvent: Signal<Void>         // 상대 종료 감지 시
     }
-
+    
     // 프로퍼티들 (게임 진행 상태, 바인딩용 Rx Relay 등)
     private let statusRelay = BehaviorRelay<PlankStatus>(value: .ready)   // 상태 변경
     private let readyDuration = 5     // 준비시간(5초)
@@ -48,26 +48,26 @@ final class PlankCoopViewModel: ViewModelType {
     private let didFinishRelay = PublishRelay<Bool>()         // 결과 알림
     private let mateQuitRelay = PublishRelay<Void>()          // 상대 종료 감지
     private let disposeBag = DisposeBag()                     // Rx 메모리 관리
-
+    
     private var pauseRemainTime: Int?         // 일시정지 시 남은 시간 저장
     private var listener: Disposable?         // Firestore 리스너
     private var isListening = false           // 중복 리스닝 방지
     private let isInviter: Bool               // 내가 초대자인지 여부
-
+    
     var myTime: Int { myTimeRelay.value }         // 내 누적 시간(외부 접근용)
     var mateTime: Int { mateTimeRelay.value }     // 상대 누적 시간(외부 접근용)
-
+    
     let myCharacter: String       // 내 캐릭터(아바타)
     let mateCharacter: String     // 상대 캐릭터(아바타)
     let goalMinutes: Int          // 목표 시간(분)
     private let matchCode: String // 경기 코드(Firestore 문서 키)
     private let myUID: String     // 내 유저 UID
     private let mateUID: String   // 상대 유저 UID
-
+    
     private var isMyTurn = true           // 현재 내 턴 여부(플래그)
     private var timer: Timer?             // 실시간 카운트다운 타이머
     private var lastStartAt: Date?        // 마지막 시작 시각(동기화 기준)
-
+    
     // 생성자
     init(
         goalMinutes: Int,
@@ -86,14 +86,14 @@ final class PlankCoopViewModel: ViewModelType {
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
     }
-
+    
     // transform (Input → Output)
     func transform(input: Input) -> Output {
         // 게임 시작
         input.start
             .subscribe(onNext: { [weak self] in self?.startGame() })
             .disposed(by: disposeBag)
-
+        
         // 내가 일시정지
         input.pause
             .subscribe(onNext: { [weak self] in self?.pause(isMine: true) })
@@ -102,7 +102,7 @@ final class PlankCoopViewModel: ViewModelType {
         input.matePause
             .subscribe(onNext: { [weak self] in self?.pause(isMine: false) })
             .disposed(by: disposeBag)
-
+        
         // 내가 이어하기(재개)
         input.resume
             .subscribe(onNext: { [weak self] in
@@ -119,7 +119,7 @@ final class PlankCoopViewModel: ViewModelType {
         input.mateResume
             .subscribe()
             .disposed(by: disposeBag)
-
+        
         // 내가 그만두기
         input.quit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: true) })
@@ -128,7 +128,7 @@ final class PlankCoopViewModel: ViewModelType {
         input.mateQuit
             .subscribe(onNext: { [weak self] in self?.confirmQuit(isMine: false) })
             .disposed(by: disposeBag)
-
+        
         // 프로그레스바 비율 계산 (총 진행 시간 / 목표 시간)
         let progress = Observable
             .combineLatest(myTimeRelay, mateTimeRelay)
@@ -139,7 +139,7 @@ final class PlankCoopViewModel: ViewModelType {
                 return CGFloat(min(1.0, Double(total) / Double(goalSec)))
             }
             .asDriver(onErrorJustReturn: CGFloat(0))
-
+        
         return Output(
             status: statusRelay.asDriver(onErrorJustReturn: .ready),            // 현재 상태
             timerText: timerRelay.map { "\($0)" }.asDriver(onErrorJustReturn: "0"), // 남은 타이머 텍스트
@@ -150,7 +150,7 @@ final class PlankCoopViewModel: ViewModelType {
             mateQuitEvent: mateQuitRelay.asSignal(onErrorJustReturn: ())        // 상대 종료 감지
         )
     }
-
+    
     // Firestore에서 실시간 진행상황 바인딩(내 기록/상대 기록)
     func bindProgressFromFirestore() {
         Observable
@@ -171,7 +171,7 @@ final class PlankCoopViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
     }
-
+    
     // Firestore의 match 상태 리스너(턴, 일시정지, 상대 종료 등)
     func bindMatchStatus() {
         guard !isListening else { return }
@@ -185,7 +185,7 @@ final class PlankCoopViewModel: ViewModelType {
                 let startAt = ts.dateValue()
                 let paused = data["paused"] as? Bool ?? false
                 let myTurn = self.isInviter ? (turn == "my") : (turn == "mate")
-
+                
                 // 최초 진입 (혹은 세션 새로 시작)
                 if self.lastStartAt == nil {
                     self.lastStartAt = startAt
@@ -211,12 +211,12 @@ final class PlankCoopViewModel: ViewModelType {
                 }
                 // 상대 종료 감지
                 if let quitMap = data["quitStatus"] as? [String: Bool],
-                    quitMap[self.mateUID] == true {
+                   quitMap[self.mateUID] == true {
                     self.mateQuitRelay.accept(())
                 }
             })
     }
-
+    
     // 상대방이 종료했는지 실시간 감지
     func bindMateQuitListener() {
         FirestoreService.shared.listenMateQuitStatus(matchCode: matchCode, myUid: myUID)
@@ -227,7 +227,7 @@ final class PlankCoopViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
     }
-
+    
     // 게임 시작 (처음 1회만!)
     private func startGame() {
         statusRelay.accept(.ready)
@@ -241,7 +241,7 @@ final class PlankCoopViewModel: ViewModelType {
                 .disposed(by: disposeBag)
         }
     }
-
+    
     // 내 턴/상대 턴 시작(타이머 작동)
     private func startTurn(isMyTurn: Bool, remainSeconds: Int? = nil) {
         timer?.invalidate()
@@ -296,7 +296,7 @@ final class PlankCoopViewModel: ViewModelType {
             }
         }
     }
-
+    
     // (일시정지 →) 재개 시 타이머/상태 복구
     private func resume(startAt: Date) {
         timer?.invalidate()
@@ -316,7 +316,7 @@ final class PlankCoopViewModel: ViewModelType {
             }
         }
     }
-
+    
     // 일시정지 처리 (타이머 멈춤, 상태 갱신)
     private func pause(isMine: Bool) {
         timer?.invalidate()
@@ -329,7 +329,7 @@ final class PlankCoopViewModel: ViewModelType {
                 .disposed(by: disposeBag)
         }
     }
-
+    
     // 종료(그만두기) 처리
     private func confirmQuit(isMine: Bool) {
         timer?.invalidate()
@@ -346,14 +346,14 @@ final class PlankCoopViewModel: ViewModelType {
         }
         finish(success: false)
     }
-
+    
     // 게임 종료 처리(성공/실패)
     func finish(success: Bool) {
         timer?.invalidate()
         statusRelay.accept(.finished(success: success))
         didFinishRelay.accept(success)
     }
-
+    
     // 초/분 포맷 변호ㅏㄴ
     static func formatTime(_ seconds: Int) -> String {
         if seconds < 60 { return "\(seconds)초" }
@@ -361,7 +361,7 @@ final class PlankCoopViewModel: ViewModelType {
         let sec = seconds % 60
         return "\(min)분 \(sec)초"
     }
-
+    
     // 메모리 누수 방지
     deinit { timer?.invalidate(); listener?.dispose() }
 }

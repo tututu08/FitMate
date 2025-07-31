@@ -33,7 +33,7 @@ class CustomButton: UIButton {
     }()
     
     private let radioButtonImageView: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()

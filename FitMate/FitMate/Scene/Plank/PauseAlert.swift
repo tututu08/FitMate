@@ -4,20 +4,20 @@ import RxCocoa
 import SnapKit
 
 final class PauseAlert: UIView {
-
+    
     // 어떤 타입의 일시정지 알럿인지 구분
     enum AlertType {
         case myPause      // 내가 일시정지
         case matePause    // 상대가 일시정지
     }
-
+    
     // 콜백 (이어하기)
     var onResume: (() -> Void)?
-
+    
     // 내부 타이머 관련
     private let disposeBag = DisposeBag()
     private var timerDisposable: Disposable?
-
+    
     // UI 요소
     private let dimmedView: UIView = {
         let view = UIView()
@@ -25,8 +25,8 @@ final class PauseAlert: UIView {
         view.isUserInteractionEnabled = true
         return view
     }()
+    
     private let alertContainer = UIView()
-
     private let iconImageView = UIImageView()
     private let titleLabel = UILabel()
     private let messageLabel = UILabel()
@@ -38,13 +38,16 @@ final class PauseAlert: UIView {
         setupUI()
         setAlert(type: type)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private func setupUI() {
         // 전체 dimmedView
         addSubview(dimmedView)
         dimmedView.snp.makeConstraints { $0.edges.equalToSuperview() }
-
+        
         // 알럿 컨테이너
         addSubview(alertContainer)
         alertContainer.backgroundColor = .background0
@@ -54,7 +57,7 @@ final class PauseAlert: UIView {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)
         }
-
+        
         // 각 요소 스타일 세팅
         iconImageView.contentMode = .scaleAspectFit
         iconImageView.image = UIImage(named: "pause")
@@ -62,18 +65,18 @@ final class PauseAlert: UIView {
         titleLabel.font = UIFont(name: "Pretendard-SemiBold", size: 24)
         titleLabel.textAlignment = .center
         titleLabel.textColor = UIColor(named: "Background900")
-
-
+        
+        
         timerLabel.font = UIFont(name: "Pretendard-Medium", size: 14)
         timerLabel.textColor = .primary400
         timerLabel.textAlignment = .center
-
+        
         resumeButton.setTitle("계속하기", for: .normal)
         resumeButton.setTitleColor(.background0, for: .normal)
         resumeButton.backgroundColor = .primary500
         resumeButton.titleLabel?.font = UIFont(name: "Pretendard-Regular", size: 18)
         resumeButton.layer.cornerRadius = 4
-
+        
         // StackView 배치 (spacing 맞추기)
         let stack = UIStackView(arrangedSubviews: [
             iconImageView,
@@ -85,14 +88,14 @@ final class PauseAlert: UIView {
         stack.axis = .vertical
         stack.spacing = 20
         stack.alignment = .center
-
+        
         alertContainer.addSubview(stack)
         stack.snp.makeConstraints {
             $0.top.equalToSuperview().offset(32)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(20)
         }
-
+        
         iconImageView.snp.makeConstraints {
             $0.size.equalTo(84)
         }
@@ -108,7 +111,7 @@ final class PauseAlert: UIView {
     }
     
     private func setAlert(type: AlertType) {
-//        timerLabel.isHidden = false
+        //        timerLabel.isHidden = false
         switch type {
         case .myPause:
             titleLabel.text = "운동이 잠시 멈췄어요"
@@ -139,7 +142,8 @@ final class PauseAlert: UIView {
             .bind { [weak self] in self?.onResume?() }
             .disposed(by: disposeBag)
     }
-        private func startCountdown(from seconds: Int) {
+    
+    private func startCountdown(from seconds: Int) {
         var remain = seconds
         timerLabel.text = "남은 시간: \(formatTime(remain))"
         timerDisposable?.dispose()
@@ -156,6 +160,7 @@ final class PauseAlert: UIView {
             })
         timerDisposable?.disposed(by: disposeBag)
     }
+    
     // 2:59 처럼 포맷
     private func formatTime(_ seconds: Int) -> String {
         let min = seconds / 60
@@ -175,7 +180,7 @@ final class PauseAlert: UIView {
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 0
         messageLabel.attributedText = attributedString
-       }
+    }
     
     deinit { timerDisposable?.dispose() }
 }

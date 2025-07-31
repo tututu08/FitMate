@@ -15,9 +15,9 @@ extension UIApplication {
     /// - 파라미터: 기본값은 앱의 rootViewController
     class func topViewController(
         base: UIViewController? = UIApplication.shared.connectedScenes
-            // 모든 windowScene 중에서
+        // 모든 windowScene 중에서
             .compactMap { ($0 as? UIWindowScene)?.keyWindow }
-            // 첫 번째 keyWindow의 rootViewController부터 시작
+        // 첫 번째 keyWindow의 rootViewController부터 시작
             .first?.rootViewController
     ) -> UIViewController? {
         

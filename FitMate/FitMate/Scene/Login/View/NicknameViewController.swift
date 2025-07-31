@@ -39,7 +39,7 @@ class NicknameViewController: BaseViewController {
     }
     
     override func bindViewModel() {
-    
+        
         let termsGesture = UITapGestureRecognizer()
         nicknameView.termsLabel.addGestureRecognizer(termsGesture)
         nicknameView.termsLabel.isUserInteractionEnabled = true
@@ -171,12 +171,12 @@ class NicknameViewController: BaseViewController {
                 let label = self.nicknameView.validationMessageLabel
                 label.text = message
                 label.isHidden = message.isEmpty
-
+                
                 // 사용 가능할 때만 색상 변경
                 label.textColor = (message == "사용 가능한 닉네임입니다.") ? .primary300 : .background400
             })
             .disposed(by: disposeBag)
-
+        
     }
 }
 

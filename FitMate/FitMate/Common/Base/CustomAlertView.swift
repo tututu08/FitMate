@@ -122,6 +122,7 @@ class CustomAlertView: UIView {
         }
         
     }
+    
     // Builder 패턴 -> alertView 생성을 유연하게 만들기 위한 클래스
     class AlertBuilder {
         // alert 본체를 구성할 요소들

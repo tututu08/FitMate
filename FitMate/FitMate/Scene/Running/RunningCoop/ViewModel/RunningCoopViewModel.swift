@@ -11,7 +11,7 @@ final class RunningCoopViewModel: ViewModelType {
     private var totalDistance: CLLocationDistance = 0
     private var previousLocation: CLLocation?
     
-//    private let didFinishRelay = PublishRelay<Bool>()
+    //    private let didFinishRelay = PublishRelay<Bool>()
     private let didFinishRelay = PublishRelay<(Bool, Double)>()
     // 내 누적 거리 (m)
     private let myDistanceRelay = BehaviorRelay<Double>(value: 0)
@@ -109,7 +109,7 @@ final class RunningCoopViewModel: ViewModelType {
         let myText = myDistanceDisplayRelay
             .map { [weak self] km in self?.formatDistance(km) ?? "\(km) km" }
             .asDriver(onErrorJustReturn: "0.0 km")
-
+        
         let mateText = mateDistanceDisplayRelay
             .map { [weak self] km in self?.formatDistance(km) ?? "\(km) km" }
             .asDriver(onErrorJustReturn: "0.0 km")
@@ -178,10 +178,11 @@ final class RunningCoopViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
     }
+    
     // // 사용자가 직접 '그만하기'를 누른 경우 또는 상대가 종료한 경우의 정리 및 종료 처리
     private func confirmQuit(isMine: Bool) {
         locationManager.stopUpdatingLocation()
-
+        
         // 그만하기 버튼 탭 시, QuitStatus 업데이트
         if isMine {
             FirestoreService.shared.updateMyQuitStatus(matchCode: matchCode, uid: myUid)
@@ -194,11 +195,13 @@ final class RunningCoopViewModel: ViewModelType {
         }
         finish(success: false)
     }
+    
     // 거리 측정 종료 후 결과를 외부로 알림 (성공/실패, 거리)
     func finish(success: Bool) {
         locationManager.stopUpdatingLocation()
         didFinishRelay.accept((success,  Double(myDistance)))
     }
+    
     // 외부에서 메이트의 거리 업데이트가 들어올 경우 처리
     func updateMateDistance(_ meter: Int) {
         mateDistanceRelay.accept(Double(meter))
@@ -208,6 +211,7 @@ final class RunningCoopViewModel: ViewModelType {
             finish(success: true)
         }
     }
+    
     // Firestore에서 실시간으로 내 거리, 메이트 거리 받아와 반영
     func bindDistanceFromFirestore() {
         Observable

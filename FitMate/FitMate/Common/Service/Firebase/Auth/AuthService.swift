@@ -15,8 +15,6 @@ import AuthenticationServices
 import CryptoKit
 import FirebaseFirestore
 
-
-
 typealias KakaoUser = KakaoSDKUser.User
 
 final class AuthService: NSObject {
@@ -201,11 +199,11 @@ final class AuthService: NSObject {
                 )))
                 return Disposables.create()
             }
-
+            
             let db = Firestore.firestore()
             let tokensRef = db.collection("tokens").document(uid)
             let usersRef = db.collection("users").document(uid)
-
+            
             // (1) tokens 문서 삭제
             tokensRef.delete { tokenError in
                 if let tokenError = tokenError {
@@ -213,7 +211,7 @@ final class AuthService: NSObject {
                 } else {
                     print("tokens 문서 삭제 완료")
                 }
-
+                
                 // (2) users 문서에서 fcmToken 필드만 삭제
                 usersRef.updateData(["fcmToken": FieldValue.delete()]) { userError in
                     if let userError = userError {
@@ -221,7 +219,7 @@ final class AuthService: NSObject {
                     } else {
                         print("users 문서 fcmToken 필드 삭제 완료")
                     }
-
+                    
                     // (3) Firebase 로그아웃 수행
                     do {
                         try firebaseAuth.signOut()
@@ -231,7 +229,7 @@ final class AuthService: NSObject {
                     }
                 }
             }
-
+            
             return Disposables.create()
         }
     }
@@ -254,7 +252,7 @@ final class AuthService: NSObject {
                 )
                 single(.failure(error))
             }
-
+            
             return Disposables.create()
         }
     }
@@ -270,7 +268,7 @@ final class AuthService: NSObject {
                 )))
                 return Disposables.create()
             }
-
+            
             // 세션 복원 먼저 시도
             if GIDSignIn.sharedInstance.currentUser == nil {
                 GIDSignIn.sharedInstance.restorePreviousSignIn { restoredUser, error in
@@ -290,7 +288,7 @@ final class AuthService: NSObject {
                 let googleUser = GIDSignIn.sharedInstance.currentUser!
                 self.performGoogleReauth(user: user, googleUser: googleUser, single: single)
             }
-
+            
             return Disposables.create()
         }
     }
@@ -304,10 +302,10 @@ final class AuthService: NSObject {
             )))
             return
         }
-
+        
         let accessToken = googleUser.accessToken.tokenString
         let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
-
+        
         user.reauthenticate(with: credential) { _, error in
             if let error = error {
                 single(.failure(error))
@@ -324,16 +322,16 @@ final class AuthService: NSObject {
                 single(.failure(NSError(domain: "FirebaseAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "로그인된 유저 없음"])))
                 return Disposables.create()
             }
-
+            
             guard let email = kakaoUser.kakaoAccount?.email,
                   let id = kakaoUser.id else {
                 single(.failure(NSError(domain: "KakaoAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "카카오 유저 정보 없음"])))
                 return Disposables.create()
             }
-
+            
             let password = String(id)
             let credential = EmailAuthProvider.credential(withEmail: email, password: password)
-
+            
             user.reauthenticate(with: credential) { _, error in
                 if let error = error {
                     single(.failure(error))
@@ -341,7 +339,7 @@ final class AuthService: NSObject {
                     single(.success(()))
                 }
             }
-
+            
             return Disposables.create()
         }
     }

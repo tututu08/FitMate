@@ -9,13 +9,14 @@ import Lottie
 import SnapKit
 
 class LoadingView: UIView {
-   
+    
     private lazy var animation: LottieAnimationView = {
-       let lottie = LottieAnimationView(name: "battery")
+        let lottie = LottieAnimationView(name: "battery")
         return lottie
     }()
+    
     private let loadingMent: UILabel = {
-       let ment = UILabel()
+        let ment = UILabel()
         ment.text = "잠시만 기다려주세요"
         ment.font = UIFont(name: "DungGeunMo", size: 20)
         ment.textColor = .primary100
@@ -38,7 +39,7 @@ class LoadingView: UIView {
         button.backgroundColor = .clear
         return button
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpUI()
@@ -67,10 +68,10 @@ class LoadingView: UIView {
         }
         
         cancelButton.snp.makeConstraints { make in
-               make.top.equalTo(loadingMent.snp.bottom).offset(32)
-               make.centerX.equalToSuperview()
-               make.width.equalTo(84)
-               make.height.equalTo(40)
+            make.top.equalTo(loadingMent.snp.bottom).offset(32)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(84)
+            make.height.equalTo(40)
         }
     }
     

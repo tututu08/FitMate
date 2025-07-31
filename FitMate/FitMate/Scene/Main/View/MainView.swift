@@ -13,7 +13,7 @@ class MainView: BaseView {
         let view = UINavigationBar()
         return view
     }()
-
+    
     let coinLabel: UILabel = {
         let coin = UILabel()
         coin.text = "0"
@@ -29,12 +29,12 @@ class MainView: BaseView {
         coinImg.clipsToBounds = true
         return coinImg
     }()
- 
-//    let bellButton: UIButton = {
-//        let bell = UIButton()
-//        bell.setImage(UIImage(named: "bell"), for: .normal)
-//        return bell
-//    }()
+    
+    //    let bellButton: UIButton = {
+    //        let bell = UIButton()
+    //        bell.setImage(UIImage(named: "bell"), for: .normal)
+    //        return bell
+    //    }()
     
     let explainLabel: UILabel = {
         let explain = UILabel()
@@ -49,13 +49,13 @@ class MainView: BaseView {
         dDay.text = "1일째"
         dDay.font = UIFont(name: "DungGeunMo", size: 40)
         dDay.textColor = .secondary500
-//        dDay.minimumScaleFactor = 0.1 // 외부 제약이 명시적일때 그 제약에 맞게
+        //        dDay.minimumScaleFactor = 0.1 // 외부 제약이 명시적일때 그 제약에 맞게
         dDay.adjustsFontSizeToFitWidth = true
         return dDay
     }()
     
     let myAvatarImage: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.image = UIImage(named: "kaepy")
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -66,7 +66,7 @@ class MainView: BaseView {
         font: UIFont(name: "Pretendard-Regular", size: 16) ?? .systemFont(ofSize: 16),
         arrowColor: .background0
     )
-
+    
     private let mateNicknameStack = NicknameStackView(
         nickname: "", textColor: .background300,
         font: UIFont(name: "Pretendard-Regular", size: 12) ?? .systemFont(ofSize: 12),
@@ -91,7 +91,7 @@ class MainView: BaseView {
         exercise.clipsToBounds = true
         return exercise
     }()
-
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -105,13 +105,13 @@ class MainView: BaseView {
     
     override func configureUI() {
         backgroundColor = .background800
-            [topBar, explainLabel, dDaysLabel, myAvatarImage,
-             mateAvatarImage, exerciseButton,
-             myNicknameStack, mateNicknameStack].forEach { addSubview($0) }
-
+        [topBar, explainLabel, dDaysLabel, myAvatarImage,
+         mateAvatarImage, exerciseButton,
+         myNicknameStack, mateNicknameStack].forEach { addSubview($0) }
+        
         [coinLabel, coinIcon ].forEach({topBar.addSubview($0)})
-//        [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
-
+        //        [coinLabel, coinIcon, bellButton].forEach({topBar.addSubview($0)})
+        
     }
     
     override func setLayoutUI() {
@@ -132,12 +132,12 @@ class MainView: BaseView {
             make.centerY.equalTo(topBar)
             make.leading.equalTo(coinIcon.snp.trailing).offset(8)
         }
-
-//        bellButton.snp.makeConstraints{ make in
-//            make.centerY.equalTo(topBar)
-//            make.trailing.equalToSuperview().inset(20)
-//            make.size.equalTo(28)
-//        }
+        
+        //        bellButton.snp.makeConstraints{ make in
+        //            make.centerY.equalTo(topBar)
+        //            make.trailing.equalToSuperview().inset(20)
+        //            make.size.equalTo(28)
+        //        }
         
         explainLabel.snp.makeConstraints { make in
             make.top.equalTo(topBar.snp.bottom).offset(18)
@@ -151,11 +151,11 @@ class MainView: BaseView {
         }
         
         myAvatarImage.snp.makeConstraints { make in
-//            make.top.equalTo(dDaysLabel.snp.bottom).offset(45)
+            //            make.top.equalTo(dDaysLabel.snp.bottom).offset(45)
             make.leading.equalToSuperview().inset(68)
             make.trailing.equalToSuperview().inset(67)
             make.bottom.equalTo(exerciseButton.snp.top).offset(-40)
-//            make.width.equalTo(hasMate ? 208 : 240)
+            //            make.width.equalTo(hasMate ? 208 : 240)
             make.height.equalTo(309)
         }
         
@@ -165,7 +165,7 @@ class MainView: BaseView {
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(exerciseButton.snp.width).multipliedBy(0.17)
         }
-
+        
     }
     
     /// - 메이트 유무에 따라 레이아웃을 다르게
@@ -177,12 +177,12 @@ class MainView: BaseView {
         mateNicknameStack.updateNickname(mateNickname)
         
         myNicknameStack.isHidden = false
-            mateNicknameStack.isHidden = !hasMate
-            mateAvatarImage.isHidden = !hasMate
+        mateNicknameStack.isHidden = !hasMate
+        mateAvatarImage.isHidden = !hasMate
         
         // 내 아바타 위치 및 크기 설정
         myAvatarImage.snp.remakeConstraints { make in
-//            make.top.equalTo(dDaysLabel.snp.bottom).offset(45)
+            //            make.top.equalTo(dDaysLabel.snp.bottom).offset(45)
             make.leading.equalToSuperview().inset(hasMate ? 44: 68)
             make.trailing.equalToSuperview().inset(hasMate ? 123 : 67)
             make.bottom.equalTo(exerciseButton.snp.top).offset(-40)

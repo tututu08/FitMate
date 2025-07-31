@@ -145,7 +145,7 @@ class PlankCoopView: BaseView {
     }()
     
     private let middleContainer = UIView()
-
+    
     private let myCharacterImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "kaepy")
@@ -163,11 +163,11 @@ class PlankCoopView: BaseView {
     
     // 일시정지 버튼
     let pauseButton: UIButton = {
-           let button = UIButton()
-           button.setImage(UIImage(named: "pause"), for: .normal)
-           button.backgroundColor = .clear // 필요시 색상, cornerRadius 등 적용
-           return button
-       }()
+        let button = UIButton()
+        button.setImage(UIImage(named: "pause"), for: .normal)
+        button.backgroundColor = .clear // 필요시 색상, cornerRadius 등 적용
+        return button
+    }()
     
     // 종료 버튼
     let stopButton: UIButton = {
@@ -180,13 +180,13 @@ class PlankCoopView: BaseView {
     }()
     
     private let bottomStackView: UIStackView = {
-           let stack = UIStackView()
-           stack.axis = .horizontal
-           stack.spacing = 16
-           stack.alignment = .center
-           stack.distribution = .fill
-           return stack
-       }()
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 16
+        stack.alignment = .center
+        stack.distribution = .fill
+        return stack
+    }()
     
     // UI 구성 요소 추가
     override func configureUI() {
@@ -208,7 +208,7 @@ class PlankCoopView: BaseView {
         
         middleContainer.addSubview(coopImage)
         bottomStackView.addArrangedSubview(pauseButton)
-               bottomStackView.addArrangedSubview(stopButton)
+        bottomStackView.addArrangedSubview(stopButton)
     }
     
     // SnapKit으로 레이아웃 제약 설정
@@ -305,20 +305,25 @@ class PlankCoopView: BaseView {
     func updateMyRecord(_ text: String) {
         myRecordLabel.text = text
     }
+    
     // 메이트 기록 라벨 갱신
     func updateMateRecord(_ text: String) {
         mateRecordLabel.text = text
     }
+    
     // 목표치 라벨 갱신
     func updateGoal(_ text: String) {
         goalLabel.text = text
     }
+    
     func updateMyCharacter(_ name: String) {
         myCharacterImage.image = UIImage(named: name)
     }
+    
     func updateMateCharacter(_ name: String) {
         mateCharacterImage.image = UIImage(named: name)
     }
+    
     // 진행률 바 갱신(0~1 비율)
     func updateProgress(ratio: CGFloat) {
         layoutIfNeeded()
@@ -326,6 +331,7 @@ class PlankCoopView: BaseView {
         progressWidthConstraint?.update(offset: width * min(1, max(0, ratio)))
         layoutIfNeeded()
     }
+    
     func updateStatus(_ status: PlankStatus, timer: Int) {
         switch status {
         case .ready:
@@ -354,6 +360,7 @@ class PlankCoopView: BaseView {
             break
         }
     }
+    
     func showPauseAlert(
         type: PauseAlert.AlertType,
         onResume: (() -> Void)? = nil,
@@ -378,12 +385,12 @@ class PlankCoopView: BaseView {
         }
         self.alertView = alert
     }
-
-
+    
     func hidePauseAlert() {
         alertView?.removeFromSuperview()
         alertView = nil
     }
+    
     // PlankCoopView 확장
     func showQuitAlert(
         type: QuitAlert.AlertType,
@@ -398,17 +405,18 @@ class PlankCoopView: BaseView {
         alert.onBack = { [weak self] in onBack?(); self?.hideQuitAlert() }
         self.addSubview(alert)
         alert.snp.makeConstraints {
-                $0.edges.equalToSuperview()
+            $0.edges.equalToSuperview()
         }
         self.quitAlertView = alert
     }
-
+    
     func hideQuitAlert() {
         quitAlertView?.removeFromSuperview()
         quitAlertView = nil
     }
-
+    
 }
+
 extension PlankCoopView {
     // 일시정지 버튼 활성/비활성 & 이미지 교체
     func setPauseButtonEnabled(_ enabled: Bool) {

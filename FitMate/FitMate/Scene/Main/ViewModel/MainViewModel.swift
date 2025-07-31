@@ -17,7 +17,7 @@ class MainViewModel {
     private let hasNoMateRelay = PublishRelay<Void>() // 메이트가 없을 때
     private let moveToExerciseRelay = PublishRelay<Void>() // 메이트가 있을 때
     private let moveToMatePageRelay =  PublishRelay<String>()
-   
+    
     let showMateDisconnectedAlert = PublishRelay<Void>() // 메이트 끊김
     let showMateWithdrawnAlert = PublishRelay<Void>() // 메이트 회원 탈퇴
     private var listener: ListenerRegistration? // 메이트 끊김 리스너
@@ -96,26 +96,27 @@ class MainViewModel {
         
         input.mateAvatarTap
             .flatMapLatest { [weak self] _ -> Single<String?> in
-                   guard let self else { return .just(nil) }
-                   return FirestoreService.shared
-                       .fetchDocument(collectionName: "users", documentName: self.uid)
-                       .map { document in
-                           let mate = document["mate"] as? [String: Any]
-                           return mate?["uid"] as? String
-                       }
-               }
+                guard let self else { return .just(nil) }
+                return FirestoreService.shared
+                    .fetchDocument(collectionName: "users", documentName: self.uid)
+                    .map { document in
+                        let mate = document["mate"] as? [String: Any]
+                        return mate?["uid"] as? String
+                    }
+            }
             .subscribe(onNext: { [weak self] mateUid in
                 guard let self, let mateUid else { return }
                 self.moveToMatePageRelay.accept(mateUid)
             })
             .disposed(by: disposeBag)
-
+        
         // Output: Driver로 변환하여 뷰에 전달
         let hasNoMate = hasNoMateRelay.asDriver(onErrorDriveWith: .empty())
         let moveToExercise = moveToExerciseRelay.asDriver(onErrorDriveWith: .empty())
         let moveToMatePage = moveToMatePageRelay.asDriver(onErrorDriveWith: .empty())
         let showMateDisconnected = showMateDisconnectedAlert.asDriver(onErrorDriveWith: .empty())
         let showMateWithdrawn = showMateWithdrawnAlert.asDriver(onErrorDriveWith: .empty())
+        
         return Output(
             hasNoMate: hasNoMate,
             moveToExercise: moveToExercise,

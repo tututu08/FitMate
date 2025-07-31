@@ -11,11 +11,11 @@ import AuthenticationServices
 class LoginView: BaseView {
     
     private let fitMateLogo: UIImageView = {
-       let logo = UIImageView()
+        let logo = UIImageView()
         logo.contentMode = .scaleAspectFit
         logo.clipsToBounds = true
         logo.image = UIImage(named: "logo_bgX")
-       return logo
+        return logo
     }()
     
     let kakaoLogin: CustomButton = {
@@ -59,7 +59,7 @@ class LoginView: BaseView {
             make.centerX.equalToSuperview()
             make.height.equalTo(60)
         }
-       
+        
         kakaoLogin.snp.makeConstraints { make in
             make.top.equalTo(fitMateLogo.snp.bottom).offset(140)
             make.leading.trailing.equalToSuperview().inset(20)

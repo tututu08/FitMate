@@ -32,7 +32,7 @@ class SoundManage {
             isSoundEnabled = true
         }
     }
-
+    
     func coinSound() {
         guard isSoundEnabled else { return } // 사운드 설정 꺼져 있으면 재생 안 함
         guard let url = Bundle.main.url(forResource: "coin", withExtension: "wav") else { return }

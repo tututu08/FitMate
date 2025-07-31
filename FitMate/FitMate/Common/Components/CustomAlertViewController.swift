@@ -55,10 +55,12 @@ class CustomAlertViewController: UIViewController {
         setupButtons()
         setupAlertView()
     }
+    
     // Alert 뒷배경을 반투명하게 설정 (화면 어둡게)
     private func setupBackground() {
         view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
     }
+    
     // 버튼 스타일, 높이, 텍스트 설정
     private func setupButtons() {
         // 버튼 높이 고정 -> SnapKit으로 오토레이아웃 설정
@@ -77,13 +79,14 @@ class CustomAlertViewController: UIViewController {
             confirmButton.setTitle(confirmText, for: .normal)
         }
     }
+    
     // 실제 AlertView 구성 및 화면에 배치
     private func setupAlertView() {
         // Builder 패턴으로 alertView 생성 준비
         var builder = CustomAlertView.AlertBuilder()
             .setTitle(alertType.title)
             .setMessage(alertType.message)
-
+        
         switch alertType.buttonStyle {
         case .single:
             builder = builder.setStopButton(confirmButton)
@@ -92,16 +95,16 @@ class CustomAlertViewController: UIViewController {
                 .setResumeButton(cancelButton)
                 .setStopButton(confirmButton)
         }
-
+        
         // 최종적으로 alertView 완성
         let alertView = builder.buildAlert()
-
+        
         self.alertView = alertView
         view.addSubview(alertView)
-
+        
         alertView.setContentHuggingPriority(.required, for: .vertical)
         alertView.setContentCompressionResistancePriority(.required, for: .vertical)
-
+        
         alertView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(326)

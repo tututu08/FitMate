@@ -11,6 +11,7 @@ final class MypageView: UIView {
         button.tintColor = .background0
         return button
     }()
+    
     //뒤로가기버튼
     let backButton: UIButton = {
         let button = UIButton()

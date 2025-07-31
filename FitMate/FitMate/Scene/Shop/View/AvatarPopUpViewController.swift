@@ -25,7 +25,7 @@ class AvatarPopUpViewController: CustomAlertViewController {
     }()
     
     private let coinImage = UIImageView(image: UIImage(named: "blackcoin"))
-
+    
     private lazy var coinStack: UIStackView = {
         coinImage.contentMode = .scaleAspectFit
         let stack = UIStackView(arrangedSubviews: [coinImage, coinLabel])
@@ -47,10 +47,10 @@ class AvatarPopUpViewController: CustomAlertViewController {
         super.viewDidLoad()
         setupUI()
     }
-
+    
     private func setupUI() {
         guard let alertView else { return }
-
+        
         // 공통 우선순위 설정
         coinLabel.setContentHuggingPriority(.required, for: .vertical)
         coinLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -62,32 +62,32 @@ class AvatarPopUpViewController: CustomAlertViewController {
         coinBackgroundView.addSubview(coinStack)
         alertView.addSubview(coinBackgroundView)
         alertView.addSubview(avatarImage)
-
+        
         // coinStack이 coinBackgroundView 내부에 꽉 차게
         coinStack.snp.makeConstraints { // 피그마대로 양 방향에 다 여백 주기
             $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 4, left: 12, bottom: 4, right: 12))
         }
-
+        
         // 타이틀 아래에 coinBackgroundView 배치
         coinBackgroundView.snp.makeConstraints { make in
             make.top.equalTo(alertView.alertTitle.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
-
+        
         avatarImage.snp.makeConstraints { make in
             make.top.equalTo(coinBackgroundView.snp.bottom).offset(12)
             make.centerX.equalToSuperview()
             make.width.lessThanOrEqualTo(alertView.snp.width).offset(-100)
             make.height.equalTo(avatarImage.snp.width).multipliedBy(0.91)
         }
-
+        
         guard let buttonStack = confirmButton.superview else { return }
-
+        
         avatarImage.snp.makeConstraints { make in
             make.bottom.lessThanOrEqualTo(buttonStack.snp.top).offset(-22)
         }
     }
-
+    
     // 팝업 뷰 안에 보여줄 이미지와 코인 금액을 직접 셋팅하는 역할
     func configure(avatarImageName: String, coinCost: Int) {
         // 코인 라벨에 가격 숫자 표시
