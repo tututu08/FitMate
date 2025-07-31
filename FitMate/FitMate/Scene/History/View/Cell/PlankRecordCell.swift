@@ -137,10 +137,9 @@ final class PlankRecordCell: UICollectionViewCell {
     func configure(with record: ExerciseRecord) {
         dateLabel.text = record.dateOnly
         resultLabel.text = record.result.rawValue
-        
         resultLabel.backgroundColor = .primary500 // 플랭크는 대결이 없어서 색상 고정
         resultLabel.textColor = .background0
-        
+      
         // 나, 메이트는 초 단위 -> 분단위 볍ㄴ환
         let me = Int(record.detail2) ?? 0
         let mate = Int(record.detail3) ?? 0

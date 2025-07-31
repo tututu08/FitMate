@@ -142,7 +142,7 @@ class CustomAlertViewController: UIViewController {
             dismiss(animated: true) { [weak self] in
                 self?.onConfirm?()
             }
-            
+
         case .avatarPurchase:
             dismiss(animated: true) { [weak self] in
                 self?.onConfirm?()

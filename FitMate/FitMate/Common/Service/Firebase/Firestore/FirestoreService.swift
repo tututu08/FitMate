@@ -398,6 +398,7 @@ extension FirestoreService {
 extension FirestoreService {
     /// 사용자가 선택한 대표 아바타를 Firestore에 저장하는 메서드
     /// uid ->  로그인된 사용자 UID
+    @discardableResult
     func saveSelectedAvatar(uid: String, type: AvatarType) -> Single<Void> {
         return Single.create { single in
             let data: [String: Any] = [
@@ -905,7 +906,6 @@ extension FirestoreService {
     }
 }
 
-// TODO: date extention 으로 빼기
 // MARK: - 디데이 위한 데이트포매터
 extension FirestoreService {
     // 디데이 위한 데이트포매터
