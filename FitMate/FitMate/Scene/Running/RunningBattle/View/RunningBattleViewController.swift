@@ -6,7 +6,7 @@ import CoreLocation
 import FirebaseFirestore
 
 class RunningBattleViewController: BaseViewController {
-    
+    // MARK: - Properties
     private let rootView = RunningBattleView()
     private let viewModel: RunningBattleViewModel
     
@@ -16,36 +16,23 @@ class RunningBattleViewController: BaseViewController {
     private let mateDistanceRelay = PublishRelay<Double>()
     private let locationAuthStatusRelay = BehaviorRelay<CLAuthorizationStatus>(value: CLLocationManager().authorizationStatus)
     
+    // 전달받은 운동 정보
     private let exerciseType: String
     private let goalDistance: Int
-    private let matchCode: String
-    private let mateUid: String
-    private let myUid: String
-    private let myCharacter: String
-    private let mateCharacter: String
+    private let matchInfo: MatchInfo
     
-    // matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String -> ,matchInfo: MatchInfo으로 변경
-    init(exerciseType: String, goalDistance: Int, matchCode: String, myUid: String, mateUid: String, myCharacter: String, mateCharacter: String /*,matchInfo: MatchInfo*/) {
+    // MARK: - Initializer
+    init(exerciseType: String, goalDistance: Int, matchInfo: MatchInfo) {
         self.exerciseType = exerciseType
         self.goalDistance = goalDistance
-        self.matchCode = matchCode
-        self.myUid = myUid
-        self.mateUid = mateUid
-        self.myCharacter = myCharacter
-        self.mateCharacter = mateCharacter
-        //        위에 5줄 하단 5줄 코드로 변경
-        //        matchCode = matchInfo.matchCode
-        //        myUid = matchInfo.myUid
-        //        mateUid = matchInfo.mateUid
-        //        myCharacter = matchInfo.myCharacter
-        //        mateCharacter = matchInfo.mateCharacter
+        self.matchInfo = matchInfo
         
         self.viewModel = RunningBattleViewModel(
             goalDistance: goalDistance,
-            myCharacter: myCharacter,
-            mateCharacter: mateCharacter,
-            matchCode: matchCode,
-            myUid: myUid
+            myCharacter: matchInfo.myCharacter,
+            mateCharacter: matchInfo.mateCharacter,
+            matchCode: matchInfo.matchCode,
+            myUid: matchInfo.myUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -54,6 +41,7 @@ class RunningBattleViewController: BaseViewController {
         fatalError("not implemented")
     }
     
+    // MARK: - Lifecycle
     override func loadView() {
         self.view = rootView
     }
@@ -62,8 +50,8 @@ class RunningBattleViewController: BaseViewController {
         super.viewDidLoad()
         
         rootView.updateGoal("\(exerciseType) \(viewModel.goalDistance)Km")
-        rootView.updateMyCharacter(myCharacter)
-        rootView.updateMateCharacter(mateCharacter)
+        rootView.updateMyCharacter(matchInfo.myCharacter)
+        rootView.updateMateCharacter(matchInfo.mateCharacter)
         
         // 화면 진입 시 권한 상태 확인
         locationAuthStatusRelay.accept(CLLocationManager().authorizationStatus)
@@ -75,11 +63,11 @@ class RunningBattleViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         FirestoreService.shared
-            .observeMateProgress(matchCode: matchCode, mateUid: mateUid)
+            .observeMateProgress(matchCode: matchInfo.matchCode, mateUid: matchInfo.mateUid)
             .bind(to: mateDistanceRelay)
             .disposed(by: disposeBag)
         
-        FirestoreService.shared.listenToMatchStatus(matchCode: matchCode)
+        FirestoreService.shared.listenToMatchStatus(matchCode: matchInfo.matchCode)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] data in
                 guard let self = self else { return }
@@ -106,6 +94,7 @@ class RunningBattleViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
+    // MARK: - Binding
     override func bindViewModel() {
         super.bindViewModel()
         
@@ -169,7 +158,7 @@ class RunningBattleViewController: BaseViewController {
     
     // 운동 종료 후 결과 화면 이동
     private func navigateToFinish(success: Bool, myDistance: Double) {
-        let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
+        let avatarType = AvatarType(rawValue: self.matchInfo.myCharacter) ?? .kaepy
         
         let finishVM = FinishViewModel(
             mode: .battle,
@@ -181,9 +170,9 @@ class RunningBattleViewController: BaseViewController {
             success: success
         )
         let vc = FinishViewController(
-            uid: myUid,
-            mateUid: mateUid,
-            matchCode: matchCode,
+            uid: matchInfo.myUid,
+            mateUid: matchInfo.mateUid,
+            matchCode: matchInfo.matchCode,
             viewModel: finishVM
         )
         vc.modalPresentationStyle = .fullScreen
@@ -210,10 +199,10 @@ class RunningBattleViewController: BaseViewController {
                 guard let self = self else { return }
                 // 여기서 matchStatus를 "finished" 등으로 변경
                 FirestoreService.shared
-                    .updateMatchStatus(matchCode: self.matchCode, status: "finished")
+                    .updateMatchStatus(matchCode: self.matchInfo.matchCode, status: "finished")
                     .subscribe(onCompleted: {
                         // 탭바 진입
-                        let tabBarVC = TabBarController(uid: self.myUid)
+                        let tabBarVC = TabBarController(uid: self.matchInfo.myUid)
                         tabBarVC.modalPresentationStyle = .fullScreen
                         if let window = UIApplication.shared.connectedScenes
                             .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
@@ -247,11 +236,11 @@ class RunningBattleViewController: BaseViewController {
         alert.addAction(UIAlertAction(title: "메인화면으로 이동", style: .cancel, handler: { [weak self] _ in
             guard let self = self else { return }
             FirestoreService.shared
-                .updateMatchStatus(matchCode: self.matchCode, status: "cancelLocation")
+                .updateMatchStatus(matchCode: self.matchInfo.matchCode, status: "cancelLocation")
                 .subscribe(
                     onCompleted: {
                         print("matchStatus: cancelLocation 저장 완료")
-                        let tabBarVC = TabBarController(uid: self.myUid)
+                        let tabBarVC = TabBarController(uid: self.matchInfo.myUid)
                         tabBarVC.modalPresentationStyle = .fullScreen
                         if let window = UIApplication.shared.connectedScenes
                             .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
