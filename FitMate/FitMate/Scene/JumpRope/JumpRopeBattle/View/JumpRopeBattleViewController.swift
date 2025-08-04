@@ -6,45 +6,35 @@ import FirebaseFirestore
 
 // JumpRope 대결 모드 컨트롤러 (전체 흐름 제어, ViewModel과 View 연결 담당)
 class JumpRopeBattleViewController: BaseViewController {
-    
+    // MARK: - Properties
     // 루트 뷰
     private let sportsView = JumpRopeBattleView()
+    
     // 뷰모델 선언
     private var viewModel: JumpRopeBattleViewModel
+    
     // 시작 트리거용(버튼, viewDidLoad 등에서 신호 보낼 때 사용)
     private let startRelay = PublishRelay<Void>()
+    
     // 메이트 점프 횟수 수신용(상대방이 firebase에서 온 값으로 갱신할 때 쓸 수도 있음)
     private let mateCountRelay = PublishRelay<Double>()
     private let quitRelay = PublishRelay<Void>()
     private let mateQuitRelay = PublishRelay<Void>()
-    private let myCharacter: String
-    private let mateCharacter: String
-    private let matchCode: String
-    private let mateUid: String
-    private let myUid: String
     
-    // matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String -> ,matchInfo: MatchInfo으로 변경
-    init(goalCount: Int, matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String /*,matchInfo: MatchInfo*/) {
-        self.matchCode = matchCode
-        self.myUid = myUid
-        self.mateUid = mateUid
-        self.myCharacter = myCharacter
-        self.mateCharacter = mateCharacter
-        //        위에 5줄 하단 5줄 코드로 변경
-        //        matchCode = matchInfo.matchCode
-        //        myUid = matchInfo.myUid
-        //        mateUid = matchInfo.mateUid
-        //        myCharacter = matchInfo.myCharacter
-        //        mateCharacter = matchInfo.mateCharacter
-        
+    // 전달받은 운동 정보
+    private let matchInfo: MatchInfo
+    
+    // MARK: - Initializer
+    init(goalCount: Int, matchInfo: MatchInfo) {
+        self.matchInfo = matchInfo
         
         self.viewModel = JumpRopeBattleViewModel(
             goalCount: goalCount,
-            myCharacter: myCharacter,
-            mateCharacter: mateCharacter,
-            matchCode: matchCode,
-            myUID: myUid,
-            mateUID:mateUid
+            myCharacter: matchInfo.myCharacter,
+            mateCharacter: matchInfo.mateCharacter,
+            matchCode: matchInfo.matchCode,
+            myUID: matchInfo.myUid,
+            mateUID: matchInfo.mateUid
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -53,7 +43,7 @@ class JumpRopeBattleViewController: BaseViewController {
         fatalError("not implemented")
     }
     
-    
+    // MARK: - Lifecycle
     // loadView에서 커스텀 뷰 할당
     override func loadView() {
         self.view = sportsView
@@ -65,8 +55,8 @@ class JumpRopeBattleViewController: BaseViewController {
         UIApplication.shared.isIdleTimerDisabled = true
         sportsView.updateGoal("줄넘기 \(viewModel.goalCount)개")
         //(파이널베이스 내의 만약 캐릭터 이미지 바인딩 시 이곳에서)
-        sportsView.updateMyCharacter(myCharacter)
-        sportsView.updateMateCharacter(mateCharacter)
+        sportsView.updateMyCharacter(matchInfo.myCharacter)
+        sportsView.updateMateCharacter(matchInfo.mateCharacter)
         
         startRelay.accept(())
         
@@ -92,11 +82,13 @@ class JumpRopeBattleViewController: BaseViewController {
         UIApplication.shared.isIdleTimerDisabled = false
     }
     
+    // MARK: - DeInitializer
     // 혹시라도 강제 종료 시점이 있을 수 있으니
     deinit {
         UIApplication.shared.isIdleTimerDisabled = false
     }
     
+    // MARK: - Binding
     // ViewModel과 UI 바인딩
     override func bindViewModel() {
         let input = JumpRopeBattleViewModel.Input(
@@ -155,7 +147,7 @@ class JumpRopeBattleViewController: BaseViewController {
     
     // 피니쉬화면으로 이동
     private func navigateToFinish(success: Bool) {
-        let avatarType = AvatarType(rawValue: myCharacter) ?? .kaepy
+        let avatarType = AvatarType(rawValue: matchInfo.myCharacter) ?? .kaepy
         
         let finishVM = FinishViewModel(
             mode: .battle,
@@ -168,48 +160,14 @@ class JumpRopeBattleViewController: BaseViewController {
         )
         
         let vc = FinishViewController(
-            uid: myUid,
-            mateUid: mateUid,
-            matchCode: matchCode,
+            uid: matchInfo.myUid,
+            mateUid: matchInfo.mateUid,
+            matchCode: matchInfo.matchCode,
             viewModel: finishVM
         )
         
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
-    }
-    
-    private func navigateToFinish() {
-        Firestore.firestore().collection("matches").document(matchCode)
-            .getDocument { [weak self] snapshot, error in
-                guard let self = self else { return }
-                guard let data = snapshot?.data(),
-                      let players = data["players"] as? [String: Any],
-                      let myData = players[self.myUid] as? [String: Any],
-                      let isWinner = myData["isWinner"] as? Bool else {
-                    return
-                }
-                
-                let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
-                
-                let finishVM = FinishViewModel(
-                    mode: .battle,
-                    sport: "줄넘기",
-                    goal: self.viewModel.goalCount,
-                    goalUnit: "개",
-                    myDistance: Double(self.viewModel.myCount),
-                    avatarType: avatarType,
-                    success: isWinner  // Firestore에서 가져온 최종 결과
-                )
-                
-                let vc = FinishViewController(
-                    uid: self.myUid,
-                    mateUid: self.mateUid,
-                    matchCode: self.matchCode,
-                    viewModel: finishVM
-                )
-                vc.modalPresentationStyle = .fullScreen
-                self.present(vc, animated: true)
-            }
     }
     
     func receiveMateQuit()    {
@@ -219,9 +177,8 @@ class JumpRopeBattleViewController: BaseViewController {
             type: .mateQuit,
             onBack: { [weak self] in
                 // 피니쉬화면으로 이동 등
-                
                 self?.viewModel.finish(success: true) // 위치 정지 및 기록 저장
-                self?.navigateToFinish()
+                self?.navigateToFinish(success: true)
             }
         )
     }
