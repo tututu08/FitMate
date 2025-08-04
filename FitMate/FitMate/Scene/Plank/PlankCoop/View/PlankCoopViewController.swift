@@ -4,7 +4,7 @@ import RxCocoa
 
 // 플랭크 협동모드(코드베이스) 뷰컨트롤러
 final class PlankCoopViewController: BaseViewController {
-    
+    // MARK: - Properties
     private let sportsView = PlankCoopView()
     private let viewModel: PlankCoopViewModel
     
@@ -18,48 +18,25 @@ final class PlankCoopViewController: BaseViewController {
     private let mateQuitRelay = PublishRelay<Void>()   // 상대 그만두기
     
     // 유저/매치 정보
-    private let myCharacter: String      // 내 아바타
-    private let mateCharacter: String    // 상대 아바타
-    private let matchCode: String        // 경기 코드
-    private let myUID: String            // 내 UID
-    private let mateUID: String          // 상대 UID
     private let isInviter: Bool          // 내가 초대자인지 여부
+    private let matchInfo: MatchInfo
     
-    // matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String -> ,matchInfo: MatchInfo으로 변경
-    // myUID,mateUID 에러 뜰 시 이름 myUid, mateUid로 변경해줘야함
+    // MARK: - Initializer
     // 생성자(매치 기본정보 및 내/상대 정보 주입)
-    init(
-        goalMinutes: Int,
-        matchCode: String,
-        myUID: String,
-        mateUID: String,
-        isInviter: Bool,
-        myCharacter: String,
-        mateCharacter: String
-        /*,matchInfo: MatchInfo*/
-    ) {
+    // TODO: - isInviter 변수도 struct로 처리 해야될까?
+    init(goalMinutes: Int, isInviter: Bool, matchInfo: MatchInfo) {
         self.isInviter = isInviter
-        self.matchCode = matchCode
-        self.myUID = myUID
-        self.mateUID = mateUID
-        self.myCharacter = myCharacter
-        self.mateCharacter = mateCharacter
-        //        위에 5줄 하단 5줄 코드로 변경
-        //        matchCode = matchInfo.matchCode
-        //        myUid = matchInfo.myUid
-        //        mateUid = matchInfo.mateUid
-        //        myCharacter = matchInfo.myCharacter
-        //        mateCharacter = matchInfo.mateCharacter
+        self.matchInfo = matchInfo
         
         // 뷰모델 생성
         self.viewModel = PlankCoopViewModel(
             goalMinutes: goalMinutes,
-            matchCode: matchCode,
-            myUID: myUID,
-            mateUID: mateUID,
+            matchCode: matchInfo.matchCode,
+            myUID: matchInfo.myUid,
+            mateUID: matchInfo.mateUid,
             isInviter: isInviter,
-            myCharacter: myCharacter,
-            mateCharacter: mateCharacter
+            myCharacter: matchInfo.myCharacter,
+            mateCharacter: matchInfo.mateCharacter
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -68,6 +45,7 @@ final class PlankCoopViewController: BaseViewController {
         fatalError("not implemented")
     }
     
+    // MARK: - Lifecycle
     // 메인 뷰 할당
     override func loadView() { self.view = sportsView }
     
@@ -79,8 +57,8 @@ final class PlankCoopViewController: BaseViewController {
         
         // 목표/아바타 UI 업데이트
         sportsView.updateGoal("플랭크 \(viewModel.goalMinutes)분")
-        sportsView.updateMyCharacter(myCharacter)
-        sportsView.updateMateCharacter(mateCharacter)
+        sportsView.updateMyCharacter(matchInfo.myCharacter)
+        sportsView.updateMateCharacter(matchInfo.mateCharacter)
         
         // 주요 Rx 바인딩/Firestore 실시간 리스너 연결
         bind()
@@ -111,11 +89,13 @@ final class PlankCoopViewController: BaseViewController {
         UIApplication.shared.isIdleTimerDisabled = false
     }
     
+    // MARK: - DeInitializer
     // 만약 컨트롤러가 deinit될 때도 안전하게 해제
     deinit {
         UIApplication.shared.isIdleTimerDisabled = false
     }
     
+    // MARK: - Binding
     // ViewModel과 Rx 바인딩 세팅
     private func bind() {
         // Input - 버튼 등에서 발생한 이벤트를 ViewModel로 전달
@@ -238,7 +218,7 @@ final class PlankCoopViewController: BaseViewController {
     // 결과화면 이동(성공/실패)
     private func navigateToFinish(success: Bool) {
         // 내 아바타 타입 변환
-        let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
+        let avatarType = AvatarType(rawValue: self.matchInfo.myCharacter) ?? .kaepy
         // 결과 화면용 뷰모델 생성
         let finishVM = FinishViewModel(
             mode: .cooperation,
@@ -251,9 +231,9 @@ final class PlankCoopViewController: BaseViewController {
         )
         // 결과 화면 푸시
         let vc = FinishViewController(
-            uid: myUID,
-            mateUid: mateUID,
-            matchCode: matchCode,
+            uid: matchInfo.myUid,
+            mateUid: matchInfo.mateUid,
+            matchCode: matchInfo.matchCode,
             viewModel: finishVM
         )
         vc.modalPresentationStyle = .fullScreen
@@ -261,8 +241,13 @@ final class PlankCoopViewController: BaseViewController {
     }
     
     // Rx 트리거 수동 호출 (상대방 액션 수신용)
-    func receiveMatePaused()  { matePauseRelay.accept(()) }
-    func receiveMateResumed() { mateResumeRelay.accept(()) }
+    func receiveMatePaused()  {
+        matePauseRelay.accept(())
+    }
+    
+    func receiveMateResumed() {
+        mateResumeRelay.accept(())
+    }
     
     // 상대가 그만둔 경우(=퇴장) → 알럿/효과음 → 결과화면 이동
     func receiveMateQuit() {
