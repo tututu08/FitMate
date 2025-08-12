@@ -57,36 +57,44 @@ final class FirestoreService {
                     if isDuplicate {
                         // 중복이면 다시 시도 (재귀)
                         tryGenerateAndSave()
-                    } else {
-                        let newRef = self.db.collection("users").document(uid)
-                        let data: [String: Any] = [
-                            "uid": uid,
-                            "coin": 0, // 코인 // 2025년 06월 29일 추가
-                            "inviteCode": inviteCode,
-                            "hasMate" : false, // 메이트 매칭 여부
-                            "totalStats": [ // 총 기록
-                                "walkingKm": 0, // 걷기
-                                "runningKm": 0, // 달리기
-                                "cyclingKm": 0, // 자전거
-                                "plankRounds": 0, // 플랭크
-                                "jumpRopeCount": 0 // 줄넘기
-                                          ],
-                            "winCount": 0,
-                            "loseCount": 0,
-                            "createAt": FieldValue.serverTimestamp(), // 만든 시간
-                        ]
-                        
-                        // users 컬렉션의 uid 문서 생성
-                        // 데이터 생성
-                        newRef.setData(data) { error in
+                        return
+                    }
+                    
+                    let newRef = self.db.collection("users").document(uid)
+                    let user = UserDocument(
+                        id: nil, // 문서 번호 자동 매칭
+                        uid: uid,
+                        coin: 0,
+                        inviteCode: inviteCode,
+                        hasMate: false,
+                        totalStats: .init(
+                            walkingKm: 0,
+                            runningKm: 0,
+                            cyclingKm: 0,
+                            plankRounds: 0,
+                            jumpRopeCount: 0
+                        ),
+                        winCount: 0,
+                        loseCount: 0,
+                        createAt: nil // 서버가 채움
+                    )
+                    
+                    // users 컬렉션의 uid 문서 생성
+                    // 데이터 생성
+                    do {
+                        try newRef.setData(from: user) { error in
                             if let error = error {
-                                single(.failure(error))
                                 print("User 데이터 생성 실패: \(error.localizedDescription)")
+                                single(.failure(error))
                             } else {
-                                single(.success(()))
                                 print("User 데이터 생성 완료: \(uid), 초대코드: \(inviteCode)")
+                                single(.success(()))
                             }
                         }
+                    } catch {
+                        // 인코딩 실패 시 여기로 옴
+                        print("인코딩 실패: \(error)")
+                        single(.failure(error))
                     }
                 }
             }
