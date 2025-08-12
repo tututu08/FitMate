@@ -57,44 +57,36 @@ final class FirestoreService {
                     if isDuplicate {
                         // 중복이면 다시 시도 (재귀)
                         tryGenerateAndSave()
-                        return
-                    }
-                    
-                    let newRef = self.db.collection("users").document(uid)
-                    let user = UserDocument(
-                        id: nil, // 문서 번호 자동 매칭
-                        uid: uid,
-                        coin: 0,
-                        inviteCode: inviteCode,
-                        hasMate: false,
-                        totalStats: .init(
-                            walkingKm: 0,
-                            runningKm: 0,
-                            cyclingKm: 0,
-                            plankRounds: 0,
-                            jumpRopeCount: 0
-                        ),
-                        winCount: 0,
-                        loseCount: 0,
-                        createAt: nil // 서버가 채움
-                    )
-                    
-                    // users 컬렉션의 uid 문서 생성
-                    // 데이터 생성
-                    do {
-                        try newRef.setData(from: user) { error in
+                    } else {
+                        let newRef = self.db.collection("users").document(uid)
+                        let data: [String: Any] = [
+                            "uid": uid,
+                            "coin": 0, // 코인 // 2025년 06월 29일 추가
+                            "inviteCode": inviteCode,
+                            "hasMate" : false, // 메이트 매칭 여부
+                            "totalStats": [ // 총 기록
+                                "walkingKm": 0, // 걷기
+                                "runningKm": 0, // 달리기
+                                "cyclingKm": 0, // 자전거
+                                "plankRounds": 0, // 플랭크
+                                "jumpRopeCount": 0 // 줄넘기
+                                          ],
+                            "winCount": 0,
+                            "loseCount": 0,
+                            "createAt": FieldValue.serverTimestamp(), // 만든 시간
+                        ]
+                        
+                        // users 컬렉션의 uid 문서 생성
+                        // 데이터 생성
+                        newRef.setData(data) { error in
                             if let error = error {
-                                print("User 데이터 생성 실패: \(error.localizedDescription)")
                                 single(.failure(error))
+                                print("User 데이터 생성 실패: \(error.localizedDescription)")
                             } else {
-                                print("User 데이터 생성 완료: \(uid), 초대코드: \(inviteCode)")
                                 single(.success(()))
+                                print("User 데이터 생성 완료: \(uid), 초대코드: \(inviteCode)")
                             }
                         }
-                    } catch {
-                        // 인코딩 실패 시 여기로 옴
-                        print("인코딩 실패: \(error)")
-                        single(.failure(error))
                     }
                 }
             }
@@ -122,39 +114,49 @@ final class FirestoreService {
                     if isDuplicate {
                         // 중복이면 다시 시도 (재귀)
                         tryGenerateAndSave()
-                    }
-                    
-                    let newRef = self.db.collection("matches").document(matchCode)
-                    
-                    let doc = MatchDocument(
-                        id: nil,
-                        exerciseType: exerciseType,
-                        goalValue: goalValue,
-                        goalUnit: goalUnit,
-                        mode: mode,
-                        matchStatus: "waiting",
-                        inviterUid: inviterUid,
-                        inviteeUid: inviteeUid,
-                        players: [
-                            inviterUid: .init(isOnline: true, progress: 0.0, status: "waiting"),
-                            inviteeUid: .init(isOnline: true, progress: 0.0, status: "waiting")
-                        ],
-                        createAt: nil
-                    )
-                    
-                    do {
-                        try newRef.setData(from: doc) { error in
+                    } else {
+                        let newRef = self.db.collection("matches").document(matchCode)
+                        let data: [String: Any] = [
+                            "exerciseType": exerciseType, // 운동 종목
+                            "goalValue": goalValue, // 목표 수치
+                            "goalUnit": goalUnit,
+                            "mode": mode, // 운동 모드
+                            "matchStatus": "waiting", // waiting or started
+                            "inviterUid": inviterUid, // 운동 생성자 uid
+                            "inviteeUid": inviteeUid, // 운동 초대 받는 uid (mate)
+                            "createAt": FieldValue.serverTimestamp(), // 만든 시간
+                            // "startedAt": FieldValue.serverTimestamp(),     // 실제 시작 시각 넣을 땐 따로 업데이트
+                            // "finishedAt": FieldValue.serverTimestamp(),    // 실제 종료 시각 넣을 땐 따로 업데이트
+                            "players": [
+                                inviterUid: [
+                                    // "avatar": "끼리꼬", // 아바타 구현 되면 넣어야됨
+                                    "isOnline": true,
+                                    // "isWinner": true, // (대결모드에만 사용) 실제 게임 종료 후 따로 업데이트
+                                    "progress": 0.0,
+                                    "status": "waiting"
+                                ],
+                                inviteeUid: [
+                                    // "avatar": "끼리꼬",
+                                    "isOnline": true,
+                                    // "isWinner": true,
+                                    "progress": 0.0,
+                                    "status": "waiting"
+                                ]
+                            ]
+                        ]
+                        
+                        // Match 컬렉션의 MatchCode 문서 생성
+                        // 데이터 생성
+                        newRef.setData(data) { error in
                             if let error = error {
-                                print("Match 데이터 생성 실패: \(error.localizedDescription)")
                                 single(.failure(error))
+                                print("Match 데이터 생성 실패: \(error.localizedDescription)")
                             } else {
+                                // MatchCode 반환
+                                single(.success(newRef.documentID))
                                 print("Match 데이터 생성 완료: 매치코드: \(matchCode)")
-                                single(.success(newRef.documentID))   // matchCode 반환
                             }
                         }
-                    } catch {
-                        print("인코딩 실패: \(error)")
-                        single(.failure(error))
                     }
                 }
             }
