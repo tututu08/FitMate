@@ -9,7 +9,9 @@ final class FinishViewModel: ViewModelType {
         case cooperation
     }
     
-    struct Input { }
+    struct Input {
+        let rewardTap: Signal<Void> // 보상 버튼 탭
+    }
     
     struct Output {
         let modeText: Driver<String>
@@ -19,8 +21,11 @@ final class FinishViewModel: ViewModelType {
         let resultText: Driver<String>
         let resultImageName: Driver<String>
         let characterImageName: Driver<String>
+        let saveCompleted: Signal<Void> // 저장 완료 트리거 (VC에서 화면전환)
+        let saveFailed: Signal<String> // 저장 에러
     }
     
+    // MARK: - Inputs (생성자 주입)
     let mode: Mode
     let sport: String
     let goal: Int
@@ -29,41 +34,14 @@ final class FinishViewModel: ViewModelType {
     let success: Bool
     let avatarType: AvatarType
     
-    init(mode: Mode, sport: String, goal: Int, goalUnit: String, myDistance: Double = 0.0, avatarType: AvatarType, success: Bool) {
-        self.mode = mode
-        self.sport = sport
-        self.goal = goal
-        self.goalUnit = goalUnit
-        self.myDistance = myDistance      // 실제 달성 거리 (ex. 2.4)
-        self.avatarType = avatarType
-        self.success = success
-    }
     // 외부 필요 파라미터 (보상/저장에 쓰이는 식별자)
     let uid: String
     let mateUid: String
     let matchCode: String
     
-    func transform(input: Input) -> Output {
-        let modeText = Observable.just(mode == .battle ? "대결 모드" : "협력 모드")
-        let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
-        let reward = Observable.just("\(rewardCoin)")
-        let hideCoin = Observable.just(!success)
-        let myDistance: Double // 실제 달성 거리 (ex. 2.4Km)
-        let result = Observable.just(resultMessage)
-        let resultImage = Observable.just(success ? "win" : "Lose")
-        let characterImage = Observable.just(success ? avatarType.rawValue : "\(avatarType.rawValue)Lose")
-        
-        
-        return Output(
-            modeText: modeText.asDriver(onErrorJustReturn: ""),
-            goalText: goalText.asDriver(onErrorJustReturn: ""),
-            rewardText: reward.asDriver(onErrorJustReturn: ""),
-            hideCoin: hideCoin.asDriver(onErrorJustReturn: true),
-            resultText: result.asDriver(onErrorJustReturn: ""),
-            resultImageName: resultImage.asDriver(onErrorJustReturn: ""),
-            characterImageName: characterImage.asDriver(onErrorJustReturn: "")
-        )
-    }
+    private let disposeBag = DisposeBag()
+    private let saveCompletedRelay = PublishRelay<Void>()
+    private let saveFailedRelay = PublishRelay<String>()
     
     // 간단한 보상 계산 로직
     private var rewardCoin: Int {
@@ -120,6 +98,171 @@ final class FinishViewModel: ViewModelType {
         self.myDistance = myDistance      // 실제 달성 거리 (ex. 2.4)
         self.avatarType = avatarType
         self.success = success
+    }
+    
+    func transform(input: Input) -> Output {
+        let modeText = Observable.just(mode == .battle ? "대결 모드" : "협력 모드")
+        let goalText = Observable.just("\(sport) \(goal)\(goalUnit)")
+        // VC에 있던 상세 보상 계산을 그대로 ViewModel로 옮김
+        let rewardValue = calculateReward(exerciseType: sport,
+                                          goalValue: goal,
+                                          mode: mode,
+                                          isWin: success)
+        let reward = Observable.just("\(rewardCoin)")
+        let hideCoin = Observable.just(!success)
+        let myDistance: Double // 실제 달성 거리 (ex. 2.4Km)
+        let result = Observable.just(resultMessage)
+        let resultImage = Observable.just(success ? "win" : "Lose")
+        let characterImage = Observable.just(success ? avatarType.rawValue : "\(avatarType.rawValue)Lose")
+        
+        // 버튼 탭 → 코인 지급 + 경기 결과저장 + 기록 저장
+        input.rewardTap.emit(onNext: { [weak self] in
+            guard let self else { return }
+            if self.success {
+                SoundManage.shared.coinSound()
+            }
+            
+            let reward = rewardValue
+            
+            // 1) 코인 가산
+            self.rewardCoins(coinAmount: reward)
+            // 2) 경기 결과 업데이트
+                .andThen(
+                    FirestoreService.shared.updateMatchResult(
+                        matchCode: self.matchCode,
+                        myUid: self.uid,
+                        mateUid: self.mateUid,
+                        mode: self.mode,
+                        isWinner: self.success,
+                        goal: self.goal,
+                        myDistance: self.myDistance,
+                        exerciseType: self.sport
+                    )
+                )
+            // 3) 운동 기록 저장
+                .andThen(self.saveRecord(uid: self.uid, mateUid: self.mateUid, matchCode: self.matchCode))
+                .subscribe(
+                    onCompleted: { [weak self] in
+                        self?.saveCompletedRelay.accept(())
+                    },
+                    onError: { [weak self] error in
+                        self?.saveFailedRelay.accept(error.localizedDescription)
+                    }
+                )
+                .disposed(by: self.disposeBag)
+        }).disposed(by: disposeBag)
+        
+        
+        return Output(
+            modeText: modeText.asDriver(onErrorJustReturn: ""),
+            goalText: goalText.asDriver(onErrorJustReturn: ""),
+            rewardText: reward.asDriver(onErrorJustReturn: ""),
+            hideCoin: hideCoin.asDriver(onErrorJustReturn: true),
+            resultText: result.asDriver(onErrorJustReturn: ""),
+            resultImageName: resultImage.asDriver(onErrorJustReturn: ""),
+            characterImageName: characterImage.asDriver(onErrorJustReturn: ""),
+            saveCompleted: saveCompletedRelay.asSignal(),
+            saveFailed: saveFailedRelay.asSignal()
+        )
+    }
+}
+
+// MARK: - 코인 보상
+extension FinishViewModel {
+    /// 코인 보상 계산
+    private func calculateReward(
+        exerciseType: String,
+        goalValue: Int,    // km, 분, 개수(줄넘기)
+        mode: FinishViewModel.Mode,
+        isWin: Bool = false
+    ) -> Int {
+        
+        // 운동 계수
+        let exerciseFactor: Double = {
+            switch exerciseType {
+            case "걷기", "달리기": return 1.5
+            case "자전거": return 1.0
+            case "플랭크": return 1.6
+            case "줄넘기": return 1.4
+            default: return 1.0
+            }
+        }()
+        
+        // 모드 계수
+        let modeFactor: Double = {
+            switch mode {
+            case .cooperation: return isWin ? 0.5 : 0.0
+            case .battle: return isWin ? 1.0 : 0.0
+            }
+        }()
+        
+        // 지속 보너스 계수
+        let durationBonus: Double = {
+            switch exerciseType {
+            case "걷기":
+                if goalValue < 5 { return 0.5 }
+                else if goalValue < 11 { return 1.0 }
+                else if goalValue < 16 { return 1.5 }
+                else if goalValue < 20 { return 1.8 }
+                else { return 2.0 }
+            case "달리기":
+                if goalValue < 5 { return 0.5 }
+                else if goalValue < 11 { return 1.0 }
+                else if goalValue < 16 { return 1.5 }
+                else if goalValue < 20 { return 1.8 }
+                else if goalValue < 26 { return 2.0 }
+                else if goalValue < 30 { return 2.5 }
+                else if goalValue < 36 { return 3.0 }
+                else { return 4.0 }
+            case "자전거":
+                if goalValue < 11 { return 0.5 }
+                else if goalValue < 15 { return 0.8 }
+                else if goalValue < 30 { return 1.0 }
+                else if goalValue < 36 { return 1.5 }
+                else if goalValue < 40 { return 1.8 }
+                else if goalValue < 46 { return 2.0 }
+                else if goalValue < 50 { return 2.5 }
+                else if goalValue < 56 { return 3.0 }
+                else { return 4.0 }
+            case "플랭크":
+                if goalValue < 3 { return 0.5 }
+                else if goalValue < 4 { return 0.7 }
+                else if goalValue < 5 { return 0.9 }
+                else if goalValue < 6 { return 1.2 }
+                else if goalValue < 7 { return 1.5 }
+                else if goalValue < 8 { return 1.8 }
+                else if goalValue < 9 { return 2.0 }
+                else if goalValue < 10 { return 2.3 }
+                else { return 2.5 }
+            case "줄넘기":
+                if goalValue < 400 { return 0.5 }
+                else if goalValue < 700 { return 0.8 }
+                else if goalValue < 1000 { return 1.0 }
+                else if goalValue < 1300 { return 1.3 }
+                else if goalValue < 1600 { return 1.6 }
+                else if goalValue < 1900 { return 2.0 }
+                else { return 2.5 }
+            default:
+                return 1.0
+            }
+        }()
+        
+        let reward = (exerciseFactor * 100 * modeFactor * durationBonus).rounded(.toNearestOrEven)
+        return Int((reward / 10.0).rounded() * 10)
+    }
+    
+    func rewardCoins(coinAmount: Int) -> Completable {
+        guard coinAmount > 0 else { return .empty() }
+        return FirestoreService.shared.fetchDocument(collectionName: "users", documentName: self.uid)
+            .flatMapCompletable { data in
+                let current = data["coin"] as? Int ?? 0
+                return FirestoreService.shared.updateDocument(
+                    collectionName: "users",
+                    documentName: self.uid,
+                    fields: ["coin": current + coinAmount]
+                )
+                .asCompletable() // updateDocument 가 Single<Void>을 반환하여 Single<Void> → Completable 로 변환
+            }
     }
 }
 
