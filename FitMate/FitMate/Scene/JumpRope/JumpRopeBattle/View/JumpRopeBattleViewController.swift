@@ -158,6 +158,9 @@ class JumpRopeBattleViewController: BaseViewController {
         let avatarType = AvatarType(rawValue: myCharacter) ?? .kaepy
         
         let finishVM = FinishViewModel(
+            uid: myUid,
+            mateUid: mateUid,
+            matchCode: matchCode,
             mode: .battle,
             sport: "줄넘기",
             goal: viewModel.goalCount,
@@ -168,9 +171,6 @@ class JumpRopeBattleViewController: BaseViewController {
         )
         
         let vc = FinishViewController(
-            uid: myUid,
-            mateUid: mateUid,
-            matchCode: matchCode,
             viewModel: finishVM
         )
         
@@ -192,6 +192,9 @@ class JumpRopeBattleViewController: BaseViewController {
                 let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
                 
                 let finishVM = FinishViewModel(
+                    uid: myUid,
+                    mateUid: mateUid,
+                    matchCode: matchCode,
                     mode: .battle,
                     sport: "줄넘기",
                     goal: self.viewModel.goalCount,
@@ -202,11 +205,9 @@ class JumpRopeBattleViewController: BaseViewController {
                 )
                 
                 let vc = FinishViewController(
-                    uid: self.myUid,
-                    mateUid: self.mateUid,
-                    matchCode: self.matchCode,
                     viewModel: finishVM
                 )
+                
                 vc.modalPresentationStyle = .fullScreen
                 self.present(vc, animated: true)
             }

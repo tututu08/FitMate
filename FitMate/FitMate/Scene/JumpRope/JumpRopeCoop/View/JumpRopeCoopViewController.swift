@@ -141,6 +141,9 @@ class JumpRopeCoopViewController: BaseViewController {
         let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
         
         let finishVM = FinishViewModel(
+            uid: myUid,
+            mateUid: mateUid,
+            matchCode: matchCode,
             mode: .cooperation,
             sport: "줄넘기",
             goal: viewModel.goalCount,
@@ -149,10 +152,11 @@ class JumpRopeCoopViewController: BaseViewController {
             avatarType: avatarType,
             success: success
         )
-        let vc = FinishViewController(uid: myUid,
-                                      mateUid: mateUid,
-                                      matchCode: matchCode,
-                                      viewModel: finishVM)
+        
+        let vc = FinishViewController(
+            viewModel: finishVM
+        )
+        
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }

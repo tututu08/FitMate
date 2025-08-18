@@ -172,6 +172,9 @@ class RunningBattleViewController: BaseViewController {
         let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
         
         let finishVM = FinishViewModel(
+            uid: myUid,
+            mateUid: mateUid,
+            matchCode: matchCode,
             mode: .battle,
             sport: exerciseType,
             goal: goalDistance,
@@ -180,12 +183,11 @@ class RunningBattleViewController: BaseViewController {
             avatarType: avatarType,
             success: success
         )
+        
         let vc = FinishViewController(
-            uid: myUid,
-            mateUid: mateUid,
-            matchCode: matchCode,
             viewModel: finishVM
         )
+        
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
