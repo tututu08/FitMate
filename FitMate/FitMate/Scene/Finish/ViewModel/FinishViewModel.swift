@@ -38,6 +38,10 @@ final class FinishViewModel: ViewModelType {
         self.avatarType = avatarType
         self.success = success
     }
+    // 외부 필요 파라미터 (보상/저장에 쓰이는 식별자)
+    let uid: String
+    let mateUid: String
+    let matchCode: String
     
     func transform(input: Input) -> Output {
         let modeText = Observable.just(mode == .battle ? "대결 모드" : "협력 모드")
@@ -94,6 +98,28 @@ final class FinishViewModel: ViewModelType {
             다음번엔 꼭 성공하리...
             """
         }
+    }
+    
+    init(uid: String,
+         mateUid: String,
+         matchCode: String,
+         mode: Mode,
+         sport: String,
+         goal: Int,
+         goalUnit: String,
+         myDistance: Double = 0.0,
+         avatarType: AvatarType,
+         success: Bool) {
+        self.uid = uid
+        self.mateUid = mateUid
+        self.matchCode = matchCode
+        self.mode = mode
+        self.sport = sport
+        self.goal = goal
+        self.goalUnit = goalUnit
+        self.myDistance = myDistance      // 실제 달성 거리 (ex. 2.4)
+        self.avatarType = avatarType
+        self.success = success
     }
 }
 

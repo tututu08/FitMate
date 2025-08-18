@@ -8,14 +8,7 @@ class FinishViewController: BaseViewController {
     private let finishView = FinishView()
     private let viewModel: FinishViewModel
     
-    let uid: String
-    let mateUid: String
-    let matchCode: String
-    
-    init(uid: String, mateUid: String, matchCode: String, viewModel: FinishViewModel) {
-        self.uid = uid
-        self.mateUid = mateUid
-        self.matchCode = matchCode
+    init(viewModel: FinishViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
