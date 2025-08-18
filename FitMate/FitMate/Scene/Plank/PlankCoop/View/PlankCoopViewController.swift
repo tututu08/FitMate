@@ -21,8 +21,8 @@ final class PlankCoopViewController: BaseViewController {
     private let myCharacter: String      // 내 아바타
     private let mateCharacter: String    // 상대 아바타
     private let matchCode: String        // 경기 코드
-    private let myUID: String            // 내 UID
-    private let mateUID: String          // 상대 UID
+    private let myUid: String            // 내 UID
+    private let mateUid: String          // 상대 UID
     private let isInviter: Bool          // 내가 초대자인지 여부
     
     // matchCode: String, myUid: String, mateUid: String,  myCharacter: String, mateCharacter: String -> ,matchInfo: MatchInfo으로 변경
@@ -40,8 +40,8 @@ final class PlankCoopViewController: BaseViewController {
     ) {
         self.isInviter = isInviter
         self.matchCode = matchCode
-        self.myUID = myUID
-        self.mateUID = mateUID
+        self.myUid = myUID
+        self.mateUid = mateUID
         self.myCharacter = myCharacter
         self.mateCharacter = mateCharacter
         //        위에 5줄 하단 5줄 코드로 변경
@@ -239,8 +239,12 @@ final class PlankCoopViewController: BaseViewController {
     private func navigateToFinish(success: Bool) {
         // 내 아바타 타입 변환
         let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
+        
         // 결과 화면용 뷰모델 생성
         let finishVM = FinishViewModel(
+            uid: myUid,
+            mateUid: mateUid,
+            matchCode: matchCode,
             mode: .cooperation,
             sport: "플랭크",
             goal: viewModel.goalMinutes,
@@ -249,13 +253,12 @@ final class PlankCoopViewController: BaseViewController {
             avatarType: avatarType,
             success: success
         )
+        
         // 결과 화면 푸시
         let vc = FinishViewController(
-            uid: myUID,
-            mateUid: mateUID,
-            matchCode: matchCode,
             viewModel: finishVM
         )
+        
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
