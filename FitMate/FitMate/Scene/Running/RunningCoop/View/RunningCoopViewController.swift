@@ -173,6 +173,9 @@ final class RunningCoopViewController: BaseViewController {
         let avatarType = AvatarType(rawValue: self.myCharacter) ?? .kaepy
         
         let finishVM = FinishViewModel(
+            uid: myUid,
+            mateUid: mateUid,
+            matchCode: matchCode,
             mode: .cooperation,
             sport: exerciseType,
             goal: goalDistance,
@@ -183,11 +186,9 @@ final class RunningCoopViewController: BaseViewController {
         )
         
         let vc = FinishViewController(
-            uid: myUid,
-            mateUid: mateUid,
-            matchCode: matchCode,
             viewModel: finishVM
         )
+        
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)
     }
