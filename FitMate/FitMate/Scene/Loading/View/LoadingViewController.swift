@@ -157,26 +157,27 @@ class LoadingViewController: BaseViewController {
                 
                 let pushVC: UIViewController?
                 
+                // 중복되는 인자를 하나로 묶어서 간소화
+                let matchInfo = MatchInfo(
+                    matchCode: matchCode,
+                    myUid: myUid,
+                    mateUid: mateUid,
+                    myCharacter: myCharacter,
+                    mateCharacter: mateCharacter
+                )
+                
                 if mode == "battle" {
                     switch exerciseType {
                     case "걷기", "달리기", "자전거":
                         pushVC = RunningBattleViewController(
                             exerciseType: exerciseType,
                             goalDistance: goalValue,
-                            matchCode: matchCode,
-                            myUid: myUid,
-                            mateUid: mateUid,
-                            myCharacter: myCharacter,
-                            mateCharacter: mateCharacter
+                            matchInfo: matchInfo
                         )
                     case "줄넘기":
                         pushVC = JumpRopeBattleViewController(
                             goalCount: goalValue,
-                            matchCode: matchCode,
-                            myUid: myUid,
-                            mateUid: mateUid,
-                            myCharacter: myCharacter,
-                            mateCharacter: mateCharacter
+                            matchInfo: matchInfo
                         )
                     default: return
                     }
@@ -186,30 +187,18 @@ class LoadingViewController: BaseViewController {
                         pushVC = RunningCoopViewController(
                             exerciseType: exerciseType,
                             goalDistance: goalValue,
-                            matchCode: matchCode,
-                            myUid: myUid,
-                            mateUid: mateUid,
-                            myCharacter: myCharacter,
-                            mateCharacter: mateCharacter
+                            matchInfo: matchInfo
                         )
                     case "플랭크":
                         pushVC = PlankCoopViewController(
                             goalMinutes: goalValue,
-                            matchCode: matchCode,
-                            myUID: myUid,
-                            mateUID: mateUid,
                             isInviter: isInviter,
-                            myCharacter: myCharacter,
-                            mateCharacter: mateCharacter
+                            matchInfo: matchInfo
                         )
                     case "줄넘기":
                         pushVC = JumpRopeCoopViewController(
                             goalCount: goalValue,
-                            matchCode: matchCode,
-                            myUid: myUid,
-                            mateUid: mateUid,
-                            myCharacter: myCharacter,
-                            mateCharacter: mateCharacter
+                            matchInfo: matchInfo
                         )
                     default: return
                     }
