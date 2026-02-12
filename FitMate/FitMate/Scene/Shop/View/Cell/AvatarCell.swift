@@ -59,6 +59,7 @@ final class AvatarCell: UICollectionViewCell {
     }
     
     func setUpUI() {
+        
         [avatarImage, blackFilter, unlockLabel].forEach({ contentView.addSubview($0) })
         contentView.backgroundColor = .background800
         contentView.clipsToBounds = true // 셀 외곽 넘침 방지
@@ -78,16 +79,18 @@ final class AvatarCell: UICollectionViewCell {
                 make.height.equalTo(unlockLabel.snp.width).multipliedBy(0.9)
             }
         }
+        
     }
     
+    
     func configure(with model: AvatarModel) {
-        
-        if let url = URL(string: model.imageUrl) {
-            avatarImage.kf.setImage(with: url)
+
+        if let name = model.imageName {
+            avatarImage.image = UIImage(named: name)
         }
-        
+
         let isLocked = !model.isUnlocked
-        blackFilter.isHidden = !isLocked
+        blackFilter.alpha = isLocked ? 0.5 : 0
         unlockLabel.isHidden = !isLocked
     }
 }
