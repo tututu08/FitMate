@@ -14,7 +14,6 @@ struct AvatarModel: Codable, Hashable {
     // Firestore에서 직접 내려주는 값들 -> 디코딩 대상
     let name: String
     let category: String
-    let imageUrl: String
     let price: Int?
     var isLocked: Bool
     let ratio: Double?
