@@ -81,13 +81,13 @@ final class AvatarCell: UICollectionViewCell {
     }
     
     func configure(with model: AvatarModel) {
-        
-        if let url = URL(string: model.imageUrl) {
-            avatarImage.kf.setImage(with: url)
+
+        if let name = model.imageName {
+            avatarImage.image = UIImage(named: name)
         }
-        
+
         let isLocked = !model.isUnlocked
-        blackFilter.isHidden = !isLocked
+        blackFilter.alpha = isLocked ? 0.5 : 0
         unlockLabel.isHidden = !isLocked
     }
 }
